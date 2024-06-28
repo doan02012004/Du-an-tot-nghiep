@@ -17,7 +17,6 @@ export default {
         green:"#28a745",
         teal:"#20c997",
         cyan:"#17a2b8",
-        gray:"#6c757d",
         grayDark:"#343a40",
         primary:"#007bff",
         secondary:"#6c757d",
@@ -26,7 +25,10 @@ export default {
         warning:"#ffc107",
         danger:"#dc3545",
         light:"#f8f9fa",
-        dark:"#343a40",
+        dark:"#221F20",
+      },
+      height:{
+        main_mini_cart: "calc(100vh - 75px - 240px)",
       }
     },
   },
