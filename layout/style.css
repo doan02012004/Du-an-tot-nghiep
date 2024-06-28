@@ -52,7 +52,6 @@ body{
     .footer-infomation-icon i {
         @apply transition-all duration-300 ease-in-out
     }
- 
     .sub-menu,
     .quicksearch{
         animation: sub_menu 0.3s ease-in;
