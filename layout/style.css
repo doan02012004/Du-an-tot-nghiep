@@ -45,9 +45,14 @@ body{
     .scrollbar::-webkit-scrollbar{
         display: none;
     }
-    .footer-infomation-icon i {
-        @apply transition duration-300 ease-in-out
+    .footer-information .active i {
+        rotate: 90deg;
+        @apply transition-all duration-300 ease-in-out
     }
+    .footer-infomation-icon i {
+        @apply transition-all duration-300 ease-in-out
+    }
+ 
     .sub-menu,
     .quicksearch{
         animation: sub_menu 0.3s ease-in;
