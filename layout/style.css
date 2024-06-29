@@ -52,12 +52,20 @@ body{
     .footer-infomation-icon i {
         @apply transition-all duration-300 ease-in-out
     }
- 
+    .btn-cart .active {
+        @apply text-dark bg-white
+    }
+    .tabs-btn .active{
+        color:  #221f20 ;
+        background: white;
+    }
     .sub-menu,
     .quicksearch{
         animation: sub_menu 0.3s ease-in;
     }
-    
+    .card-list-size{
+        animation: card_list_size 0.3s ease-in;
+    }
     
     @keyframes sub_menu {
         from{
@@ -67,6 +75,20 @@ body{
         to {
             transform: translateX(0);
             opacity: 1;
+        }
+    }
+    @keyframes card_list_size {
+        from{
+           bottom: 0;
+           opacity: 0;
+          
+        }
+        to {
+            bottom: 35px;
+            opacity: 1;
+            @media (max-width:576px) {
+                bottom: 25px;
+            }
         }
     }
    
