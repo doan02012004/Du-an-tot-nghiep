@@ -107,7 +107,9 @@ body{
         .footer-infomation-content{
             animation: toTop 0.3s ease-in;
         }
-       
+       .formChangePass{
+        animation: toBlock 0.3s ease-in;
+       }
         @keyframes toRight {
             from{
                transform: translateX(-10px);

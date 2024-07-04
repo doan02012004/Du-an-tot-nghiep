@@ -116,3 +116,4 @@ btns_card_addtocart.forEach((btn,i)=>{
     lists_card_size[i].classList.toggle('hidden')
   })
 })
+
