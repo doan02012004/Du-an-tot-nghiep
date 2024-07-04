@@ -34,8 +34,8 @@ body{
 
     }
     .btn-lg{
-        border-radius: 24px 0;
-        @apply transition-all duration-300 ease-in-out  rounded-tl-lg rounded-br-lg  hover:bg-[#221F20] hover:text-white
+        
+        @apply transition-all duration-300 ease-in-out text-dark text-sm  rounded-tl-lg rounded-br-lg lg:text-base lg:rounded-tl-3xl lg:rounded-br-3xl  hover:bg-[#221F20] hover:text-white
     }
    
     .scrollbar{
