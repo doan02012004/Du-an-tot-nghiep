@@ -116,5 +116,92 @@ btns_card_addtocart.forEach((btn, i) => {
     lists_card_size[i].classList.toggle('hidden')
   })
 })
+// ----------------------------------products---------------------------//
+document.getElementById('toggleSizeIcon').addEventListener('click', function() {
+  var sizeOptions = document.getElementById('sizeOptions');
+  sizeOptions.classList.toggle('hidden');
+  var icon = this.querySelector('i');
+  icon.classList.toggle('fa-plus');
+  icon.classList.toggle('fa-minus');
+});
 
+document.getElementById('toggleColorIcon').addEventListener('click', function() {
+  var colorOptions = document.getElementById('colorOptions');
+  colorOptions.classList.toggle('hidden');
+  var icon = this.querySelector('i');
+  icon.classList.toggle('fa-plus');
+  icon.classList.toggle('fa-minus');
+});
+
+document.getElementById('togglePriceIcon').addEventListener('click', function() {
+  var priceOptions = document.getElementById('priceOptions');
+  priceOptions.classList.toggle('hidden');
+  var icon = this.querySelector('i');
+  icon.classList.toggle('fa-plus');
+  icon.classList.toggle('fa-minus');
+});
+
+document.querySelectorAll('.size-btn').forEach(function(button) {
+  button.addEventListener('click', function() {
+      document.querySelectorAll('.size-btn').forEach(function(btn) {
+          btn.classList.remove('highlighted');
+      });
+      this.classList.add('highlighted');
+  });
+});
+
+document.querySelectorAll('.color-btn').forEach(function(button) {
+  button.addEventListener('click', function() {
+      if (this.classList.contains('highlighted')) {
+          this.classList.remove('highlighted');
+          this.innerHTML = '';
+      } else {
+          this.classList.add('highlighted');
+          if (this.style.backgroundColor === 'white') {
+              this.innerHTML = '<i class="fa-solid fa-check absolute inset-0 flex items-center justify-center text-black"></i>';
+          } else {
+              this.innerHTML = '<i class="fa-solid fa-check absolute inset-0 flex items-center justify-center text-white"></i>';
+          }
+      }
+  });
+});
+
+document.getElementById('priceRange').addEventListener('input', function() {
+  var value = this.value;
+  document.getElementById('minPrice').innerText = value + 'đ';
+});
+
+document.getElementById('resetBtn').addEventListener('click', function() {
+  document.querySelectorAll('.size-btn').forEach(function(btn) {
+      btn.classList.remove('highlighted');
+  });
+  document.querySelectorAll('.color-btn').forEach(function(btn) {
+      btn.classList.remove('highlighted');
+      btn.innerHTML = '';
+  });
+  document.getElementById('priceRange').value = 0;
+  document.getElementById('minPrice').innerText = '0đ';
+});
+
+document.getElementById('applyBtn').addEventListener('click', function() {
+  // Implement your filter logic here
+  alert('Filters applied!');
+});
+
+function toggleDropdown() {
+document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+if (!event.target.matches('.dropbtn')) {
+  var dropdowns = document.getElementsByClassName("dropdown-content");
+  for (var i = 0; i < dropdowns.length; i++) {
+    var openDropdown = dropdowns[i];
+    if (openDropdown.classList.contains('show')) {
+      openDropdown.classList.remove('show');
+    }
+  }
+}
+}
 
