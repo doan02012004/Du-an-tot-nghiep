@@ -5,6 +5,7 @@ import { createProduct, getAllProduct } from '../controllers/productController.j
 const router = express.Router()
 
 router.post('/', createProduct)
-router.get('/',getAllProduct)
+router.get('/', getAllProduct)
+
 
 export default router
