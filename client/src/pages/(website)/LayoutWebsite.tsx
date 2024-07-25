@@ -1,11 +1,15 @@
-import { Button } from 'antd'
-import React from 'react'
+
+import { Outlet } from 'react-router-dom'
+import Footer from './_components/Footer'
+import Header from './_components/Header'
 
 const LayoutWebsite = () => {
   return (
-    <div>
-        <Button type='primary'>Hello</Button>
-    </div>
+    <>
+    <Header />
+    <Outlet />
+    <Footer />
+    </>
   )
 }
 
