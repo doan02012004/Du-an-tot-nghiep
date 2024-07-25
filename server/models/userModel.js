@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     email:{
         type:String,
         required:true,
+        unique:true,
     },
     password:{
         type:String,
@@ -50,7 +51,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ["user", "admin"],
         default: "user",
-    }
+    },
+    
     
 },{
     timestamps:true , versionKey:false

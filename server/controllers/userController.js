@@ -1,4 +1,7 @@
 import UserModel from "../models/userModel.js"
+import bcrypt from "bcryptjs"
+import { registerSchema, loginSchema } from "../validations/userValidations.js"
+import generateRefreshToken from "../ultils/tokenAuth.js"
 
 // lấy toàn bộ user
 export const getAllUser = async (req, res) => {
@@ -86,32 +89,85 @@ export const register = async (req, res) => {
         address: req.body.address
     }
     try {
-        const oldUser = await UserModel.findOne({ email: User.email })
+        //lấy schemma để validate
+        const { error } = registerSchema.validate(req.body, { abortEarly: false });
+        if (error) {
+            // Nếu có lỗi sẽ trả về tất cả lỗi
+            return res.status(400).json({ errors: error.details.map(err => err.message) });
+        }
+
+        const existUser = await UserModel.findOne({ email: User.email })
         //kiểm tra xem tk đã tồn tại chưa
-        if (oldUser) {
+        if (existUser) {
             return res.status(401).json({
                 message: "Email đã tồn tại"
             })
         }
-        //kiểm tra mật khẩu có trùng nhau khi đăng kí không
-        if (User.password !== User.confirmPassword) {
-            return res.status(400).json({
-                error: "Mật khẩu không trùng khớp"
-            })
-        }
         //mã hóa mật khẩu khẩu bằng jwt
         const hashPassword = await bcrypt.hash(User.password, 10)
-        User.password = hashPassword
+        // ở đây thì ta sử dụng countDocuments để đọc số lượng trong collection user nếu như ko có thì tài khoản đầu tiên là "admin"
+        const role = (await UserModel.countDocuments({})) === 0 ? "admin" : "user";
 
-        //sau khi pass qua các bước trên thì ta sẽ tạo ddc 1 tài khoản mới và trả về trạng thái
-        const userData = await UserModel.create(User)
+        //sau khi pass qua các bước trên thì ta sẽ tạo đc 1 tài khoản mới
+        const userData = await UserModel.create({
+            ...req.body,
+            password: hashPassword,
+            role
+        })
         return res.status(201).json({
             message: "Đăng ký thành công",
             data: userData
         })
     } catch (error) {
-        console.log("lỗi.", error.message)
+        console.log("lỗi đăng kí", error.message)
         return res.status(500).json({ error: "lỗi máy chủ" })
 
+    }
+}
+
+
+// đăng nhập tài khoản
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body
+        //lấy schemma để validate
+        const { error } = loginSchema.validate(req.body, { abortEarly: false });
+        if (error) {
+            // Nếu có lỗi sẽ trả về tất cả lỗi
+            return res.status(400).json({ errors: error.details.map(err => err.message) });
+        }
+
+        const user = await UserModel.findOne({ email })
+        const passwordCorrect = await bcrypt.compare(password, user?.password || "");
+
+        //kiểm tra tài khoản đã tồn tại chưa thông qua email
+        if (!user) {
+            res.status(404).json({ message: "Không có tài khoản" })
+        }
+
+        //kiểm tra mật khẩu có đúng không giữa req người dùng nhập với pass có sẵn trong db
+        if (!user || !passwordCorrect) {
+            return res.status(400).json({ error: "sai mật khẩu" });
+        }
+        // lấy token ở bên fodels ultils
+        const refreshToken = generateRefreshToken(user._id);
+        return res.status(200).json({ refreshToken })
+
+    } catch (error) {
+        console.log("lỗi đăng nhập", error.message)
+        res.status(500).json({ error: "lỗi máy chủ" })
+    }
+}
+
+
+// đăng xuất tài khoản
+export const logout = async (req, res) => {
+    try {
+        //thiết lập cookie là giá trị rỗng và cho thời gian sống bằng 0
+        res.cookie('jwt', "", { maxAge: 0 })
+        res.status(200).json({message:"đăng xuất thành công"})
+    } catch (error) {
+        console.log("lỗi đăng xuất", error.message)
+        res.status(500).json({ error: "lỗi máy chủ" })
     }
 }
