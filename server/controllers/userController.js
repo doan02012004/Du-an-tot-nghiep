@@ -150,8 +150,19 @@ export const login = async (req, res) => {
             return res.status(400).json({ error: "sai mật khẩu" });
         }
         // lấy token ở bên fodels ultils
-        const refreshToken = generateRefreshToken(user._id);
-        return res.status(200).json({ refreshToken })
+        generateRefreshToken(user._id, res);
+        
+        return res.status(200).json({
+            firstname: user.firstname,
+            lastname: user.lastname,
+            phone: user.phone,
+            date: user.date,
+            gender: user.gender,
+            city: user.city,
+            district: user.district,
+            ward: user.ward,
+            address: user.address
+        })
 
     } catch (error) {
         console.log("lỗi đăng nhập", error.message)
@@ -165,7 +176,7 @@ export const logout = async (req, res) => {
     try {
         //thiết lập cookie là giá trị rỗng và cho thời gian sống bằng 0
         res.cookie('jwt', "", { maxAge: 0 })
-        res.status(200).json({message:"đăng xuất thành công"})
+        res.status(200).json({ message: "đăng xuất thành công" })
     } catch (error) {
         console.log("lỗi đăng xuất", error.message)
         res.status(500).json({ error: "lỗi máy chủ" })
