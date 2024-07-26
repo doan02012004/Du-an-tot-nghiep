@@ -62,3 +62,60 @@ export const updateAttributeProduct = async(req,res)=>{
         })
     }
 }
+
+export const getByIdProduct = async(req, res)=>{
+    try {
+     
+        const product = await ProductModel.findById(req.params.productId).populate('categoryId')
+        if(!product){
+            return res.status(404).json({
+                message: "Product Not Found"
+            })
+        }
+        return res.status(200).json(product)
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+    }
+}
+export const updateInforProduct = async(req,res)=>{
+    try {
+        const updateProduct = await ProductModel.findByIdAndUpdate({_id:req.params.productId},
+            {
+                name:req.body.name,
+                categoryId:req.body.categoryId,
+                discount:req.body.discount,
+                price_old:req.body.price_old,
+                description:req.body.description,
+                featured:req.body.featured,
+                status:req.body.status,
+                gender:req.body.gender
+            },
+            {new:true}
+        )
+        return res.status(200).json(updateProduct)
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+    }
+}
+export const deleteProduct = async(req, res)=>{
+    try {
+     
+        const product = await ProductModel.findByIdAndDelete(req.params.productId)
+        if(!product){
+            return res.status(404).json({
+                message: "Product Not Found"
+            })
+        }
+        return res.status(200).json(product)
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+    }
+}
+
+
