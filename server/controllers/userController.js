@@ -150,7 +150,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ error: "sai mật khẩu" });
         }
         // lấy token ở bên fodels ultils
-        generateRefreshToken(user._id, res);
+       const token =  generateRefreshToken(user._id, res);
         
         return res.status(200).json({
             firstname: user.firstname,
