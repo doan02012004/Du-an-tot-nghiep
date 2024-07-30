@@ -19,8 +19,8 @@ const Table = () => {
                             <td className="w-[27rem]">
                                 <div className="flex mt-0 pt-0 w-[27rem]">
                                     <div className="max-w-40 flex-none ">
-                                        <a href='' className=''>
-                                            <img src="./assets/images/products/ao1.jpg" className='' />
+                                        <a href='' className='block h-[215px] w-[150px]'>
+                                            <img src="https://picsum.photos/200/1000" className='h-full w-full object-cover' />
                                         </a>
                                     </div>
                                     <div className="flex-grow ml-4 p-0 m-0">
@@ -34,8 +34,8 @@ const Table = () => {
                             </td>
                             <td className="align-top">
                                 <div className="text-left">
-                                    <span className=''>-1.194.000đ</span>
-                                    <p className="text-red text-[12px] font-bold">( -60% )</p>
+                                    <span className='text-sm'>-1.194.000đ</span>
+                                    <p className="text-red text-xs font-bold">( -60% )</p>
                                 </div>
                             </td>
                             <td className="align-top">
@@ -47,7 +47,7 @@ const Table = () => {
                             </td>
                             <td className="align-top">
                                 <div className=''>
-                                    <span className="text-black font-bold text-[18px] pl-4">796.000đ</span>
+                                    <span className="text-black font-bold text-sm pl-4">796.000đ</span>
                                 </div>
                             </td>
                             <td className="align-top">

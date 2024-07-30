@@ -98,6 +98,9 @@ input[type="number"] {
   .active-lable{
       @apply bg-black
   }
+  .text .active {
+    @apply text-black
+  }
 
   @keyframes sub_menu {
       from {

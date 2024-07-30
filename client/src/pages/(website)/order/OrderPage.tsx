@@ -1,54 +1,22 @@
 import { useEffect, useState } from "react"
-
+import imageVisa from '../../../assets/images/products/image 10.jpg'
 
 const OrderPage = () => {
     const [clickCity,setClickCity]= useState(false)
-    const onCLickCity = ()=>{
-        setClickCity(!clickCity)
-    }
     const [clickDistrict,setClickDistrict]= useState(false)
-    const onClickDistrict = ()=>{
-        setClickDistrict(!clickDistrict)
-    }
-    const [clickWard,setClickWard]= useState(false)
-    const onClickWard = ()=>{
-        setClickWard(!clickWard)
-    }
-
     const [paymentMethods,setPaymentMethos] = useState(false)
+    const [clickWard,setClickWard]= useState(false)
+    const [displayVoucher,setDisplayVoucher] = useState(false)
+
+
+   
+    
     const onClickPaymentMethos = ()=>{
         setPaymentMethos(!paymentMethods)
     }
 
-    const [displayVoucher,setDisplayVoucher] = useState(false)
-    const onClickDisplayVoucher = ()=>{
-        setDisplayVoucher(!displayVoucher)
-    }
-    useEffect(() => {
-        
-        
-        
-
-
-        /// checked
-        
-
-        // voucher
-        // const modalVoucher:any = document.getElementById("myModalVoucher");
-        // const zoomVoucher:any = document.getElementById("zoomVoucher");
-        // const closeModalVoucher:any = document.getElementById("closeModalVoucher");
-        // zoomVoucher.onclick = function () {
-        //     modalVoucher.classList.toggle("hidden");
-        // }
-        // closeModalVoucher.onclick = function () {
-        //     modalVoucher.classList.toggle("hidden");
-        // }
-        // window.onclick = function (event) {
-        //     if (event.target == modalVoucher) {
-        //         modalVoucher.classList.toggle("hidden");
-        //     }
-        // }
-    })
+    
+    
     return (
         <section>
             <div>
@@ -123,14 +91,14 @@ const OrderPage = () => {
                                     </div>
                                     <div className="w-full flex justify-between items-center gap-8" >
                                         <div className="w-full relative select-information" >
-                                            <select className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  lg:text-base text-black" onClick={onCLickCity}>
-                                                <option value='' disabled selected>Tỉnh/Thành Phố</option>
-                                                <option value=''>Hà nội</option>
+                                            <select onBlur={()=>{setClickCity(false)}} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  lg:text-base text-black" onClick={()=>setClickCity(!clickCity)}>
+                                                <option disabled selected>Tỉnh/Thành Phố</option>
+                                                <option >Hà nội</option>
                                             </select>
                                             <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${clickCity ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
                                         </div>
                                         <div className="w-full relative select-information">
-                                            <select className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black " onClick={onClickDistrict}>
+                                            <select onBlur={()=>{setClickDistrict(false)}} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black " onClick={()=>setClickDistrict(!clickDistrict)}>
                                                 <option disabled selected>Quận/Huyện</option>
                                                 <option>Hà nội</option>
                                             </select>
@@ -138,9 +106,9 @@ const OrderPage = () => {
                                         </div>
                                     </div>
                                     <div className="w-full relative select-information">
-                                        <select className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black "  onClick={onClickWard}>
-                                            <option value='' disabled selected>Phường/Xã</option>
-                                            <option value=''>Hà nội</option>
+                                        <select onBlur={()=>{setClickWard(false)}} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black "  onClick={()=>setClickWard(!clickWard)}>
+                                            <option disabled selected>Phường/Xã</option>
+                                            <option >Hà nội</option>
                                         </select>
                                         <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${clickWard ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
                                     </div>
@@ -161,7 +129,7 @@ const OrderPage = () => {
                             </div>
                             <div className=''>
                                 <span className="text-lg lg:text-xl text-black font-semibold">Phương thức thanh toán</span>
-                                <div className="px-5 py-4 my-4 border rounded-tl-[30px] rounded-br-[30px] lg:py-8 lg:px-10 flex flex-col gap-8" onClick={onClickPaymentMethos}>
+                                <div className="px-5 py-4 my-4 border rounded-tl-[30px] rounded-br-[30px] lg:py-8 lg:px-10 flex flex-col gap-8" onClick={()=>setPaymentMethos(!paymentMethods)}>
                                     <span className="text-sm ">Mọi giao dịch đều được bảo mật và mã hóa. Thông tin thẻ tín dụng sẽ không bao giờ
                                         được lưu lại.</span>
                                     <div className="flex items-center gap-3">
@@ -170,7 +138,7 @@ const OrderPage = () => {
                                             <span className="text-white hidden text-[12px]"><i className="fa-solid fa-check" /></span>
                                         </label>
                                         <span className="text-sm text-black">Phương thức thanh toán</span>
-                                        <img src="./assets/images/products/image 10.jpg" />
+                                        <img src={imageVisa} />
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <label className="custom-radio 1 size-4 rounded-full border flex justify-center items-center cursor-pointer">
@@ -227,7 +195,7 @@ const OrderPage = () => {
                                 <div className="flex items-center justify-between lg:justify-around">
                                     <span className="lg:text-lg text-black font-semibold">Mã phiếu giảm giá</span>
                                     <div className="w-[1px] h-6 bg-black" />
-                                    <button className="lg:text-lg text-gray-400 font-semibold" id="zoomVoucher" onClick={onClickDisplayVoucher}>Mã của tôi</button>
+                                    <button className="lg:text-lg text-gray-400 font-semibold" id="zoomVoucher" onClick={()=>setDisplayVoucher(!displayVoucher)}>Mã của tôi</button>
                                 </div>
                                 <div className="flex items-center gap-3 justify-between">
                                     <input type="text" className="placeholder:text-sm border rounded-md py-3 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:placeholder:text-base " placeholder="Mã giảm giá" />
@@ -242,11 +210,11 @@ const OrderPage = () => {
                             </div>
                         </div>
                         <div id="myModalVoucher" className={`modal fixed top-0 left-0 w-full h-full bg-black/45  z-[51]  ${displayVoucher ? "":"hidden"}`}>
-                            <div className="w-[400px] mt-3 lg:w-[800px] mx-auto bg-white lg:mt-9 rounded-lg">
+                            <div className="w-[400px] mt-3 lg:w-[800px] mx-auto bg-white lg:mt-9 rounded-lg" >
                                 <div className="border-b">
-                                    <div className="flex items-center justify-between px-5 py-4">
+                                    <div className="flex items-center justify-between px-5 py-4" >
                                         <span className="text-black text-lg font-semibold">Danh sách Voucher</span>
-                                        <button id="closeModalVoucher" onClick={onClickDisplayVoucher}><i className="fa-solid fa-xmark" /></button>
+                                        <button  id="closeModalVoucher" onClick={()=>setDisplayVoucher(!displayVoucher)}><i className="fa-solid fa-xmark" /></button>
                                     </div>
                                 </div>
                                 <div className="px-5 pt-4 pb-6">
