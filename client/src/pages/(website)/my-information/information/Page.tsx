@@ -8,7 +8,7 @@ const Account = () => {
         <h1 className="uppercase font-semibold text-lg mb-4 lg:text-2xl text-dark lg:mb-8">Tài khoản của tôi</h1>
         <div className="flex flex-col lg:gap-x-4 lg:flex-row">
             {/* Form  */}
-          <form onClick={(e)=>{e.preventDefault()}} className="order-2 mb-5 w-full lg:basis-4/6 lg:flex-shrink-0 lg:order-1 lg:mb-0">
+          <form className="order-2 mb-5 w-full lg:basis-4/6 lg:flex-shrink-0 lg:order-1 lg:mb-0">
             <div className="flex flex-col  mb-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
               <div className="w-[170px] font-light text-dark text-sm flex-shrink-0">Họ</div>
               <input type="text" defaultValue="Bùi Văn" className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200" disabled />
@@ -29,15 +29,15 @@ const Account = () => {
               <div className="w-[170px] font-light text-dark text-sm flex-shrink-0">Giới tính</div>
               <div className="flex items-center gap-x-8">
                 <div className="flex items-center gap-x-2">
-                  <input type="radio" id="nam" className="accent-slate-950 size-5" name="gender" defaultValue="Nam" />
+                  <input type="radio" id="nam" className="accent-slate-950 size-5" name="gender" />
                   <label htmlFor="nam" className="block cursor-pointer text-dark font-semibold text-sm">Nam</label>
                 </div>
                 <div className="flex items-center gap-x-2">
-                  <input type="radio" id="nu" className="accent-slate-950 size-5" name="gender" defaultValue="Nữ" />
+                  <input type="radio" id="nu" className="accent-slate-950 size-5" name="gender"/>
                   <label htmlFor="nu" className="block cursor-pointer text-dark font-semibold text-sm">Nữ</label>
                 </div>
                 <div className="flex items-center gap-x-2">
-                  <input type="radio" id="khac" className="accent-slate-950 size-5" name="gender" defaultValue="Khác" />
+                  <input type="radio" id="khac" className="accent-slate-950 size-5" name="gender"/>
                   <label htmlFor="khac" className="block cursor-pointer text-dark font-semibold text-sm">Khác</label>
                 </div>
               </div>
@@ -48,7 +48,7 @@ const Account = () => {
             </div>
             <div className=" flex items-center w-max mx-auto">
               <button type="submit" className="border mr-4 border-dark rounded-tl-2xl bg-dark rounded-br-2xl text-white px-6 py-3 hover:bg-white hover:text-dark transition duration-300 ease-in-out">Cập nhật</button>
-              <button onClick={()=>{setIsOpen(true)}} className="btn-changePass border border-dark rounded-tl-2xl bg-white rounded-br-2xl text-dark px-6 py-3 hover:bg-dark hover:text-white transition duration-300 ease-in-out">Đổi mật khẩu</button>
+              <button onClick={(e)=>{setIsOpen(true);e.preventDefault()}} className="btn-changePass border border-dark rounded-tl-2xl bg-white rounded-br-2xl text-dark px-6 py-3 hover:bg-dark hover:text-white transition duration-300 ease-in-out">Đổi mật khẩu</button>
             </div>
           </form>
           {/* Table chiết khấu  */}
