@@ -1,22 +1,32 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import imageVisa from '../../../assets/images/products/image 10.jpg'
 
 const OrderPage = () => {
-    const [clickCity,setClickCity]= useState(false)
-    const [clickDistrict,setClickDistrict]= useState(false)
-    const [paymentMethods,setPaymentMethos] = useState(false)
-    const [clickWard,setClickWard]= useState(false)
-    const [displayVoucher,setDisplayVoucher] = useState(false)
+    const [clickCity, setClickCity] = useState(false)
+    const [clickDistrict, setClickDistrict] = useState(false)
+    const [clickWard, setClickWard] = useState(false)
+    const [displayVoucher, setDisplayVoucher] = useState(false)
+    const [payment, setPayment] = useState<number | null>(null)
 
+    const [address, setAddress] = useState<number | null>(null)
 
-   
-    
-    const onClickPaymentMethos = ()=>{
-        setPaymentMethos(!paymentMethods)
+    const onClickAddress = (number: number) => {
+        if (address == null || address !== number) {
+            setAddress(number)
+        } else {
+            setAddress(null)
+        }
     }
 
-    
-    
+
+    const onClickPayment = (number: number) => {
+        if (payment == null || payment !== number) {
+            setPayment(number)
+        } else {
+            setPayment(null)
+        }
+    }
+
     return (
         <section>
             <div>
@@ -24,30 +34,38 @@ const OrderPage = () => {
                     <div className="lg:w-[68%]">
                         <div className=''>
                             <div className="border border-[#91979c] rounded-tl-[20px] rounded-br-[20px] py-5 relative mb-9">
-                                <div className="flex items-center px-4 pb-6 w-max mx-auto lg:pb-10">
-                                    <div className="size-4 lg:size-5 rounded-full bg-black border relative">
-                                        <div className="top-6 left-7 text-sm absolute lg:left-1/2 transform -translate-x-1/2 lg:top-8 lg:text-xs leading-snug w-24 text-center">
-                                            Giỏ hàng
+                                <div className="flex items-center px-4 pb-6 w-[90%] mx-auto lg:pb-10">
+                                    <div className="flex items-center basis-1/3 ">
+                                        <div className="size-4 lg:size-5 rounded-full bg-black border relative flex-shrink-0">
+                                            <div className="top-6 left-7 text-sm absolute lg:left-1/2 transform -translate-x-1/2 lg:top-8 lg:text-xs leading-snug w-24 text-center">
+                                                Giỏ hàng
+                                            </div>
+                                        </div>
+                                        <div className="w-full h-[4px] lg:h-[2px] bg-black" />
+                                    </div>
+                                    <div className="flex items-center  basis-1/3 ">
+                                        <div className="size-4 lg:size-5 rounded-full bg-black border border-gray-300 relative flex-shrink-0">
+                                            <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 top-8 text-xs leading-snug w-24 text-center">
+                                                Đặt hàng
+                                            </div>
+                                        </div>
+                                        <div className="w-full h-[4px]  lg:h-[2px] bg-gray-300" />
+                                    </div>
+
+                                    <div className="flex items-center  basis-1/3 ">
+                                        <div className="size-4 lg:size-5 rounded-full bg-white border border-gray-300 relative flex-shrink-0">
+                                            <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 top-8 text-xs leading-snug w-24 text-center">
+                                                Thanh toán
+                                            </div>
+                                        </div>
+                                        <div className="w-full h-[4px] lg:h-[2px] bg-gray-300" />
+                                        <div className="size-4 lg:size-5 rounded-full bg-white border border-gray-300 relative flex-shrink-0">
+                                            <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 top-8 text-xs leading-snug w-24 text-center">
+                                                Hoàn thành đơn
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="w-24 h-[4px] lg:w-52 lg:h-[2px] bg-black" />
-                                    <div className="size-4 lg:size-5 rounded-full bg-black border border-gray-300 relative">
-                                        <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 top-8 text-xs leading-snug w-24 text-center">
-                                            Đặt hàng
-                                        </div>
-                                    </div>
-                                    <div className="w-24 h-[4px] lg:w-52 lg:h-[2px] bg-gray-300" />
-                                    <div className="size-4 lg:size-5 rounded-full bg-white border border-gray-300 relative">
-                                        <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 top-8 text-xs leading-snug w-24 text-center">
-                                            Thanh toán
-                                        </div>
-                                    </div>
-                                    <div className="w-24 h-[4px] lg:w-52 lg:h-[2px] bg-gray-300" />
-                                    <div className="size-4 lg:size-5 rounded-full bg-white border border-gray-300 relative">
-                                        <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 top-8 text-xs leading-snug w-24 text-center">
-                                            Hoàn thành đơn
-                                        </div>
-                                    </div>
+
                                 </div>
                             </div>
                             <div className=''>
@@ -91,26 +109,26 @@ const OrderPage = () => {
                                     </div>
                                     <div className="w-full flex justify-between items-center gap-8" >
                                         <div className="w-full relative select-information" >
-                                            <select onBlur={()=>{setClickCity(false)}} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  lg:text-base text-black" onClick={()=>setClickCity(!clickCity)}>
+                                            <select onBlur={() => { setAddress(null) }} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  lg:text-base text-black" onClick={() => onClickAddress(1)}>
                                                 <option disabled selected>Tỉnh/Thành Phố</option>
                                                 <option >Hà nội</option>
                                             </select>
-                                            <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${clickCity ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
+                                            <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${address == 1 ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
                                         </div>
                                         <div className="w-full relative select-information">
-                                            <select onBlur={()=>{setClickDistrict(false)}} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black " onClick={()=>setClickDistrict(!clickDistrict)}>
+                                            <select onBlur={() => { setAddress(null) }} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black " onClick={() => onClickAddress(2)}>
                                                 <option disabled selected>Quận/Huyện</option>
                                                 <option>Hà nội</option>
                                             </select>
-                                            <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${clickDistrict ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
+                                            <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${address == 2 ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
                                         </div>
                                     </div>
                                     <div className="w-full relative select-information">
-                                        <select onBlur={()=>{setClickWard(false)}} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black "  onClick={()=>setClickWard(!clickWard)}>
+                                        <select onBlur={() => { setAddress(null) }} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black " onClick={() => onClickAddress(3)}>
                                             <option disabled selected>Phường/Xã</option>
                                             <option >Hà nội</option>
                                         </select>
-                                        <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${clickWard ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
+                                        <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${address == 3 ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
                                     </div>
                                     <div>
                                         <input type="text" className="w-full  border rounded-md py-3 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:placeholder:text-base placeholder-black placeholder:text-sm" placeholder="Địa chỉ" />
@@ -129,37 +147,56 @@ const OrderPage = () => {
                             </div>
                             <div className=''>
                                 <span className="text-lg lg:text-xl text-black font-semibold">Phương thức thanh toán</span>
-                                <div className="px-5 py-4 my-4 border rounded-tl-[30px] rounded-br-[30px] lg:py-8 lg:px-10 flex flex-col gap-8" onClick={()=>setPaymentMethos(!paymentMethods)}>
+                                <div className="px-5 py-4 my-4 border rounded-tl-[30px] rounded-br-[30px] lg:py-8 lg:px-10 flex flex-col gap-8" >
                                     <span className="text-sm ">Mọi giao dịch đều được bảo mật và mã hóa. Thông tin thẻ tín dụng sẽ không bao giờ
                                         được lưu lại.</span>
-                                    <div className="flex items-center gap-3">
-                                        <label className="custom-radio 1 size-4 rounded-full border flex justify-center items-center cursor-pointer">
-                                            <input type="radio" name="radio-example" className={`hidden 1 ${paymentMethods ? "bg-black" :""}`} />
-                                            <span className="text-white hidden text-[12px]"><i className="fa-solid fa-check" /></span>
-                                        </label>
-                                        <span className="text-sm text-black">Phương thức thanh toán</span>
+                                    <div className="  flex items-center gap-3">
+                                        <div className={` cursor-pointer flex items-center gap-x-3`} onClick={() => onClickPayment(1)}>
+                                            <input type="radio" name="radio-example" id="payment" checked={payment == 1 ? true : false} className='hidden' />
+                                            <div className={`size-4 rounded-full border flex justify-center items-center  ${payment == 1 ? 'bg-black' : ''} `}>
+                                                <span className={`text-white text-[12px] ${payment !== 1 && 'hidden'}`}><i className="fa-solid fa-check" /></span>
+                                            </div>
+                                            <span className="text-sm text-black">Phương thức thanh toán</span>
+                                        </div>
+
                                         <img src={imageVisa} />
+
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <label className="custom-radio 1 size-4 rounded-full border flex justify-center items-center cursor-pointer">
-                                            <input type="radio" name="radio-example" className={`hidden 1 ${paymentMethods ? "bg-black" :""}`}/>
-                                            <span className="text-white hidden text-[12px]"><i className="fa-solid fa-check" /></span>
-                                        </label>
-                                        <span className="text-sm text-black">Thanh toán bằng thẻ ATM</span>
+                                    <div className="  flex items-center gap-3">
+                                        <div className={` cursor-pointer flex items-center gap-x-3`} onClick={() => onClickPayment(2)}>
+                                            <input type="radio" name="radio-example" id="payment" checked={payment == 2 ? true : false} className='hidden' />
+                                            <div className={`size-4 rounded-full border flex justify-center items-center  ${payment == 2 ? 'bg-black' : ''} `}>
+                                                <span className={`text-white text-[12px] ${payment !== 2 && 'hidden'}`}><i className="fa-solid fa-check" /></span>
+                                            </div>
+                                            <span className="text-sm text-black">Thanh toán bằng thẻ ATM</span>
+                                        </div>
+
+
+
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <label className="custom-radio 1 size-4 rounded-full border flex justify-center items-center cursor-pointer">
-                                            <input type="radio" name="radio-example" className={`hidden 1 ${paymentMethods ? "bg-black" :""}`} />
-                                            <span className="text-white hidden text-[12px]"><i className="fa-solid fa-check" /></span>
-                                        </label>
-                                        <span className="text-sm text-black">Thanh toán bằng MoMo</span>
+                                    <div className="  flex items-center gap-3">
+                                        <div className={` cursor-pointer flex items-center gap-x-3`} onClick={() => onClickPayment(3)}>
+                                            <input type="radio" name="radio-example" id="payment" checked={payment == 3 ? true : false} className='hidden' />
+                                            <div className={`size-4 rounded-full border flex justify-center items-center  ${payment == 3 ? 'bg-black' : ''} `}>
+                                                <span className={`text-white text-[12px] ${payment !== 3 && 'hidden'}`}><i className="fa-solid fa-check" /></span>
+                                            </div>
+                                            <span className="text-sm text-black">Thanh toán bằng Momo</span>
+                                        </div>
+
+
+
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <label className="custom-radio 1 size-4 rounded-full border flex justify-center items-center cursor-pointer">
-                                            <input type="radio" name="radio-example" className={`hidden 1 ${paymentMethods ? "bg-black" :""}`} />
-                                            <span className="text-white hidden text-[12px]"><i className="fa-solid fa-check" /></span>
-                                        </label>
-                                        <span className="text-sm text-black">Thanh thanh toán khi nhận hàng</span>
+                                    <div className="  flex items-center gap-3">
+                                        <div className={` cursor-pointer flex items-center gap-x-3`} onClick={() => onClickPayment(4)}>
+                                            <input type="radio" name="radio-example" id="payment" checked={payment == 4 ? true : false} className='hidden' />
+                                            <div className={`size-4 rounded-full border flex justify-center items-center  ${payment == 4 ? 'bg-black' : ''} `}>
+                                                <span className={`text-white text-[12px] ${payment !== 4 && 'hidden'}`}><i className="fa-solid fa-check" /></span>
+                                            </div>
+                                            <span className="text-sm text-black">Thanh toán khi nhận hàng</span>
+                                        </div>
+
+
+
                                     </div>
                                 </div>
                             </div>
@@ -195,7 +232,7 @@ const OrderPage = () => {
                                 <div className="flex items-center justify-between lg:justify-around">
                                     <span className="lg:text-lg text-black font-semibold">Mã phiếu giảm giá</span>
                                     <div className="w-[1px] h-6 bg-black" />
-                                    <button className="lg:text-lg text-gray-400 font-semibold" id="zoomVoucher" onClick={()=>setDisplayVoucher(!displayVoucher)}>Mã của tôi</button>
+                                    <button className="lg:text-lg text-gray-400 font-semibold" id="zoomVoucher" onClick={() => setDisplayVoucher(!displayVoucher)}>Mã của tôi</button>
                                 </div>
                                 <div className="flex items-center gap-3 justify-between">
                                     <input type="text" className="placeholder:text-sm border rounded-md py-3 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:placeholder:text-base " placeholder="Mã giảm giá" />
@@ -209,12 +246,12 @@ const OrderPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <div id="myModalVoucher" className={`modal fixed top-0 left-0 w-full h-full bg-black/45  z-[51]  ${displayVoucher ? "":"hidden"}`}>
+                        <div id="myModalVoucher" className={`modal fixed top-0 left-0 w-full h-full bg-black/45  z-[51]  ${displayVoucher ? "" : "hidden"}`}>
                             <div className="w-[400px] mt-3 lg:w-[800px] mx-auto bg-white lg:mt-9 rounded-lg" >
                                 <div className="border-b">
                                     <div className="flex items-center justify-between px-5 py-4" >
                                         <span className="text-black text-lg font-semibold">Danh sách Voucher</span>
-                                        <button  id="closeModalVoucher" onClick={()=>setDisplayVoucher(!displayVoucher)}><i className="fa-solid fa-xmark" /></button>
+                                        <button id="closeModalVoucher" onClick={() => setDisplayVoucher(!displayVoucher)}><i className="fa-solid fa-xmark" /></button>
                                     </div>
                                 </div>
                                 <div className="px-5 pt-4 pb-6">
