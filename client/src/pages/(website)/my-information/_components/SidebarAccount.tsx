@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { NavLink } from "react-router-dom"
 
 const SidebarAccount = () => {
-    const [isMobile, setIsMobile] = useState(false)
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 576)
     const [maxHeightUl, setMaxHeightUl] = useState(null)
     const listMenu = useRef<any>()
     useEffect(()=>{

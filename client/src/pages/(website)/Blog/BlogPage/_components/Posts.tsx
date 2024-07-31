@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 const Posts = () => {
   return (
@@ -6,7 +6,9 @@ const Posts = () => {
     <div>
         <div className=" mb-4 lg:flex">
             {/* ảnh blog */}
-            <div className=" px-[15px] flex-shrink-0 mb-[10px] lg:w-[200px] lg:h-[135px]"><img className="w-full " src="./assets/images/products/blog-img.jpg" /></div>
+            <div className=" px-[15px] flex-shrink-0 mb-[10px] lg:w-[200px] lg:h-[135px]">
+                <img className="w-full h-full object-cover " src="http://picsum.photos/id/44/1000/1000" />
+            </div>
             {/* văn bản */}
             <div className="px-[15px] ">
                 <a className="text-[#373737] font-medium " href="http://"> THE WHISPER OF CLASSY DẪN DẮT XU
@@ -18,7 +20,7 @@ const Posts = () => {
         </div>
         <div className=" mb-4 lg:flex">
             {/* ảnh blog */}
-            <div className=" px-[15px] flex-shrink-0 mb-[10px] lg:w-[200px] lg:h-[135px]"><img className="w-full" src="./assets/images/products/blog-img.jpg" /></div>
+            <div className=" px-[15px] flex-shrink-0 mb-[10px] lg:w-[200px] lg:h-[135px]"><img className="w-full" src="http://picsum.photos/id/46/1000/1000" /></div>
             {/* văn bản */}
             <div className="px-[15px] ">
                 <a className="text-[#373737] font-medium " href="http://"> THE WHISPER OF CLASSY DẪN DẮT XU
@@ -31,7 +33,7 @@ const Posts = () => {
         </div>
         <div className=" mb-4 lg:flex">
             {/* ảnh blog */}
-            <div className=" px-[15px] flex-shrink-0 mb-[10px] lg:w-[200px] lg:h-[135px]"><img className="w-full" src="./assets/images/products/blog-img.jpg" /></div>
+            <div className=" px-[15px] flex-shrink-0 mb-[10px] lg:w-[200px] lg:h-[135px]"><img className="w-full h-full object-cover" src="./assets/images/products/blog-img.jpg" /></div>
             {/* văn bản */}
             <div className="px-[15px] ">
                 <a className="text-[#373737] font-medium " href="http://"> THE WHISPER OF CLASSY DẪN DẮT XU

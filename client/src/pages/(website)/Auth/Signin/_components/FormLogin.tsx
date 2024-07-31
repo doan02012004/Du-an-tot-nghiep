@@ -31,7 +31,7 @@ const FormLogin = ({state, onChangeForm}:FormLoginProps) => {
     return (
         <div className="w-full  lg:w-[480px] ">
             {/* của phần desktop */}
-            <span onClick={()=>onChangeForm(1)} className="titles-auth text-base ursor-pointer pb-3 lg:text-xl text-dark font-semibold lg:cursor-auto lg:hidden">
+            <span onClick={()=>onChangeForm(1)} className="titles-auth cursor-pointer text-base ursor-pointer pb-3 lg:text-xl text-dark font-semibold lg:cursor-auto lg:hidden">
                 Bạn đã có tài khoản</span>
             {/* của mobile */}
             <p className=" text-base hidden ursor-pointer pb-3 lg:text-xl font-semibold lg:cursor-auto lg:block">Bạn đã có tài

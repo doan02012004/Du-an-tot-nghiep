@@ -34,7 +34,7 @@ const FormNode = ({state,onChangeForm}:FormLoginProps) => {
     return (
         <div className="w-full lg:w-[480px] ">
             <div className="mb-8">
-                <p onClick={()=> onChangeForm(2)} className="titles-auth text-base ursor-pointer pb-3 lg:text-xl text-dark font-semibold lg:cursor-auto lg:hidden">
+                <p onClick={()=> onChangeForm(2)} className=" cursor-pointer text-base ursor-pointer pb-3 lg:text-xl text-dark font-semibold lg:cursor-auto lg:hidden">
                     Khách hàng mới của mail shop</p>
                 <p className=" text-base hidden ursor-pointer pb-3 lg:text-xl font-semibold lg:cursor-auto lg:block">
                     Khách hàng mới của mail shop</p>

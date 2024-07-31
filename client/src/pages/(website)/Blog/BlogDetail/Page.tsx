@@ -7,7 +7,7 @@ import CategoryBlogDetail from './_components/CategoryBlogDetail'
 const PageDetail = () => {
     return (
         <div>
-            &lt; !--phần chi tiết bài viết-- &gt;
+           
             <section className="container mb-10  ">
                 {/* đường dẫn của trang */}
                 <div className=" flex justify-start items-center gap-3 border-t-2 border-b-[1px] py-3  ">
