@@ -5,6 +5,7 @@ import PageSignup from '../pages/(website)/Auth/Signup/Page'
 import LayoutWebsite from '../pages/(website)/LayoutWebsite'
 import PageBlog from '../pages/(website)/Blog/BlogPage/Page'
 import PageDetail from '../pages/(website)/Blog/BlogDetail/Page'
+
 import HomePage from '../pages/(website)/home/HomePage'
 import MyInformation from '../pages/(website)/my-information/Page'
 import Account from '../pages/(website)/my-information/information/Page'
@@ -17,6 +18,7 @@ const Router = () => {
   return (
     <Routes>
       <Route path='/' element={<LayoutWebsite />}>
+
         <Route path='signin' element={<PageSignin />} />
         <Route path='signup' element={<PageSignup />} />
         <Route path='blog' element={<PageBlog />} />
@@ -28,6 +30,7 @@ const Router = () => {
         <Route path='customer' element={<MyInformation />}>
           <Route path='infor' element={<Account />} />
         </Route>
+
       </Route>
       <Route path='admin' element={<LayoutAdmin />}></Route>
     </Routes>
