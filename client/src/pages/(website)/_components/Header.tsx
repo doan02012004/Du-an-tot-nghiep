@@ -45,16 +45,16 @@ const Header = () => {
         }
         setIsOpenMenu(!isOpenMenu)
     }
-    const onHandleNavbarMenu = (index:number)=>{
+    const onHandleNavbarMenu = (index: number) => {
         const content_menu_bottom = document.querySelectorAll<HTMLElement>('.content-menu-bottom');
-            content_menu_bottom.forEach((item, i) => {
-              if (index !== i) {
+        content_menu_bottom.forEach((item, i) => {
+            if (index !== i) {
                 item.classList.add('hidden');
                 item.classList.remove('block');
-              }
-            });
-            content_menu_bottom[index].classList.toggle('hidden');
-            content_menu_bottom[index].classList.toggle('block');
+            }
+        });
+        content_menu_bottom[index].classList.toggle('hidden');
+        content_menu_bottom[index].classList.toggle('block');
     }
     return (
         <header className=" h-16 lg:h-20">
@@ -65,7 +65,7 @@ const Header = () => {
                             <i className="fa-solid fa-bars" />
                         </span>
                         <div className="menu fixed px-[15px] pt-6 top-0 left-0 w-full transition-all duration-500 ease-in-out bg-white z-10 h-screen hidden lg:block lg:static lg:w-auto lg:h-auto lg:pt-0">
-                            <span onClick={ onMenuMobile} className="close-menu block cursor-pointer text-2xl mb-8 lg:hidden">
+                            <span onClick={onMenuMobile} className="close-menu block cursor-pointer text-2xl mb-8 lg:hidden">
                                 <i className="fa-solid fa-xmark" />
                             </span>
                             <ul className="menu-item flex flex-col gap-8 lg:py-7 lg:flex-row lg:items-center lg:gap-x-3">
@@ -246,7 +246,7 @@ const Header = () => {
                                             {/* cart item  */}
                                             <div className="w-full h-[94px] flex gap-3 pb-4 border-b border-gray-200  mb-4  ">
                                                 <div className="w-16 h-full flex-shrink-0">
-                                                    <img src="./assets/images/products/aonam2.jpg" className="w-full h-full object-cover"  />
+                                                    <img src="./assets/images/products/aonam2.jpg" className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="w-full flex flex-col justify-between ">
                                                     <h3 className="text-base"><a href="#" className="text-[#373737]">Áo sơ mi nam</a></h3>
@@ -274,7 +274,7 @@ const Header = () => {
                                             </div>
                                             <div className="w-full h-[94px] flex gap-3 pb-4 border-b border-gray-200  mb-4  ">
                                                 <div className="w-16 h-full flex-shrink-0">
-                                                    <img src="./assets/images/products/aonam2.jpg" className="w-full h-full object-cover"  />
+                                                    <img src="./assets/images/products/aonam2.jpg" className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="w-full flex flex-col justify-between ">
                                                     <h3 className="text-base"><a href="#" className="text-[#373737]">Áo sơ mi nam</a></h3>
@@ -302,7 +302,7 @@ const Header = () => {
                                             </div>
                                             <div className="w-full h-[94px] flex gap-3 pb-4 border-b border-gray-200  mb-4  ">
                                                 <div className="w-16 h-full flex-shrink-0">
-                                                    <img src="./assets/images/products/aonam2.jpg" className="w-full h-full object-cover"  />
+                                                    <img src="./assets/images/products/aonam2.jpg" className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="w-full flex flex-col justify-between ">
                                                     <h3 className="text-base"><a href="#" className="text-[#373737]">Áo sơ mi nam</a></h3>
@@ -330,7 +330,7 @@ const Header = () => {
                                             </div>
                                             <div className="w-full h-[94px] flex gap-3 pb-4 border-b border-gray-200  mb-4  ">
                                                 <div className="w-16 h-full flex-shrink-0">
-                                                    <img src="./assets/images/products/aonam2.jpg" className="w-full h-full object-cover"  />
+                                                    <img src="./assets/images/products/aonam2.jpg" className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="w-full flex flex-col justify-between ">
                                                     <h3 className="text-base"><a href="#" className="text-[#373737]">Áo sơ mi nam</a></h3>
@@ -358,7 +358,7 @@ const Header = () => {
                                             </div>
                                             <div className="w-full h-[94px] flex gap-3 pb-4 border-b border-gray-200  mb-4  ">
                                                 <div className="w-16 h-full flex-shrink-0">
-                                                    <img src="./assets/images/products/aonam2.jpg" className="w-full h-full object-cover"  />
+                                                    <img src="./assets/images/products/aonam2.jpg" className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="w-full flex flex-col justify-between ">
                                                     <h3 className="text-base"><a href="#" className="text-[#373737]">Áo sơ mi nam</a></h3>
@@ -400,13 +400,13 @@ const Header = () => {
                         <div className="fixed bottom-0 left-0 w-full z-40 pt-1 bg-white border-t border-gray-200 lg:hidden">
                             <div className="px-[15px] w-full ">
                                 <div className="flex items-center w-max mx-auto">
-                                    <div onClick={()=>onHandleNavbarMenu(0)} className="menu-bottom-item cursor-pointer text-center  px-4">
+                                    <div onClick={() => onHandleNavbarMenu(0)} className="menu-bottom-item cursor-pointer text-center  px-4">
                                         <span className="mb-1">
                                             <i className="fa-solid fa-magnifying-glass" />
                                         </span>
                                         <p className="text-[12px]/[150%]">Tìm kiếm</p>
                                     </div>
-                                    <div  onClick={()=>onHandleNavbarMenu(1)} className="menu-bottom-item cursor-pointer text-center  px-4">
+                                    <div onClick={() => onHandleNavbarMenu(1)} className="menu-bottom-item cursor-pointer text-center  px-4">
                                         <span className="mb-1">
                                             <i className="fa-solid fa-headphones" />
                                         </span>
@@ -455,7 +455,7 @@ const Header = () => {
                                             </ul>
                                         </div>
                                     </div>
-                                    <div  onClick={()=>onHandleNavbarMenu(2)} className=" menu-bottom-item cursor-pointer text-center px-4">
+                                    <div onClick={() => onHandleNavbarMenu(2)} className=" menu-bottom-item cursor-pointer text-center px-4">
                                         <span className="mb-1">
                                             <i className="fa-regular fa-user" />
                                         </span>
