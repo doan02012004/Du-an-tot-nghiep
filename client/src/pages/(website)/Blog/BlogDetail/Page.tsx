@@ -1,8 +1,8 @@
 import React from 'react'
-import BannerSale from './component/BannerSale'
+import BannerSale from './_components/BannerSale'
 import NewsBlog from '../../_components/NewsBlog'
-import PostBlogDetail from './component/PostBlogDetail'
-import CategoryBlogDetail from './component/CategoryBlogDetail'
+import PostBlogDetail from './_components/PostBlogDetail'
+import CategoryBlogDetail from './_components/CategoryBlogDetail'
 
 const PageDetail = () => {
     return (

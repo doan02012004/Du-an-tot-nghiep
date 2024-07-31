@@ -1,7 +1,13 @@
-import { useState } from "react"
-import logo from '../../../assets/logos/logo.png'
+
+import Logo from "./Logo"
+import QuicklySearch from "./QuicklySearch"
+import MiniCart from "./MiniCart"
+import NavbarBottom from "./NavbarBottom"
+import ActionsSupportUser from "./ActionsSupportUser"
+import MenuHeader from "./MenuHeader"
 
 const Header = () => {
+<<<<<<< HEAD
     const [actionSupport, setActionSupport] = useState(false)
     const [actionUser, setActionUser] = useState(false)
     const [isOpenCart, setIsOpenCart] = useState(false)
@@ -56,11 +62,16 @@ const Header = () => {
         content_menu_bottom[index].classList.toggle('hidden');
         content_menu_bottom[index].classList.toggle('block');
     }
+=======
+ 
+
+>>>>>>> 47fc7f497225972f028f602ad446cdb48f89c770
     return (
         <header className=" h-16 lg:h-20">
             <div className="fixed top-0 left-0 w-full py-5 z-50 bg-white h-16 lg:h-20 lg:py-0">
                 <div className="container relative">
                     <nav className="flex items-center justify-between w-full lg:border-b lg:border-gray-200">
+<<<<<<< HEAD
                         <span onClick={onMenuMobile} className=" open-menu block cursor-pointer text-xl lg:hidden">
                             <i className="fa-solid fa-bars" />
                         </span>
@@ -84,43 +95,14 @@ const Header = () => {
                                 <img src={logo} className="w-[140px] h-auto object-contain" />
                             </a>
                         </div>
+=======
+                      <MenuHeader />
+                        <Logo />
+>>>>>>> 47fc7f497225972f028f602ad446cdb48f89c770
                         <div className="flex items-center">
-                            <div className="search-wrapper content-menu-bottom fixed z-[13]  top-0 left-0 w-full h-screen hidden bg-white lg:w-auto lg:block lg:h-auto lg:px-0 lg:static lg:z-auto">
-                                <div className=" mt-3 relative mx-[15px] lg:mr-5 lg:block group lg:mx-0 lg:mt-0 ">
-                                    <form className=" z-[11] w-full lg:w-60 h-10 border border-gray rounded-md overflow-hidden">
-                                        <button className="size-10 border-0 outline-0 font-thin absolute left-0 top-0 text-dark">
-                                            <i className="fa-solid fa-magnifying-glass" />
-                                        </button>
-                                        <input type="text" className="pl-10 py-[15px] text-sm pr-[15px] w-full h-10 border-0 outline-0 font-light" placeholder="Tìm kiếm sản phẩm" />
-                                    </form>
-                                    {/* quicksearch menu  */}
-                                    <div className="quicksearch absolute top-8 left-0 z-10 w-full lg:hidden lg:group-hover:block lg:w-[440px]">
-                                        <div className="mt-[15px] border border-gray-200 rounded-md p-6   bg-white">
-                                            <h1 className="mb-4 text-sm text-[#221F20] font-semibold">Tìm kiếm nhiều nhất</h1>
-                                            <div className="flex items-center flex-wrap gap-3 mb-4">
-                                                <a href="#" className="block px-2 py-2 border border-gray-200 text-[12px]/[150%] rounded-tl-lg rounded-br-lg transition duration-300 ease-in-out hover:text-white hover:bg-black">Áo
-                                                    polo</a>
-                                                <a href="#" className="block px-2 py-2 border border-gray-200 text-[12px]/[150%] rounded-tl-lg rounded-br-lg transition duration-300 ease-in-out hover:text-white hover:bg-black">Đầm</a>
-                                                <a href="#" className="block px-2 py-2 border border-gray-200 text-[12px]/[150%] rounded-tl-lg rounded-br-lg transition duration-300 ease-in-out hover:text-white hover:bg-black">Trễ
-                                                    Vai</a>
-                                                <a href="#" className="block px-2 py-2 border border-gray-200 text-[12px]/[150%] rounded-tl-lg rounded-br-lg transition duration-300 ease-in-out hover:text-white hover:bg-black">Quần
-                                                    Jean</a>
-                                                <a href="#" className="block px-2 py-2 border border-gray-200 text-[12px]/[150%] rounded-tl-lg rounded-br-lg transition duration-300 ease-in-out hover:text-white hover:bg-black">Váy
-                                                    học sinh</a>
-                                                <a href="#" className="block px-2 py-2 border border-gray-200 text-[12px]/[150%] rounded-tl-lg rounded-br-lg transition duration-300 ease-in-out hover:text-white hover:bg-black">Croptop</a>
-                                                <a href="#" className="block px-2 py-2 border border-gray-200 text-[12px]/[150%] rounded-tl-lg rounded-br-lg transition duration-300 ease-in-out hover:text-white hover:bg-black">Áo
-                                                    thun</a>
-                                            </div>
-                                            <h1 className="mb-4 text-sm text-[#221F20] font-semibold">Vừa tìm kiếm</h1>
-                                            <div className="flex items-center flex-wrap gap-3 ">
-                                                <a href="#" className="block px-2 py-2 border border-gray-200 text-[12px]/[150%] rounded-tl-lg rounded-br-lg transition duration-300 ease-in-out hover:text-white hover:bg-black">Áo
-                                                    polo</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <QuicklySearch />
                             <div className="flex items-center gap-3">
+<<<<<<< HEAD
                                 <div className="relative hidden lg:block">
                                     <span onClick={onHandeActionSupport} className="sub-top cursor-pointer text-base hover:text-gray-800 block">
                                         <i className="fa-solid fa-headphones" />
@@ -520,6 +502,14 @@ const Header = () => {
                                 </div>
                             </div>
                         </div>
+=======
+                                <ActionsSupportUser />
+                                <MiniCart />
+                            </div>
+                        </div>
+                        {/* navbar-bottom  */}
+                        <NavbarBottom />
+>>>>>>> 47fc7f497225972f028f602ad446cdb48f89c770
                     </nav>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import FormLogin from './component/FormLogin'
-import FormNode from './component/FormNode'
+import FormLogin from './_components/FormLogin'
+import FormNode from './_components/FormNode'
 
 const PageSignup = () => {
   const [isOpen,setIsOpen] = useState<number|null>(null)

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 type FormLoginProps = {
     state:number|null,
@@ -7,14 +7,30 @@ type FormLoginProps = {
 }
 
 const FormNode = ({state,onChangeForm}:FormLoginProps) => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 576)
     const contentRef = useRef<any>()
     useEffect(()=>{
-        if(state == 2){
-            contentRef.current.style.height =  contentRef.current.scrollHeight + "px"
+        window.addEventListener('resize',()=>{
+            if(window.innerWidth < 576) {
+                setIsMobile(true)
+            }else{
+                setIsMobile(false)
+            }
+        })
+    },[])
+    useEffect(()=>{
+      
+       if(isMobile){
+                if(state == 2){
+                    contentRef.current.style.height =  contentRef.current.scrollHeight + "px"
+                }else{
+                    contentRef.current.style.height = 0
+                }
         }else{
-            contentRef.current.style.height = 0
+            contentRef.current.style.height = "auto"
         }
-    },[state])
+       
+    },[state,isMobile])
     return (
         <div className="w-full lg:w-[480px] ">
             <div className="mb-8">
@@ -22,7 +38,7 @@ const FormNode = ({state,onChangeForm}:FormLoginProps) => {
                     Khách hàng mới của mail shop</p>
                 <p className=" text-base hidden ursor-pointer pb-3 lg:text-xl font-semibold lg:cursor-auto lg:block">
                     Khách hàng mới của mail shop</p>
-                <div ref={contentRef} className=" contents-auth h-0 transition-all duration-300 ease-in-out overflow-hidden lg:block">
+                <div ref={contentRef} className=" contents-auth h-0 transition-all duration-300 ease-in-out overflow-hidden lg:block lg:overflow-visible lg:h-auto">
                     <p className=" mb-4  mx-auto w-full lg:w-[390px]">Nếu bạn chưa có tài khoản trên ivymoda.com, hãy sử dụng tùy chọn
                         này
                         để truy cập

@@ -1,4 +1,4 @@
-import FormSignup from "./component/FormSignup"
+import FormSignup from "./_components/FormSignup"
 
 const PageSignin = () => {
   return (

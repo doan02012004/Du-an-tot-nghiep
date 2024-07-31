@@ -1,21 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type FormLoginProps = {
     state:number|null,
     onChangeForm: (number:number)=>void
 }
 const FormLogin = ({state, onChangeForm}:FormLoginProps) => {
-
+   const [isMobile, setIsMobile] = useState(window.innerWidth < 576)
     const formRef = useRef<any>()
-
     useEffect(()=>{
-        if(state == 1){
-            formRef.current.style.height =  formRef.current.scrollHeight + "px"
+        window.addEventListener('resize', ()=>{
+            if(window.innerWidth < 576) {
+                setIsMobile(true)
+            }else{
+                setIsMobile(false)
+            }
+        })
+    },[])
+    useEffect(()=>{
+        if(isMobile){
+            if(state == 1){
+                formRef.current.style.height =  formRef.current.scrollHeight + "px"
+            }else{
+                formRef.current.style.height = 0
+            }
         }else{
-            formRef.current.style.height = 0
+            formRef.current.style.height = "auto"
         }
-    },[state])
+    },[state,isMobile])
     return (
         <div className="w-full  lg:w-[480px] ">
             {/* của phần desktop */}
@@ -24,7 +36,7 @@ const FormLogin = ({state, onChangeForm}:FormLoginProps) => {
             {/* của mobile */}
             <p className=" text-base hidden ursor-pointer pb-3 lg:text-xl font-semibold lg:cursor-auto lg:block">Bạn đã có tài
                 khoản</p>
-            <div ref={formRef} className="contents-auth transition-all duration-300 ease-in-out h-0 overflow-hidden lg:block">
+            <div ref={formRef} className="contents-auth transition-all duration-300 ease-in-out h-0 overflow-hidden lg:block lg:overflow-visible lg:h-auto">
                 <p className="pb-7">Nếu bạn đã có tài khoản, hãy đăng nhập để tích lũy điểm thành viên và nhận được những ưu đãi
                     tốt
                     hơn!</p>

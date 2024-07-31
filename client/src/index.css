@@ -65,6 +65,11 @@ input[type="number"] {
       rotate: 90deg;
       @apply transition-all duration-300 ease-in-out
   }
+  .select-information .anactive i {
+    rotate: 0deg;
+    @apply transition-all duration-300 ease-in-out
+}
+  
 
   .footer-infomation-icon i,
   .select-icon i {
@@ -92,6 +97,9 @@ input[type="number"] {
 
   .active-lable{
       @apply bg-black
+  }
+  .text .active {
+    @apply text-black
   }
 
   @keyframes sub_menu {

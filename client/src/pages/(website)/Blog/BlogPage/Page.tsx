@@ -1,5 +1,5 @@
 import React from 'react'
-import Posts from './component/Posts'
+import Posts from './_components/Posts'
 import NewsBlog from '../../_components/NewsBlog'
 import CategoryBlog from '../../_components/CategoryBlog'
 
