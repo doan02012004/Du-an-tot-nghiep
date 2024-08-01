@@ -26,7 +26,7 @@ const MenuHeader = () => {
                             <span onClick={onMenuMobile} className="close-menu block cursor-pointer text-2xl mb-8 lg:hidden">
                                 <i className="fa-solid fa-xmark" />
                             </span>
-                            <ul className="menu-item flex flex-col gap-8 lg:py-7 lg:flex-row lg:items-center lg:gap-x-3">
+                            <ul className="menu-item m-0 flex flex-col gap-8 lg:py-7 lg:flex-row lg:items-center lg:gap-x-3">
                                 <li><a href="#" className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Home</a>
                                 </li>
                                 <li><a href="#" className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Shop</a>

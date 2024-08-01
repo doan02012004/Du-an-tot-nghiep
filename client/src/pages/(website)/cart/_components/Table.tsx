@@ -40,9 +40,9 @@ const Table = () => {
                             </td>
                             <td className="align-top">
                                 <div className="border grid grid-cols-3 items-center rounded-tl-[20px] rounded-br-[20px]">
-                                    <button className=" border border-t-0 border-l-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-[2px] px-2 text-[30px]">-</button>
-                                    <span className="text-center">1</span>
-                                    <button className=" border border-t-0 border-r-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-[2px] px-2 text-[30px]">+</button>
+                                    <button className=" border border-t-0 border-l-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-2 text-lg">-</button>
+                                    <span className="text-center text-xs">1</span>
+                                    <button className=" border border-t-0 border-r-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-2 text-lg">+</button>
                                 </div>
                             </td>
                             <td className="align-top">
@@ -58,11 +58,15 @@ const Table = () => {
                 </table>
             </div>
             <div className="lg:hidden flex justify-between">
-                <div className="flex gap-2 w-2/3">
-                    <div className="w-1/4"><img src="./assets/images/products/ao1.jpg" /></div>
+                <div className="flex gap-4 w-2/3">
+                    <div className="">
+                        <a href='' className='block h-[103px] w-[72px]'>
+                            <img src="https://picsum.photos/200/1000" className='h-full w-full object-cover' />
+                        </a>
+                    </div>
                     <div className="flex flex-col gap-[6px]">
                         <span className="text-sm">Áo thun dino saurs</span>
-                        <div className="text-sm">
+                        <div className="flex gap-2 text-sm">
                             <span>Màu sắc: Trắng</span>
                             <span>Size: S</span>
                         </div>
