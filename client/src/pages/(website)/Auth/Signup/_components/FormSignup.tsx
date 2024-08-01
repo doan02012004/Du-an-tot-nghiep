@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import useApiLocationQuery from '../../../../../common/hooks/API_location/useApiLocationQuery'
 import { useMutation } from '@tanstack/react-query'
