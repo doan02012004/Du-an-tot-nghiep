@@ -14,6 +14,7 @@ import OrderPage from '../pages/(website)/order/OrderPage'
 import ThanksPage from '../pages/(website)/thanks/Page'
 import ProductPage from '../pages/(website)/product/Page'
 import ProductDetailsPage from '../pages/(website)/productdetails/Page'
+import OrderManager from '../pages/(website)/my-information/order-manager/Page'
 
 
 const Router = () => {
@@ -32,6 +33,7 @@ const Router = () => {
         <Route path='thanks' element={<ThanksPage />} />
         <Route path='customer' element={<MyInformation />}>
           <Route path='infor' element={<Account />} />
+          <Route path='order-manager' element={<OrderManager />} />
         </Route>
 
       </Route>
