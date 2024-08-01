@@ -12,13 +12,16 @@ import Account from '../pages/(website)/my-information/information/Page'
 import CartPage from '../pages/(website)/cart/CartPage'
 import OrderPage from '../pages/(website)/order/OrderPage'
 import ThanksPage from '../pages/(website)/thanks/Page'
+import ProductPage from '../pages/(website)/product/Page'
+import ProductDetailsPage from '../pages/(website)/productdetails/Page'
 
 
 const Router = () => {
   return (
     <Routes>
       <Route path='/' element={<LayoutWebsite />}>
-
+        <Route path='product' element={<ProductPage />}/>
+        <Route path='productdetails' element={<ProductDetailsPage />}/>
         <Route path='signin' element={<PageSignin />} />
         <Route path='signup' element={<PageSignup />} />
         <Route path='blog' element={<PageBlog />} />
