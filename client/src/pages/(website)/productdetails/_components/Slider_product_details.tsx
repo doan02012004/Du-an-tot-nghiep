@@ -4,7 +4,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 // import required modules
 import { useEffect, useState } from 'react';
-import { Navigation, Pagination } from 'swiper/modules';
+import { EffectFade, Navigation, Pagination } from 'swiper/modules';
 
 type Props = {}
 
@@ -21,7 +21,8 @@ const Slider_product_details = (props: Props) => {
         <div className='lg:flex lg:justify-between'>
                         <div className='w-full lg:w-[485px] lg:h-[729px]'>
                                 <Swiper
-                                            modules={[Navigation, Pagination]}
+                                            modules={[Navigation, Pagination,EffectFade]}
+                                            effect='fade'
                                             slidesPerView={1}
                                             navigation
                                         >
@@ -32,7 +33,7 @@ const Slider_product_details = (props: Props) => {
                                             </SwiperSlide>
                                             <SwiperSlide className=''>
                                                 <div className=''>
-                                                    <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='object-cover w-full h-full' />
+                                                    <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2023/08/04/95437d1b09113b992ad2496ee3e3e3f8.webp" className='object-cover w-full h-full' />
                                                 </div>
                                             </SwiperSlide>
                                             <SwiperSlide className=''>
