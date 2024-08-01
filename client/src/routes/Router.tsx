@@ -14,6 +14,9 @@ import OrderPage from '../pages/(website)/order/OrderPage'
 import ThanksPage from '../pages/(website)/thanks/Page'
 import ProductPage from '../pages/(website)/product/Page'
 import ProductDetailsPage from '../pages/(website)/productdetails/Page'
+import AdminProduct from '../pages/(admin)/product/Page'
+import ListProduct from '../pages/(admin)/product/list/Page'
+import AddProductAdmin from '../pages/(admin)/product/add/Page'
 
 
 const Router = () => {
@@ -33,9 +36,13 @@ const Router = () => {
         <Route path='customer' element={<MyInformation />}>
           <Route path='infor' element={<Account />} />
         </Route>
-
       </Route>
-      <Route path='admin' element={<LayoutAdmin />}></Route>
+      <Route path='admin' element={<LayoutAdmin />}>
+          <Route path='products' element={<AdminProduct />}>
+              <Route index element={<ListProduct />} />
+              <Route path='add' element={<AddProductAdmin />} />
+          </Route>
+      </Route>
     </Routes>
   )
 }
