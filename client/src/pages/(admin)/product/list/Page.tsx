@@ -82,7 +82,7 @@ const ListProduct = () => {
     ]
   return (
     <div>
-        <Link to={'/admin'} className='block mb-3' ><Button type='primary'><PlusOutlined /> Sản phẩm</Button></Link>
+        <Link to={'/admin/products/add'} className='block mb-3' ><Button type='primary'><PlusOutlined /> Sản phẩm</Button></Link>
         <Table columns={columns} dataSource={data}/>
     </div>
   )

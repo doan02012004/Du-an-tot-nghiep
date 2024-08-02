@@ -5,7 +5,6 @@ import PageSignup from '../pages/(website)/Auth/Signup/Page'
 import LayoutWebsite from '../pages/(website)/LayoutWebsite'
 import PageBlog from '../pages/(website)/Blog/BlogPage/Page'
 import PageDetail from '../pages/(website)/Blog/BlogDetail/Page'
-
 import HomePage from '../pages/(website)/home/HomePage'
 import MyInformation from '../pages/(website)/my-information/Page'
 import Account from '../pages/(website)/my-information/information/Page'
