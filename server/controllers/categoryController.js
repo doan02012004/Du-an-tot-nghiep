@@ -6,7 +6,7 @@ export const create = async (req, res) => {
         const categoy = await Category.create({
             name: req.body.name,
             status:req.body.status,
-            slug: slugify(req.body.name, "-"),
+            slug: slugify(req.body.name, {locale: 'vi'}),
         });
 
         return res.status(200).json(categoy);
@@ -46,7 +46,7 @@ export const deleteCategoryById = async (req, res) => {
 };
 export const updateCategoryById = async (req, res) => {
     try {
-        const category = await Category.findByIdAndUpdate(req.params.id, {...req.body, slug: slugify(req.body.name, "-")}, { new: true });
+        const category = await Category.findByIdAndUpdate(req.params.id, {...req.body, slug: slugify(req.body.name, {locale: 'vi'})}, { new: true });
         return res.status(200).json(category);
     } catch (error) {
         return res.status(500).json({ error });

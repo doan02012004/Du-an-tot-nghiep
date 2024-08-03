@@ -1,13 +1,11 @@
 import { BackwardOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Space } from 'antd'
+import FormItem from 'antd/es/form/FormItem'
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import useCategoryMutation from '../../../../common/hooks/categories/useCategoryMutation'
 import useCategoryQuery from '../../../../common/hooks/categories/useCategoryQuery'
 import { ICategories } from '../../../../interface/categories'
-import FormItem from 'antd/es/form/FormItem'
-
-type Props = {}
 
 const CategoriesForm = () => {
     const {id} = useParams();
