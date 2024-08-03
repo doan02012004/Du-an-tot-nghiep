@@ -43,6 +43,7 @@ const CategoryList: React.FC = () => {
     {
       title: "#",
       dataIndex: "key", // Thay đổi từ `id` sang `key` nếu cần
+      sorter: (a, b) => a.key - b.key,
     },
     {
       title: 'Name',
