@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { message } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { ICategories } from '../../../interface/categories'
-import { deleteCate, update } from '../../../services/categories'
+import { create, deleteCate, update } from '../../../services/categories'
 
 const useCategoryMutation = () => {
     const navigate = useNavigate()
@@ -11,6 +11,17 @@ const useCategoryMutation = () => {
         mutationKey: ['CATEGORIES'],
         mutationFn: async (options: { action: string, category: ICategories }) => {
             switch (options.action) {
+                case "add":
+                    try {
+                        const response = await create(options.category)
+                        message.success("Thêm thành công")
+                        navigate(`/admin/categories`)
+                        return response.data
+                    } catch (error) {   
+                        return message.error("Thêm thất bại")
+                    }
+                    break;
+                    
                 case "update":
                     try {
                         const response = await update(options.category)

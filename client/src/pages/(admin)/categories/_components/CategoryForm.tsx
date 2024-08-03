@@ -30,6 +30,7 @@ const CategoriesForm = () => {
             mutation.mutate({action : "update", category  : {_id : id, ...category}})
             return
         }
+        mutation.mutate({action : "add", category})
     }
   return (
     <div>
