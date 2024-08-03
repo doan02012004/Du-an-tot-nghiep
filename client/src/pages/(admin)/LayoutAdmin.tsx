@@ -3,6 +3,7 @@ import { Layout  } from 'antd';
 import SidebarAdmin from './_components/SidebarAdmin';
 import HeaderAdmin from './_components/HeaderAdmin';
 import { AppContext } from '../../common/contexts/AppContextProvider';
+import { Outlet } from 'react-router-dom';
 
 const {  Content } = Layout;
 
@@ -23,7 +24,7 @@ const LayoutAdmin: React.FC = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          Content
+          <Outlet />
         </Content>
       </Layout>
     </Layout>

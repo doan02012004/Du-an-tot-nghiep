@@ -3,7 +3,7 @@ import { Menu } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useContext } from 'react'
 import { AppContext } from '../../../common/contexts/AppContextProvider'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 const SidebarAdmin = () => {
     const {collapsed} = useContext(AppContext);
@@ -27,7 +27,11 @@ const SidebarAdmin = () => {
           children:[
             {
               key:"2.1",
-              label:"Danh sách"
+              label:<NavLink to={`/admin/categories`}>Danh mục</NavLink>
+            },
+            {
+              key:"2.2",
+              label:<NavLink to={`/admin/categories/add`}>Thêm danh  mục</NavLink>
             }
           ]
         },
