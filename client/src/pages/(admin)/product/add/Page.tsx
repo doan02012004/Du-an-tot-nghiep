@@ -1,9 +1,8 @@
-import React from 'react'
+import React from "react";
+import { Button, Checkbox, Form, Input, InputNumber } from "antd";
 
 const AddProductAdmin = () => {
-  return (
-    <div>AddProductAdmin</div>
-  )
-}
+  return <div></div>;
+};
 
-export default AddProductAdmin
+export default AddProductAdmin;
