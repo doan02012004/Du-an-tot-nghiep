@@ -1,9 +1,9 @@
-import { BarChartOutlined, MessageOutlined, OrderedListOutlined, ProductOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons'
+import { BarChartOutlined, MessageOutlined, OrderedListOutlined, PlusOutlined, ProductOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons'
 import { Menu } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useContext } from 'react'
 import { AppContext } from '../../../common/contexts/AppContextProvider'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 const SidebarAdmin = () => {
     const {collapsed} = useContext(AppContext);
@@ -38,8 +38,13 @@ const SidebarAdmin = () => {
           children:[
             {
               key:"3.1",
-              label:<Link to={'/'}>Danh sách</Link>
-            }
+              label:<NavLink to={'/admin/products'}>Danh sách</NavLink>
+            },
+            {
+              key:"3.2",
+              icon:<PlusOutlined />,
+              label:<NavLink to={'/admin/products/add'}>Sản phẩm</NavLink>
+            },
           ]
         },
         {

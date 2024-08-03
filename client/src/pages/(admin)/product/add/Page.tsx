@@ -84,16 +84,14 @@ const AddProductAdmin = () => {
     },
     {
       key: '2',
-      label: 'Thêm màu sắc',
+      label: 'Biến thể',
       children: <Properties />,
     },
     
   ]
-  const onChange = (key: string) => {
-    console.log(key);
-  };
+ 
   return (
-   <Tabs items={items} defaultActiveKey="1" onChange={onChange} />
+   <Tabs items={items} defaultActiveKey="1"/>
   )
 }
 
