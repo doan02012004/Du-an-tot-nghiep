@@ -5,6 +5,7 @@ export const create = async (req, res) => {
     try {
         const categoy = await Category.create({
             name: req.body.name,
+            status:req.body.status,
             slug: slugify(req.body.name, "-"),
         });
 

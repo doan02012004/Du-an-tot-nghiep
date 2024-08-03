@@ -10,6 +10,9 @@ const categoriesSchema = new Schema(
             unique: true,
             lowercase: true,
         },
+        status:{
+            type:String,
+        },
     },
     { timestamps: true, versionKey: false }
 );

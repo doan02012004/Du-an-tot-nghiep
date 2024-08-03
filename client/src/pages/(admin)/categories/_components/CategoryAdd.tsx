@@ -18,9 +18,12 @@ const CategoryAdd = (props: Props) => {
         <h1 className='font-semibold text-[20px]'>THÊM MỚI DANH MỤC</h1>
         <Link to={`/admin/categories`}><Button type='primary'><BackwardOutlined />Quay lại</Button></Link>
       </div>
-        <Form form={form} layout="vertical" onFinish={onSubmit}>
+        <Form form={form} layout="vertical" onFinish={onSubmit} initialValues={{ status: 'Hoạt động' }}>
       <Form.Item name="name" label="Name" rules={[{ required: true,message:"Không được bỏ trống" }]}>
         <Input />
+      </Form.Item>
+      <Form.Item name="status" label="Trạng thái" hidden>
+        <Input value={"Hoạt động"}/>
       </Form.Item>
       <Form.Item>
         <Space>
