@@ -1,14 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
-import { getAll } from '../../../services/categories'
+import { getAll, getCateById } from '../../../services/categories'
 
-type Props = {}
 
-const useCategoryQuery = (props: Props) => {
+
+const useCategoryQuery = (id ?: string) => {
     const query = useQuery({
-        queryKey:['CATEGORIES'],
+        queryKey:['CATEGORIES', id],
         queryFn:async()=>{
             try {
-                const data = await getAll();
+                const data = id ? await getCateById(id) : await getAll();
                 return data;
               } catch (error) {
                 console.log(error);

@@ -14,7 +14,8 @@ import ThanksPage from '../pages/(website)/thanks/Page'
 import ProductPage from '../pages/(website)/product/Page'
 import ProductDetailsPage from '../pages/(website)/productdetails/Page'
 import CategoriesPage from '../pages/(admin)/categories/Page'
-import CategoryAdd from '../pages/(admin)/categories/_components/CategoryAdd'
+import CategoryAdd from '../pages/(admin)/categories/_components/CategoryForm'
+import CategoriesForm from '../pages/(admin)/categories/_components/CategoryForm'
 
 
 const Router = () => {
@@ -38,7 +39,8 @@ const Router = () => {
       </Route>
       <Route path='admin' element={<LayoutAdmin />}>
         <Route path='categories' element={<CategoriesPage />}/>
-        <Route path='categories/add' element={<CategoryAdd />}/>
+        <Route path='categories/add' element={<CategoriesForm />}/>
+        <Route path='categories/edit/:id' element={<CategoriesForm />} />
       </Route>
     </Routes>
   )

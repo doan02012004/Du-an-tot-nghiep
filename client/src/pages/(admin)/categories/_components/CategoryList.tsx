@@ -1,19 +1,21 @@
 import type { TableColumnsType, TableProps } from 'antd';
-import { Button, Switch, Table } from 'antd';
+import { Button, Popconfirm, Space, Switch, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import useCategoryQuery from '../../../../common/hooks/categories/useCategoryQuery';
-import { Icategories } from '../../../../interface/categories';
+import { ICategories } from '../../../../interface/categories';
 import { PlusOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import instance from '../../../../common/config/axios';
+import useCategoryMutation from '../../../../common/hooks/categories/useCategoryMutation';
 
 const CategoryList: React.FC = () => {
-  const [categories, setCategories] = useState<Icategories[]>([]);
+  const [categories, setCategories] = useState<ICategories[]>([]);
 
   const query = useCategoryQuery();
+  const mutation = useCategoryMutation()
   useEffect(() => {
     if (query.data) {
-      const newCategories = query.data.map((category: Icategories, index: number) => ({
+      const newCategories = query.data.map((category: ICategories, index: number) => ({
         ...category,
         key: index + 1, // Đảm bảo `key` là duy nhất
       }));
@@ -24,14 +26,14 @@ const CategoryList: React.FC = () => {
   if (query.isLoading) return <p>Loading...</p>;
   if (query.isError) return <p>Error fetching categories.</p>;
 
-  const handleStatusChange = async (checked: boolean, record: Icategories) => {
+  const handleStatusChange = async (checked: boolean, record: ICategories) => {
     const newStatus = checked ? 'Hoạt động' : 'Không hoạt động';
     try {
       await instance.put(`/categories/${record._id}`, {
         ...record,
         status: newStatus,
       });
-      setCategories(categories.map((item: Icategories) =>
+      setCategories(categories.map((item: ICategories) =>
         item._id === record._id ? { ...item, status: newStatus } : item
       ));
     } catch (error) {
@@ -39,7 +41,7 @@ const CategoryList: React.FC = () => {
     }
   };
 
-  const columns: TableColumnsType<Icategories> = [
+  const columns: TableColumnsType<ICategories> = [
     {
       title: "#",
       dataIndex: "key", // Thay đổi từ `id` sang `key` nếu cần
@@ -70,10 +72,31 @@ const CategoryList: React.FC = () => {
         />
       ),
     },
-  ];
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_, record) => (
+          <Space size="middle">
+              <Popconfirm
+                  title="Delete the category"
+                  description="Are you sure to delete this category?"
+                  onConfirm={() => mutation.mutate({action : "delete", category : record})}
+                  okText="Yes"
+                  cancelText="No"
+              >
+                  <Button danger>Delete</Button>
+              </Popconfirm>
+              <Link to={`edit/${record._id}`}><Button type='primary'>Update</Button></Link>
+          </Space>
+      ),
+  }
+];
+
+
+
 
   
-  const rowClassName = (record: Icategories) => {
+  const rowClassName = (record: ICategories) => {
     return record.status === 'Không hoạt động' ? 'bg-gray-200' : '';
   };
 
