@@ -1,12 +1,12 @@
-import type { TableColumnsType, TableProps } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import type { TableColumnsType } from 'antd';
 import { Button, Popconfirm, Space, Switch, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
-import useCategoryQuery from '../../../../common/hooks/categories/useCategoryQuery';
-import { ICategories } from '../../../../interface/categories';
-import { PlusOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import instance from '../../../../common/config/axios';
 import useCategoryMutation from '../../../../common/hooks/categories/useCategoryMutation';
+import useCategoryQuery from '../../../../common/hooks/categories/useCategoryQuery';
+import { ICategories } from '../../../../interface/categories';
 
 const CategoryList: React.FC = () => {
   const [categories, setCategories] = useState<ICategories[]>([]);
@@ -23,8 +23,8 @@ const CategoryList: React.FC = () => {
     }
   }, [query.data]);
 
-  if (query.isLoading) return <p>Loading...</p>;
-  if (query.isError) return <p>Error fetching categories.</p>;
+  // if (query.isLoading) return <p>Loading...</p>;
+  // if (query.isError) return <p>Error fetching categories.</p>;
 
   const handleStatusChange = async (checked: boolean, record: ICategories) => {
     const newStatus = checked ? 'Hoạt động' : 'Không hoạt động';
@@ -45,7 +45,7 @@ const CategoryList: React.FC = () => {
     {
       title: "#",
       dataIndex: "key", // Thay đổi từ `id` sang `key` nếu cần
-      sorter: (a, b) => a.key - b.key,
+      sorter: (a : any, b : any) => a.key - b.key,
     },
     {
       title: 'Name',
@@ -55,7 +55,7 @@ const CategoryList: React.FC = () => {
         text: name,
         value: name,
       })),
-      onFilter: (value, record) => record.name.includes(value),
+      onFilter: (value : any, record : ICategories) => record.name.includes(value),
     },
     {
       title: "Slug",
@@ -64,7 +64,7 @@ const CategoryList: React.FC = () => {
     {
       title: "Trạng thái",
       dataIndex: "status",
-      render: (text, record) => (
+      render: (_, record) => (
         <Switch
           size="small"
           checked={record.status === 'Hoạt động'}
@@ -93,8 +93,6 @@ const CategoryList: React.FC = () => {
 ];
 
 
-
-
   
   const rowClassName = (record: ICategories) => {
     return record.status === 'Không hoạt động' ? 'bg-gray-200' : '';
@@ -107,7 +105,7 @@ const CategoryList: React.FC = () => {
         <Link to={`/admin/categories/add`}><Button type='primary'><PlusOutlined />Danh mục</Button></Link>
       </div>
       <div className='h-[550px] overflow-y-scroll mt-2'>
-        <Table columns={columns} dataSource={categories} rowClassName={rowClassName}  />
+        <Table loading={query.isLoading ? query.isLoading : mutation.isPending} columns={columns} dataSource={categories} rowClassName={rowClassName}  />
       </div>
     </>
   );
