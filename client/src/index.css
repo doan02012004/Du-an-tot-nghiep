@@ -153,41 +153,40 @@ input[type="number"] {
       .formChangePass {
           animation: toBlock 0.3s ease-in;
       }
-
-      @keyframes toRight {
-          from {
-              transform: translateX(-10px);
-              opacity: 0;
-          }
-
-          to {
-              transform: translateX(0);
-              opacity: 1;
-          }
-      }
-
-      @keyframes toBlock {
-          from {
-              opacity: 0;
-          }
-
-          to {
-              opacity: 1;
-          }
-      }
-
-      @keyframes toTop {
-          from {
-              transform: translateY(10px);
-              opacity: 0;
-          }
-
-          to {
-              transform: translateY(0);
-              opacity: 1;
-          }
-      }
   }
+  @keyframes toRight {
+    from {
+        transform: translateX(-10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes toBlock {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes toTop {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
 }
 /* ----------------------------------------------products----------------------------------- */
 .highlighted {

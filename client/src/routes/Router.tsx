@@ -13,8 +13,12 @@ import OrderPage from '../pages/(website)/order/OrderPage'
 import ThanksPage from '../pages/(website)/thanks/Page'
 import ProductPage from '../pages/(website)/product/Page'
 import ProductDetailsPage from '../pages/(website)/productdetails/Page'
+import AdminProduct from '../pages/(admin)/product/Page'
+import ListProduct from '../pages/(admin)/product/list/Page'
+import AddProductAdmin from '../pages/(admin)/product/add/Page'
+import LayoutColor from '../pages/(admin)/color/Page'
 import CategoriesPage from '../pages/(admin)/categories/Page'
-import CategoryAdd from '../pages/(admin)/categories/_components/CategoryForm'
+
 import CategoriesForm from '../pages/(admin)/categories/_components/CategoryForm'
 
 
@@ -35,7 +39,13 @@ const Router = () => {
         <Route path='customer' element={<MyInformation />}>
           <Route path='infor' element={<Account />} />
         </Route>
-
+      </Route>
+      <Route path='admin' element={<LayoutAdmin />}>
+          <Route path='products' element={<AdminProduct />}>
+              <Route index element={<ListProduct />} />
+              <Route path='add' element={<AddProductAdmin />} />
+          </Route>
+          <Route path='colors' element={<LayoutColor/>}  />
       </Route>
       <Route path='admin' element={<LayoutAdmin />}>
         <Route path='categories' element={<CategoriesPage />}/>
