@@ -69,6 +69,10 @@
 //     },
 //   ]
 // }
+//  const order = {
+//   productId: 'kdfjkdfjkd',
+//   attributeId:'jdfjhdf'
+//  }
 
 // import styles
 import { Tabs } from "antd";

@@ -16,6 +16,7 @@ import ProductDetailsPage from '../pages/(website)/productdetails/Page'
 import AdminProduct from '../pages/(admin)/product/Page'
 import ListProduct from '../pages/(admin)/product/list/Page'
 import AddProductAdmin from '../pages/(admin)/product/add/Page'
+import LayoutColor from '../pages/(admin)/color/Page'
 
 
 const Router = () => {
@@ -41,6 +42,7 @@ const Router = () => {
               <Route index element={<ListProduct />} />
               <Route path='add' element={<AddProductAdmin />} />
           </Route>
+          <Route path='colors' element={<LayoutColor/>}  />
       </Route>
     </Routes>
   )
