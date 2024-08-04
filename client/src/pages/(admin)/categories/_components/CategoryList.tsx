@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import instance from '../../../../common/config/axios';
 import useCategoryMutation from '../../../../common/hooks/categories/useCategoryMutation';
 import useCategoryQuery from '../../../../common/hooks/categories/useCategoryQuery';
-import { ICategories } from '../../../../interface/categories';
+import { ICategories } from '../../../../common/interfaces/categories';
 
 const CategoryList: React.FC = () => {
   const [categories, setCategories] = useState<ICategories[]>([]);

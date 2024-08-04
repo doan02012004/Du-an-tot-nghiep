@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import useCategoryMutation from '../../../../common/hooks/categories/useCategoryMutation'
 import useCategoryQuery from '../../../../common/hooks/categories/useCategoryQuery'
-import { ICategories } from '../../../../interface/categories'
+import { ICategories } from '../../../../common/interfaces/categories'
 import FormItem from 'antd/es/form/FormItem'
 
 type Props = {}
