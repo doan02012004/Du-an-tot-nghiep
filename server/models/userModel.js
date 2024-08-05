@@ -1,61 +1,65 @@
 import mongoose from 'mongoose'
 
 const userSchema = new mongoose.Schema({
-    firstname:{
-        type:String,
-        required:true
+    firstname: {
+        type: String,
+        required: true
     },
-    lastname:{
-        type:String,
-        required:true
+    lastname: {
+        type: String,
+        required: true
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true,
+    email: {
+        type: String,
+        required: true,
+        unique: true,
     },
-    password:{
-        type:String,
-        required:true
+    password: {
+        type: String,
+        required: true
     },
-    phone:{
-        type:Number,
-        required:true
+    phone: {
+        type: Number,
+        required: true
     },
-    date:{
-        type:Date,
-        required:true
+    date: {
+        type: Date,
+        required: true
     },
-    gender:{
-        type:String,
-        enum: ["male", "female","other"],
+    gender: {
+        type: String,
+        enum: ["male", "female", "other"],
         default: "other",
     },
-    city:{
-        type:String,
-        required:true
-    },
-    district:{
-        type:String,
-        required:true
-    },
-    ward:{
-        type:String,
-        required:true
-    },
-    address:{
-        type:String,
-        required:true
-    },
-    role: {
+    city: {
         type: String,
-        enum: ["user", "admin"],
-        default: "user",
+        required: true
     },
-    
-    
-},{
-    timestamps:true , versionKey:false
+    district: {
+        type: String,
+        required: true
+    },
+    ward: {
+        type: String,
+        required: true
+    },
+    address: {
+        type: String,
+        required: true
+    },
+    // role: {
+    //     type: String,
+    //     enum: ["user", "admin"],
+    //     default: "user",
+    // },
+
+    admin: {
+        type: Boolean,
+        default: false
+    }
+
+}, {
+    timestamps: true, versionKey: false
 })
-const UserModel = mongoose.model('users',userSchema)
+const UserModel = mongoose.model('users', userSchema)
 export default UserModel

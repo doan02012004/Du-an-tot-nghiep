@@ -71,6 +71,7 @@ const NavbarBottom = () => {
                             </ul>
                         </div>
                     </div>
+                {/* phần menu có user */}
                     <div onClick={() => onHandleNavbarMenu(2)} className=" menu-bottom-item cursor-pointer text-center px-4">
                         <span className="mb-1">
                             <i className="fa-regular fa-user" />
