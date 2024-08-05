@@ -1,8 +1,9 @@
 import UserModel from "../models/userModel.js"
 import bcrypt from "bcryptjs"
 import { registerSchema, loginSchema } from "../validations/userValidations.js"
-import generateRefreshToken from "../ultils/tokenAuth.js"
-
+// import generateRefreshToken from "../ultils/tokenAuth.js"
+import jwt from 'jsonwebtoken'
+let refreshTokens = [];
 // lấy toàn bộ user
 export const getAllUser = async (req, res) => {
     try {
@@ -44,7 +45,10 @@ export const deleteUser = async (req, res) => {
                 message: 'Không tìm thấy người dùng với ID này',
             });
         }
-        return res.status(201).json(users)
+        return res.status(201).json({
+            message: "Xóa user thành công",
+            data: users
+        })
     } catch (error) {
         return res.status(500).json({
             message: error.message
@@ -125,7 +129,27 @@ export const register = async (req, res) => {
     }
 }
 
+const generateAccessToken = (user) => {
+    return jwt.sign(
+        {
+            id: user.id,
+            admin: user.admin
+        },
+        process.env.JWT_TOKEN_ACC,
+        { expiresIn: "30s" }
+    )
+}
 
+const generateRefreshToken = (user) => {
+    return jwt.sign(
+        {
+            id: user.id,
+            admin: user.admin
+        },
+        process.env.JWT_TOKEN_REF,
+        { expiresIn: "30d" }
+    )
+}
 // đăng nhập tài khoản
 export const login = async (req, res) => {
     try {
@@ -138,7 +162,7 @@ export const login = async (req, res) => {
         }
 
         const user = await UserModel.findOne({ email })
-        const passwordCorrect = await bcrypt.compare(password, user?.password || "");
+        const passwordCorrect = await bcrypt.compare(req.body.password, user?.password || "");
 
         //kiểm tra tài khoản đã tồn tại chưa thông qua email
         if (!user) {
@@ -146,23 +170,32 @@ export const login = async (req, res) => {
         }
 
         //kiểm tra mật khẩu có đúng không giữa req người dùng nhập với pass có sẵn trong db
-        if (!user || !passwordCorrect) {
+        if (!passwordCorrect) {
             return res.status(400).json({ error: "sai mật khẩu" });
         }
         // lấy token ở bên fodels ultils
-       const token =  generateRefreshToken(user._id, res);
-        
-        return res.status(200).json({
-            firstname: user.firstname,
-            lastname: user.lastname,
-            phone: user.phone,
-            date: user.date,
-            gender: user.gender,
-            city: user.city,
-            district: user.district,
-            ward: user.ward,
-            address: user.address
-        })
+        //    const token =  generateRefreshToken(user._id, res);
+        if (user && passwordCorrect) {
+            //accessToken
+            const accessToken = generateAccessToken(user)
+            //refreshToken  
+            const refreshToken = generateRefreshToken(user)
+            refreshTokens.push(refreshToken)
+            res.cookie('cookie', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                path: "/",
+                sameSite: "strict",
+            })
+            //trả về ko có mk
+            const { password, ...orthers } = user._doc
+            return res.status(200).json({
+                ...orthers, accessToken
+            })
+        } else {
+            console.log(error.message)
+        }
+
 
     } catch (error) {
         console.log("lỗi đăng nhập", error.message)
@@ -170,12 +203,42 @@ export const login = async (req, res) => {
     }
 }
 
+export const requestRefreshToken = async (req, res) => {
+    try {
+        const refreshToken = req.cookies.cookie;
+        res.status(200).json({ message: "new token: ", refreshToken })
+        if (!refreshToken) return res.status(401).json('bạn chưa đăng nhập')
+        if (!refreshTokens.includes(refreshToken)) {
+            return res.status(403).json('refresh token it not valid')
+        }
+        jwt.verify(refreshToken, process.env.JWT_TOKEN_REF, (err, user) => {
+            if (err) {
+                console.log(err)
+            }
+            //lọc token cũ ra 
+            refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+            const newAccessToken = generateAccessToken(user)
+            const newRefreshToken = generateRefreshToken(user)
+            refreshTokens.push(newRefreshToken);
+            res.cookie('cookie', newRefreshToken, {
+                httpOnly: true,
+                secure: true,
+                path: "/",
+                sameSite: "strict",
+            })
+            res.status(200).json({ accessToken: newAccessToken })
+        })
+    } catch (error) {
+        console.log("lỗi xuất lại token:", error.message)
+        res.status(500).json({ error: "lỗi máy chủ" })
+    }
+}
 
 // đăng xuất tài khoản
 export const logout = async (req, res) => {
     try {
-        //thiết lập cookie là giá trị rỗng và cho thời gian sống bằng 0
-        res.cookie('jwt', "", { maxAge: 0 })
+        res.clearCookie('refreshToken');
+        refreshTokens = refreshToken.filter(token => token !== req.cookies.refreshToken)
         res.status(200).json({ message: "đăng xuất thành công" })
     } catch (error) {
         console.log("lỗi đăng xuất", error.message)

@@ -18,10 +18,6 @@ export const registerSchema = Joi.object({
         "string.min": "Trường Password phải có ít nhất {#limit} ký tự",
         "string.max": "Trường Password không được vượt quá {#limit} ký tự",
     }),
-    confirmPassword: Joi.string().required().valid(Joi.ref("password")).messages({
-        "any.required": "Trường Confirm Password là bắt buộc",
-        "any.only": "Mật khẩu không trùng khớp",
-    }),
     phone: Joi.string().pattern(/^(03|05|07|08|09)\d{8}$/).required().messages({
         "any.required": "Trường Phone là bắt buộc",
         "string.empty": "Trường Phone không được để trống",
