@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import useApiLocationQuery from '../../../../../common/hooks/API_location/useApiLocationQuery'
-import { useMutation } from '@tanstack/react-query'
-import { Isignup } from '../../../../../interface/InterfacAuth'
 import { message } from 'antd'
-import axios from 'axios'
-import { useForm } from 'react-hook-form'
+import { registerUser } from '../../../../../services/auth'
+import { Isignup } from '../../../../../common/interface/auth'
 
 const FormSignup = () => {
-    const navigate = useNavigate()
     const queryDataLocation = useApiLocationQuery()
     const [huyen, setHuyen] = useState([])
     const [xa, setXa] = useState<any>([])
-    const { register, handleSubmit  } = useForm<Isignup>()
+    const { register, handleSubmit } = useForm<Isignup>()
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     useEffect(() => {
         if (queryDataLocation.data) {
@@ -30,29 +31,50 @@ const FormSignup = () => {
 
     const onChangeHuyen = (data: string) => {
         if (data !== '') {
-            const newDataHuyen:any = huyen.find((item: any) => item.name == data)
+            const newDataHuyen: any = huyen.find((item: any) => item.name == data)
             setXa(newDataHuyen.data3)
         }
     }
-    const { mutate } = useMutation({
-        mutationFn: async (formData: Isignup) => {
-            try {
-                const response = await axios.post(`http://localhost:5000/api/users/register`, formData)
-                if (response.data.success) {
-                    message.success("Đăng kí thành công")
-                    navigate('/')
-                } else {
-                    message.error("Đăng kí thất bại. Vui lòng kiểm tra lại thông tin.")
-                }
-            } catch (error) {
-                message.error("Có lỗi xảy ra. Vui lòng thử lại sau.")
-            }
-        }
-    })
+    // const [firstname, setFirstname] = useState("")
+    // const [lastname, setLastname] = useState("")
+    // const [email, setEmail] = useState("")
+    // const [password, setPassword] = useState("")
+    // const [confirmPassword, setConfirmPassword] = useState("")
+    // const [phone, setPhone] = useState("")
+    // const [date, setDate] = useState("")
+    // const [gender, setGender] = useState("")
+    // // const [city, setCity] = useState("")
+    // // const [district, setDistrict] = useState("")
+    // const [ward, setWard] = useState("")
+    // const [address, setAddress] = useState("")
 
-    const onSubmit = (formData: Isignup) => {
-        mutate(formData)
-    }
+    // const selectedCity = huyen.length > 0 ? huyen[0].name : '';
+    // const selectedDistrict = xa.length > 0 ? xa[0].name : '';
+
+    const onSubmit = async (data: any) => {
+        // const newUser = {
+        //     firstname: firstname,
+        //     lastname: lastname,
+        //     email: email,
+        //     password: password,
+        //     confirmPassword: confirmPassword,
+        //     phone: phone,
+        //     date: date,
+        //     gender: gender,
+        //     city: huyen,
+        //     district: xa,
+        //     ward: ward,
+        //     address: address
+        // };
+        // console.log('Dữ liệu form:', data);
+
+        try {
+            await registerUser(data, dispatch, navigate);
+            message.success("đăng kí thành công")
+        } catch (error) {
+            console.error('Lỗi đăng ký:', error);
+        }
+    };
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className=" grid grid-cols-1 lg:grid-cols-2 gap-7" >
@@ -62,35 +84,36 @@ const FormSignup = () => {
                 <div className="w-full grid-cols-1 gap-5 grid lg:grid-cols-2 lg:gap-4  ">
                     <div className="flex flex-col">
                         <span className="input-signup">Họ:</span>
-                        <input type="text" placeholder="Họ..." {...register('lastname', { required: true })} className=" h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  " />
+                        <input {...register('lastname', { required: true })} type="text" placeholder="Họ..." className=" h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  " />
                     </div>
                     <div className="flex flex-col">
                         <span className="input-signup">Tên:</span>
-                        <input type="text" placeholder="Tên..." {...register('firstname', { required: true })} className=" h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input {...register('firstname', { required: true })} type="text" placeholder="Tên..." className=" h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
                     <div className="flex flex-col">
                         <span className="input-signup">Email:</span>
-                        <input type="text" placeholder="Email..." {...register('email', { required: true })} className=" h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent " />
+                        <input{...register('email', { required: true })} type="text" placeholder="Email..." className=" h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent " />
                     </div>
                     <div className="flex flex-col">
                         <span className="input-signup">Điện thoại:</span>
-                        <input type="text" placeholder="Điện thoại..." {...register('phone', { required: true })} className=" h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" {...register('phone', { required: true })} placeholder="Điện thoại..." className=" h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
                     <div className="flex flex-col">
                         <span className="input-signup">Ngày sinh:</span>
-                        <input type="date" placeholder="Ngày sinh..." {...register('date', { required: true })} className=" h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent " />
+                        <input {...register('date', { required: true })} type="date" placeholder="Ngày sinh..." className=" h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent " />
                     </div>
                     <div className="flex flex-col">
                         <span className="input-signup">Giới tính:</span>
                         <select {...register('gender', { required: true })} className=" h-12 w-full   px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option >Nữ</option>
-                            <option >Nam</option>
-                            <option >Khác</option>
+                            <option defaultChecked value="">Giới tính</option>
+                            <option value={'female'} >Nữ</option>
+                            <option value={'male'}  >Nam</option>
+                            <option value={'orther'}  >Khác</option>
                         </select>
                     </div>
                     <div className="flex flex-col">
                         <span className="input-signup">Tỉnh/TP:</span>
-                        <select onChange={(e) => onChangeTinh(e.target.value)}   className="appearance-none h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ">
+                        <select {...register('city', { required: true, onChange: (e) => onChangeTinh(e.target.value) })} className="appearance-none h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ">
                             <option defaultChecked value="">Tỉnh/Thành Phố</option>
                             {queryDataLocation?.data?.map((item: any, i: number) => (
                                 <option key={i} value={item.name} >{item.name}</option>
@@ -99,7 +122,7 @@ const FormSignup = () => {
                     </div>
                     <div className="flex flex-col">
                         <span className="input-signup">Quận/Huyện:</span>
-                        <select onChange={(e) => onChangeHuyen(e.target.value)}  className=" h-12 w-full mb-5  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <select  {...register('district', { required: true, onChange: (e) => onChangeHuyen(e.target.value) })} className=" h-12 w-full mb-5  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option defaultChecked value="">Quận/Huyện:</option>
                             {huyen?.map((item: any, i: number) => (
                                 <option key={i} value={item.name} >{item.name}</option>
@@ -127,11 +150,11 @@ const FormSignup = () => {
                 <p className="text-[16px] mb-[10px] text-dark font-medium">Thông tin mật khẩu</p>
                 <div className="flex flex-col">
                     <span className="input-signup">Mật khẩu:</span>
-                    <input type="text" placeholder="Mật khẩu..." className=" h-12 w-full mb-5  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  " />
+                    <input type="password" {...register('password', { required: true })} placeholder="Mật khẩu..." className=" h-12 w-full mb-5  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  " />
                 </div>
                 <div className="flex flex-col">
                     <span className="input-signup">Nhắc lại mật khẩu:</span>
-                    <input type="text" placeholder="Nhắc lại mật khẩu..." className=" h-12 w-full mb-5   px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent " />
+                    <input placeholder="Nhắc lại mật khẩu..." className=" h-12 w-full mb-5   px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent " />
                 </div>
                 <div className="flex flex-col">
                     <span className="input-signup">Nhập lại kí tự vào ô sau:</span>

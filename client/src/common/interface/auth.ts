@@ -4,6 +4,7 @@ export interface Isignup{
     lastname:string,
     email:string,
     password:string,
+    confirmPassword:string,
     phone:number,
     date:string
     gender:string,

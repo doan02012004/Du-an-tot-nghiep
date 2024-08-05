@@ -7,8 +7,8 @@ router.get("/", getAll);
 ;
 router.post("/", create);
 
-router.get("/:id", getCategoryById);
-router.delete("/:id", deleteCategoryById);
-router.put("/:id", updateCategoryById)
+// router.get("/:id", getCategoryById);
+// router.delete("/:id", deleteCategoryById);
+// router.put("/:id", updateCategoryById)
 
 export default router;

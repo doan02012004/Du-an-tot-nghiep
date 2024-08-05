@@ -1,37 +1,54 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { loginUser } from '../../../../../services/auth'
 
-type FormLoginProps = {
-    state:number|null,
-    onChangeForm: (number:number)=>void
-}
-const FormLogin = ({state, onChangeForm}:FormLoginProps) => {
-   const [isMobile, setIsMobile] = useState(window.innerWidth < 576)
+type FormLoginProps = { state: number | null, onChangeForm: (number: number) => void }
+
+
+const FormLogin = ({ state, onChangeForm }: FormLoginProps) => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 576)
     const formRef = useRef<any>()
-    useEffect(()=>{
-        window.addEventListener('resize', ()=>{
-            if(window.innerWidth < 576) {
+    useEffect(() => {
+        window.addEventListener('resize', () => {
+            if (window.innerWidth < 576) {
                 setIsMobile(true)
-            }else{
+            } else {
                 setIsMobile(false)
             }
         })
-    },[])
-    useEffect(()=>{
-        if(isMobile){
-            if(state == 1){
-                formRef.current.style.height =  formRef.current.scrollHeight + "px"
-            }else{
+    }, [])
+    useEffect(() => {
+        if (isMobile) {
+            if (state == 1) {
+                formRef.current.style.height = formRef.current.scrollHeight + "px"
+            } else {
                 formRef.current.style.height = 0
             }
-        }else{
+        } else {
             formRef.current.style.height = "auto"
         }
-    },[state,isMobile])
+    }, [state, isMobile])
+
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const handlerLogin = (e:any) => {
+        e.preventDefault();
+
+        const newUser = {
+            email: email,
+            password: password
+        }
+        loginUser(newUser, dispatch, navigate)
+    }
     return (
         <div className="w-full  lg:w-[480px] ">
             {/* của phần desktop */}
-            <span onClick={()=>onChangeForm(1)} className="titles-auth cursor-pointer text-base ursor-pointer pb-3 lg:text-xl text-dark font-semibold lg:cursor-auto lg:hidden">
+            <span onClick={() => onChangeForm(1)} className="titles-auth cursor-pointer text-base ursor-pointer pb-3 lg:text-xl text-dark font-semibold lg:cursor-auto lg:hidden">
                 Bạn đã có tài khoản</span>
             {/* của mobile */}
             <p className=" text-base hidden ursor-pointer pb-3 lg:text-xl font-semibold lg:cursor-auto lg:block">Bạn đã có tài
@@ -40,10 +57,11 @@ const FormLogin = ({state, onChangeForm}:FormLoginProps) => {
                 <p className="pb-7">Nếu bạn đã có tài khoản, hãy đăng nhập để tích lũy điểm thành viên và nhận được những ưu đãi
                     tốt
                     hơn!</p>
-                <form className="w-full mx-auto lg:w-[390px]">
+                {/* form ở đâyy */}
+                <form onSubmit={handlerLogin} className="w-full mx-auto lg:w-[390px]">
                     <div className="mb-3">
-                        <input type="text" placeholder="Email/SĐT" className=" h-12 w-full mb-5 px-3 py-2 placeholder-#57585A text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:" />
-                        <input type="password" placeholder="Mật khẩu" className="  h-12 w-full px-3 py-2 placeholder-#57585A text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" onChange={(e) => setEmail(e.target.value)} placeholder="Email/SĐT" className=" h-12 w-full mb-5 px-3 py-2 placeholder-#57585A text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:" />
+                        <input type="password" onChange={(e) => setPassword(e.target.value)} placeholder="Mật khẩu" className="  h-12 w-full px-3 py-2 placeholder-#57585A text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
                     {/* quên mật khâu */}
                     <div className=" flex justify-between items-center mb-5">
