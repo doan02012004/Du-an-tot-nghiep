@@ -1,31 +1,60 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PlusOutlined, SaveOutlined } from '@ant-design/icons'
-import { Button, Divider, Form, Input, InputNumber, InputRef, Radio, Select, Space, Switch } from 'antd'
-import React, { useRef, useState } from 'react'
+import { Button, Divider, Form, Input, InputNumber, InputRef, message, Radio, Select, Space, Switch } from 'antd'
+import React, {  useEffect, useRef, useState } from 'react'
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
+import useCategoryQuery from '../../../../../common/hooks/categories/useCategoryQuery';
+import { ICategories } from '../../../../../common/interfaces/categories';
+import useCategoryMutation from '../../../../../common/hooks/categories/useCategoryMutation';
+import useLocalStorage from '../../../../../common/hooks/localstorage/useLocalStorage';
+
+import { useDispatch } from 'react-redux';
+import { setProductInfor } from '../../../../../common/redux/features/productSlice';
+import { Iproduct } from '../../../../../common/interfaces/product';
 const FormInfor = () => {
-    const [items, setItems] = useState(['jack', 'lucy']);
-    const [name, setName] = useState('');
+    const [form] =Form.useForm()
+    const [name, setName] = useState<string>('');
     const inputRef = useRef<InputRef>(null);
-
-    const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
-    };
-
+    const categoriesQuery = useCategoryQuery()
+    const categoriesMutation = useCategoryMutation()
+    const [value,setValue] = useLocalStorage('product',{})
+    const dispath = useDispatch()
+    const onChangePriceNew:any = (priceNew:number) =>{
+       const priceOld = form.getFieldValue('price_old')
+       if(priceNew > priceOld ){
+        form.setFieldValue('price_new', 0)
+        return message.error('Vui lòng không nhập cao hơn giá niêm yết')
+       }
+        if(priceOld){
+            const discount = Math.ceil((priceOld - priceNew) / priceOld  * 100)
+            form.setFieldValue('discount', discount)
+        }
+    }
+    useEffect(()=>{
+        if(value){
+            dispath(setProductInfor(value))
+            form.setFieldsValue(value)
+        }
+    },[value])
     const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
         e.preventDefault();
-        setItems([...items, name]);
+       if(name == ''){
+        message.error("Vui lòng nhập dữ liệu !")
+       }else{
+        categoriesMutation.mutate({action:'add',category:{name:name},isOther:true})
         setName('');
+       }
         setTimeout(() => {
             inputRef.current?.focus();
         }, 0);
     };
-    const onSubmit = (data: any) => {
-        console.log(data)
+    const onSubmit = async(data:Iproduct) => {
+        await setValue({...data})
+        message.success("Bạn đã lưu thay đổi !")
     }
     return (
-        <Form name="basic" layout="vertical" onFinish={onSubmit} className="">
+        <Form form={form} name="basic" layout="vertical" onFinish={onSubmit} >
             <h1 className='font-bold text-xl mb-4 text-center'>Thông tin sản phẩm</h1>
             <div className="flex py-3">
                 {/* Thông tin  */}
@@ -44,6 +73,7 @@ const FormInfor = () => {
                             rules={[{ required: true, message: "Bắt buộc nhập" }]}
                         >
                             <Select
+                                loading={categoriesQuery.isLoading?categoriesQuery.isLoading:categoriesMutation.isPending}
                                 placeholder="custom dropdown render"
                                 dropdownRender={(menu) => (
                                     <>
@@ -54,7 +84,7 @@ const FormInfor = () => {
                                                 placeholder="Please enter item"
                                                 ref={inputRef}
                                                 value={name}
-                                                onChange={onNameChange}
+                                                onChange={(event)=> setName(event.target.value)}
                                                 onKeyDown={(e) => e.stopPropagation()}
                                             />
                                             <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
@@ -63,7 +93,7 @@ const FormInfor = () => {
                                         </Space>
                                     </>
                                 )}
-                                options={items.map((item) => ({ label: item, value: item }))}
+                                options={categoriesQuery?.data?.map((item:ICategories) => ({ label:item.name, value: item._id }))}
                             />
                         </Form.Item>
                         <Form.Item
@@ -71,7 +101,7 @@ const FormInfor = () => {
                             name={'price_old'}
                             rules={[{ required: true, message: "Bắt buộc nhập" }]}
                         >
-                            <InputNumber className="w-full" />
+                            <InputNumber className="w-full"/>
                         </Form.Item>
                         <div className="flex items-center gap-x-3">
                             <Form.Item
@@ -80,15 +110,15 @@ const FormInfor = () => {
                                 className="basis-1/2"
                                 rules={[{ required: true, message: "Bắt buộc nhập" }]}
                             >
-                                <InputNumber className="w-full" />
+                                <InputNumber className="w-full" onChange={onChangePriceNew} />
                             </Form.Item>
                             <Form.Item
                                 label="Khuyến mại (%)"
                                 name={'discount'}
                                 className="basis-1/2"
-                                rules={[{ required: true, message: "Bắt buộc nhập" }]}
+                                rules={[{ required: true, message: "Bắt buộc nhập" },{type:'number',min:0,message:"Không để giá trị âm"}]}
                             >
-                                <InputNumber className="w-full" />
+                                <InputNumber className="w-full" disabled />
                             </Form.Item>
                         </div>
                         <Form.Item
@@ -99,7 +129,7 @@ const FormInfor = () => {
                             <Radio.Group>
                                 <Radio value="male">Nam</Radio>
                                 <Radio value="female">Nữ</Radio>
-                                <Radio value="other">Khác</Radio>
+                                <Radio value="unisex">Cả nam nữ</Radio>
                             </Radio.Group>
                         </Form.Item>
                         <div className="flex items-center gap-x-3">

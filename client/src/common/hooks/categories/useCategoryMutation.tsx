@@ -9,13 +9,15 @@ const useCategoryMutation = () => {
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey: ['CATEGORIES'],
-        mutationFn: async (options: { action: string, category: ICategories }) => {
+        mutationFn: async (options: { action: string, category: ICategories, isOther?:boolean }) => {
             switch (options.action) {
                 case "add":
                     try {
                         const response = await create(options.category)
                         message.success("Thêm thành công")
+                       if(options.isOther == false || options.isOther == undefined){
                         navigate(`/admin/categories`)
+                       }
                         return response.data
                     } catch (error) {   
                         return message.error("Thêm thất bại")

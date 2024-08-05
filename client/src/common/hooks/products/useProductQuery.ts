@@ -1,21 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
-import instance from '../config/axios'
+import { getProducts } from '../../../services/products'
 
 
 const useProductQuery = () => {
-
     const query = useQuery({
-        queryKey:['PRODUCT'],
-        queryFn: async()=>{
+        queryKey: ['PRODUCT'],
+        queryFn: async () => {
             try {
-             const res = await instance.get('/products')
-             return res.data
+                const data = await getProducts()
+                return data
             } catch (error) {
                 console.log(error)
             }
         }
     })
-  return query
+    return query
 }
 
 export default useProductQuery

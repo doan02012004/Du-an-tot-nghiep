@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // const color ={
 //   _id:"djfhjdhjdh",
 //   name:"ĐEN",
@@ -75,11 +76,13 @@
 //  }
 
 // import styles
-import { Tabs } from "antd";
+import { message, Tabs } from "antd";
 import FormInfor from "./_components/FormInfor";
 import Properties from "./_components/Properties";
+import { useSelector } from "react-redux";
 
 const AddProductAdmin = () => {
+  const productInfor = useSelector((state:any) => state.product.productInfor)
   const items = [
     {
       key: '1',
@@ -95,7 +98,11 @@ const AddProductAdmin = () => {
   ]
  
   return (
-   <Tabs items={items} defaultActiveKey="1"/>
+   <Tabs items={items} defaultActiveKey="1" onChange={()=>{if(Object.keys(productInfor).length  == 0 ){
+    message.error("Vui lòng nhập dữ liệu form !")
+   }
+   
+  }}/>
   )
 }
 
