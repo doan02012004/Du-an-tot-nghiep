@@ -87,7 +87,7 @@ const ListProduct = () => {
         {
             title: "Chức năng",
             key: "actions",
-            render: () => (
+            render: (product:Iproduct) => (
                 <Space>
                     <Popconfirm
                         title="Xóa sản phẩm"
@@ -97,7 +97,7 @@ const ListProduct = () => {
                     >
                         <Button type='primary' danger><DeleteOutlined /></Button>
                     </Popconfirm>
-                    <Link to={'/admin/'}><Button className='bg-yellow text-white'><EyeOutlined /></Button></Link>
+                    <Link to={`/admin/products/edit/${product._id}`}><Button className='bg-yellow text-white'><EyeOutlined /></Button></Link>
                 </Space>
             )
         }
