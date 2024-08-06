@@ -1,7 +1,8 @@
 
 import { Button } from 'antd'
 import { formatPrice } from '../../../../../common/utils/product'
-import { StarFilled } from '@ant-design/icons'
+import {  StarFilled } from '@ant-design/icons'
+import CommentItem from './CommentItem'
 
 const ViewInfor = () => {
     return (
@@ -48,7 +49,8 @@ const ViewInfor = () => {
                 </div>
                 {/* Bình luận  */}
                 <div className='basis-1/2 px-5'>
-                    <div className='flex items-center'>
+                    {/* Đánh giá  */}
+                    <div className='flex items-center mb-3'>
                         <div className='flex justify-center items-center'>
                             <div className='flex items-center w-max'>
                                 <h1 className='text-[30px] m-0 pr-2'>4.7</h1>
@@ -87,6 +89,11 @@ const ViewInfor = () => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    {/* Hộp bình luận  */}
+                    <div className='w-full h-72 overflow-y-scroll p-4 rounded-lg border'>
+                       <CommentItem />
+                       <CommentItem />
                     </div>
                 </div>
             </div>
