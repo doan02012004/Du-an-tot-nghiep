@@ -19,8 +19,8 @@ type ColorItemProps = {
   data: Igallery
 }
 
-const Clound_name = "dsko2bveh";
-const preset = "demo0201";
+const Clound_name = import.meta.env.VITE_CLOUND_NAME;
+const preset = import.meta.env.VITE_PRESET;
 
 const ColorItem = ({ data }: ColorItemProps) => {
   const [avatar, setAvatar] = useState<string>("");
