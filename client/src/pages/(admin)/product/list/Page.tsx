@@ -21,6 +21,8 @@ const ListProduct = () => {
             setProducts(newProducts)
         }
     }, [productQuery.data])
+    const ap = import.meta.env.VITE_CLOUND_NAME
+    console.log(ap)
     const columns = [
         {
             title: "STT",
