@@ -3,14 +3,17 @@ import { Button } from 'antd'
 import { formatPrice } from '../../../../../common/utils/product'
 import {  StarFilled } from '@ant-design/icons'
 import CommentItem from './CommentItem'
+import { useState } from 'react'
+import FormUpdate from './FormUpdate'
 
 const ViewInfor = () => {
+    const [isOpen, setIsOpen] = useState(false)
     return (
         <div>
             <h1 className='text-xl font-semibold text-center mb-3'>Thông tin sản phẩm</h1>
             <div className='flex'>
                 {/* Thông tin sản phẩm  */}
-                <div className='basis-1/2 px-5 border-r-2 border-r-gray-500 '>
+                <div className='basis-1/2 px-5 '>
                     <div className=' grid grid-cols-2 gap-x-1'>
                         <div className='flex items-center'>
                             <p className='pr-2 font-semibold'>Tên sản phẩm :</p>
@@ -45,7 +48,10 @@ const ViewInfor = () => {
                             <p>Không</p>
                         </div>
                     </div>
-                    <Button className='bg-black text-white'>Cập nhật</Button>
+                    <Button onClick={()=>setIsOpen(true)} className='bg-black text-white'>Cập nhật</Button>
+                    {isOpen && (
+                        <FormUpdate onStatus={setIsOpen} />
+                    )}
                 </div>
                 {/* Bình luận  */}
                 <div className='basis-1/2 px-5'>
@@ -91,7 +97,7 @@ const ViewInfor = () => {
                         </div>
                     </div>
                     {/* Hộp bình luận  */}
-                    <div className='w-full h-72 overflow-y-scroll p-4 rounded-lg border'>
+                    <div className='w-full h-72 overflow-y-scroll p-4 bg-black/85 rounded-lg border'>
                        <CommentItem />
                        <CommentItem />
                     </div>

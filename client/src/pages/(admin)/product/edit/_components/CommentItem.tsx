@@ -4,7 +4,7 @@ import { Rate } from 'antd'
 
 const CommentItem = () => {
   return (
-    <div className='px-3 py-1 border rounded-lg mb-4'>
+    <div className='px-3 py-1 border rounded-lg mb-4 bg-white'>
     {/* header  */}
     <div className='flex'>
         <div className='flex items-center justify-center size-10 rounded-full border '>

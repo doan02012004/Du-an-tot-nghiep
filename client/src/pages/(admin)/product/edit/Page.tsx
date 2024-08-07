@@ -1,6 +1,5 @@
 import { Tabs, TabsProps } from "antd";
 import ViewInfor from "./_components/ViewInfor";
-import ViewColor from "./_components/ViewColor";
 import ViewProperties from "./_components/ViewProperties";
 
 
@@ -13,11 +12,6 @@ const UpdateProduct = () => {
         },
         {
           key: '2',
-          label: 'Màu sắc',
-          children: <ViewColor />,
-        },
-        {
-          key: '3',
           label: 'Các biến thể',
           children: <ViewProperties />,
         },
