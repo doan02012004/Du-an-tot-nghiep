@@ -1,39 +1,40 @@
-import { IColor } from "./Color"
+
 
 
 export interface Iproduct {
-    _id?:string|number,
-    name:string,
-    description:string,
-    price_new:number,
+    _id?: string | number,
+    name: string,
+    description: string,
+    price_new: number,
     price_old: number,
-    discount:number,
-    active:boolean,
-    featured:boolean,
-    gallerys:Igallery[],
+    discount: number,
+    active: boolean,
+    featured: boolean,
+    gallerys: Igallery[],
     attributes: Iattribute[]
 }
 export interface IproductInfor {
-    _id?:string|number,
-    name:string,
-    description:string,
-    price_new:number,
+    _id?: string | number,
+    name: string,
+    description: string,
+    price_new: number,
     price_old: number,
-    discount:number,
-    active?:boolean,
-    featured?:boolean,
+    discount: number,
+    active?: boolean,
+    featured?: boolean,
 }
 
-export interface Igallery{
-    _id?:string|number,
-    colorId:IColor,
+export interface Igallery {
+    _id?: string | number,
+    name: string,
+    background: string,
     avatar: string,
     items: string[],
-    check?:boolean
+    check?: boolean
 }
-export interface Iattribute{
-    _id?:string|number,
-    size:string,
+export interface Iattribute {
+    _id?: string | number,
+    size: string,
     color: string,
     instock: number
 }

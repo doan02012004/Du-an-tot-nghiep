@@ -76,33 +76,21 @@
 //  }
 
 // import styles
-import { message, Tabs } from "antd";
+import CreateProduct from "./_components/CreateProduct";
 import FormInfor from "./_components/FormInfor";
 import Properties from "./_components/Properties";
-import { useSelector } from "react-redux";
+
 
 const AddProductAdmin = () => {
-  const productInfor = useSelector((state:any) => state.product.productInfor)
-  const items = [
-    {
-      key: '1',
-      label: 'Thông tin sản phẩm',
-      children: <FormInfor />
-    },
-    {
-      key: '2',
-      label: 'Biến thể',
-      children: <Properties />,
-    },
-    
-  ]
- 
   return (
-   <Tabs items={items} defaultActiveKey="1" onChange={()=>{if(Object.keys(productInfor).length  == 0 ){
-    message.error("Vui lòng nhập dữ liệu form !")
-   }
-   
-  }}/>
+    <div className="bg-gray-400 w-full h-[580px] overflow-y-scroll py-3 ">
+        <div className="w-8/12 p-3 bg-white rounded-lg mx-auto">
+          <h1 className="text-lg font-bold text-center mb-3">Thêm sản phẩm</h1>
+          <FormInfor />
+          <Properties />
+          <CreateProduct />
+        </div>
+    </div>
   )
 }
 

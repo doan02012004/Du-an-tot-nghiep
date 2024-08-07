@@ -55,10 +55,8 @@ const FormInfor = () => {
     }
     return (
         <Form form={form} name="basic" layout="vertical" onFinish={onSubmit} >
-            <h1 className='font-bold text-xl mb-4 text-center'>Thông tin sản phẩm</h1>
-            <div className="flex py-3">
+            <div className=" py-3">
                 {/* Thông tin  */}
-                <div className="px-5 basis-1/2 ">
                     <div className="grid grid-cols-2 gap-x-4" >
                         <Form.Item
                             label="Tên sản phẩm"
@@ -101,7 +99,7 @@ const FormInfor = () => {
                             name={'price_old'}
                             rules={[{ required: true, message: "Bắt buộc nhập" }]}
                         >
-                            <InputNumber className="w-full"/>
+                            <InputNumber className="w-full" />
                         </Form.Item>
                         <div className="flex items-center gap-x-3">
                             <Form.Item
@@ -149,20 +147,21 @@ const FormInfor = () => {
                             </Form.Item>
                         </div>
                     </div>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit"><SaveOutlined /> Lưu thay đổi</Button>
-                    </Form.Item>
-                </div>
+             
                 {/* Mô tả  */}
-                <div className="px-5 basis-1/2 w-max ">
+                <div className="px-5 basis-1/2 w-max mx-auto ">
                     <Form.Item
                         label="Mô tả sản phẩm"
                         name={'description'}
+                        
 
                     >
                         <ReactQuill className="w-[500px]" />
                     </Form.Item>
                 </div>
+                <Form.Item className='w-max mx-auto'>
+                        <Button type="primary" htmlType="submit"><SaveOutlined /> Lưu thay đổi</Button>
+                </Form.Item>
             </div>
         </Form>
     )

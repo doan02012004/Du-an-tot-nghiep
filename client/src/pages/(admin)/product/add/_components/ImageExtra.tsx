@@ -17,8 +17,8 @@ const ImageExtra = ({data,items}:ImageExtraProps) => {
       slidesPerView={3}
       spaceBetween={20}
       navigation={{
-        nextEl: `.btn-next-gallery-${data.colorId.name}`,
-        prevEl: `.btn-prev-gallery-${data.colorId.name}`,
+        nextEl: `.btn-next-gallery-${data.name}`,
+        prevEl: `.btn-prev-gallery-${data.name}`,
       }}
     >
       {items?.map((item: string, index: number) => (
@@ -33,10 +33,10 @@ const ImageExtra = ({data,items}:ImageExtraProps) => {
         </SwiperSlide>
       ))}
     </Swiper>
-    <Button className={`absolute z-10 -translate-y-1/2 rounded-full btn-prev-gallery-${data.colorId.name} top-1/2 -left-3 size-8`}>
+    <Button className={`absolute z-10 -translate-y-1/2 rounded-full btn-prev-gallery-${data.name} top-1/2 -left-3 size-8`}>
       <LeftOutlined />
     </Button>
-    <Button className={`absolute z-10 -translate-y-1/2 rounded-full btn-next-gallery-${data.colorId.name} top-1/2 -right-3 size-8`}>
+    <Button className={`absolute z-10 -translate-y-1/2 rounded-full btn-next-gallery-${data.name} top-1/2 -right-3 size-8`}>
       <RightOutlined />
     </Button>
   </div>

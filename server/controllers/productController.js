@@ -32,7 +32,7 @@ export const getAllProduct = async(req, res)=>{
     //   if (maxPrice) {
     //     query.price = { ...query.price, $lte: Number(maxPrice) };
     //   }
-        const products = await ProductModel.find().populate('categoryId gallerys.colorId')
+        const products = await ProductModel.find().populate('categoryId colors')
         return res.status(200).json(products)
     } catch (error) {
         return res.status(500).json({

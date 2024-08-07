@@ -78,7 +78,7 @@ const ColorItem = ({ data }: ColorItemProps) => {
         ...data,
         check:false
       }
-      const newGallers = gallerys.map((item: Igallery) => item.colorId.name == data.colorId.name ? newGallery : item);
+      const newGallers = gallerys.map((item: Igallery) => item.name == data.name ? newGallery : item);
       setGallerysLocal(newGallers)
       dispath(setGallerys(newGallers))
     }
@@ -91,7 +91,7 @@ const ColorItem = ({ data }: ColorItemProps) => {
       items:items,
       check:true
     }
-    const newGallers = gallerys.map((item: Igallery) => item.colorId.name == data.colorId.name ? newGallery : item);
+    const newGallers = gallerys.map((item: Igallery) => item.name == data.name ? newGallery : item);
     setGallerysLocal(newGallers)
     dispath(setGallerys(newGallers))
   }
@@ -104,8 +104,8 @@ const ColorItem = ({ data }: ColorItemProps) => {
         
         {/* tên và màu sắc  */}
         <div className="flex items-center gap-x-4">
-          <h3 className="text-base font-semibold">{data.colorId.name}</h3>
-          <div className="rounded-full size-6 border" style={{ background: data.colorId.background }}></div>
+          <h3 className="text-base font-semibold">{data.name}</h3>
+          <div className="rounded-full size-6 border" style={{ background: data.background }}></div>
           {data.check && <CheckCircleOutlined className="text-green-600 text-xl" />}
         </div>
         {/* icon  */}

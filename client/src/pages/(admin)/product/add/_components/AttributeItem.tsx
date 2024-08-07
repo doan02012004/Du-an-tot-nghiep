@@ -2,21 +2,18 @@
 import { InputNumber } from 'antd'
 import { Iattribute } from '../../../../../common/interfaces/product'
 import { useDispatch, useSelector } from 'react-redux'
-import useLocalStorage from '../../../../../common/hooks/localstorage/useLocalStorage'
 import { setAttributes } from '../../../../../common/redux/features/productSlice'
 
 type AttributeItemProps = {
-  data: Iattribute
+  data: Iattribute,
+  index:number
 }
-const AttributeItem = ({data}:AttributeItemProps) => {
+const AttributeItem = ({data,index}:AttributeItemProps) => {
   const attributes = useSelector((state:any)=> state.product.attributes)
-  const [,setAttributesLocal] = useLocalStorage('attributes',[])
   const dispath = useDispatch()
   const onSetInstock = async(event:any) =>{
-     const oldAttribute = attributes.find((item:Iattribute)=> (item.color == data.color && item.size == data.size))
-    const newAttribute = {...oldAttribute,instock: parseInt(event.target.value)}
-    const newAttributes = attributes.map((item:Iattribute)=> (item.color == data.color  && item.size == data.size) ? newAttribute : item)
-    await setAttributesLocal(newAttributes)
+    const newAttribute = {...data,instock: parseInt(event.target.value)}
+    const newAttributes = attributes.map((item:Iattribute,i:number)=> index == i ? newAttribute : item)
     dispath(setAttributes(newAttributes))
   }
   return (

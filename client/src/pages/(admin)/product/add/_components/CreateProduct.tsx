@@ -15,6 +15,8 @@ const CreateProduct = () => {
     const productMutation = useProductMutation()
     const attributes = useSelector((state:any)=>state.product.attributes)
     const gallerys = useSelector((state:any)=>state.product.gallerys)
+    const sizes = useSelector((state:any)=>state.product.sizes)
+    const colors = useSelector((state:any)=>state.product.colors)
     const productInfor = useSelector((state:any)=>state.product.productInfor)
 
     useEffect(()=>{
@@ -28,23 +30,20 @@ const CreateProduct = () => {
         if(Object.keys(productInfor).length == 0){
             return message.error("Vui lòng nhập dữ liệu thông tin sản phẩm")
         }
-        const newGallers = gallerys.map((item:Igallery)=>(
-            {
-                ...item,
-                colorId: item.colorId._id
-            }
-        ))
         const newProduct = {
             ...productInfor,
-            gallerys:newGallers,
+            sizes:sizes,
+            colors:colors,
+            gallerys:gallerys,
             attributes:attributes
         }
         productMutation.mutate({action:'add',product:newProduct})
-        console.log(newProduct)
     }
   return (
     <div>
-    {checkAdd && ( <Button onClick={onCreateProduct} className='bg-black text-white'><PlusOutlined /> Sản phẩm</Button>)}
+    {checkAdd && (<div className='flex justify-center items-end'>
+        <Button onClick={onCreateProduct} className='bg-black text-white  mx-auto'><PlusOutlined /> Sản phẩm</Button>
+    </div>)}
   </div>
   )
 }

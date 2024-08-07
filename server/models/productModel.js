@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const gallerySchema = new mongoose.Schema({
     avatar:{type:String},
     name:{type:String},
-    colorId:{type:mongoose.Schema.Types.ObjectId, ref:'colors'},
     items:[{type:String}]
 })
 const attributeSchema = new mongoose.Schema({
@@ -18,6 +17,12 @@ const productShema = new mongoose.Schema({
     price_new: {type:Number,required:true},
     discount:{type:Number, default:0},
     gallerys:[gallerySchema],
+    sizes:[
+        {type:String, default:"FREESIZE"}
+    ],
+    colors:[
+        {type:mongoose.Schema.Types.ObjectId, ref:'colors'}
+    ],
     gender:{type:String, enum:['male',"female","unisex"],default:"unisex"},
     description:{type:String, default:""},
     featured:{type:Boolean,default:false},
