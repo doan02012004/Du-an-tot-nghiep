@@ -19,3 +19,21 @@ export interface Isignin{
     email:string,
     password:string
 }
+export interface Iuser {
+    _id?:number|string,
+    firstname?:string,
+    lastname?:string,
+    email:string,
+    password:string,
+    phone?:number,
+    date?:Date,
+    gender?:string,
+    city?:string,
+    district?:string,
+    ward?:string,
+    address?:string
+    status:boolean
+    role?:string
+    createdAt?:Date,
+    updateAt?:Date
+}

@@ -78,9 +78,9 @@ const SidebarAdmin = () => {
             label: "Người dùng",
             children: [
               {
-                key: "4.1",
-                label: <Link to={"/"}>Danh sách</Link>,
-              },
+                key:"4.1",
+                label:<Link to={'/admin/auth'}>Danh sách</Link>
+              }
             ],
           },
           {
