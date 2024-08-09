@@ -20,6 +20,8 @@ import LayoutColor from '../pages/(admin)/color/Page'
 import CategoriesPage from '../pages/(admin)/categories/Page'
 
 import CategoriesForm from '../pages/(admin)/categories/_components/CategoryForm'
+import PageAuthAdmin from '../pages/(admin)/users/Page'
+import ListUser from '../pages/(admin)/users/_components/ListUser'
 import ViewProductAdmin from '../pages/(admin)/product/view/Page'
 
 
@@ -28,8 +30,8 @@ const Router = () => {
     <Routes>
       <Route path='/' element={<LayoutWebsite />}>
         <Route index element={<HomePage />} />
-        <Route path='product' element={<ProductPage />}/>
-        <Route path='productdetails' element={<ProductDetailsPage />}/>
+        <Route path='product' element={<ProductPage />} />
+        <Route path='productdetails' element={<ProductDetailsPage />} />
         <Route path='signin' element={<PageSignin />} />
         <Route path='signup' element={<PageSignup />} />
         <Route path='blog' element={<PageBlog />} />
@@ -42,17 +44,18 @@ const Router = () => {
         </Route>
       </Route>
       <Route path='admin' element={<LayoutAdmin />}>
-          <Route path='products' element={<AdminProduct />}>
-              <Route index element={<ListProduct />} />
-              <Route path='add' element={<AddProductAdmin />} />
-              <Route path='view/:id' element={<ViewProductAdmin />} />
-          </Route>
-          <Route path='colors' element={<LayoutColor/>}  />
-      </Route>
-      <Route path='admin' element={<LayoutAdmin />}>
-        <Route path='categories' element={<CategoriesPage />}/>
-        <Route path='categories/add' element={<CategoriesForm />}/>
+        <Route path='products' element={<AdminProduct />}>
+          <Route index element={<ListProduct />} />
+          <Route path='add' element={<AddProductAdmin />} />
+          <Route path='view/:id' element={<ViewProductAdmin />} />
+        </Route>
+        <Route path='colors' element={<LayoutColor />} />
+        <Route path='categories' element={<CategoriesPage />} />
+        <Route path='categories/add' element={<CategoriesForm />} />
         <Route path='categories/edit/:id' element={<CategoriesForm />} />
+        <Route path='auth' element={<PageAuthAdmin />} >
+          <Route index element={<ListUser />} />
+        </Route>
       </Route>
     </Routes>
   )
