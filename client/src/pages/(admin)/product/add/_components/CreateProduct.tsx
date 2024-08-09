@@ -18,7 +18,7 @@ const CreateProduct = () => {
     const sizes = useSelector((state:any)=>state.product.sizes)
     const colors = useSelector((state:any)=>state.product.colors)
     const productInfor = useSelector((state:any)=>state.product.productInfor)
-
+    const isSave = useSelector((state:any)=>state.product.isSave)
     useEffect(()=>{
        if(gallerys.length == 0){
         setCheckAdd(false)
@@ -30,6 +30,7 @@ const CreateProduct = () => {
         if(Object.keys(productInfor).length == 0){
             return message.error("Vui lòng nhập dữ liệu thông tin sản phẩm")
         }
+        if(isSave == false) return  message.error("Bạn chưa lưu thay đổi thông tin sản phẩm")
         const newProduct = {
             ...productInfor,
             sizes:sizes,

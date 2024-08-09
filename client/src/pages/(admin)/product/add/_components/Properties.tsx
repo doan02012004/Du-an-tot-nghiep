@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ColorItem from './ColorItem';
-import AttributeItem from './AttributeItem';
+import ColorItem from '../../_components/ColorItem';
+import AttributeItem from '../../_components/AttributeItem';
 import { Iattribute, Igallery } from '../../../../../common/interfaces/product';
 import ChoiceProperties from './ChoiceProperties';
 import {  useSelector } from 'react-redux';

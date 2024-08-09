@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   CheckCircleOutlined,
-  DeleteOutlined,
   DownOutlined,
   EditOutlined,
   SaveOutlined,
@@ -9,11 +8,11 @@ import {
 } from "@ant-design/icons";
 import { Button, message, Upload, UploadProps } from "antd";
 import { useEffect, useRef, useState } from "react";
-import { Igallery } from "../../../../../common/interfaces/product";
+import { Igallery } from "../../../../common/interfaces/product";
 import { useDispatch, useSelector } from "react-redux";
-import { setGallerys } from "../../../../../common/redux/features/productSlice";
-import useLocalStorage from "../../../../../common/hooks/localstorage/useLocalStorage";
-import ImageExtra from "./ImageExtra";
+import { setGallerys } from "../../../../common/redux/features/productSlice";
+import useLocalStorage from "../../../../common/hooks/localstorage/useLocalStorage";
+import ImageExtra from "../add/_components/ImageExtra";
 
 type ColorItemProps = {
   data: Igallery
@@ -29,7 +28,7 @@ const ColorItem = ({ data }: ColorItemProps) => {
   const [loadingGal,setLoadingGal] = useState(false)
   const gallerys = useSelector((state:any)=> state.product.gallerys)
   const [,setGallerysLocal] = useLocalStorage('gallerys',[])
-  const [maxHeight, setMaxHeight] = useState<number | null>(null);
+  const [maxHeight, setMaxHeight] = useState<number>(0);
   const divRef = useRef<any>();
   const dispath = useDispatch()
   useEffect(() => {
@@ -41,7 +40,8 @@ const ColorItem = ({ data }: ColorItemProps) => {
   },[data])
   const onOpen = () => {
     if (divRef.current.style.height == "0px" || !divRef.current.style.height) {
-      divRef.current.style.height = maxHeight + "px";
+      divRef.current.style.height = maxHeight + 20 + "px";
+     
     } else {
       divRef.current.style.height = 0 + "px";
     }
@@ -96,7 +96,7 @@ const ColorItem = ({ data }: ColorItemProps) => {
     dispath(setGallerys(newGallers))
   }
   return (
-    <div className="w-full mb-4 border rounded-lg shadow-sm shadow-gray-500">
+    <div className="w-full mb-4 border rounded-lg shadow-sm shadow-gray-500 bg-white">
       {/* Tiêu đề  */}
       <div
         className="flex items-center justify-between p-3 border-b cursor-pointer"
@@ -111,7 +111,6 @@ const ColorItem = ({ data }: ColorItemProps) => {
         {/* icon  */}
         <div className="flex items-center gap-x-3">
          {data.check == false ? ( <Button disabled={loadingAvt? loadingAvt: loadingGal} onClick={onSave} type="primary"><SaveOutlined /></Button>):( <Button onClick={onEdit} className="bg-yellow text-white"><EditOutlined /></Button>)}
-          <Button type="primary" danger><DeleteOutlined /></Button>
           <Button className="size-8 rounded-full"  onClick={onOpen}><DownOutlined/></Button>
         </div>
       </div>
@@ -121,7 +120,7 @@ const ColorItem = ({ data }: ColorItemProps) => {
         className="flex h-0 overflow-hidden transition-all duration-300 ease-in-out"
       >
         {/* ảnh đại diện  */}
-        <div className="flex-shrink-0 p-5 basis-1/3">
+        <div className=" p-5 basis-1/3">
           <Upload
 
             disabled={data.check}
@@ -158,7 +157,7 @@ const ColorItem = ({ data }: ColorItemProps) => {
           >
             <Button loading={loadingGal}  disabled={data.check} icon={<UploadOutlined />}>Ảnh phụ</Button>
           </Upload>
-         <ImageExtra data={data} items={items} />
+         <ImageExtra items={items} />
         </div>
       </div>
     </div>

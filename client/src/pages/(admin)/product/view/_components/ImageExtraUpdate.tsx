@@ -1,10 +1,9 @@
 
-import "swiper/css";
+
 type ImageExtraProps = {
-  
-    items:string[]
+  items: string[]
 }
-const ImageExtra = ({items}:ImageExtraProps) => {
+const ImageExtraUpdate = ({ items }: ImageExtraProps) => {
   return (
     <div className='w-96 min-h-36 border overflow-x-scroll  gap-3 px-5 py-2 mt-3'>
       <div className="flex items-center w-max">
@@ -22,4 +21,4 @@ const ImageExtra = ({items}:ImageExtraProps) => {
   )
 }
 
-export default ImageExtra
+export default ImageExtraUpdate

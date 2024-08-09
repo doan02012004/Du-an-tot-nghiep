@@ -30,7 +30,6 @@ const ChoiceProperties = () => {
         newGallerys.push({
           name:findColor.name,
           background:findColor.background,
-          // colorId: findColor,
           avatar: "",
           items: [],
           check: false

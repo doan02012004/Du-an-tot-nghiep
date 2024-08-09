@@ -76,15 +76,27 @@
 //  }
 
 // import styles
+import { useDispatch } from "react-redux";
 import CreateProduct from "./_components/CreateProduct";
 import FormInfor from "./_components/FormInfor";
 import Properties from "./_components/Properties";
+import { useEffect } from "react";
+import { setAttributes, setColors, setGallerys, SetIsSave, setProductInfor, setSizes } from "../../../../common/redux/features/productSlice";
 
 
 const AddProductAdmin = () => {
+  const dispath = useDispatch()
+  useEffect(()=>{
+    dispath(setSizes([]))
+    dispath(setProductInfor({}))
+    dispath(setGallerys([]))
+    dispath(setAttributes([]))
+    dispath(setColors([]))
+    dispath(SetIsSave(false))
+  },[])
   return (
     <div className="bg-gray-400 w-full h-[580px] overflow-y-scroll py-3 ">
-        <div className="w-8/12 p-3 bg-white rounded-lg mx-auto">
+        <div className="w-8/12 p-3 bg-white rounded-lg mx-auto shadow-sm shadow-gray-700">
           <h1 className="text-lg font-bold text-center mb-3">Thêm sản phẩm</h1>
           <FormInfor />
           <Properties />

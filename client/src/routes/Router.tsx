@@ -20,6 +20,7 @@ import LayoutColor from '../pages/(admin)/color/Page'
 import CategoriesPage from '../pages/(admin)/categories/Page'
 
 import CategoriesForm from '../pages/(admin)/categories/_components/CategoryForm'
+import ViewProductAdmin from '../pages/(admin)/product/view/Page'
 
 
 const Router = () => {
@@ -44,6 +45,7 @@ const Router = () => {
           <Route path='products' element={<AdminProduct />}>
               <Route index element={<ListProduct />} />
               <Route path='add' element={<AddProductAdmin />} />
+              <Route path='view/:id' element={<ViewProductAdmin />} />
           </Route>
           <Route path='colors' element={<LayoutColor/>}  />
       </Route>

@@ -3,6 +3,7 @@ import { Iattribute, Igallery, IproductInfor } from "../../interfaces/product"
 
 const initialState = {
     productInfor:{} as IproductInfor,
+    isSave:false as boolean,
     gallerys:[] as Igallery[],
     attributes:[] as Iattribute[],
     sizes:[],
@@ -28,9 +29,12 @@ const productSlice = createSlice({
         setColors:(state, action) =>{
             state.colors = action.payload
         },
+        SetIsSave:(state, action) =>{
+            state.isSave = action.payload
+        },
     }
 })
 
-export const {setProductInfor,setGallerys,setAttributes,setSizes,setColors} = productSlice.actions
+export const {setProductInfor,setGallerys,setAttributes,setSizes,setColors,SetIsSave} = productSlice.actions
 
 export default productSlice.reducer

@@ -1,13 +1,18 @@
+import { ICategories } from "./categories"
+import { IColor } from "./Color"
 
 
 
 export interface Iproduct {
     _id?: string | number,
     name: string,
+    categoryId:ICategories,
     description: string,
     price_new: number,
     price_old: number,
     discount: number,
+    sizes: string[],
+    colors:IColor[]
     active: boolean,
     featured: boolean,
     gallerys: Igallery[],
@@ -20,14 +25,14 @@ export interface IproductInfor {
     price_new: number,
     price_old: number,
     discount: number,
-    active?: boolean,
+    status?: boolean,
     featured?: boolean,
 }
 
 export interface Igallery {
     _id?: string | number,
     name: string,
-    background: string,
+    background?:string,
     avatar: string,
     items: string[],
     check?: boolean
@@ -37,4 +42,14 @@ export interface Iattribute {
     size: string,
     color: string,
     instock: number
+}
+
+export interface InewSize {
+    size:string[],
+    attributes:Iattribute[]
+}
+export interface InewColor {
+    colors:string[],
+    gallerys:Igallery[]
+    attributes:Iattribute[]
 }
