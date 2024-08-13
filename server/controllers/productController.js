@@ -11,6 +11,49 @@ export const createProduct = async (req, res) => {
         })
     }
 }
+
+export const getProductFilter = async (req, res) => {
+    try {
+
+        const {
+            highlightedSize = '',
+            highlightedColors = [''],
+            price = [0, 1000000]
+        } = req.body;
+
+        const productsSize = await ProductModel.find({ sizes: highlightedSize }).populate('categoryId colors')
+
+
+        const productsColors = await Promise.all(
+            highlightedColors.map(async (col) => {
+                return await ProductModel.find({ colors: col }).populate('categoryId colors');
+            })
+        );
+
+        // Làm phẳng mảng
+        const flatProductsColors = productsColors.flat();
+
+        // Kết hợp mảng
+        const combProducts = productsSize.concat(flatProductsColors);
+
+        // Loại bỏ product trùng dựa theo _id
+        const uniqueProducts = combProducts.reduce((acc, product) => {
+            const existProduct = acc.find(p => p._id.toString() === product._id.toString());
+            if (!existProduct) {
+                acc.push(product);
+            }
+            return acc;
+        }, []); 
+
+        return res.status(200).json(uniqueProducts);
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+    }
+
+}
+
 export const getAllProduct = async (req, res) => {
     try {
         const { slug, minPrice, maxPrice, gender } = req.query;
@@ -186,7 +229,7 @@ export const deleteSize = async (req, res) => {
 }
 export const deleteColor = async (req, res) => {
     try {
-        const product = await ProductModel.findById(req.params.productId ).populate("colors")
+        const product = await ProductModel.findById(req.params.productId).populate("colors")
         if (!product) {
             return res.status(404).json({
                 message: "Product Not Found"

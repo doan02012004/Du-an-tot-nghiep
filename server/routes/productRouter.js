@@ -1,11 +1,12 @@
 
 import express from 'express'
-import { addColors, addSizes, createProduct, deleteColor, deleteProduct, deleteSize, getAllProduct, getByIdProduct, updateAttributeProduct, updateGallery, updateInforProduct } from '../controllers/productController.js'
+import { addColors, addSizes, createProduct, deleteColor, deleteProduct, deleteSize, getAllProduct, getByIdProduct, getProductFilter, updateAttributeProduct, updateGallery, updateInforProduct } from '../controllers/productController.js'
 
 const router = express.Router()
 
 router.post('/', createProduct)
 router.get('/',getAllProduct)
+router.post('/filter', getProductFilter)
 router.put('/updateAtb/:productId', updateAttributeProduct)
 router.put('/updateInfor/:productId', updateInforProduct)
 router.put('/updateGallery/:productId', updateGallery)

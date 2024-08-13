@@ -10,8 +10,6 @@ type Props = {
 
 const Sub_main_prod = ({ products }: Props) => {
 
-  console.log(products)
-
   return (
     <>
       <div className="sub-main-prod mt-3 lg:mt-[26px]">

@@ -1,9 +1,8 @@
 import { Slider } from 'antd';
 import React, { useState } from 'react'
 
-type Props = {}
 
-const Sidebar_prod = (props: Props) => {
+const Sidebar_prod = ({filter}: any) => {
     const [sizeOptionsVisible, setSizeOptionsVisible] = useState(false);
   const [colorOptionsVisible, setColorOptionsVisible] = useState(false);
   const [priceOptionsVisible, setPriceOptionsVisible] = useState(false);
@@ -38,8 +37,9 @@ const Sidebar_prod = (props: Props) => {
   };
 
   const handleApply = () => {
-    // Implement your filter logic here
-    alert('Filters applied!');
+
+    filter({highlightedSize,highlightedColors,price})
+
   };
   return (
     <>
