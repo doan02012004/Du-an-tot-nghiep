@@ -3,8 +3,13 @@ import Breadcrumb_products from './_components/Breadcrumb_products';
 import Sidebar_prod from './_components/Sidebar_prod';
 import Sub_main_prod from './_components/Sub_main_prod';
 import Top_main_prod from './_components/Top_main_prod';
+import useProductQuery from '../../../common/hooks/products/useProductQuery';
 
 const ProductPage = () => {
+
+  const query = useProductQuery();
+  console.log(query.data);
+
 
   return (
     <div>
@@ -19,7 +24,7 @@ const ProductPage = () => {
           <div className="main-prod lg:mb-[54px]">
             <Top_main_prod />
             {/* <!-------------------------------------------------------end top-main-prod-----------------------------  --> */}
-            <Sub_main_prod />
+            <Sub_main_prod products={query.data} />
 
           </div>
         </section>

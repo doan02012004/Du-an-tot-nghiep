@@ -1,21 +1,26 @@
 import React from 'react'
+import { Iproduct } from '../../../common/interfaces/product'
+import { Link } from 'react-router-dom'
 
-type Props = {}
+type Props = {
+  product : Iproduct
+}
 
-const Product = (props: Props) => {
+const Product = ({product}: Props) => {
+
   return (
     <>
         <div className="swiper-slide swiper-slide-active w-full" role="group" aria-label="1 / 9">
                     <div>
                       <div className="h-[236px] lg:h-[350px] w-full relative overflow-hidden mb-4">
-                        <a href="#" className="block w-full h-full">
-                          <img src="./assets/images/products/ao1.jpg" className="w-full h-full object-cover" alt />
-                        </a>
+                        <Link to="#" className="block w-full h-full">
+                          <img src={product.gallerys[0].avatar} className="w-full h-full object-cover" alt={product.name} />
+                        </Link>
                         <span className="absolute top-0 left-0 text-[12px]/[150%] font-semibold py-1 px-3 bg-rose-900 text-white rounded-br-full">
                           Best seller
                         </span>
                         <span className="absolute size-6 lg:size-10 rounded-full top-2 right-2 text-[12px]/[150%] font-semibold bg-black text-white flex justify-center items-center">
-                          30%
+                          {product.discount}%
                         </span>
                       </div>
                       <div className="flex justify-between mb-2 lg:mb-3">
@@ -37,11 +42,11 @@ const Product = (props: Props) => {
                           <i className="fa-regular fa-heart" />
                         </span>
                       </div>
-                      <a href="#" className="block text-[12px]/[16px] lg:text-sm hover:text-rose-800 mb-2 lg:mb-[10px]">Sản phẩm A</a>
+                      <a href="#" className="block text-[12px]/[16px] lg:text-sm hover:text-rose-800 mb-2 lg:mb-[10px]">{product.name}</a>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
-                          <span className=" text-sm font-semibold text-dark lg:text-base">999.999đ</span>
-                          <span className=" text-[10px]/[150%] line-through lg:text-[12px]/[150%]">999.999đ</span>
+                          <span className=" text-sm font-semibold text-dark lg:text-base">{product.price_new}đ</span>
+                          <span className=" text-[10px]/[150%] line-through lg:text-[12px]/[150%]">{product.price_old}đ</span>
                         </div>
                         <div className="relative btn-cart">
                           <button className="card-add-to-cart size-5 text-[12px] border-dark border bg-dark rounded-tl-lg rounded-br-lg text-white transition duration-500 ease-in-out hover:bg-white lg:text-base hover:text-black lg:size-8">

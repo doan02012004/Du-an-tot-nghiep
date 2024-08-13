@@ -8,6 +8,7 @@ const useProductQuery = (id?:string|number) => {
         queryFn: async () => {
             try {
                 const data = id? await getProductById(id) : await getProducts()
+                console.log(data)
                 return data
             } catch (error) {
                 console.log(error)
