@@ -12,48 +12,6 @@ export const createProduct = async (req, res) => {
     }
 }
 
-export const getProductFilter = async (req, res) => {
-    try {
-
-        const {
-            highlightedSize = '',
-            highlightedColors = [''],
-            price = [0, 1000000]
-        } = req.body;
-
-        const productsSize = await ProductModel.find({ sizes: highlightedSize }).populate('categoryId colors')
-
-
-        const productsColors = await Promise.all(
-            highlightedColors.map(async (col) => {
-                return await ProductModel.find({ colors: col }).populate('categoryId colors');
-            })
-        );
-
-        // Làm phẳng mảng
-        const flatProductsColors = productsColors.flat();
-
-        // Kết hợp mảng
-        const combProducts = productsSize.concat(flatProductsColors);
-
-        // Loại bỏ product trùng dựa theo _id
-        const uniqueProducts = combProducts.reduce((acc, product) => {
-            const existProduct = acc.find(p => p._id.toString() === product._id.toString());
-            if (!existProduct) {
-                acc.push(product);
-            }
-            return acc;
-        }, []); 
-
-        return res.status(200).json(uniqueProducts);
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message
-        })
-    }
-
-}
-
 export const getAllProduct = async (req, res) => {
     try {
         const { slug, minPrice, maxPrice, gender } = req.query;
@@ -83,6 +41,71 @@ export const getAllProduct = async (req, res) => {
         })
     }
 }
+
+export const getProductFilter = async (req, res) => {
+    try {
+        let {
+            highlightedSize ,
+            highlightedColors,
+            price
+        } = req.query;
+
+        highlightedColors = highlightedColors.split(',') ;
+        price = price.split(',').map(Number);
+
+
+        let productsSize = []
+
+        if(highlightedSize === ""){
+             productsSize = await ProductModel.find().populate('categoryId colors')
+        }else {
+             productsSize = await ProductModel.find({ sizes: highlightedSize }).populate('categoryId colors')
+        }
+
+        let productsColors = [];
+
+        if (highlightedColors.length > 0 && highlightedColors[0] !== "") {
+            productsColors = productsSize.filter(product => 
+                product.colors.some(color => highlightedColors.includes(color._id.toString()))
+            );
+        }else {
+            productsColors = productsSize;
+        }
+
+        if(highlightedSize !== ""){
+            productsColors = productsColors.filter(product => product.sizes.some(size => size === highlightedSize))
+        };
+
+        let productsPrice = [];
+
+         productsPrice = productsColors.filter(product => product.price_new >= price[0] && product.price_new <= price[1]);
+
+
+        // Làm phẳng mảng
+        const flatProductsColors = productsPrice.flat();
+
+        // Kết hợp mảng
+        const combProducts = productsPrice.concat(flatProductsColors)
+
+        // Loại bỏ product trùng dựa theo _id
+        const uniqueProducts = combProducts.reduce((acc, product) => {
+            const existProduct = acc.find(p => p._id.toString() === product._id.toString());
+            if (!existProduct) {
+                acc.push(product);
+            }
+            return acc;
+        }, []);
+
+        return res.status(200).json(uniqueProducts);
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+    }
+
+}
+
+
 
 export const updateAttributeProduct = async (req, res) => {
     try {

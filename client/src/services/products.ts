@@ -13,9 +13,10 @@ export const getProducts = async()=> {
     }
 }
 
-export const getProductsByFilter = async(dataFilter : {})=> {
+export const getProductsByFilter = async(dataFilter : {} | undefined)=> {
+    console.log(dataFilter)
     try {
-        const res = await instance.post('/products/filter', dataFilter)
+        const res = await instance.get(`products/filter?${dataFilter}`)
         return res.data
     } catch (error) {
         console.log(error)
