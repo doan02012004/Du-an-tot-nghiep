@@ -2,9 +2,18 @@ import React, { useState } from 'react'
 
 type Props = {}
 
-const Top_main_prod = (props: Props) => {
+const Top_main_prod = ({sort}: any) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
+
+
+  const applySort = (data : string) => {
+    console.log(data);
+    sort(data);
+  }
+
+
+
   return (
     <>
         <div className="top-main-prod lg:flex lg:justify-between lg:items-center lg:mb-4 lg:w-[920px] lg:pl-0">
@@ -17,12 +26,12 @@ const Top_main_prod = (props: Props) => {
                   </button>
                   {dropdownVisible && (
                     <div id="myDropdown" className="dropdown-content bg-white border border-gray-300 rounded-lg shadow-lg mt-2 absolute z-50 w-[67%] lg:w-[274px]">
-                      <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Mặc định</a>
-                      <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Mới nhất</a>
-                      <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Được mua nhiều nhất</a>
-                      <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Được yêu thích nhất</a>
-                      <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Giá: cao đến thấp</a>
-                      <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Giá: thấp đến cao</a>
+                      <button onClick={() => applySort("default")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Mặc định</button>
+                      <button onClick={() => applySort("new")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Mới nhất</button>
+                      <button onClick={() => applySort("bestSale")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Được mua nhiều nhất</button>
+                      <button onClick={() => applySort("favourite")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Được yêu thích nhất</button>
+                      <button onClick={() => applySort("high")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Giá: cao đến thấp</button>
+                      <button onClick={() => applySort("low")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Giá: thấp đến cao</button>
                     </div>
                   )}
                 </div>
