@@ -24,7 +24,7 @@ export const getcolorById = async (req, res) => {
   try {
     const color = await colorModel.findById(req.params.colorId);
     if (!color)
-      return res.status(404).json({ message: "Không tìm thấy sản phẩm nào!" });
+      return res.status(404).json({ message: "Không tìm thấy mã màu bạn cần!" });
     return res.status(200).json(color);
   } catch (error) {
     return res.status(500).json({ error });

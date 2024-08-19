@@ -1,5 +1,7 @@
 import {
   BarChartOutlined,
+  BgColorsOutlined,
+  FileImageOutlined,
   MessageOutlined,
   OrderedListOutlined,
   PlusOutlined,
@@ -40,8 +42,19 @@ const SidebarAdmin = () => {
             ],
           },
           {
+            key: "8",
+            icon: <FileImageOutlined />,
+            label: "Banner",
+            children: [
+              {
+                key: "8.1",
+                label: <NavLink to={"/admin/banners"}>Danh sách</NavLink>,
+              },
+            ],
+          },
+          {
             key: "7",
-            icon: <OrderedListOutlined />,
+            icon: <BgColorsOutlined />,
             label: "Màu sắc",
             children: [
               {

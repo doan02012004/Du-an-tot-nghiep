@@ -62,7 +62,7 @@ const ListProduct = () => {
                     >
                         <Button type='primary' danger><DeleteOutlined /></Button>
                     </Popconfirm>
-                    <Link to={'/admin/'}><Button className='bg-yellow text-white'><EyeOutlined /></Button></Link>
+                    <Link to={'/admin/'}><Button className='text-white bg-yellow'><EyeOutlined /></Button></Link>
                 </Space>
             )
         }

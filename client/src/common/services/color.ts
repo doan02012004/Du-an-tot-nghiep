@@ -1,5 +1,5 @@
-import instance from "../common/config/axios";
-import { IColor } from "../common/interfaces/Color";
+import instance from "./../config/axios";
+import { IColor } from "../interfaces/Color";
 
 export const getAllColors = async () => {
   try {

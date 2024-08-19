@@ -17,6 +17,10 @@ import AdminProduct from '../pages/(admin)/product/Page'
 import ListProduct from '../pages/(admin)/product/list/Page'
 import AddProductAdmin from '../pages/(admin)/product/add/Page'
 import LayoutColor from '../pages/(admin)/color/Page'
+import AdminBanner from '../pages/(admin)/banner/Page'
+import ListBanner from '../pages/(admin)/banner/_components/ListBanner'
+import AddBanner from '../pages/(admin)/banner/_components/AddBanner'
+import EditBanner from '../pages/(admin)/banner/_components/EditBanner'
 
 
 const Router = () => {
@@ -41,6 +45,11 @@ const Router = () => {
           <Route path='products' element={<AdminProduct />}>
               <Route index element={<ListProduct />} />
               <Route path='add' element={<AddProductAdmin />} />
+          </Route>
+          <Route path='banners' element={<AdminBanner />}>
+              <Route index element={<ListBanner />} />
+              <Route path='add' element={<AddBanner />} />
+              <Route path='edit/:id' element={<EditBanner />} />
           </Route>
           <Route path='colors' element={<LayoutColor/>}  />
       </Route>
