@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 import { useEffect, useState } from "react";
 import { IBanner } from "../../../../common/interfaces/Banner";
 import useBannerQuery from "../../../../common/hooks/banner/useBannerQuery";

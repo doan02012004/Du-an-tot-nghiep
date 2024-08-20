@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Table, Space, Button, Switch } from "antd";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import useBannerQuery from "../../../../common/hooks/banner/useBannerQuery";
-import useBannerMutation from "../../../../common/hooks/banner/useBannerMutation"; // Import hook mutation
+import useBannerMutation from "../../../../common/hooks/banner/useBannerMutation";
 import EditBanner from "./EditBanner";
 import DeleteBanner from "./DeleteBanner";
 import { IBanner } from "../../../../common/interfaces/Banner";
@@ -10,12 +10,11 @@ import AddBanner from "./AddBanner";
 
 const ListBanner = () => {
   const { data: banners, isLoading } = useBannerQuery();
-  const bannerMutation = useBannerMutation(); // Sử dụng hook mutation
+  const bannerMutation = useBannerMutation();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editBanner, setEditBanner] = useState<IBanner | null>(null);
 
   const handleSwitchChange = (banner: IBanner, checked: boolean) => {
-    // Cập nhật trạng thái active của banner mà không cần phải mở EditBanner
     bannerMutation.mutate({
       action: "update",
       banner: { ...banner, active: checked },
