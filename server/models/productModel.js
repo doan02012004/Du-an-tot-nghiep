@@ -10,6 +10,10 @@ const attributeSchema = new mongoose.Schema({
     color:{type:String},
     instock:{type:Number,default:0}
 })
+const colorSchema = new mongoose.Schema({
+    name:{type:String},
+    background:{type:String}
+})
 const productShema = new mongoose.Schema({
     name:{type:String, required:true},
     categoryId:{type:mongoose.Schema.Types.ObjectId, ref:'Categories'},
@@ -21,7 +25,7 @@ const productShema = new mongoose.Schema({
         {type:String, default:"FREESIZE"}
     ],
     colors:[
-        {type:mongoose.Schema.Types.ObjectId, ref:'colors'}
+        colorSchema
     ],
     gender:{type:String, enum:['male',"female","unisex"],default:"unisex"},
     description:{type:String, default:""},

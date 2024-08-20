@@ -71,9 +71,8 @@ const AddColors = ({ product,setOption }: AddPropertiesProps) => {
   const onSubmit = () => {
     if (gallerys.some((item: Igallery) => item.check == false)) return message.error('Bạn cần thêm ảnh cho sản phẩm')
     if(choiceColors.length == 0) return message.error('Bạn cần chọn màu sắc cho sản phẩm')
-    const newColorId:string[]|any = choiceColors.map((item:IColor)=> item._id)
     const newData:InewColor = {
-        colors:newColorId,
+        colors:choiceColors,
         gallerys:gallerys,
         attributes:attributes
     }
