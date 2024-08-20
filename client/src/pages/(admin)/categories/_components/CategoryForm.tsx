@@ -7,8 +7,6 @@ import useCategoryQuery from '../../../../common/hooks/categories/useCategoryQue
 import { ICategories } from '../../../../common/interfaces/categories'
 import FormItem from 'antd/es/form/FormItem'
 
-type Props = {}
-
 const CategoriesForm = () => {
     const {id} = useParams();
     const [form] = Form.useForm()

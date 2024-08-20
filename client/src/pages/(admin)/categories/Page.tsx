@@ -1,8 +1,6 @@
 import CategoryList from './_components/CategoryList'
 
-type Props = {}
-
-const CategoriesPage = (props: Props) => {
+const CategoriesPage = () => {
   return (
     <>
         <CategoryList />

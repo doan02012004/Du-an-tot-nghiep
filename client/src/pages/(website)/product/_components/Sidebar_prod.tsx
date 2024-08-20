@@ -2,6 +2,7 @@ import { Slider } from 'antd';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { IColor } from '../../../../common/interfaces/Color';
+import { formatPrice } from '../../../../common/utils/product';
 
 
 const Sidebar_prod = ({ filter}: any) => {
@@ -59,7 +60,7 @@ const Sidebar_prod = ({ filter}: any) => {
   };
   return (
     <>
-      <div className="sidebar-prod sidebar-prod-pc hidden lg:block lg:w-[270px] lg:mr-[33px] lg:pl-[15px]">
+      <div className="sidebar-prod flex-shrink-0 sidebar-prod-pc hidden lg:block lg:w-[270px] lg:mr-[33px] lg:pl-[15px]">
         <div className="filter-by-side">
           <ul>
             <li className="flex justify-between">
@@ -126,8 +127,8 @@ const Sidebar_prod = ({ filter}: any) => {
                   handleStyle={{ borderColor: '#000', backgroundColor: '#000' }} // Handle color
                 />
                 <div className="flex justify-between mt-2">
-                  <span id="minPrice">{price[0]}đ</span>
-                  <span id="maxPrice">{price[1]}đ</span>
+                  <span id="minPrice">{formatPrice(price[0])}đ</span>
+                  <span id="maxPrice">{formatPrice(price[1])}đ</span> 
                 </div>
               </li>
             )}
