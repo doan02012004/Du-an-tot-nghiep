@@ -34,7 +34,7 @@ const Banner = () => {
                 key={banner._id}
                 className="swiper-slide w-full h-[396px] lg:h-[508px] overflow-hidden rounded-tl-[32px] rounded-br-[32px] lg:rounded-tl-[80px] lg:rounded-br-[80px]"
               >
-                <a href="#" className="block w-full h-full">
+                <a href={banner.linkPrd} className="block w-full h-full">
                   <img
                     src={banner.imageUrl}
                     alt={banner.title}

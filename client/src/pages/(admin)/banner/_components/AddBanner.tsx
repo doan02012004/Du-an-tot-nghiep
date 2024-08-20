@@ -13,6 +13,7 @@ const AddBanner: React.FC<AddBannerProps> = ({ onClose }) => {
 
   const onFinish = (values: IBanner) => {
     bannerMutation.mutate({ action: "add", banner: values });
+    form.resetFields();
     onClose();
   };
 
@@ -24,25 +25,43 @@ const AddBanner: React.FC<AddBannerProps> = ({ onClose }) => {
       onCancel={onClose}
       footer={null}
     >
-      <Form form={form} onFinish={onFinish}>
+      <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
           label="Chủ đề banner"
           name="title"
           rules={[{ required: true, message: "Vui lòng nhập chủ đề!" }]}
         >
-          <Input />
+          <Input placeholder="Nhập chủ đề banner" />
         </Form.Item>
         <Form.Item
           label="URL hình ảnh"
           name="imageUrl"
-          rules={[{ required: true, message: "Vui lòng nhập URL hình ảnh!" }]}
+          rules={[
+            { required: true, message: "Vui lòng nhập URL hình ảnh!" },
+            { type: "url", message: "Vui lòng nhập một URL hợp lệ!" },
+          ]}
         >
-          <Input />
+          <Input placeholder="Nhập URL hình ảnh" />
         </Form.Item>
-        <Form.Item label="Hoạt động" name="active">
+        <Form.Item
+          label="Link sản phẩm"
+          name="linkPrd"
+          rules={[
+            { required: true, message: "Vui lòng nhập link sản phẩm!" },
+            { type: "url", message: "Vui lòng nhập một URL hợp lệ!" },
+          ]}
+        >
+          <Input placeholder="Nhập link sản phẩm hoặc chương trình khuyến mãi" />
+        </Form.Item>
+        <Form.Item
+          label="Hoạt động"
+          name="active"
+          valuePropName="checked"
+          initialValue={false}
+        >
           <Switch />
         </Form.Item>
-        <Form.Item className="flex items-center justify-center">
+        <Form.Item className="text-center">
           <Button type="primary" htmlType="submit">
             Thêm Banner
           </Button>
