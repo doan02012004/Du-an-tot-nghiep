@@ -84,10 +84,10 @@ const Product = ({ product }: Props) => {
 
               <ul
                 className={`w-[100px] absolute bottom-[35px] transition-all duration-800 ease-in-out right-0 bg-white lg:w-[132px] border border-gray-200 z-10
-                              ${openCart ? `card-list-size-open` : `card-list-size-close`}
+                              ${openCart ? `card-list-size-open` : `card-list-size-close opacity-0`}
                     `}
               >
-                {openCart && product.sizes.map((size, index) => (
+                {product.sizes.map((size, index) => (
                   <li key={index}>
                     <button className=" w-full text-sm py-2 text-dark font-semibold border border-white lg:text-base lg:py-3 hover:bg-gray-200 ">
                       {size}
