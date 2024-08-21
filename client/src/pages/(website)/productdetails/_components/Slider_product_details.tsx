@@ -5,12 +5,15 @@ import 'swiper/css/navigation';
 // import required modules
 import { useEffect, useState } from 'react';
 import { EffectFade, Navigation, Pagination } from 'swiper/modules';
+import { Iproduct } from '../../../../common/interfaces/product';
 
-type Props = {}
+type Props = {
+    product:Iproduct
+}
 
-const Slider_product_details = (props: Props) => {
+const Slider_product_details = ({product}: Props) => {
+    
     const [isMobile, setIsMobile] = useState(window.innerWidth);
-
     useEffect(() => {
         window.addEventListener('resize', ()=>{
             setIsMobile(window.innerWidth)
