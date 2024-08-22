@@ -1,6 +1,6 @@
 import React from 'react'
 import Pagination from './Pagination'
-import Product from './Product'
+import Product from '../../_components/Product'
 
 type Props = {}
 

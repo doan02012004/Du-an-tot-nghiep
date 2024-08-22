@@ -37,7 +37,13 @@ const SidebarAdmin = () => {
             children: [
               {
                 key: "2.1",
-                label: "Danh sách",
+                label: <NavLink to={`/admin/categories`}>Danh mục</NavLink>,
+              },
+              {
+                key: "2.2",
+                label: (
+                  <NavLink to={`/admin/categories/add`}>Thêm danh mục</NavLink>
+                ),
               },
             ],
           },
@@ -86,7 +92,7 @@ const SidebarAdmin = () => {
             children: [
               {
                 key: "4.1",
-                label: <Link to={"/"}>Danh sách</Link>,
+                label: <Link to={"/admin/auth"}>Danh sách</Link>,
               },
             ],
           },
@@ -96,7 +102,7 @@ const SidebarAdmin = () => {
             label: "Đơn hàng",
             children: [
               {
-                key: "4.1",
+                key: "5.1",
                 label: <Link to={"/"}>Danh sách</Link>,
               },
             ],

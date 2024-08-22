@@ -1,3 +1,4 @@
+// ListBanner.tsx
 import { useState } from "react";
 import { Table, Space, Button, Switch } from "antd";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
@@ -5,8 +6,8 @@ import useBannerQuery from "../../../../common/hooks/banner/useBannerQuery";
 import useBannerMutation from "../../../../common/hooks/banner/useBannerMutation";
 import EditBanner from "./EditBanner";
 import DeleteBanner from "./DeleteBanner";
-import { IBanner } from "../../../../common/interfaces/Banner";
 import AddBanner from "./AddBanner";
+import { IBanner } from "../../../../common/interfaces/Banner";
 
 const ListBanner = () => {
   const { data: banners, isLoading } = useBannerQuery();
@@ -14,10 +15,10 @@ const ListBanner = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editBanner, setEditBanner] = useState<IBanner | null>(null);
 
-  const handleSwitchChange = (banner: IBanner, checked: boolean) => {
+  const handleSwitchChange = (banner: IBanner) => {
     bannerMutation.mutate({
       action: "update",
-      banner: { ...banner, active: checked },
+      banner: { ...banner, active: !banner.active },
     });
   };
 
@@ -34,15 +35,14 @@ const ListBanner = () => {
       key: "title",
     },
     {
-      title: "Banner",
+      title: "Hình ảnh",
       dataIndex: "imageUrl",
       key: "imageUrl",
-      render: (imageUrl: string, banner: IBanner) =>
-        banner.active ? (
-          <img src={imageUrl} alt="Banner" style={{ width: "100px" }} />
-        ) : (
-          <span>Ảnh không hiển thị</span>
-        ),
+      render: (imageUrl: string, record: IBanner) => (
+        <a href={record.linkPrd} target="_blank" rel="noopener noreferrer">
+          <img src={imageUrl} alt={record.title} style={{ width: "100px" }} />
+        </a>
+      ),
     },
     {
       title: "Link sản phẩm",
@@ -55,13 +55,11 @@ const ListBanner = () => {
       ),
     },
     {
-      title: "Trạng thái",
+      title: "Hoạt động",
+      dataIndex: "active",
       key: "active",
-      render: (banner: IBanner) => (
-        <Switch
-          checked={banner.active}
-          onChange={(checked) => handleSwitchChange(banner, checked)}
-        />
+      render: (active: boolean, banner: IBanner) => (
+        <Switch checked={active} onChange={() => handleSwitchChange(banner)} />
       ),
     },
     {
@@ -85,10 +83,11 @@ const ListBanner = () => {
     <div>
       <Button
         type="primary"
+        icon={<PlusOutlined />}
         className="mb-3"
         onClick={() => setIsAddOpen(true)}
       >
-        <PlusOutlined /> Thêm Banner
+        Thêm Banner
       </Button>
       <Table
         loading={isLoading}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import FormLogin from './_components/FormLogin'
 import FormNode from './_components/FormNode'
 
@@ -12,9 +12,9 @@ const PageSignup = () => {
     }
 }
   return (
-    <section className=" container">
+    <section className="container ">
       <div className="border-t-2 mb-9">
-        <div className="flex justify-between text-center mt-5  relative flex-col lg:flex-row lg:px-24">
+        <div className="relative flex flex-col justify-between mt-5 text-center lg:flex-row lg:px-24">
           {/* form đăng nhâp */}
           <FormLogin state={isOpen} onChangeForm={onChangeForm}/>
           <div className="absolute hidden w-[1px] h-full bg-gray-400 z-10 bottom-0 left-1/2 -translate-x-1/2 lg:block" />
