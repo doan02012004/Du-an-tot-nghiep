@@ -1,14 +1,16 @@
 import { Button, message } from 'antd'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Iproduct } from '../../../../common/interfaces/product'
 import Product_description from './Product_description'
+import { AppContext } from '../../../../common/contexts/AppContextProvider'
 
 type Props = {
     product:Iproduct
 }
 
 const Product_information = ({product}: Props) => {
-    const [choiceColor, setChoiceColor] = useState('')
+    const {choiceColor,setChoiceColor} = useContext(AppContext)
+    // const [choiceColor, setChoiceColor] = useState('')
     const [choiceSize, setChoiceSize] = useState('')
     const [curentAttribute, setCurentAttribute] = useState(null)
     useEffect(() => {

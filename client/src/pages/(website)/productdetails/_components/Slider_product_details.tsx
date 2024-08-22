@@ -3,22 +3,38 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 // import required modules
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { EffectFade, Navigation, Pagination } from 'swiper/modules';
 import { Iproduct } from '../../../../common/interfaces/product';
+import { AppContext } from '../../../../common/contexts/AppContextProvider';
 
 type Props = {
     product:Iproduct
 }
 
 const Slider_product_details = ({product}: Props) => {
-    
+    const { choiceColor } = useContext(AppContext);
+    const [gallery, setGallery] = useState(null);
+
+    useEffect(() => {
+        if (product && product.gallerys) {
+            const handleColorChange = () => {
+                const color = choiceColor;
+                const newColor = product.gallerys.find(img => img.name === color);
+                setGallery(newColor);
+            };
+
+            handleColorChange();
+        }
+    }, [choiceColor, product]); // Đảm bảo thêm các phụ thuộc
+
     const [isMobile, setIsMobile] = useState(window.innerWidth);
     useEffect(() => {
         window.addEventListener('resize', ()=>{
             setIsMobile(window.innerWidth)
         })
     }, []);
+    // console.log(gallery)
   return (
     <>
         <div className='lg:flex lg:justify-between'>
@@ -29,12 +45,14 @@ const Slider_product_details = ({product}: Props) => {
                                             slidesPerView={1}
                                             navigation
                                         >
-                                            <SwiperSlide className=''>
+                                            {gallery?.items.map((item,index)=>(
+                                                <SwiperSlide key={index} className=''>
                                                 <div className=''>
-                                                    <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='object-cover w-full h-full' />
+                                                    <img src={item} className='object-cover w-full h-full' />
                                                 </div>
                                             </SwiperSlide>
-                                            <SwiperSlide className=''>
+                                            ))}
+                                            {/* <SwiperSlide className=''>
                                                 <div className=''>
                                                     <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2023/08/04/95437d1b09113b992ad2496ee3e3e3f8.webp" className='object-cover w-full h-full' />
                                                 </div>
@@ -48,7 +66,7 @@ const Slider_product_details = ({product}: Props) => {
                                                 <div className=''>
                                                     <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='object-cover w-full h-full' />
                                                 </div>
-                                            </SwiperSlide>
+                                            </SwiperSlide> */}
                                 </Swiper>
                         </div>
                         {/* --------------------------------------------------------- */}
@@ -79,12 +97,14 @@ const Slider_product_details = ({product}: Props) => {
                                                 className='lg:h-[604px]'
                                                 
                                             >
-                                                <SwiperSlide>
-                                                    <div className='lg:w-[95px] lg:h-[142px]'>
-                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='w-full h-full object-cover' />
-                                                    </div>
-                                                </SwiperSlide>
-                                                <SwiperSlide>
+                                                {gallery?.items.map((item,index)=>(
+                                                    <SwiperSlide key={index}>
+                                                        <div className='lg:w-[95px] lg:h-[142px]'>
+                                                            <img src={item} className='w-full h-full object-cover' />
+                                                        </div>
+                                                    </SwiperSlide>
+                                                ))}
+                                                {/* <SwiperSlide>
                                                     <div className='lg:w-[95px] lg:h-[142px]'>
                                                         <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='w-full h-full object-cover' />
                                                       </div>
@@ -108,7 +128,7 @@ const Slider_product_details = ({product}: Props) => {
                                                     <div className='lg:w-[95px] lg:h-[142px]'>
                                                         <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='w-full h-full object-cover' />
                                                     </div>
-                                                </SwiperSlide>
+                                                </SwiperSlide> */}
                             </Swiper>
                             <button className='swiper-gallery-next cursor-pointer pl-[50px] pt-[37px] hidden bg-white lg:block'><i className="fa-solid fa-chevron-down text-[20px]"></i></button>
                         </div>
