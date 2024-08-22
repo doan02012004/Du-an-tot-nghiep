@@ -8,7 +8,10 @@ const initialState = {
     attributes:[] as Iattribute[],
     sizes:[],
     colors:[],
+    productId : null as string | number | null,
 }
+
+
 
 const productSlice = createSlice({
     name:"product",
@@ -32,9 +35,12 @@ const productSlice = createSlice({
         SetIsSave:(state, action) =>{
             state.isSave = action.payload
         },
+        setProductId:(state, action) =>{
+            state.productId = action.payload
+        }
     }
 })
 
-export const {setProductInfor,setGallerys,setAttributes,setSizes,setColors,SetIsSave} = productSlice.actions
+export const {setProductInfor,setGallerys,setAttributes,setSizes,setColors,SetIsSave, setProductId} = productSlice.actions
 
 export default productSlice.reducer

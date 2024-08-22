@@ -60,8 +60,6 @@ const ProductPage = () => {
     setFilter(queryString)
   }
 
-
-
   return (
     <div>
       <Breadcrumb_products />
@@ -75,7 +73,7 @@ const ProductPage = () => {
           <div className="main-prod lg:mb-[54px]">
             <Top_main_prod sort={onHandleSort} />
             {/* <!-------------------------------------------------------end top-main-prod-----------------------------  --> */}
-            <Sub_main_prod products={sortedData.length > 0 ? sortedData : data} />
+            <Sub_main_prod  products={sortedData.length > 0 ? sortedData : data} />
 
           </div>
         </section>

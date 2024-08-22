@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Pagination from './Pagination'
 import Product from '../../_components/Product'
 import { Iproduct } from '../../../../common/interfaces/product'
@@ -7,8 +7,8 @@ type Props = {
   products: Iproduct[];
 }
 
-
 const Sub_main_prod = ({ products }: Props) => {
+
 
   return (
     <>
@@ -17,9 +17,12 @@ const Sub_main_prod = ({ products }: Props) => {
           <div className="item-cat-product grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-9">
             {products?.map((product: Iproduct, index: number) => (
               <>
-                <Product key={index} product={product} />
+                <Product
+                  key={index}
+                  product={product} 
+                 
+                />
               </>
-
             ))}
             {/* -----------------end products ---------------------------------------------*/}
           </div>

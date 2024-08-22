@@ -5,9 +5,8 @@ import { IColor } from '../../../../common/interfaces/Color';
 import { formatPrice } from '../../../../common/utils/product';
 
 
-const Sidebar_prod = ({ filter}: any) => {
+const Sidebar_prod = ({ filter }: any) => {
 
- 
 
   const [colors, setColors] = useState([]);
   const [sizeOptionsVisible, setSizeOptionsVisible] = useState(false);
@@ -23,8 +22,8 @@ const Sidebar_prod = ({ filter}: any) => {
   const togglePriceOptions = () => setPriceOptionsVisible(!priceOptionsVisible);
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
 
-  const handleSizeClick = (size) => {
-    setHighlightedSize(size);
+  const handleSizeClick = (size: string) => {
+    highlightedSize === size ? setHighlightedSize("") : setHighlightedSize(size);
   };
 
   useEffect(() => {
@@ -35,7 +34,7 @@ const Sidebar_prod = ({ filter}: any) => {
   }, [])
 
 
-  const handleColorClick = (color : IColor) => {
+  const handleColorClick = (color: IColor) => {
     setHighlightedColors((prev) => {
       if (prev.includes(color)) {
         return prev.filter(c => c._id !== color._id);
@@ -49,13 +48,18 @@ const Sidebar_prod = ({ filter}: any) => {
     setHighlightedSize('');
     setHighlightedColors([]);
     setPrice([0, 10000000]);
+    filter({
+      highlightedSize : '',
+      highlightedColors : [],
+      price : [0, 10000000]
+    })
   };
 
   const handleApply = () => {
-    filter({ 
-      highlightedSize, 
-      highlightedColors, 
-      price 
+    filter({
+      highlightedSize,
+      highlightedColors,
+      price
     })
   };
   return (
@@ -92,20 +96,20 @@ const Sidebar_prod = ({ filter}: any) => {
             {colorOptionsVisible && (
               <li id="colorOptions" className="mt-4">
                 <ul className="flex flex-wrap gap-2">
-                      {colors.map((color : any, index) => (
-                        <li key={index}>
-                           <button
-                            className={`color-btn w-5 h-5 rounded-full relative ${highlightedColors.includes(color) ? 'highlighted' : ''}`}
-                            onClick={() => handleColorClick(color)}
-                            style={{ backgroundColor: color.background, borderColor: color === 'white' ? 'black' : 'transparent' }}
-                        >
-                          
-                            {highlightedColors.includes(color) && (
-                              <i className={`fa-solid fa-check absolute inset-0 flex items-center justify-center ${color === 'white' ? 'text-black' : 'text-white'}`} />
-                            )}
-                        </button>
-                        </li>
-                      ))}
+                  {colors.map((color: any, index) => (
+                    <li key={index}>
+                      <button
+                        className={`color-btn w-5 h-5 rounded-full relative ${highlightedColors.includes(color) ? 'highlighted' : ''}`}
+                        onClick={() => handleColorClick(color)}
+                        style={{ backgroundColor: color.background, borderColor: color === 'white' ? 'black' : 'transparent' }}
+                      >
+
+                        {highlightedColors.includes(color) && (
+                          <i className={`fa-solid fa-check absolute inset-0 flex items-center justify-center ${color === 'white' ? 'text-black' : 'text-white'}`} />
+                        )}
+                      </button>
+                    </li>
+                  ))}
                 </ul>
               </li>
             )}
@@ -128,7 +132,7 @@ const Sidebar_prod = ({ filter}: any) => {
                 />
                 <div className="flex justify-between mt-2">
                   <span id="minPrice">{formatPrice(price[0])}đ</span>
-                  <span id="maxPrice">{formatPrice(price[1])}đ</span> 
+                  <span id="maxPrice">{formatPrice(price[1])}đ</span>
                 </div>
               </li>
             )}

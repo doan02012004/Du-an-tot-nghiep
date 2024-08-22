@@ -25,6 +25,9 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
+
+
+
 @layer utilities {
     .container {
         @apply max-w-[1256px] px-[15px] mx-auto
@@ -94,12 +97,13 @@ input[type="number"] {
     }
 
     .card-list-size-open {
-        animation: card_list_size_open 0.5s ease-in;
+        animation: card_list_size_open 0.3s ease-in;
 
     }
 
     .card-list-size-close {
-        animation: card_list_size_close 0.5s ease-in;
+        animation: card_list_size_close 0.3s ease-in;
+        opacity : 0;
     }
 
     .active-lable {

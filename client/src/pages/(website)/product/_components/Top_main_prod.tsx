@@ -8,11 +8,8 @@ const Top_main_prod = ({sort}: any) => {
 
 
   const applySort = (data : string) => {
-    console.log(data);
     sort(data);
   }
-
-
 
   return (
     <>
