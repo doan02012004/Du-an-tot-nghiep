@@ -30,6 +30,15 @@ export const addProduct = async(product?:Iproduct)=>{
         console.log(error)
     }
 }
+export const deleteProduct = async (productId:string|number|undefined)=>{
+    try {
+        const res = await instance.delete(`/products/${productId}`)
+        return res.data
+    } catch (error) {
+        console.log(error)
+        message.error("Xóa san pham thất bại!")
+    }
+}
 
 export const updateProductInfor = async(productInfor?:IproductInfor) =>{
     try {
