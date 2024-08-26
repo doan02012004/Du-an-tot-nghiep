@@ -134,7 +134,7 @@ const Product_information = ({product}: Props) => {
                 <h3 className="lg:text-2xl font-semibold">Màu sắc: <span id="selected-color">{choiceColor===''?product.colors[0].name : choiceColor}</span></h3> 
                 <div className="color-options flex lg:mt-4 lg:text-[16px] mt-2">
                     {product.colors.map((color,index)=>(
-                        <div onClick={()=>{setChoiceColor(color.name);setChoiceSize('')}} key={index} className="color-option lg:w-6 lg:h-6 w-5 h-5 bg-black border rounded-full mr-4 relative" style={{background: color.background}}>
+                        <div onClick={()=>{setChoiceColor(color.name);setChoiceSize('');setCurentAttribute(null)}} key={index} className="color-option lg:w-6 lg:h-6 w-5 h-5 bg-black border rounded-full mr-4 relative" style={{background: color.background}}>
                         {choiceColor === '' ? (<span className="check-icon  absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white" style={{ color: choiceColor === 'TRẮNG' ? 'black' : 'white' }}><i className="fas fa-check" /></span>):(<span className="check-icon  absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white" style={{ color: choiceColor === 'TRẮNG' ? 'black' : 'white' }}><i className="fas fa-check" /></span>)}
                         </div>
                     ))}
@@ -149,15 +149,34 @@ const Product_information = ({product}: Props) => {
                 {product.attributes.map((color, index) => {
                     if (color.color === choiceColor) {
                         return (
-                            <Button 
-                                key={index} 
-                                onClick={() => { setChoiceSize(color.size); }} 
-                                className="size-option lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border flex colors-center justify-center lg:mr-[14px] mr-3" 
-                                style={{ border: `1px solid ${choiceSize === color.size ? 'blue' : ''}` }} 
-                                disabled={color.instock === 0}
+                            // <Button 
+                            //     key={index} 
+                            //     onClick={() => { setChoiceSize(color.size); }} 
+                            //     className="size-option lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border flex colors-center justify-center lg:mr-[14px] mr-3" 
+                            //     style={{ border: `1px solid ${choiceSize === color.size ? 'blue' : ''}` }} 
+                            //     disabled={color.instock === 0}
+                            // >
+                            //     {color.size}
+                            // </Button>
+                            <div 
+                                key={index + 1} 
+                                onClick={() => { 
+                                    if (color.instock === 0) {
+                                        message.error(`Sản phẩm này đã hết size: ${color.size} vui lòng chọn size khác`);
+                                    } else {
+                                        setChoiceSize(color.size);
+                                    }
+                                }} 
+                                className={` ${color?._id === curentAttribute?._id && 'border-black'} size-option cursor-pointer lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border overflow-hidden flex items-center justify-center lg:mr-[14px] mr-3 relative`}
                             >
-                                {color.size}
-                            </Button>
+                                {color?.size}
+                                {color.instock === 0 && (
+                                    <div className='absolute top-0 left-0 w-full h-full flex justify-center items-center'>
+                                        <div className='block rotate-[62deg] w-px h-10 lg:h-11 bg-slate-600'></div>
+                                    </div>
+                                )}
+                            </div>
+
                         );
                     }
                     return null;

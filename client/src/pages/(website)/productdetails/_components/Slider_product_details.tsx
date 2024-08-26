@@ -3,9 +3,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 // import required modules
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { EffectFade, Navigation, Pagination } from 'swiper/modules';
-import { Iproduct } from '../../../../common/interfaces/product';
+import { Igallery, Iproduct } from '../../../../common/interfaces/product';
 import { AppContext } from '../../../../common/contexts/AppContextProvider';
 
 type Props = {
@@ -15,18 +15,32 @@ type Props = {
 const Slider_product_details = ({product}: Props) => {
     const { choiceColor } = useContext(AppContext);
     const [gallery, setGallery] = useState(null);
+    const imageRef = useRef(null as any)
 
     useEffect(() => {
         if (product && product.gallerys) {
             const handleColorChange = () => {
                 const color = choiceColor;
-                const newColor = product.gallerys.find(img => img.name === color);
-                setGallery(newColor);
+                const galleryItem = product?.gallerys.find((item:Igallery) => item.name == color)
+                if (galleryItem) {
+                    const items = Array.isArray(galleryItem.items) ? galleryItem.items : [];
+                    setGallery([galleryItem.avatar, ...items]);
+                }
+                
             };
 
             handleColorChange();
+            if(imageRef && imageRef.current.swiper){
+                imageRef.current.swiper.slideTo(0)
+            }
         }
     }, [choiceColor, product]); // Đảm bảo thêm các phụ thuộc
+    console.log(gallery)
+    const onChangeImage = (index:number) =>{
+        if(imageRef && imageRef.current.swiper){
+            imageRef.current.swiper.slideTo(index)
+        }
+    }
 
     const [isMobile, setIsMobile] = useState(window.innerWidth);
     useEffect(() => {
@@ -44,8 +58,9 @@ const Slider_product_details = ({product}: Props) => {
                                             effect='fade'
                                             slidesPerView={1}
                                             navigation
+                                            ref={imageRef}
                                         >
-                                            {gallery?.items.map((item,index)=>(
+                                            {gallery?.map((item,index)=>(
                                                 <SwiperSlide key={index} className=''>
                                                 <div className=''>
                                                     <img src={item} className='object-cover w-full h-full' />
@@ -97,10 +112,10 @@ const Slider_product_details = ({product}: Props) => {
                                                 className='lg:h-[604px]'
                                                 
                                             >
-                                                {gallery?.items.map((item,index)=>(
+                                                {gallery?.map((item,index)=>(
                                                     <SwiperSlide key={index}>
                                                         <div className='lg:w-[95px] lg:h-[142px]'>
-                                                            <img src={item} className='w-full h-full object-cover' />
+                                                            <img src={item} onClick={()=> onChangeImage(index)} className='w-full h-full object-cover' />
                                                         </div>
                                                     </SwiperSlide>
                                                 ))}
