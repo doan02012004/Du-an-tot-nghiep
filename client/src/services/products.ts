@@ -3,9 +3,9 @@ import instance from "../common/config/axios"
 import { Iattribute, Igallery, InewColor, InewSize, Iproduct, IproductInfor } from "../common/interfaces/product"
 import { IColor } from "../common/interfaces/Color"
 
-export const getProducts = async()=> {
+export const getProducts = async(dataFilter : {} | undefined)=> {
     try {
-        const res = await instance.get('/products')
+        const res = dataFilter && Object.keys(dataFilter).length > 0 ? await instance.get(`products?${dataFilter}`)  : await instance.get('/products')
         return res.data
     } catch (error) {
         console.log(error)
@@ -13,16 +13,16 @@ export const getProducts = async()=> {
     }
 }
 
-export const getProductsByFilter = async(dataFilter : {} | undefined)=> {
-    console.log(dataFilter)
-    try {
-        const res = await instance.get(`products/filter?${dataFilter}`)
-        return res.data
-    } catch (error) {
-        console.log(error)
-        return error
-    }
-}
+// export const getProductsByFilter = async(dataFilter : {} | undefined)=> {
+//     try {
+//         console.log(dataFilter)
+//         // const res = await instance.get(`products/filter?${dataFilter}`)
+//         // return res.data
+//     } catch (error) {
+//         console.log(error)
+//         return error
+//     }
+// }
 
 
 

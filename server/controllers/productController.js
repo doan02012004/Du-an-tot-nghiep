@@ -14,96 +14,51 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
     try {
-        const { slug, minPrice, maxPrice, gender } = req.query;
-        //     let query = {};
-        // if (categorySlug) {
-        //     // Tìm categoryId dựa trên slug
-        //     const category = await Category.findOne({ slug: categorySlug });
-        //     if (category) {
-        //       query.category = category._id;
-        //     } else {
-        //       return res.status(404).json({ message: 'Category not found' });
-        //     }
-        //   }
-
-        //   if (minPrice) {
-        //     query.price = { ...query.price, $gte: Number(minPrice) };
-        //   }
-
-        //   if (maxPrice) {
-        //     query.price = { ...query.price, $lte: Number(maxPrice) };
-        //   }
-        const products = await ProductModel.find().populate('categoryId colors')
-        return res.status(200).json(products)
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message
-        })
-    }
-}
-
-export const getProductFilter = async (req, res) => {
-    try {
-        let {
-            highlightedSize ,
-            highlightedColors,
-            price
-        } = req.query;
-
-        highlightedColors = highlightedColors.split(',') ;
-        price = price.split(',').map(Number);
-
-
-        let productsSize = []
-
-        if(highlightedSize === ""){
-             productsSize = await ProductModel.find().populate('categoryId colors')
-        }else {
-             productsSize = await ProductModel.find({ sizes: highlightedSize }).populate('categoryId colors')
-        }
-
-        let productsColors = [];
-
-        if (highlightedColors.length > 0 && highlightedColors[0] !== "") {
-            productsColors = productsSize.filter(product => 
-                product.colors.some(color => highlightedColors.includes(color._id.toString()))
-            );
-        }else {
-            productsColors = productsSize;
-        }
-
-        if(highlightedSize !== ""){
-            productsColors = productsColors.filter(product => product.sizes.some(size => size === highlightedSize))
+        const { min_price, max_price, size, color, sell_order } = req.query;
+        let sort = {}
+        let query = {
+            $and: [
+                { price_new: { $gte: parseInt(min_price) || 0 } },
+                { price_new: { $lte: parseInt(max_price) || 10000000 } }
+            ]
         };
-
-        let productsPrice = [];
-
-         productsPrice = productsColors.filter(product => product.price_new >= price[0] && product.price_new <= price[1]);
-
-
-        // Làm phẳng mảng
-        const flatProductsColors = productsPrice.flat();
-
-        // Kết hợp mảng
-        const combProducts = productsPrice.concat(flatProductsColors)
-
-        // Loại bỏ product trùng dựa theo _id
-        const uniqueProducts = combProducts.reduce((acc, product) => {
-            const existProduct = acc.find(p => p._id.toString() === product._id.toString());
-            if (!existProduct) {
-                acc.push(product);
+        if(sell_order){
+            if(sell_order == 'new'){
+                sort["createdAt"] = -1
             }
-            return acc;
-        }, []);
+            if(sell_order == 'asc'){
+                sort["price_new"] = 1
+            }
+            if(sell_order == 'desc'){
+                sort["price_new"] = -1
+            }
+        }
 
-        return res.status(200).json(uniqueProducts);
+        if (size) {
+            query['sizes'] = { $in: size.split(',') };
+        }
+
+        if (color) {
+            query['color'] = {
+                $elemMatch: {
+                    name: { $in: color.split(',').map((name) => new RegExp(name, 'i')) }
+                }
+            };
+        }
+
+        const products = await ProductModel
+            .find(query)
+            .sort(sort)
+            .populate('categoryId')
+
+        return res.status(200).json(products);
+
     } catch (error) {
         return res.status(500).json({
             message: error.message
-        })
+        });
     }
-
-}
+};
 
 
 

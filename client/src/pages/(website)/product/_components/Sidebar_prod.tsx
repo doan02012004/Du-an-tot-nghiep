@@ -3,10 +3,33 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { IColor } from '../../../../common/interfaces/Color';
 import { formatPrice } from '../../../../common/utils/product';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useFilterParams } from '../../../../common/hooks/products/useFilter';
 
+const colorsDefault = [
+  {
+    name: "Đen",
+    background: "black"
+  },
+  {
+    name: "Trắng",
+    background: "white"
+  },
+  {
+    name: "Vàng",
+    background: "yellow"
+  },
+  {
+    name: "Đỏ",
+    background: "red"
+  },
+  {
+    name: "Xanh",
+    background: "blue"
+  },
+]
 
-const Sidebar_prod = ({ filter }: any) => {
-
+const Sidebar_prod = () => {
 
   const [colors, setColors] = useState([]);
   const [sizeOptionsVisible, setSizeOptionsVisible] = useState(false);
@@ -16,6 +39,9 @@ const Sidebar_prod = ({ filter }: any) => {
   const [highlightedColors, setHighlightedColors] = useState([]);
   const [price, setPrice] = useState([0, 10000000]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const navigate = useNavigate();
+  const { setFilterParams, getFiltersFromUrl } = useFilterParams();
+  const location = useLocation();
 
   const toggleSizeOptions = () => setSizeOptionsVisible(!sizeOptionsVisible);
   const toggleColorOptions = () => setColorOptionsVisible(!colorOptionsVisible);
@@ -30,41 +56,49 @@ const Sidebar_prod = ({ filter }: any) => {
     (async () => {
       const { data } = await axios.get('http://localhost:5000/api/colors');
       setColors(data);
-    })()
-  }, [])
-
-
-  const handleColorClick = (color: IColor) => {
-    setHighlightedColors((prev) => {
-      if (prev.includes(color)) {
-        return prev.filter(c => c._id !== color._id);
-      } else {
-        return [...prev, color];
+      if (location.search !== "") {
+        const dataUrl: any = getFiltersFromUrl();
+        const colorArray = dataUrl.color ? dataUrl.color.split(',') : [];
+        const resultColor = data.filter(c => colorArray.includes(c.background))
+        setHighlightedSize(dataUrl.size);
+        setHighlightedColors(resultColor)
+        setPrice([Number(dataUrl.minPrice), Number(dataUrl.maxPrice)]);
+        setSizeOptionsVisible(!sizeOptionsVisible);
+        setColorOptionsVisible(!colorOptionsVisible);
+        setPriceOptionsVisible(!priceOptionsVisible);
       }
-    });
+    })()
+  }, [location.search])
+
+  const handleColorClick = (color:string) => {
+    if(highlightedColors.includes(color)){
+      setHighlightedColors(highlightedColors.filter((item:string) => item !== color))
+      }else{
+        setHighlightedColors([...highlightedColors, color])
+      }
   };
 
   const handleReset = () => {
     setHighlightedSize('');
     setHighlightedColors([]);
     setPrice([0, 10000000]);
-    filter({
-      highlightedSize : '',
-      highlightedColors : [],
-      price : [0, 10000000]
-    })
+    navigate("/product")
   };
 
   const handleApply = () => {
-    filter({
-      highlightedSize,
-      highlightedColors,
-      price
+    console.log(highlightedColors)
+    const params = setFilterParams({
+      size: highlightedSize,
+      color: highlightedColors,
+      minPrice: price[0],
+      maxPrice: price[1]
     })
+    console.log(params?.toString())
+    navigate(`?${params?.toString()}`);
   };
   return (
     <>
-      <div className="sidebar-prod flex-shrink-0 sidebar-prod-pc hidden lg:block lg:w-[270px] lg:mr-[33px] lg:pl-[15px]">
+      <div className="sidebar-prod flex-shrink-0 sidebar-prod-pc hidden lg:block lg:w-[230px] lg:mr-[33px] lg:pl-[15px]">
         <div className="filter-by-side">
           <ul>
             <li className="flex justify-between">
@@ -96,19 +130,18 @@ const Sidebar_prod = ({ filter }: any) => {
             {colorOptionsVisible && (
               <li id="colorOptions" className="mt-4">
                 <ul className="flex flex-wrap gap-2">
-                  {colors.map((color: any, index) => (
-                    <li key={index}>
-                      <button
-                        className={`color-btn w-5 h-5 rounded-full relative ${highlightedColors.includes(color) ? 'highlighted' : ''}`}
-                        onClick={() => handleColorClick(color)}
-                        style={{ backgroundColor: color.background, borderColor: color === 'white' ? 'black' : 'transparent' }}
-                      >
-
-                        {highlightedColors.includes(color) && (
-                          <i className={`fa-solid fa-check absolute inset-0 flex items-center justify-center ${color === 'white' ? 'text-black' : 'text-white'}`} />
-                        )}
-                      </button>
-                    </li>
+                  {colorsDefault.map((color: any, index) => (
+                    <li key={color.name}>
+                    <button
+                      className={`color-btn w-5 h-5 rounded-full relative ${color.background === 'white' ? 'border border-[#000]' : ''} ${highlightedColors.includes(color.name) ? 'highlighted' : ''}`}
+                      onClick={() => handleColorClick(color.name)}
+                      style={{ backgroundColor: color.background, borderColor: color.background === 'white' ? 'black' : 'transparent' }}
+                    >
+                      {highlightedColors.includes(color.name) && (
+                        <i className={`fa-solid fa-check absolute inset-0 flex items-center justify-center ${color.background === 'white' ? 'text-black' : 'text-white'}`} />
+                      )}
+                    </button>
+                  </li>
                   ))}
                 </ul>
               </li>

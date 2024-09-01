@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Iproduct } from '../../../common/interfaces/product';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { IColor } from '../../../common/interfaces/Color';
-import { formatPrice } from '../../../common/utils/product';
-import { useDispatch, useSelector } from 'react-redux';
+import { Iproduct } from '../../../common/interfaces/product';
 import { setProductId } from '../../../common/redux/features/productSlice';
+import { formatPrice } from '../../../common/utils/product';
 
 type Props = {
   product: Iproduct;
 };
 
 const Product = ({ product }: Props) => {
+
+  console.log(product);
+
   const productId = useSelector((state: any) => state.product.productId)
   const dispath = useDispatch()
   const [isOpenSize, setIsOpenSize] = useState(false)
   const [selectedColor, setSelectedColor] = useState<IColor | null>(product.colors[0]);
+
 
   const handleColorClick = (color: IColor) => {
     setSelectedColor(color);
