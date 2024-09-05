@@ -49,7 +49,7 @@ export interface InewSize {
     attributes:Iattribute[]
 }
 export interface InewColor {
-    colors:string[],
+    colors:IColor[],
     gallerys:Igallery[]
     attributes:Iattribute[]
 }

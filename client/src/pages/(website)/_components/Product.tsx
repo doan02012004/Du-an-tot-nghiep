@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
-import { Iattribute, Igallery, Iproduct } from '../../../common/interfaces/product'
-import { formatPrice } from '../../../common/utils/product'
-import { IColor } from '../../../common/interfaces/Color'
 import { useDispatch, useSelector } from 'react-redux'
-import { setProductId } from '../../../common/redux/features/productSlice'
 import { Link } from 'react-router-dom'
+import { IColor } from '../../../common/interfaces/Color'
+import { Iattribute, Igallery, Iproduct } from '../../../common/interfaces/product'
+import { setProductId } from '../../../common/redux/features/productSlice'
+import { formatPrice } from '../../../common/utils/product'
 
 type Props = {
   product: Iproduct

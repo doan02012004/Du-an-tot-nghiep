@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Iproduct, IproductInfor } from '../../interfaces/product'
 import { message } from 'antd'
-import { addProduct, updateProductInfor } from '../../../services/products'
+import { addProduct, deleteProduct, updateProductInfor } from '../../../services/products'
 import { useNavigate } from 'react-router-dom'
 
 const useProductMutation = () => {
@@ -19,6 +19,16 @@ const useProductMutation = () => {
                     } catch (error) {
                         console.log(error)
                         message.error("Thêm sản phẩm thất bại")
+                    }
+                    break;
+                    case 'delete':
+                    try {
+                        await deleteProduct(option.product?._id)
+                        message.success("Xoá sản phẩm thành công")
+                        navigate('/admin/products')
+                    } catch (error) {
+                        console.log(error)
+                        message.error("Xoá sản phẩm thất bại")
                     }
                     break;
                 case 'updateInfor':

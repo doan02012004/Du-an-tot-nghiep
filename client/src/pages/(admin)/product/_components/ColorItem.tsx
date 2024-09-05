@@ -11,7 +11,6 @@ import { useEffect, useRef, useState } from "react";
 import { Igallery } from "../../../../common/interfaces/product";
 import { useDispatch, useSelector } from "react-redux";
 import { setGallerys } from "../../../../common/redux/features/productSlice";
-import useLocalStorage from "../../../../common/hooks/localstorage/useLocalStorage";
 import ImageExtra from "../add/_components/ImageExtra";
 
 type ColorItemProps = {
@@ -27,7 +26,6 @@ const ColorItem = ({ data }: ColorItemProps) => {
   const [loadingAvt,setLoadingAvt] = useState(false)
   const [loadingGal,setLoadingGal] = useState(false)
   const gallerys = useSelector((state:any)=> state.product.gallerys)
-  const [,setGallerysLocal] = useLocalStorage('gallerys',[])
   const [maxHeight, setMaxHeight] = useState<number>(0);
   const divRef = useRef<any>();
   const dispath = useDispatch()
@@ -62,7 +60,6 @@ const ColorItem = ({ data }: ColorItemProps) => {
   const handleChangeItems: UploadProps["onChange"] = (info) => {
     if (info.file.status == "uploading") {
       setLoadingGal(true)
-      setItems([]);
     }
     if (info.file.status == "done") {
       setItems([...items, info.file.response.url]);
@@ -79,7 +76,6 @@ const ColorItem = ({ data }: ColorItemProps) => {
         check:false
       }
       const newGallers = gallerys.map((item: Igallery) => item.name == data.name ? newGallery : item);
-      setGallerysLocal(newGallers)
       dispath(setGallerys(newGallers))
     }
   const onSave = () =>{
@@ -92,7 +88,6 @@ const ColorItem = ({ data }: ColorItemProps) => {
       check:true
     }
     const newGallers = gallerys.map((item: Igallery) => item.name == data.name ? newGallery : item);
-    setGallerysLocal(newGallers)
     dispath(setGallerys(newGallers))
   }
   return (
@@ -154,6 +149,7 @@ const ColorItem = ({ data }: ColorItemProps) => {
               upload_preset: preset,
             }}
             onChange={handleChangeItems}
+            beforeUpload={()=>  setItems([])}
           >
             <Button loading={loadingGal}  disabled={data.check} icon={<UploadOutlined />}>Ảnh phụ</Button>
           </Upload>

@@ -6,10 +6,12 @@ import { formatPrice } from '../../../../common/utils/product'
 import { useEffect, useState } from 'react'
 import { Iproduct } from '../../../../common/interfaces/product'
 import useProductQuery from '../../../../common/hooks/products/useProductQuery'
+import useProductMutation from '../../../../common/hooks/products/useProductMutation'
 
 const ListProduct = () => {
     const [products, setProducts] = useState([] as Iproduct[])
     const productQuery = useProductQuery()
+    const mutation = useProductMutation()
     useEffect(() => {
         if (productQuery.data) {
             const newProducts = productQuery?.data?.map((item: Iproduct, index: number) => (
@@ -94,6 +96,7 @@ const ListProduct = () => {
                         description="Bạn có muốn xóa không ?"
                         cancelText="Không"
                         okText="Có"
+                        onConfirm={()=>mutation.mutate({action:'delete',product:product})}
                     >
                         <Button type='primary' danger><DeleteOutlined /></Button>
                     </Popconfirm>

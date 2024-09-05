@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
-import Pagination from './Pagination'
-import Product from '../../_components/Product'
 import { Iproduct } from '../../../../common/interfaces/product'
+import Product from '../../_components/Product'
+import Pagination from './Pagination'
 
 type Props = {
   products: Iproduct[];
 }
 
 const Sub_main_prod = ({ products }: Props) => {
+
 
 
   return (
