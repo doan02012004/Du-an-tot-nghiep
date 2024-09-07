@@ -22,6 +22,7 @@ export const getAllProduct = async (req, res) => {
                 { price_new: { $lte: parseInt(max_price) || 10000000 } }
             ]
         };
+
         if(sell_order){
             if(sell_order == 'new'){
                 sort["createdAt"] = -1
@@ -39,7 +40,7 @@ export const getAllProduct = async (req, res) => {
         }
 
         if (color) {
-            query['color'] = {
+            query['colors'] = {
                 $elemMatch: {
                     name: { $in: color.split(',').map((name) => new RegExp(name, 'i')) }
                 }

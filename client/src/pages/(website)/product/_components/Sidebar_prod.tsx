@@ -59,9 +59,11 @@ const Sidebar_prod = () => {
       if (location.search !== "") {
         const dataUrl: any = getFiltersFromUrl();
         const colorArray = dataUrl.color ? dataUrl.color.split(',') : [];
-        const resultColor = data.filter(c => colorArray.includes(c.background))
+        const resultColor: any = colorsDefault.filter(c => colorArray.includes(c.name))
+        console.log(colorArray);
+        console.log(resultColor);
         setHighlightedSize(dataUrl.size);
-        setHighlightedColors(resultColor)
+        setHighlightedColors(resultColor.map(c => c.name));
         setPrice([Number(dataUrl.minPrice), Number(dataUrl.maxPrice)]);
         setSizeOptionsVisible(!sizeOptionsVisible);
         setColorOptionsVisible(!colorOptionsVisible);
@@ -69,6 +71,7 @@ const Sidebar_prod = () => {
       }
     })()
   }, [location.search])
+
 
   const handleColorClick = (color:string) => {
     if(highlightedColors.includes(color)){
@@ -93,7 +96,6 @@ const Sidebar_prod = () => {
       minPrice: price[0],
       maxPrice: price[1]
     })
-    console.log(params?.toString())
     navigate(`?${params?.toString()}`);
   };
   return (
