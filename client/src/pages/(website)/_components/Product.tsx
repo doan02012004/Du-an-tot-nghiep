@@ -98,7 +98,7 @@ const Product = ({ product }: Props) => {
                 {
                   product?.sizes.map((item: string) => (
                     <li key={item}>
-                      <button disabled={checkSizes.includes(item)} className={`${checkSizes.includes(item)? 'text-gray-300' : 'text-dark hover:border-dark '} w-full text-sm py-2  font-semibold border border-white lg:text-base lg:py-3 `}>{item}</button>
+                      <button disabled={!checkSizes.includes(item)} className={`${!checkSizes.includes(item)? 'text-gray-300' : 'text-dark hover:border-dark '} w-full text-sm py-2  font-semibold border border-white lg:text-base lg:py-3 `}>{item}</button>
                     </li>
                   ))
                 }
