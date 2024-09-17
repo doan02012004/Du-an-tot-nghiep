@@ -135,7 +135,9 @@ const Product_information = ({product}: Props) => {
                 <div className="color-options flex lg:mt-4 lg:text-[16px] mt-2">
                     {product.colors.map((color,index)=>(
                         <div onClick={()=>{setChoiceColor(color.name);setChoiceSize('');setCurentAttribute(null)}} key={index} className="color-option lg:w-6 lg:h-6 w-5 h-5 bg-black border rounded-full mr-4 relative" style={{background: color.background}}>
-                        {choiceColor === '' ? (<span className="check-icon  absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white" style={{ color: choiceColor === 'TRẮNG' ? 'black' : 'white' }}><i className="fas fa-check" /></span>):(<span className="check-icon  absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white" style={{ color: choiceColor === 'TRẮNG' ? 'black' : 'white' }}><i className="fas fa-check" /></span>)}
+                        {color.name === choiceColor && (
+                                          <span className={`${color.name.includes('TRẮNG')? 'text-black' : 'text-white'} check-icon  absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 `}><i className="fas fa-check" /></span>
+                                    )}
                         </div>
                     ))}
                     {/* <div className="color-option lg:w-6 lg:h-6 w-5 h-5 bg-white border rounded-full mr-4 relative" data-color="Trắng">
