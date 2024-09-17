@@ -1,8 +1,13 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { AppContext } from '../../../common/contexts/AppContextProvider'
 
 const ActionsSupportUser = () => {
     const [actionSupport, setActionSupport] = useState(false)
     const [actionUser, setActionUser] = useState(false)
+    const { accessToken } = useContext(AppContext)
+
+
+
     const onHandeActionSupport = () => {
         setActionSupport(!actionSupport)
         setActionUser(false)
@@ -57,10 +62,18 @@ const ActionsSupportUser = () => {
                     </div>
                 )}
             </div>
+            {/* .------------------------------------------------------------. */}
             <div className="relative hidden lg:block">
-                <span onClick={onHandeActionUser} className="sub-top block cursor-pointer text-base hover:text-gray-800 ">
-                    <i className="fa-regular fa-user" />
-                </span>
+                {accessToken ? (
+                    <span onClick={onHandeActionUser} className="sub-top cursor-pointer text-base hover:text-gray-800 block">
+                        <i className="fa-regular fa-user" />
+                    </span>
+                ) : (
+                    <a href="/signin" className="sub-top cursor-pointer text-base hover:text-gray-800 block">
+                        <i className="fa-regular fa-user" />
+                    </a>
+                )}
+
                 {actionUser && (
                     <div className="sub-menu transition-all duration-500 ease-in-out  absolute min-w-[255px] top-10 right-0 bg-white border border-gray rounded-md z-[3]">
                         <div className="border-b border-gray">

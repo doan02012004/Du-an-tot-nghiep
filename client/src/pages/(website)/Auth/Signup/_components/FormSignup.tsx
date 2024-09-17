@@ -35,42 +35,12 @@ const FormSignup = () => {
             setXa(newDataHuyen.data3)
         }
     }
-    // const [firstname, setFirstname] = useState("")
-    // const [lastname, setLastname] = useState("")
-    // const [email, setEmail] = useState("")
-    // const [password, setPassword] = useState("")
-    // const [confirmPassword, setConfirmPassword] = useState("")
-    // const [phone, setPhone] = useState("")
-    // const [date, setDate] = useState("")
-    // const [gender, setGender] = useState("")
-    // // const [city, setCity] = useState("")
-    // // const [district, setDistrict] = useState("")
-    // const [ward, setWard] = useState("")
-    // const [address, setAddress] = useState("")
-
-    // const selectedCity = huyen.length > 0 ? huyen[0].name : '';
-    // const selectedDistrict = xa.length > 0 ? xa[0].name : '';
 
     const onSubmit = async (data: any) => {
-        // const newUser = {
-        //     firstname: firstname,
-        //     lastname: lastname,
-        //     email: email,
-        //     password: password,
-        //     confirmPassword: confirmPassword,
-        //     phone: phone,
-        //     date: date,
-        //     gender: gender,
-        //     city: huyen,
-        //     district: xa,
-        //     ward: ward,
-        //     address: address
-        // };
-        // console.log('Dữ liệu form:', data);
-
         try {
             await registerUser(data, dispatch, navigate);
             message.success("đăng kí thành công")
+            navigate('/signin')
         } catch (error) {
             console.error('Lỗi đăng ký:', error);
         }

@@ -1,28 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { loginFailed, loginStart, loginSuccess, registerFailed, registerStart, registerSuccess } from "../common/redux/features/authSlice";
+import { loginFailed, loginStart, loginSuccess, registerFailed, registerStart, registerSuccess,  } from "../common/redux/features/authSlice";
 import { Isignin, Isignup, Iuser } from "../common/interfaces/auth";
 import instance from "../common/config/axios";
 import { message } from "antd";
 
 
-export const loginUser = async (user: Isignin, dispatch: any, navigate: any) => {
+
+export const loginUser = async (user: Isignin, dispatch: any, navigate: any,setAccesToken:any,setIsLogin:any) => {
     dispatch(loginStart())
     try {
         const res = await instance.post("/users/login", user)
         dispatch(loginSuccess(res.data))
+        setAccesToken(res.data.accessToken)
+        setIsLogin(true)
         navigate("/")
     } catch (error) {
         dispatch(loginFailed())
     }
 }
 
-export const registerUser = async (user: Isignup, dispatch: any, navigate: any) => {
+export const registerUser = async (user: Isignup, dispatch: any, navigate?: unknown) => {
     dispatch(registerStart());
     try {
         console.log("User data being sent:", user);
-        await instance.post("/users/register", user)
+        const res = await instance.post("/users/register", user)
         dispatch(registerSuccess())
-        navigate('/signin')
+        // navigate('/signin')
+        return res.data
     } catch (error) {
         dispatch(registerFailed())
     }
@@ -86,5 +90,21 @@ export const deleteUser = async (user:Iuser)=>{
     } catch (error) {
         message.error('Xoá lỗi!')
         return error
+    }
+}
+export const getNewToken = async ()=>{
+    try {
+        const {data} = await instance.post(`/users/token/refresh`)
+        return data
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const getAccountUser = async ()=>{
+    try {
+        const {data} = await instance.get(`/users/getaccount/user`)
+        return data
+    } catch (error) {
+        console.log(error)
     }
 }

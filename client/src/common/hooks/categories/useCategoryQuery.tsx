@@ -10,7 +10,7 @@ const useCategoryQuery = (id ?: string) => {
             try {
                 const data = id ? await getCateById(id) : await getAll();
                 return data;
-              } catch (error) {
+              } catch (error) { 
                 console.log(error);
                 throw error; // Đảm bảo lỗi được truyền ra để xử lý trong giao diện
               }
