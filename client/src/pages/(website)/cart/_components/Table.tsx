@@ -7,27 +7,27 @@ const Table = () => {
                 <table className="lg:w-full">
                     <thead>
                         <tr className="*:pb-5">
-                            <th className="text-left text-[12px] ">TÊN SẢN PHẨM</th>
-                            <th className="text-[12px] text-left">CHIẾT KHẤU</th>
-                            <th className="text-[12px] text-left">SỐ LƯỢNG</th>
-                            <th className="text-[12px] text-left pl-4">TỔNG GIÁ</th>
+                            <th className="text-left text-[10px] ">TÊN SẢN PHẨM</th>
+                            <th className="text-[10px] text-left">CHIẾT KHẤU</th>
+                            <th className="text-[10px] text-left">SỐ LƯỢNG</th>
+                            <th className="text-[10px] text-left pl-4">TỔNG GIÁ</th>
                             <th />
                         </tr>
                     </thead>
                     <tbody>
                         <tr className="border-b border-t *:py-5">
                             <td className="w-[27rem]">
-                                <div className="flex mt-0 pt-0 w-[27rem]">
-                                    <div className="max-w-40 flex-none ">
-                                        <a href='' className='block h-[215px] w-[150px]'>
+                                <div className="flex mt-0 pt-0 w-[25rem]">
+                                    <div className="max-w-36 flex-none ">
+                                        <a href='' className='block h-[205px] w-[140px]'>
                                             <img src="https://picsum.photos/200/1000" className='h-full w-full object-cover' />
                                         </a>
                                     </div>
                                     <div className="flex-grow ml-4 p-0 m-0">
-                                        <span> Elegance Dress - Đầm xòe cổ kiểu</span>
+                                        <span className='text-wrap'> Elegance Dress - Đầm xòe cổ kiểu</span>
                                         <div className="flex gap-4 pt-5">
-                                            <span className="text-[14px]">Màu sắc: Ghi</span>
-                                            <span className="text-[14px]">Size: S</span>
+                                            <span className="text-[12px]">Màu sắc: Ghi</span>
+                                            <span className="text-[12px]">Size: S</span>
                                         </div>
                                     </div>
                                 </div>
@@ -35,14 +35,14 @@ const Table = () => {
                             <td className="align-top">
                                 <div className="text-left">
                                     <span className='text-sm'>-1.194.000đ</span>
-                                    <p className="text-red text-xs font-bold">( -60% )</p>
+                                    {/* <p className="text-red text-xs font-bold">( -60% )</p> */}
                                 </div>
                             </td>
-                            <td className="align-top">
+                            <td className="align-top w-24">
                                 <div className="border grid grid-cols-3 items-center rounded-tl-[20px] rounded-br-[20px]">
-                                    <button className=" border border-t-0 border-l-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-2 text-lg">-</button>
-                                    <span className="text-center text-xs">1</span>
-                                    <button className=" border border-t-0 border-r-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-2 text-lg">+</button>
+                                    <button className=" border border-t-0 border-l-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">-</button>
+                                    <input value={1} className="text-center text-xs outline-0 bg-transparent  h-full "/>
+                                    <button className=" border border-t-0 border-r-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">+</button>
                                 </div>
                             </td>
                             <td className="align-top">

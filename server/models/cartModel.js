@@ -23,6 +23,7 @@ const cartItem = new mongoose.Schema(
         galleryId: {
             type: String
         }
+
     }
 )
 
@@ -37,7 +38,11 @@ const cartSchema = new mongoose.Schema({
     },
     carts: [
         cartItem
-    ]
+    ],
+    totalCart: {
+        type: Number,
+        default: 0
+    }
 }, { timestamps: true, versionKey: false })
 
 
