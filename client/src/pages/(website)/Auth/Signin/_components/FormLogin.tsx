@@ -71,7 +71,7 @@ const FormLogin = ({ state, onChangeForm }: FormLoginProps) => {
             </span>
             {/* Mobile */}
             <p className="text-base hidden pb-3 lg:text-xl font-semibold lg:cursor-auto lg:block">
-                Bạn đã có tài khoản
+                Bạn đã có tài khoản 
             </p>
             <div
                 ref={formRef}

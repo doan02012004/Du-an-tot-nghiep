@@ -113,7 +113,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     }
   }, [accessToken])
   return (
-    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser }}>
+    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser }}>
       {children}
     </AppContext.Provider>
   )
