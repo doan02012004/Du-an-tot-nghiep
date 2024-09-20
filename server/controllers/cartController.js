@@ -60,7 +60,7 @@ export const addToCart = async (req, res) => {
                 if (attribute.instock < quantity) {
                     return res.status(400).json({ message: "sản phẩm không đủ hàng" })
                 } else {
-                    carts.carts.push({
+                    carts.carts.unshift({
                         productId: productId,
                         quantity: quantity,
                         attributeId: attributeId,
