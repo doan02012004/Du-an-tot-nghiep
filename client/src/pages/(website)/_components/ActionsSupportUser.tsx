@@ -1,17 +1,16 @@
 import { useContext, useState } from 'react'
 import { AppContext } from '../../../common/contexts/AppContextProvider'
-import { message } from 'antd'
+import { Modal, message } from 'antd'
 import { logoutUser } from '../../../services/auth'
 import { useDispatch } from 'react-redux'
-import { logoutStart, logoutSuccess } from '../../../common/redux/features/authSlice'
+import { logoutFailed, logoutStart, logoutSuccess } from '../../../common/redux/features/authSlice'
 // import { useNavigate } from 'react-router-dom'
 
 const ActionsSupportUser = () => {
     const [actionSupport, setActionSupport] = useState(false)
     const [actionUser, setActionUser] = useState(false)
     const { accessToken, setAccesToken, setCurrentUser, setIsLogin } = useContext(AppContext)
-
-    // const navigate = useNavigate();
+    const { confirm } = Modal;
     const dispatch = useDispatch()
 
     const onHandeActionSupport = () => {
@@ -25,24 +24,35 @@ const ActionsSupportUser = () => {
 
 
     const onHandleLogout = async () => {
-        dispatch(logoutStart());
-       
-        try {
-            const data = await logoutUser()
-            console.log(data)
-            if (data.SC == 1) {
-                setCurrentUser({});
-                setIsLogin(false);
-                setAccesToken(null);
-                window.location.reload();
-            }
-            dispatch(logoutSuccess());
-         
-
-        } catch (error) {
-            message.error('Đăng xuất thất bại')
-        }
-
+        confirm({
+            title: 'Bạn có chắc chắn muốn đăng xuất không?',
+            content: 'Thao tác này sẽ đăng xuất khỏi tài khoản hiện tại.',
+            okText: 'Đăng xuất',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk: async () => {
+                dispatch(logoutStart());
+    
+                try {
+                    const data = await logoutUser();
+    
+                    if (data.SC == 1) {
+                        setCurrentUser({});
+                        setIsLogin(false);
+                        setAccesToken(null);
+                        window.location.reload();
+                    }
+    
+                    dispatch(logoutSuccess());
+                } catch (error) {
+                    message.error('Đăng xuất thất bại');
+                    dispatch(logoutFailed());
+                }
+            },
+            onCancel() {
+                message.success('Người dùng đã hủy thao tác đăng xuất');
+            },
+        });
     };
 
     return (
