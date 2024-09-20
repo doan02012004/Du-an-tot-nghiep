@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addToCart, decreaseProductCartQuantity, getCartByUserId, increaseProductCartQuantity, onInputProductCartQuantity } from "../controllers/cartController.js";
+import { addToCart, decreaseProductCartQuantity, getCartByUserId, increaseProductCartQuantity, onInputProductCartQuantity, removeProductCartQuantity } from "../controllers/cartController.js";
 
 
 const router = Router();
@@ -11,5 +11,6 @@ router.post("/addtocart", addToCart);
 router.post("/increase",increaseProductCartQuantity)
 router.post("/decrease",decreaseProductCartQuantity)
 router.post("/oninput",onInputProductCartQuantity)
+router.post("/remove",removeProductCartQuantity)
 
 export default router;

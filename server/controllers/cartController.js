@@ -113,7 +113,7 @@ export const increaseProductCartQuantity = async (req,res)=>{
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
 }
-
+// giảm số lượng sản phẩm
 export const decreaseProductCartQuantity  = async (req,res)=>{
     const {userId,productId,attributeId} = req.body
     try {
@@ -145,7 +145,7 @@ export const decreaseProductCartQuantity  = async (req,res)=>{
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
 }
-
+// nhập số từ input
 export const onInputProductCartQuantity = async (req,res)=>{
     const {userId,productId,attributeId,quantity} = req.body
     try {
@@ -170,6 +170,31 @@ export const onInputProductCartQuantity = async (req,res)=>{
         }
 
         // 
+        await cart.save()
+        res.status(StatusCodes.OK).json(cart)
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+    }
+}
+
+// xoá sản phẩm
+export const removeProductCartQuantity  = async (req,res)=>{
+    const {userId,productId,attributeId} = req.body
+    try {
+        const cart = await CartModel.findOne({userId:userId})
+        const product = await ProductModel.findOne({_id:productId})
+        const attribute = product.attributes.find(item => item._id == attributeId)
+        if (!cart) {
+            return res.status(StatusCodes.NOT_FOUND).json({message: "Cart not found"})
+        }
+        const cartItem = cart.carts.find((item)=> item.productId.toString() === productId && item.attributeId.toString() === attributeId)
+        if (!cartItem) {
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Product not found in cart"})
+        }
+        const newCarts = cart.carts.filter((item)=> item._id !== cartItem._id)
+        cart.carts = newCarts
+        cart.totalPrice = cart.carts.reduce((total, item) => total + item.total, 0)
+        cart.totalCart = cart.carts.reduce((total, item) => total + item.quantity, 0)
         await cart.save()
         res.status(StatusCodes.OK).json(cart)
     } catch (error) {

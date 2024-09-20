@@ -7,10 +7,17 @@ export interface InewCart {
     galleryId?:string,
 }
 export interface IcartItem {
-    productId?: Iproduct,
+    productId: Iproduct,
     attributeId?:string,
     quantity:number,
     galleryId?:string,
     total:number,
     validateCart: boolean
+}
+
+export interface ICart {
+    userId?:string,
+    carts:IcartItem[],
+    totalCart:number,
+    totalPrice:number
 }

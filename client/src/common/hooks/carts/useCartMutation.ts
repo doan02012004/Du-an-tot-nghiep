@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { InewCart } from '../../interfaces/cart'
-import { addToCart, decreaseProductCartQuantity, increaseProductCartQuantity, onInputProductCartQuantity } from '../../../services/cart'
+import { addToCart, decreaseProductCartQuantity, increaseProductCartQuantity, onInputProductCartQuantity, removeProductCartQuantity } from '../../../services/cart'
 import { useContext } from 'react'
 import { AppContext } from '../../contexts/AppContextProvider'
 import { message } from 'antd'
@@ -49,6 +49,15 @@ const useCartMutation = () => {
                         return error
                     }
                     break;
+                    case "remove":
+                        try {
+                            const data = await removeProductCartQuantity({ userId: currentUser?._id, ...options.cart })
+                            message.success("Xoá sản phẩm thành công")
+                            return data
+                        } catch (error) {
+                            return error
+                        }
+                        break;
                 default:
                     break;
             }

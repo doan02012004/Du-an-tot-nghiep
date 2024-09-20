@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { formatPrice } from '../../../common/utils/product'
 import { Iattribute, Igallery } from '../../../common/interfaces/product'
 import useCartMutation from '../../../common/hooks/carts/useCartMutation'
+import { Link } from 'react-router-dom'
 
 type Props = {
     cart: any
@@ -58,7 +59,9 @@ const MiniCartItem = ({cart}: Props) => {
     return (
         <div className="w-full h-[94px] flex gap-3 pb-4 border-b border-gray-200  mb-4  ">
             <div className="w-16 h-full flex-shrink-0">
-                <img src={gallery?.avatar} className="w-full h-full object-cover" />
+                <Link to={`/productdetails/${cart?.productId?._id}`}>
+                    <img  src={gallery?.avatar} className="w-full h-full object-cover" />
+                </Link> 
             </div>
             <div className="w-full flex flex-col justify-between ">
                 <h3 className="text-base"><a href="#" className="text-[#373737]">{cart?.productId?.name}</a></h3>

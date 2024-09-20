@@ -44,3 +44,12 @@ export const onInputProductCartQuantity = async (option: { userId?: string,produ
         console.log(error)
     }
 }
+
+export const removeProductCartQuantity = async (option: { userId?: string,productId?:string,attributeId?:string})=>{
+    try {
+        const res = await instance.post(`/carts/remove`, option)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}

@@ -50,7 +50,7 @@ const MiniCart = () => {
                 <div >
                     <p className="text-right px-6 pb-3 mb-3 border-b border-gray-200">Tổng cộng: <span className="text-lg font-semibold text-[#0A0A0B]">{cartUser?.totalPrice>0 ? formatPrice(cartUser?.totalPrice) : '0'}đ</span></p>
                     <div className="px-6">
-                        <Link to='/cart' className="block w-full py-4 bg-black border border-black uppercase font-semibold text-lg  text-center text-white transition duration-300 ease-in-out hover:bg-white hover:text-black ">Xem
+                        <Link to='/cart' onClick={onMiniCart} className="block w-full py-4 bg-black border border-black uppercase font-semibold text-lg  text-center text-white transition duration-300 ease-in-out hover:bg-white hover:text-black ">Xem
                             giỏ hàng</Link>
                     </div>
                 </div>
