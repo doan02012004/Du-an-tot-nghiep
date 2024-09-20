@@ -21,10 +21,6 @@ const useCartMutation = () => {
                         return error
                     }
                     break;
-<<<<<<< HEAD
-=======
-
->>>>>>> 7a0cefbdd60da1382cdbb05f539f71707cb3b1cf
                 case "increase":
                     try {
                         const data = await increaseProductCartQuantity({ userId: currentUser?._id, ...options.cart })
