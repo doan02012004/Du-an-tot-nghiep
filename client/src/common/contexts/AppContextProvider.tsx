@@ -31,6 +31,7 @@ const fetchUser = async (setCurrentUser?: any, setIsLogin?: any, setIsLoading?: 
 export const AppContext = createContext<any>(null)
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
+  const [choiceColor, setChoiceColor] = useState('')
   const [collapsed, setCollapsed] = useState(false);
   const [currentUser, setCurrentUser] = useLocalStorage('tt_user', {})
   const [isLoading, setIsLoading] = useState(false)
@@ -113,7 +114,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     }
   }, [accessToken])
   return (
-    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser }}>
+    <AppContext.Provider value={{collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken,setIsLogin,isLogin,isLoading,currentUser,choiceColor,setChoiceColor}}>
       {children}
     </AppContext.Provider>
   )
