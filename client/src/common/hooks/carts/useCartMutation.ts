@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { InewCart } from '../../interfaces/cart'
-import { addToCart } from '../../../services/cart'
+import { addToCart, decreaseProductCartQuantity, increaseProductCartQuantity, onInputProductCartQuantity } from '../../../services/cart'
 import { useContext } from 'react'
 import { AppContext } from '../../contexts/AppContextProvider'
 import { message } from 'antd'
@@ -14,14 +14,40 @@ const useCartMutation = () => {
             switch (options.action) {
                 case "addtocart":
                     try {
-                        const data = await addToCart({ userId: currentUser?._id, newCart: options.cart })
+                        const data = await addToCart({ userId: currentUser?._id, ...options.cart })
                         message.success("Thêm sản phẩm vào giỏ hàng thành công")
                         return data
                     } catch (error) {
                         return error
                     }
                     break;
-               
+                case "increase":
+                    try {
+                        const data = await increaseProductCartQuantity({ userId: currentUser?._id, ...options.cart })
+                        message.success("Tăng số lượng thành công")
+                        return data
+                    } catch (error) {
+                        return error
+                    }
+                    break;
+                case "decrease":
+                    try {
+                        const data = await decreaseProductCartQuantity({ userId: currentUser?._id, ...options.cart })
+                        message.success("Giảm số lượng thành công")
+                        return data
+                    } catch (error) {
+                        return error
+                    }
+                    break;
+                case "oninput":
+                    try {
+                        const data = await onInputProductCartQuantity({ userId: currentUser?._id, ...options.cart })
+                        message.success("Cập nhật số lượng thành công")
+                        return data
+                    } catch (error) {
+                        return error
+                    }
+                    break;
                 default:
                     break;
             }
