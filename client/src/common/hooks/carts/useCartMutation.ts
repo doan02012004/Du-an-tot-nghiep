@@ -21,22 +21,7 @@ const useCartMutation = () => {
                         return error
                     }
                     break;
-                // case "update":
-                //     try {
-                //         // Call API to update cart
-                //         return options.cart
-                //     } catch (error) {
-                //         return error
-                //     }
-                //     break;
-                // case "delete":
-                //     try {
-                //         // Call API to delete cart
-                //         return options.cart
-                //     } catch (error) {
-                //         return error
-                //     }
-                //     break;
+               
                 default:
                     break;
             }

@@ -1,12 +1,18 @@
 import { useContext, useState } from 'react'
 import { AppContext } from '../../../common/contexts/AppContextProvider'
+import { message } from 'antd'
+import { logoutUser } from '../../../services/auth'
+import { useDispatch } from 'react-redux'
+import { logoutStart, logoutSuccess } from '../../../common/redux/features/authSlice'
+// import { useNavigate } from 'react-router-dom'
 
 const ActionsSupportUser = () => {
     const [actionSupport, setActionSupport] = useState(false)
     const [actionUser, setActionUser] = useState(false)
-    const { accessToken } = useContext(AppContext)
+    const { accessToken, setAccesToken, setCurrentUser, setIsLogin } = useContext(AppContext)
 
-
+    // const navigate = useNavigate();
+    const dispatch = useDispatch()
 
     const onHandeActionSupport = () => {
         setActionSupport(!actionSupport)
@@ -16,6 +22,29 @@ const ActionsSupportUser = () => {
         setActionUser(!actionUser)
         setActionSupport(false)
     }
+
+
+    const onHandleLogout = async () => {
+        dispatch(logoutStart());
+       
+        try {
+            const data = await logoutUser()
+            console.log(data)
+            if (data.SC == 1) {
+                setCurrentUser({});
+                setIsLogin(false);
+                setAccesToken(null);
+                window.location.reload();
+            }
+            dispatch(logoutSuccess());
+         
+
+        } catch (error) {
+            message.error('Đăng xuất thất bại')
+        }
+
+    };
+
     return (
         <>
             <div className="relative hidden lg:block">
@@ -123,10 +152,10 @@ const ActionsSupportUser = () => {
                                 </a>
                             </li>
                             <li className="group ">
-                                <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
+                                <button onClick={onHandleLogout} className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
                                     <span className="mr-3 "><i className="fa-solid fa-arrow-right-from-bracket" /></span>
                                     Đăng xuất
-                                </a>
+                                </button>
                             </li>
                         </ul>
                     </div>
