@@ -113,15 +113,15 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     }
   }, [accessToken])
 
-//set địa chỉ 
+  //set địa chỉ 
   useEffect(() => {
     if (locationQuery.data) {
       setLocation(locationQuery.data)
     }
-  }, [locationQuery.data])  
+  }, [locationQuery.data])
 
   return (
-    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, choiceColor, setChoiceColor, location }}>
+    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location }}>
       {children}
     </AppContext.Provider>
   )

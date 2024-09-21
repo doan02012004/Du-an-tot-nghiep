@@ -5,6 +5,7 @@ import { registerSchema, loginSchema, addSchema } from "../validations/userValid
 // import generateRefreshToken from "../ultils/tokenAuth.js"
 import jwt from 'jsonwebtoken'
 import { StatusCodes } from "http-status-codes";
+import BlackListModel from '../models/blackListModel.js'
 dotenv.config()
 let refreshTokens = [];
 // lấy toàn bộ user
@@ -22,7 +23,7 @@ export const getAllUser = async (req, res) => {
 
 // lấy user theo id
 export const getByIdUser = async (req, res) => {
-   
+
     const id = req.params.id
     try {
         const users = await UserModel.findById(id)
@@ -196,7 +197,7 @@ export const register = async (req, res) => {
 
     }
 }
-
+//tạo access token
 const generateAccessToken = (user) => {
     return jwt.sign(
         {
@@ -208,6 +209,7 @@ const generateAccessToken = (user) => {
     )
 }
 
+//tạo refresh token
 const generateRefreshToken = (user) => {
     return jwt.sign(
         {
@@ -218,6 +220,7 @@ const generateRefreshToken = (user) => {
         { expiresIn: process.env.TIME_TOKEN_REF }
     )
 }
+
 // đăng nhập tài khoản
 export const login = async (req, res) => {
     try {
@@ -282,40 +285,44 @@ export const requestRefreshToken = async (req, res) => {
         const acToken = req.cookies.accessToken;
         if (!refreshToken) return res.status(403).json({
             EC: 1,
-            message:"Bạn chưa đăng nhập"
+            message: "Bạn chưa đăng nhập",
         })
+        const tokenBlackList = await BlackListModel.findOne({ token: refreshToken });
+        if (tokenBlackList) {
+            return res.status(StatusCodes.FORBIDDEN).json({ EC: 1, error: "refeshToken hết hạn" })
+        }
         // if (!refreshTokens.includes(refreshToken)) {
         //     return res.status(StatusCodes.FORBIDDEN).json('refresh token it not valid')
         // }
-        if(acToken){
-            jwt.verify(acToken,process.env.JWT_TOKEN_ACC,(err,user)=>{
-                if(err){
+        if (acToken) {
+            jwt.verify(acToken, process.env.JWT_TOKEN_ACC, (err, user) => {
+                if (err) {
                     jwt.verify(refreshToken, process.env.JWT_TOKEN_REF, (err, user) => {
                         if (err) {
-                            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ EC:1,error: "refeshToken hết hạn" })
+                            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ EC: 1, error: "refeshToken hết hạn" })
                         }
-                       else{
-                         //lọc token cũ ra 
-                        // refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
-                        const newAccessToken = generateAccessToken(user)
-                        res.cookie('accessToken', newAccessToken, {
-                            httpOnly: true,
-                            secure: true,
-                            sameSite: "strict",
-                            maxAge: 30 * 24 * 60 * 60 * 1000,// Thời gian sống của cookie, ví dụ: 1 ngày
-                        })
-                        return res.status(StatusCodes.OK).json({ accessToken: newAccessToken })
-                       }
+                        else {
+                            //lọc token cũ ra 
+                            // refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+                            const newAccessToken = generateAccessToken(user)
+                            res.cookie('accessToken', newAccessToken, {
+                                httpOnly: true,
+                                secure: true,
+                                sameSite: "strict",
+                                maxAge: 30 * 24 * 60 * 60 * 1000,// Thời gian sống của cookie, ví dụ: 1 ngày
+                            })
+                            return res.status(StatusCodes.OK).json({ accessToken: newAccessToken })
+                        }
                     })
                 }
-                else{
+                else {
                     return res.status(StatusCodes.OK).json({ accessToken: acToken })
                 }
             })
-        }else{
+        } else {
             jwt.verify(refreshToken, process.env.JWT_TOKEN_REF, (err, user) => {
                 if (err) {
-                    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ EC:1,error: "refeshToken hết hạn" })
+                    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ EC: 1, error: "refeshToken hết hạn" })
                 }
                 //lọc token cũ ra 
                 // refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
@@ -334,24 +341,41 @@ export const requestRefreshToken = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
     }
 }
-
+//-------------------------------------------------------------------//
 export const getAccount = async (req, res) => {
     try {
-        const user = await UserModel.findOne({_id:req.user._id}).select('-password')
+        const user = await UserModel.findOne({ _id: req.user._id }).select('-password')
         return res.status(200).json(user)
     } catch (error) {
         res.status(500).json({ error: "lỗi máy chủ" })
     }
 }
 
+
+
+
 // đăng xuất tài khoản
 export const logout = async (req, res) => {
+
     try {
-        res.clearCookie('refreshToken');
-        refreshTokens = refreshToken.filter(token => token !== req.cookies.refreshToken)
-        res.status(StatusCodes.CREATED).json({ message: "đăng xuất thành công" })
+        const refreshToken = req.cookies.refeshToken;
+        // Kiểm tra nếu không có cookie accessToken và refreshToken
+        if (!req.cookies.accessToken || !refreshToken) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "Người dùng chưa đăng nhập hoặc token không tồn tại",
+            });
+        }
+        const token = await BlackListModel.create({ token: refreshToken });
+
+        // Xóa token khỏi cookies
+        res.clearCookie('accessToken');
+        res.clearCookie('refeshToken');
+
+        return res.status(StatusCodes.OK).json({
+            SC: 1,
+            message: "Đăng xuất thành công"
+        });
     } catch (error) {
-        console.log("lỗi đăng xuất", error.message)
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
     }
 }

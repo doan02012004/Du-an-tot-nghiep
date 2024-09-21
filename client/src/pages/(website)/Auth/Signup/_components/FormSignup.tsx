@@ -32,7 +32,7 @@ const FormSignup = () => {
 
     const onSubmit = async (data: any) => {
         try {
-            await registerUser(data, dispatch, navigate);
+            await registerUser(data, dispatch);
             message.success("đăng kí thành công")
             navigate('/signin')
         } catch (error) {

@@ -10,7 +10,7 @@ const cartItem = new mongoose.Schema(
             default: 1
         },
         attributeId: {
-            type: String,
+            type: String
         },
         total: {
             type: Number,
@@ -21,8 +21,9 @@ const cartItem = new mongoose.Schema(
             default: true
         },
         galleryId: {
-            type: String,
-        },
+            type: String
+        }
+
     }
 )
 
@@ -37,7 +38,11 @@ const cartSchema = new mongoose.Schema({
     },
     carts: [
         cartItem
-    ]
+    ],
+    totalCart: {
+        type: Number,
+        default: 0
+    }
 }, { timestamps: true, versionKey: false })
 
 
