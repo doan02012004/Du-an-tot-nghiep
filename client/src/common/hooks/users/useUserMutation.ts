@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Iuser } from '../../interfaces/auth'
-import { creatUser, deleteUser, updateUser, updateUserStatus } from '../../services/auth'
+import { creatUser, deleteUser, updateUser, updateUserStatus } from '../../../services/auth'
 
 const useUserMutation = () => {
   const queryClient = useQueryClient()

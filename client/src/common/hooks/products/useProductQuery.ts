@@ -1,18 +1,26 @@
 import { useQuery } from '@tanstack/react-query'
-import { getProductById, getProducts } from '../../services/products'
+import { getProductById, getProducts } from '../../../services/products'
 
 
-const useProductQuery = (id?:string|number) => {
+const useProductQuery = (id ?: string | number, dataFilter ?: any) => {
+
     const query = useQuery({
-        queryKey: ['PRODUCT',id],
+        queryKey: ['PRODUCT', id, dataFilter],
         queryFn: async () => {
             try {
-                const data = id? await getProductById(id) : await getProducts()
-                return data
+
+                if (id) {
+                    const data = await getProductById(id);
+                    return data;
+                }
+                if (!id){
+                    const data = await getProducts(dataFilter);
+                    return data;
+                }
             } catch (error) {
-                console.log(error)
+                return error
             }
-        }
+        },
     })
     return query
 }

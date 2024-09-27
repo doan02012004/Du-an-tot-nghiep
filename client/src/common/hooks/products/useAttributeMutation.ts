@@ -2,8 +2,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Iattribute, Igallery, InewColor, InewSize } from '../../interfaces/product'
 import { message } from 'antd'
+import { addColorProduct, addSizeProduct, deleteColorProduct, deleteSizeProduct, updateProductAttribute, updateProductGallery } from '../../../services/products'
 import { IColor } from '../../interfaces/Color'
-import { addColorProduct, addSizeProduct, deleteColorProduct, deleteSizeProduct, updateProductAttribute, updateProductGallery } from '../../services/products'
 const useAttributeMutation = () => {
     const queryClient = useQueryClient()
     const mutation = useMutation({

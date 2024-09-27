@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from "@tanstack/react-query";
-import { getProductSlider } from './../../services/products';
+import { getProductSlider } from "../../../services/products";
 
 type Options = {
   _gender?: string;

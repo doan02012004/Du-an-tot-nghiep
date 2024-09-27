@@ -4,7 +4,7 @@ import {
   addColor,
   DeleteColorById,
   updateColorById,
-} from "../../services/color";
+} from "../../../services/color";
 import { message } from "antd";
 
 const useColorMutation = () => {

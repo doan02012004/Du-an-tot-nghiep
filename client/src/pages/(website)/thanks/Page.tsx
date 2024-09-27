@@ -16,7 +16,7 @@ const ThanksPage = () => {
         <span className="text-center">Chú ý: Miễn đổi trả với sản phẩm đồng giá / sale trên 50%</span>
       </div>
       <div className="flex items-center justify-between gap-4">
-        <a href="" className=""><button className="text-sm px-3 py-2 lg:text-base lg:w-[240px] border border-black bg-black text-white  lg:px-5 lg:py-3 rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black">TIẾP TỤC MUA SẮM</button></a>
+        <a href="/product" className=""><button className="text-sm px-3 py-2 lg:text-base lg:w-[240px] border border-black bg-black text-white  lg:px-5 lg:py-3 rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black">TIẾP TỤC MUA SẮM</button></a>
         <a href="" className=""><button className="text-sm px-3 py-2 lg:text-base lg:w-[240px] border border-black bg-black text-white  lg:px-5 lg:py-3 rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black">THEO DÕI ĐƠN HÀNG</button></a>
       </div>
     </div>

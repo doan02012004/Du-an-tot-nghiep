@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Iuser } from '../../interfaces/auth'
-import { getAllUser, getByIdUser } from '../../services/auth'
+import { getAllUser, getByIdUser } from '../../../services/auth'
 
 
 const useUserQuery = (_id?:Iuser) => {

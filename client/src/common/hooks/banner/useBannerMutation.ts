@@ -5,7 +5,7 @@ import {
   addBanner,
   DeleteBannerById,
   updateBannerById,
-} from "../../services/banner";
+} from "../../../services/banner";
 
 const useBannerMutation = () => {
   const queryClient = useQueryClient();

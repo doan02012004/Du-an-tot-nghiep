@@ -4,8 +4,11 @@ import { IColor } from "./Color"
 
 
 export interface Iproduct {
+<<<<<<< HEAD
     imageUrl: string | undefined
     id: Key | null | undefined
+=======
+>>>>>>> main
     _id?: string | number,
     name: string,
     categoryId:ICategories,

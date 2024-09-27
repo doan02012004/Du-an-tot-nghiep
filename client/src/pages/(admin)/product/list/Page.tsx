@@ -6,10 +6,12 @@ import { formatPrice } from '../../../../common/utils/product'
 import { useEffect, useState } from 'react'
 import { Iproduct } from '../../../../common/interfaces/product'
 import useProductQuery from '../../../../common/hooks/products/useProductQuery'
+import useProductMutation from '../../../../common/hooks/products/useProductMutation'
 
 const ListProduct = () => {
     const [products, setProducts] = useState([] as Iproduct[])
     const productQuery = useProductQuery()
+    const mutation = useProductMutation()
     useEffect(() => {
         if (productQuery.data) {
             const newProducts = productQuery?.data?.map((item: Iproduct, index: number) => (
@@ -31,9 +33,12 @@ const ListProduct = () => {
             )
         },
         {
-            title:"Tên sản phẩm",
-            dataIndex:"name",
-            key:"name"
+            title: "Tên sản phẩm",
+            dataIndex: "name",
+            key: "name",
+            render: (name: string) => (
+                <p className='font-semibold '>{name}</p>
+            )
         },
         {
             title: "Danh mục",
@@ -53,9 +58,12 @@ const ListProduct = () => {
             )
         },
         {
-            title:"Giảm giá",
-            dataIndex:"discount",
-            key:"discount"
+            title: "Giảm giá",
+            dataIndex: "discount",
+            key: "discount",
+            render: (discount: number) => (
+                <p className='text-green-500 '>{discount}%</p>
+            )
         },
         {
             title: "Hoạt động",
@@ -66,9 +74,17 @@ const ListProduct = () => {
             )
         },
         {
-            title:"Trạng thái",
-            dataIndex:"name",
-            key:"name"
+            title: "Trạng thái",
+            key:'instock',
+            render: (product:Iproduct) => {
+                const sum = product.attributes.reduce((value,currentValue)=> value + currentValue.instock,0)
+               if(sum > 0){
+                return  <p className='text-green-500 '>Còn hàng</p>
+               }else{
+                return  <p className=' text-red'>Hết hàng</p>
+               } 
+               
+            }
         },
         {
             title: "Chức năng",
@@ -80,10 +96,12 @@ const ListProduct = () => {
                         description="Bạn có muốn xóa không ?"
                         cancelText="Không"
                         okText="Có"
+                        onConfirm={()=>mutation.mutate({action:'delete',product:product})}
                     >
                         <Button type='primary' danger><DeleteOutlined /></Button>
                     </Popconfirm>
                     <Link to={'/admin/'}><Button className='text-white bg-yellow'><EyeOutlined /></Button></Link>
+                    <Link to={`/admin/products/view/${product._id}`}><Button className='text-white bg-yellow'><EyeOutlined /></Button></Link>
                 </Space>
             )
         }

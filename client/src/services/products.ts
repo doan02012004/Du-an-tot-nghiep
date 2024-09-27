@@ -1,5 +1,5 @@
 import { message } from "antd";
-import instance from "../config/axios";
+import instance from "../common/config/axios";
 import {
   Iattribute,
   Igallery,
@@ -7,8 +7,8 @@ import {
   InewSize,
   Iproduct,
   IproductInfor,
-} from "./../interfaces/product";
-import { IColor } from "./../interfaces/Color";
+} from "../common/interfaces/product";
+import { IColor } from "../common/interfaces/Color";
 
 export const getProductSlider = async (options: any) => {
   try {

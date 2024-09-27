@@ -1,5 +1,5 @@
-import instance from "../config/axios";
-import { IBanner } from "./../interfaces/Banner";
+import instance from "../common/config/axios";
+import { IBanner } from "../common/interfaces/Banner";
 
 export const getAll = async () => {
   try {

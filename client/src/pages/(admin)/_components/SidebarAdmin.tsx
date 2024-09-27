@@ -1,3 +1,4 @@
+
 import {
   BarChartOutlined,
   BgColorsOutlined,
@@ -15,6 +16,7 @@ import { useContext } from "react";
 import { AppContext } from "../../../common/contexts/AppContextProvider";
 import { Link, NavLink } from "react-router-dom";
 
+
 const SidebarAdmin = () => {
   const { collapsed } = useContext(AppContext);
   return (
@@ -31,19 +33,28 @@ const SidebarAdmin = () => {
             label: "Thống kê",
           },
           {
-            key: "2",
+            key: '2',
             icon: <OrderedListOutlined />,
-            label: "Danh mục",
-            children: [
+            label: 'Danh mục',
+            children:[
               {
-                key: "2.1",
-                label: <NavLink to={`/admin/categories`}>Danh mục</NavLink>,
+                key:"2.1",
+                label:<NavLink to={`/admin/categories`}>Danh mục</NavLink>
               },
               {
-                key: "2.2",
-                label: (
-                  <NavLink to={`/admin/categories/add`}>Thêm danh mục</NavLink>
-                ),
+                key:"2.2",
+                label:<NavLink to={`/admin/categories/add`}>Thêm danh  mục</NavLink>
+              }
+            ]
+          },
+          {
+            key: "7",
+            icon: <BgColorsOutlined />,
+            label: "Màu sắc",
+            children: [
+              {
+                key: "7.1",
+                label: <NavLink to={"/admin/colors"}>Danh sách</NavLink>,
               },
             ],
           },
@@ -58,17 +69,7 @@ const SidebarAdmin = () => {
               },
             ],
           },
-          {
-            key: "7",
-            icon: <BgColorsOutlined />,
-            label: "Màu sắc",
-            children: [
-              {
-                key: "7.1",
-                label: <NavLink to={"/admin/colors"}>Danh sách</NavLink>,
-              },
-            ],
-          },
+         
           {
             key: "3",
             icon: <ProductOutlined />,
@@ -91,9 +92,9 @@ const SidebarAdmin = () => {
             label: "Người dùng",
             children: [
               {
-                key: "4.1",
-                label: <Link to={"/admin/auth"}>Danh sách</Link>,
-              },
+                key:"4.1",
+                label:<Link to={'/admin/auth'}>Danh sách</Link>
+              }
             ],
           },
           {

@@ -1,29 +1,24 @@
-import { useEffect, useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useContext, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import useApiLocationQuery from '../../../../../common/hooks/API_location/useApiLocationQuery'
 import { message } from 'antd'
+import { registerUser } from '../../../../../services/auth'
 import { Isignup } from '../../../../../common/interfaces/auth'
-import { useForm } from 'react-hook-form'
-import { registerUser } from '../../../../../common/services/auth'
+import { AppContext } from '../../../../../common/contexts/AppContextProvider'
 
 const FormSignup = () => {
-    const queryDataLocation = useApiLocationQuery()
+    const {location} = useContext(AppContext)
     const [huyen, setHuyen] = useState([])
     const [xa, setXa] = useState<any>([])
     const { register, handleSubmit } = useForm<Isignup>()
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        if (queryDataLocation.data) {
-            queryDataLocation.data
-        }
-    }, [queryDataLocation.data])
-
     const onChangeTinh = (tinh: string) => {
         if (tinh !== '') {
-            const newDataTinh = queryDataLocation?.data?.find((item: any) => item.name == tinh)
+            const newDataTinh = location?.find((item: any) => item.name == tinh)
             setHuyen(newDataTinh.data2)
         }
     }
@@ -34,49 +29,19 @@ const FormSignup = () => {
             setXa(newDataHuyen.data3)
         }
     }
-    // const [firstname, setFirstname] = useState("")
-    // const [lastname, setLastname] = useState("")
-    // const [email, setEmail] = useState("")
-    // const [password, setPassword] = useState("")
-    // const [confirmPassword, setConfirmPassword] = useState("")
-    // const [phone, setPhone] = useState("")
-    // const [date, setDate] = useState("")
-    // const [gender, setGender] = useState("")
-    // // const [city, setCity] = useState("")
-    // // const [district, setDistrict] = useState("")
-    // const [ward, setWard] = useState("")
-    // const [address, setAddress] = useState("")
-
-    // const selectedCity = huyen.length > 0 ? huyen[0].name : '';
-    // const selectedDistrict = xa.length > 0 ? xa[0].name : '';
 
     const onSubmit = async (data: any) => {
-        // const newUser = {
-        //     firstname: firstname,
-        //     lastname: lastname,
-        //     email: email,
-        //     password: password,
-        //     confirmPassword: confirmPassword,
-        //     phone: phone,
-        //     date: date,
-        //     gender: gender,
-        //     city: huyen,
-        //     district: xa,
-        //     ward: ward,
-        //     address: address
-        // };
-        // console.log('Dữ liệu form:', data);
-
         try {
-            await registerUser(data, dispatch, navigate);
+            await registerUser(data, dispatch);
             message.success("đăng kí thành công")
+            navigate('/signin')
         } catch (error) {
             console.error('Lỗi đăng ký:', error);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-2 gap-7" >
+        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1  lg:grid-cols-2 gap-7" >
             {/* ////////////////box bên trá////////////////i */}
             <div>
                 <p className="text-[16px] mb-[10px]  text-dark font-medium ">Thông tin khách hàng</p>
@@ -114,7 +79,7 @@ const FormSignup = () => {
                         <span className="input-signup">Tỉnh/TP:</span>
                         <select {...register('city', { required: true, onChange: (e) => onChangeTinh(e.target.value) })} className="appearance-none h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ">
                             <option defaultChecked value="">Tỉnh/Thành Phố</option>
-                            {queryDataLocation?.data?.map((item: any, i: number) => (
+                            {location?.map((item: any, i: number) => (
                                 <option key={i} value={item.name} >{item.name}</option>
                             ))}
                         </select>
