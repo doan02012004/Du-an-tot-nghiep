@@ -1,32 +1,10 @@
 import mongoose from 'mongoose';
 
-
-const chatSchema = new mongoose.Schema({
-  participants: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'users', 
-      required: true,
-    }
-  ],
-  messages: [
-    {
-      sender: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'users',  
-      },
-      message: {
-        type: String,
-        required: true,
-      },
-      isRead: {
-        type: Boolean,
-        default: false,  // Trạng thái tin nhắn đã đọc hoặc chưa
-      },
-    },
-  ],
+const chatModel = new mongoose.Schema({
+    members: [
+        { type:mongoose.Schema.Types.ObjectId, ref: 'users'}
+     ]
 }, { timestamps: true });
 
-const ChatModel = mongoose.model('chats', chatSchema);
-
+const ChatModel = mongoose.model('chats', chatModel);
 export default ChatModel;

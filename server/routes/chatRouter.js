@@ -1,8 +1,17 @@
-import express from "express";
-import { getMessages } from "../controllers/chatController";
-const router = express.Router()
+import { Router } from "express";
+import { getChatAdmin, getMessages, sendMessage } from "../controllers/chatController.js";
+const router = Router();
 
-router.get('/:chatId/messages', getMessages)
+
+router.post('/send', sendMessage);
+
+router.get('/chatadmin', getChatAdmin);
+
+router.get('/messages/:chatId', getMessages);
+
+router.get('/chatadmin', getChatAdmin);
+
+
 
 
 export default router;

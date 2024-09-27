@@ -39,9 +39,8 @@ const ChatWidget = () => {
       {isChatOpen && (
         <div
           style={{
-            
             position: 'fixed',
-            bottom: '90px',
+            bottom: '90px', 
             right: '20px',
             width: '300px',
             height: '460px',
@@ -52,7 +51,7 @@ const ChatWidget = () => {
             zIndex: 2000,
           }}
         >
-          <Chat />
+          <Chat /> 
         </div>
       )}
     </div>

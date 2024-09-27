@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { theme } from 'antd'
-import { createContext, ReactNode, useEffect, useState } from 'react'
+import { createContext, ReactNode, useEffect, useRef, useState } from 'react'
 import instance from '../config/axios'
 import { getAccountUser, getNewToken } from '../../services/auth'
 import useLocalStorage from '../hooks/localstorage/useLocalStorage'
 import useApiLocationQuery from '../hooks/API_location/useApiLocationQuery'
+import { io } from 'socket.io-client'
 
 type AppContextProviderProps = {
   children: ReactNode
@@ -43,6 +44,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [accessToken, setAccesToken] = useLocalStorage('accessToken', null)
   const [isLogin, setIsLogin] = useLocalStorage('login', null)
   const [location, setLocation] = useLocalStorage('location', null)
+  const socket: any = useRef(null)
   // Interceptor request axios
   useEffect(() => {
     // Thêm một request interceptor
@@ -120,6 +122,20 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     }
   }, [locationQuery.data])
 
+
+  // kết nối socket
+  useEffect(() => {
+    socket.current = io('http://localhost:8000')
+  }, [])
+
+  // useEffect(() => {
+  //   // if (socket.current) {
+  //   //   socket.current.emit('addUser', currentUser._id)
+  //   // }
+  //   socket.current.on('welcome', (data: any) => {
+  //     console.log(data)
+  //   })
+  // }, [socket.current])
   return (
     <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location }}>
       {children}

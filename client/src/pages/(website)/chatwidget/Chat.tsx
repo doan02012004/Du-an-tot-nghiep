@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { AppContext } from '../../../common/contexts/AppContextProvider';
 // import { io } from 'socket.io-client';
 
 // const socket = io('http://localhost:5000'); // Thay bằng URL server Node.js nếu khác
@@ -6,28 +7,15 @@ import { useState } from 'react';
 const Chat = () => {
   const [message, setMessage] = useState('');
   const [messages] = useState([]);
-
-  //   useEffect(() => {
-  //     // Lắng nghe sự kiện 'chat message' từ server
-  //     socket.on('chat message', (msg) => {
-  //       setMessages((prevMessages) => [...prevMessages, msg]);
-  //     });
-
-  //     // Clean up khi component bị unmount
-  //     return () => {
-  //       socket.off('chat message');
-  //     };
-  //   }, []);
-
-  //   const sendMessage = (e) => {
-  //     e.preventDefault();
-  //     if (message.trim()) {
-  //       // Gửi tin nhắn tới server
-  //       socket.emit('chat message', message);
-  //       setMessage(''); // Xóa nội dung input sau khi gửi
-  //     }
-  //   };
-
+  const userId = useContext(AppContext).currentUser?._id;
+// useEffect(() => {
+//   socket.on('message', (data) => { 
+//     console.log(data);
+//   });
+//   // socket.emit('join', userId);
+//   // fetchMessages(userId).then((data) => {
+//   //   console.log(data);
+//   });
   return (
     <div>
       {/* Thông tin admin */}
@@ -51,8 +39,6 @@ const Chat = () => {
           <div key={index} style={{ marginBottom: '8px' }}>{msg}</div>
         ))}
       </div>
-      {/* onSubmit={sendMessage} -- bỏ vô form bên dưới
-       */}
       <form style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
         <input
           type="text"

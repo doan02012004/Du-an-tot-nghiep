@@ -1,96 +1,89 @@
-import ChatModel from "../models/chatModel";
+import ChatModel from "../models/chatModel.js";
+import MessageModel from "../models/messageModel.js";
+import UserModel from "../models/userModel.js";
 
 
-// tạo 1 cuộc trò chuyện mới
-export const startChat = async (req, res) => {
-    const { userId, adminId } = req.body;
-
-    try {
-        const existChat = await ChatModel.findOne({ participants: [userId, adminId] });
-        if (existChat) {
-            return res.status(200).json({ message: 'Cuộc trò chuyện đã tồn tại.' });
-        }
-
-        const newChat = new ChatModel({
-            participants: [userId, adminId],
-            messages: [],
-        })
-
-        const savedChat = await newChat.save();
-        res.status(201).json({ chat: savedChat });
-    } catch (error) {
-        console.log(error.message)
-        res.status(500).json({ message: 'Lỗi khi tạo cuộc trò chuyện.' });
-    }
-}
 
 
-// gửi tin nhắn đi
+
+
+// Gửi tin nhắn
 export const sendMessage = async (req, res) => {
-    const { sendId, chatId, message } = req.body;
     try {
-        const chat = await ChatModel.findById(chatId);
-        if (!chat) {
-            return res.status(404).json({ message: "Không tìm thấy cuộc trò chuyện" })
-        }
-        // gửi tin nhắn  vào cuộc trò chuyện
-        chat.messages.push({ sender: sendId, message: message, isRead: false })
-        const updatedChat = await chat.save();
-        return res.status(200).json({ chat: updatedChat })
+        const { senderId, receiverId, message, chatId } = req.body;
 
+        // Kiểm tra người gửi và người nhận có tồn tại
+        const sender = await UserModel.findById(senderId);
+        const receiver = await UserModel.findById(receiverId);
+
+        if (!chatId) {
+            const newChat = {
+                members: [senderId, receiverId]
+            }
+            const roomChat = await ChatModel.create(newChat).populate('members');
+            const massage = new MessageModel({
+                sender: senderId,
+                receiver: receiverId,
+                message,
+                chatId: roomChat._id
+            })
+            await massage.save()
+            return res.status(200).json({ roomChat, massage });
+        } else {
+            const massage = new MessageModel({
+                sender: senderId,
+                receiver: receiverId,
+                message,
+                chatId
+            })
+            await massage.save()
+            return res.status(200).json({ massage });
+        }
     } catch (error) {
-        console.log(error.message)
-        return res.status(500).json({ message: "lỗi không thể gửi tin nhắn" })
+        res.status(500).json({ message: 'lỗi không gửi được tin nhắn', error });
+    }
+};
+
+// get chat admin
+export const getChatAdmin = async (req, res) => {
+    try {
+        const admin = await UserModel.findById( req.params.userId ); // Giả sử chỉ có một admin  
+        if (!admin) {
+            return res.status(404).json({ message: 'Không tìm thấy người quản trị' });
+        }
+        if(admin.role !== 'admin') {
+            return res.status(404).json({ message: 'Không phải người quản trị' });
+        }
+        const chat = await ChatModel.find({ members: {$in: [admin._id]}}).populate('members');
+        res.status(200).json({ chat });
+    }   
+    catch (error) {
+        res.status(500).json({ message: 'lỗi get chat admin', error });
     }
 }
 
 
-//lấy hết tin nhắn trong cuộc trò chuyện
+
+// Lấy tất cả tin nhắn giữa admin và user của phần chat user
 export const getMessages = async (req, res) => {
-    const { chatId } = req.params;
     try {
-        const chat = await ChatModel.findById(chatId).populate('messages.sender', 'firstname lastname email') // chỗ này hơi cấn nha
-        if (!chat) {
-            return res.status(404).json({ message: "Không tìm thấy cuộc trò chuyện" })
-        }
-        res.status(200).json({ messages: chat.messages })
+        const { chatId } = req.params;
+        const messages = await MessageModel.find({ chatId }).populate('sender receiver'); 
+        res.status(200).json({ messages });
     } catch (error) {
-        console.log(error.message)
-        return res.status(500).json({ message: "lỗi không thể lấy tin nhắn" })
+        res.status(500).json({ message: 'lỗi get Message', error });
     }
-}
+};
 
-// lấy danh sách cuộ trò chuyện của 1 người dùng
-export const getChatByUser = async (req, res) => {
-    const { userId } = req.params;
+
+//lấy 1 đoạn tin nhắn của 1 user nào đó với admin
+export const getFindChat = async (req, res) => {
     try {
-        const chats = await ChatModel.find({ participants: userId }).populate('participants', 'firstname lastname email')
-        res.status(200).json({ chats })
-    } catch (error) {
-        console.log(error.message)
-        return res.status(500).json({ message: "lỗi không thể lấy cuộc trò chuyện" })
+        const { senderId, reciverId } = req.params;
+        const messages = await ChatModel.find({ members: { $all: [senderId, reciverId ] } }).populate('members');
+        res.status(200).json({ messages });
     }
-}
-
-//trạng thái tin nhắn 
-export const statusMessage = async (req, res) => {
-    try {
-        const {chatId, messageId} = req.body;
-        const chat = await ChatModel.findById(chatId);
-        if (!chat) {
-            return res.status(404).json({ message: "Không tìm thấy cuộc trò chuyện" })
-        }
-        //tìm và đánh dấu tin nhắn đã đọc
-        const message = chat.messages.id(messageId);
-        if(!message){
-            return res.status(404).json({ message: "Không tìm thấy tin nhắn" })
-        }
-
-        message.isRead = true;  
-        const updatedChat = await chat.save();
-        return res.status(200).json({ chat: updatedChat })
-    } catch (error) {
-        console.log(error.message)
-        return res.status(500).json({ message: "lỗi không thể cập nhật trạng thái tin nhắn" })
+    catch (error) {
+        res.status(500).json({ message: 'lỗi get Message', error });
     }
 }

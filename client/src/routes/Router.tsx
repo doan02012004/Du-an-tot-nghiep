@@ -23,6 +23,7 @@ import CategoriesForm from '../pages/(admin)/categories/_components/CategoryForm
 import PageAuthAdmin from '../pages/(admin)/users/Page'
 import ListUser from '../pages/(admin)/users/_components/ListUser'
 import ViewProductAdmin from '../pages/(admin)/product/view/Page'
+import ChatWidget from '../pages/(admin)/chatwiget/Page'
 
 
 const Router = () => {
@@ -53,6 +54,7 @@ const Router = () => {
         <Route path='categories' element={<CategoriesPage />} />
         <Route path='categories/add' element={<CategoriesForm />} />
         <Route path='categories/edit/:id' element={<CategoriesForm />} />
+        <Route path='chat' element={<ChatWidget />} />
         <Route path='auth' element={<PageAuthAdmin />} >
           <Route index element={<ListUser />} />
         </Route>
