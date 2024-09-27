@@ -23,6 +23,7 @@ import CategoriesForm from '../pages/(admin)/categories/_components/CategoryForm
 import PageAuthAdmin from '../pages/(admin)/users/Page'
 import ListUser from '../pages/(admin)/users/_components/ListUser'
 import ViewProductAdmin from '../pages/(admin)/product/view/Page'
+import AddressList from '../pages/(website)/my-information/address/Page'
 
 
 const Router = () => {
@@ -41,6 +42,7 @@ const Router = () => {
         <Route path='thanks' element={<ThanksPage />} />
         <Route path='customer' element={<MyInformation />}>
           <Route path='infor' element={<Account />} />
+          <Route path='address_list' element={<AddressList />} />
         </Route>
       </Route>
       <Route path='admin' element={<LayoutAdmin />}>

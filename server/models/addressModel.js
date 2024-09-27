@@ -35,6 +35,11 @@ const addressSchema = new mongoose.Schema({
         enum: ["house", "company"],
         default: "house",
     },
+    isDefault: {
+        type: Boolean,
+        default: false,
+        required: true
+    },
     userId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'users'

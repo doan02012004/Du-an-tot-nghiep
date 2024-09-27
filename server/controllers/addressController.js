@@ -13,7 +13,7 @@ export const getAllAddress = async (req,res)=>{
 
 export const getByIdAddress = async (req,res)=>{
     try {
-        const address = await AddressModel.findById(req.params.id)
+        const address = await AddressModel.find({userId:req.params.userId})
         if (!address) {
             return res.status(StatusCodes.NOT_FOUND).json({message:"Không tìm thấy ID người dùng này"})
         }

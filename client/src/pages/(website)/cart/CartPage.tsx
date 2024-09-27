@@ -19,10 +19,10 @@ const CartPage = () => {
                         </div>
                         <Table cartUser={cartUser}/>
                         <div className="py-6 lg:pt-7">
-                            <div className="w-[60%] flex items-center border border-black lg:w-[30%] py-3 justify-center gap-2 rounded-tl-[20px] rounded-br-[20px] hover:bg-black hover:text-white">
+                            <a href="/product" className="w-[60%] flex items-center border border-black lg:w-[30%] py-3 justify-center gap-2 rounded-tl-[20px] rounded-br-[20px] hover:bg-black hover:text-white">
                                 <span><i className="fa-solid fa-arrow-left-long" /></span>
                                 <button>Tiếp tục mua hàng</button>
-                            </div>
+                            </a>
                         </div>
                     </div>
                     <div className="lg:w-[32%]">

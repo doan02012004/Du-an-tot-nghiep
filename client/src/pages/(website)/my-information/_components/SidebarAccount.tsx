@@ -64,10 +64,10 @@ const SidebarAccount = () => {
         </a>
       </li>
       <li className="group mb-5 lg:mb-8">
-        <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
+      <NavLink to="/customer/address_list" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
           <span className="mr-3 "><i className="fa-solid fa-location-dot" /></span>
           Sổ địa chỉ
-        </a>
+        </NavLink>
       </li>
       <li className="group mb-5 lg:mb-8">
         <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
