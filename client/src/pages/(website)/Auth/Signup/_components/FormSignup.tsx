@@ -1,30 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import useApiLocationQuery from '../../../../../common/hooks/API_location/useApiLocationQuery'
 import { message } from 'antd'
 import { registerUser } from '../../../../../services/auth'
 import { Isignup } from '../../../../../common/interfaces/auth'
+import { AppContext } from '../../../../../common/contexts/AppContextProvider'
 
 const FormSignup = () => {
-    const queryDataLocation = useApiLocationQuery()
+    const {location} = useContext(AppContext)
     const [huyen, setHuyen] = useState([])
     const [xa, setXa] = useState<any>([])
     const { register, handleSubmit } = useForm<Isignup>()
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        if (queryDataLocation.data) {
-            queryDataLocation.data
-        }
-    }, [queryDataLocation.data])
-
     const onChangeTinh = (tinh: string) => {
         if (tinh !== '') {
-            const newDataTinh = queryDataLocation?.data?.find((item: any) => item.name == tinh)
+            const newDataTinh = location?.find((item: any) => item.name == tinh)
             setHuyen(newDataTinh.data2)
         }
     }
@@ -38,7 +32,7 @@ const FormSignup = () => {
 
     const onSubmit = async (data: any) => {
         try {
-            await registerUser(data, dispatch, navigate);
+            await registerUser(data, dispatch);
             message.success("đăng kí thành công")
             navigate('/signin')
         } catch (error) {
@@ -85,7 +79,7 @@ const FormSignup = () => {
                         <span className="input-signup">Tỉnh/TP:</span>
                         <select {...register('city', { required: true, onChange: (e) => onChangeTinh(e.target.value) })} className="appearance-none h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ">
                             <option defaultChecked value="">Tỉnh/Thành Phố</option>
-                            {queryDataLocation?.data?.map((item: any, i: number) => (
+                            {location?.map((item: any, i: number) => (
                                 <option key={i} value={item.name} >{item.name}</option>
                             ))}
                         </select>
