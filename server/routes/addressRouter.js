@@ -5,7 +5,7 @@ import { creatAddress, deleteAddress, getAllAddress, getByIdAddress, updateAddre
 const router = express.Router()
 
 router.get('/',getAllAddress)
-router.get('/:id',getByIdAddress)
+router.get('/:userId',getByIdAddress)
 router.delete('/delete/:id',deleteAddress)
 router.put('/update/:id',updateAddress)
 router.post('/',creatAddress)
