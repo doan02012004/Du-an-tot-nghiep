@@ -4,22 +4,24 @@ import { createSlice } from "@reduxjs/toolkit"
 const authSlice = createSlice({
     name: "auth",
     initialState: {
-        // accessToken:'',
         login: {
-            currentUser: null ,
+            currentUser: null,
             isFetching: false,
             error: false
         },
-        register:{
+        register: {
             isFetching: false,
             error: false,
-            success:false
+            success: false
+        },
+        logout: {
+            isFetching: false,
+            error: false,
+            success: false
         }
     },
     reducers: {
-        // setAccessToken: (state, action) => {
-        //     state.accessToken = action.payload;
-        // },
+
         loginStart: (state) => {
             state.login.isFetching = true
         },
@@ -32,7 +34,7 @@ const authSlice = createSlice({
             state.login.isFetching = false
             state.login.error = true
         },
-        
+
         registerStart: (state) => {
             state.register.isFetching = true
         },
@@ -45,7 +47,19 @@ const authSlice = createSlice({
             state.register.isFetching = false
             state.register.error = true
             state.register.success = false;
-
+        },
+        logoutStart: (state) => {
+            state.logout.isFetching = true
+        },
+        logoutFailed: (state) => {
+            state.logout.isFetching = false
+            state.logout.error = true
+            state.logout.success = false;
+        },
+        logoutSuccess: (state) => {
+            state.logout.isFetching = false
+            state.logout.success = true;
+            state.logout.error = false
         }
     }
 })
@@ -56,7 +70,9 @@ export const {
     registerStart,
     registerFailed,
     registerSuccess,
-    // setAccessToken
+    logoutStart,
+    logoutFailed,
+    logoutSuccess
 } = authSlice.actions
 
 export default authSlice.reducer

@@ -6,6 +6,8 @@ import { IColor } from '../../../common/interfaces/Color'
 import { Iattribute, Igallery, Iproduct } from '../../../common/interfaces/product'
 import { setProductId } from '../../../common/redux/features/productSlice'
 import { formatPrice } from '../../../common/utils/product'
+import useCartMutation from '../../../common/hooks/carts/useCartMutation'
+import { InewCart } from '../../../common/interfaces/cart'
 
 type Props = {
   product: Iproduct
@@ -18,38 +20,56 @@ const Product = ({ product }: Props) => {
   const [checkSizes, setCheckSizes] = useState([] as string[])
   const productId = useSelector((state: any) => state.product.productId)
   const dispath = useDispatch()
-  useEffect(()=>{
-    if(productId == null){
+  const cartMutation = useCartMutation()
+
+  useEffect(() => {
+    if (productId == null) {
       setIsOpenSize(false)
     }
-  },[productId])
+  }, [productId])
+
   useEffect(() => {
     setGallery(product?.gallerys[0])
     setColor(product.gallerys[0].name)
   }, [product])
+
   useEffect(() => {
     const newAttributes = product?.attributes?.filter((item: Iattribute) => (item.color == color && item.instock > 0))
-    const newCheckSizes = newAttributes?.map((item:Iattribute) => item.size)
+    const newCheckSizes = newAttributes?.map((item: Iattribute) => item.size)
     setCheckSizes(newCheckSizes)
   }, [color])
-  const onSetProductId = async(product:Iproduct) =>{
-    if(productId !== product?._id){
+
+  const onSetProductId = async (product: Iproduct) => {
+    if (productId !== product?._id) {
       dispath(setProductId(product._id))
       setIsOpenSize(true)
     }
-    if(productId == product?._id && isOpenSize == false){
+    if (productId == product?._id && isOpenSize == false) {
       await dispath(setProductId(null))
       dispath(setProductId(product._id))
       setIsOpenSize(true)
     }
-    if(productId == product?._id && isOpenSize == true){
+    if (productId == product?._id && isOpenSize == true) {
       dispath(setProductId(null))
     }
   }
+
   const onPickColor = (item: IColor) => {
     setColor(item.name)
     const newGallery: Igallery | any = product?.gallerys.find((gallery: Igallery) => gallery.name == item.name)
     setGallery(newGallery)
+  }
+
+  const onAddToCart = (size: string) => {
+    const attribute = product?.attributes?.find((item: Iattribute) => (item.color == color && item.size == size)) 
+    const newCart = {
+      productId: product._id,
+      quantity: 1,
+      attributeId: attribute?._id,
+      galleryId: gallery?._id
+    } as InewCart
+    cartMutation.mutate({action:'addtocart', cart: newCart})
+    
   }
   return (
     <>
@@ -98,7 +118,7 @@ const Product = ({ product }: Props) => {
                 {
                   product?.sizes.map((item: string) => (
                     <li key={item}>
-                      <button disabled={!checkSizes.includes(item)} className={`${!checkSizes.includes(item)? 'text-gray-300' : 'text-dark hover:border-dark '} w-full text-sm py-2  font-semibold border border-white lg:text-base lg:py-3 `}>{item}</button>
+                      <button onClick={() => onAddToCart(item)} disabled={!checkSizes.includes(item)} className={`${!checkSizes.includes(item) ? 'text-gray-300' : 'text-dark hover:border-dark '} w-full text-sm py-2  font-semibold border border-white lg:text-base lg:py-3 `}>{item}</button>
                     </li>
                   ))
                 }
