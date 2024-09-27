@@ -11,9 +11,7 @@ const ChatWidget = () => {
             {/* Chat Box */}
             <div className="w-3/4 flex flex-col">
                 <div className="flex-grow p-4 bg-gray-50 ">
-                    <h2 className="text-xl font-semibold mb-2">
-                        Chat with  {/*  {selectedFriend.name} */}
-                    </h2>
+                    
                     <div className="bg-white p-3 rounded-md shadow-md h-full">
                         {/* Chat messages go here */}
                         <div className="h-full flex flex-col">
