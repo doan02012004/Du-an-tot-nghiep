@@ -4,6 +4,7 @@ import useChatMutation from '../../../../common/hooks/chats/useChatMutation';
 import { useContext } from 'react';
 import { AppContext } from '../../../../common/contexts/AppContextProvider';
 import { Ichat } from '../../../../common/interfaces/chat';
+import { createChat } from '../../../../services/chat';
 
 type Props = {
     chatId: string
@@ -11,18 +12,38 @@ type Props = {
 const InputMessage = ({chatId}:Props) => {
     const { register, handleSubmit, reset } = useForm();
     const chatMutation = useChatMutation()
-    const { adminId, currentUser } = useContext(AppContext)
+    const { adminId, currentUser,socket } = useContext(AppContext)
 
 
-    const onSendMessage: any = (message:{message:string}) => {
-        const newMessage: Ichat = {
-            chatId: chatId,
-            senderId: currentUser?._id,
-            receiverId: adminId,
-            message: message.message
+    const onSendMessage: any = async (message:{message:string}) => {
+        if(!chatId){
+            try {
+                const chat = await createChat({senderId:currentUser?._id,receiverId:adminId})
+                if(chat){
+                    socket?.current?.emit("createChat",chat)
+                    const newMessage: Ichat = {
+                        chatId: chat._id,
+                        senderId: currentUser?._id,
+                        receiverId: adminId,
+                        message: message.message
+                    }
+                    chatMutation.mutate({ action: 'send', data: newMessage })
+                    reset()
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }else{
+            const newMessage: Ichat = {
+                chatId: chatId,
+                senderId: currentUser?._id,
+                receiverId: adminId,
+                message: message.message
+            }
+            chatMutation.mutate({ action: 'send', data: newMessage })
+            reset()
         }
-        chatMutation.mutate({ action: 'send', data: newMessage })
-        reset()
+       
     }
 
     return (

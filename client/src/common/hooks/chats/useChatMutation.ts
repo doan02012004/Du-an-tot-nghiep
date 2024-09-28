@@ -1,9 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Ichat } from "../../interfaces/chat";
 import { sendMessage } from "../../../services/chat";
+import { useContext } from "react";
+import { AppContext } from "../../contexts/AppContextProvider";
 
 const useChatMutation = () => {
     const queryClient = useQueryClient()
+    const {socket} = useContext(AppContext)
     const mutation = useMutation({
         mutationKey: ['CHAT'],
         mutationFn: async (option: { action: string, data: Ichat }) => {
@@ -11,7 +14,10 @@ const useChatMutation = () => {
                 case 'send':
                     try {
                         const res = await sendMessage(option.data)
-                        return res.data
+                        if(res && res?._id){
+                            socket?.current.emit("sendMessage",res)
+                        }
+                        return res
                     } catch (error) {
                         console.log(error)
                     }
@@ -23,7 +29,8 @@ const useChatMutation = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['CHAT'] }),
-            queryClient.invalidateQueries({ queryKey: ['MESSAGE'] })
+            queryClient.invalidateQueries({ queryKey: ['MESSAGE'] }),
+            queryClient.invalidateQueries({ queryKey: ['LASTMESSAGE'] })
         }
     })
     return mutation
