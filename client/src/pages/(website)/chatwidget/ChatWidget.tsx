@@ -13,21 +13,7 @@ const ChatWidget = () => {
       {/* Icon chat ở góc phải */}
       <div
         onClick={toggleChat}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          width: '60px',
-          height: '60px',
-          borderRadius: '50%',
-          backgroundColor: '#007AFF',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-          zIndex: 2000,
-        }}
+        className="fixed bottom-5 right-5 w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer shadow-lg z-50"
       >
         <img
           src="https://img.icons8.com/ios-filled/50/ffffff/chat.png"
@@ -38,20 +24,9 @@ const ChatWidget = () => {
       {/* Hộp chat khi mở */}
       {isChatOpen && (
         <div
-          style={{
-            position: 'fixed',
-            bottom: '90px', 
-            right: '20px',
-            width: '300px',
-            height: '460px',
-            border: '1px solid #ccc',
-            borderRadius: '10px',
-            backgroundColor: '#FFFFFF',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-            zIndex: 2000,
-          }}
+          className="fixed bottom-24 right-5 w-[350px] h-[500px] border border-gray-300 rounded-lg bg-white shadow-lg z-50"
         >
-          <Chat /> 
+          <Chat />
         </div>
       )}
     </div>

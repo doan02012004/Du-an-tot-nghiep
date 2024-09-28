@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getChatAdmin, getMessages, sendMessage } from "../controllers/chatController.js";
+import { getChatAdmin, getFindChatUser, getMessages, sendMessage } from "../controllers/chatController.js";
 const router = Router();
 
 
@@ -9,7 +9,7 @@ router.get('/chatadmin', getChatAdmin);
 
 router.get('/messages/:chatId', getMessages);
 
-router.get('/chatadmin', getChatAdmin);
+router.get('/chatuser/:senderId/:reciverId', getFindChatUser);
 
 
 

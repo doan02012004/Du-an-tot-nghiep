@@ -45,6 +45,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isLogin, setIsLogin] = useLocalStorage('login', null)
   const [location, setLocation] = useLocalStorage('location', null)
   const socket: any = useRef(null)
+  const [adminId,] = useState('66e7c98f670bd3af55831ca6')
   // Interceptor request axios
   useEffect(() => {
     // Thêm một request interceptor
@@ -137,7 +138,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   //   })
   // }, [socket.current])
   return (
-    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location }}>
+    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location, adminId }}>
       {children}
     </AppContext.Provider>
   )

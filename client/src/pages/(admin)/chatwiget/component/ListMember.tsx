@@ -15,10 +15,10 @@ const ListMember = () => {
             <li
                 key={friend.id}
                 onClick={() => setSelectedFriend(friend)}
-                className={`p-2 cursor-pointer hover:bg-gray-200 rounded-md ${selectedFriend.id === friend.id ? 'bg-blue-100' : ''
+                className={`p-2 cursor-pointer hover:bg-gray-200 rounded-md  ${selectedFriend.id === friend.id ? 'bg-blue-100' : ''
                     }`}
             >
-                {friend.name}
+                <span className='font-semibold'>{friend.name}</span>
             </li>
         ))}
     </ul>
