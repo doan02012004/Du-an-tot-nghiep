@@ -1,9 +1,11 @@
-import React from 'react'
+import { Outlet } from "react-router-dom";
 
 const BannerPage = () => {
   return (
-    <div>BannerPage</div>
-  )
-}
+    <div>
+      <Outlet />
+    </div>
+  );
+};
 
-export default BannerPage
+export default BannerPage;

@@ -1,9 +1,11 @@
-import React from 'react'
+import { Outlet } from "react-router-dom";
 
 const GalleryPage = () => {
   return (
-    <div>GalleryPage</div>
-  )
-}
+    <div>
+      <Outlet />
+    </div>
+  );
+};
 
-export default GalleryPage
+export default GalleryPage;
