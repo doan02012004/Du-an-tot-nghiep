@@ -121,7 +121,7 @@ const SidebarAdmin = () => {
           {
             key: "6",
             icon: <MessageOutlined />,
-            label: "Tin Nhắn",
+            label: <Link to={"/admin/chat"}>Tin Nhắn</Link>,
           },
         ]}
       />

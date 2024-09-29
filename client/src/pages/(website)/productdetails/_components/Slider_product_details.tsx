@@ -35,7 +35,6 @@ const Slider_product_details = ({product}: Props) => {
             }
         }
     }, [choiceColor, product]); // Đảm bảo thêm các phụ thuộc
-    console.log(gallery)
     const onChangeImage = (index:number) =>{
         if(imageRef && imageRef.current.swiper){
             imageRef.current.swiper.slideTo(index)
@@ -48,7 +47,7 @@ const Slider_product_details = ({product}: Props) => {
             setIsMobile(window.innerWidth)
         })
     }, []);
-    // console.log(gallery)
+    console.log(gallery)
   return (
     <>
         <div className='lg:flex lg:justify-between'>

@@ -1,16 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { theme } from 'antd'
-import { createContext, ReactNode, useEffect, useState } from 'react'
+import { createContext, ReactNode, useEffect, useRef, useState } from 'react'
 import instance from '../config/axios'
 import { getAccountUser, getNewToken } from '../../services/auth'
 import useLocalStorage from '../hooks/localstorage/useLocalStorage'
 import useApiLocationQuery from '../hooks/API_location/useApiLocationQuery'
+import { io } from 'socket.io-client'
 
 type AppContextProviderProps = {
   children: ReactNode
 }
-
+const adminId_env = import.meta.env.VITE_ADMINID
 const fetchUser = async (setCurrentUser?: any, setIsLogin?: any, setIsLoading?: any) => {
   setIsLoading(true)
   try {
@@ -43,6 +44,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [accessToken, setAccesToken] = useLocalStorage('accessToken', null)
   const [isLogin, setIsLogin] = useLocalStorage('login', null)
   const [location, setLocation] = useLocalStorage('location', null)
+  const socket: any = useRef(null)
+  const [adminId,] = useState(adminId_env)
   // Interceptor request axios
   useEffect(() => {
     // Thêm một request interceptor
@@ -120,8 +123,19 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     }
   }, [locationQuery.data])
 
+
+  // kết nối socket
+  useEffect(() => {
+    socket.current = io('http://localhost:8000')
+  }, [])
+
+  useEffect(() => {
+    if (socket.current && currentUser) {
+      socket.current.emit('addUser', currentUser)
+    }
+  }, [socket.current,currentUser])
   return (
-    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location }}>
+    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location, adminId ,socket}}>
       {children}
     </AppContext.Provider>
   )

@@ -19,15 +19,17 @@ import AddProductAdmin from "../pages/(admin)/product/add/Page";
 import LayoutColor from "../pages/(admin)/color/Page";
 import CategoriesPage from "../pages/(admin)/categories/Page";
 
-import CategoriesForm from "../pages/(admin)/categories/_components/CategoryForm";
-import PageAuthAdmin from "../pages/(admin)/users/Page";
-import ListUser from "../pages/(admin)/users/_components/ListUser";
-import ViewProductAdmin from "../pages/(admin)/product/view/Page";
-import AddressList from "../pages/(website)/my-information/address/Page";
+import CategoriesForm from '../pages/(admin)/categories/_components/CategoryForm'
+import PageAuthAdmin from '../pages/(admin)/users/Page'
+import ListUser from '../pages/(admin)/users/_components/ListUser'
+import ViewProductAdmin from '../pages/(admin)/product/view/Page'
+import ChatWidget from '../pages/(admin)/chatwiget/Page'
+import AddressList from '../pages/(website)/my-information/address/Page'
 import BannerPage from "../pages/(admin)/banner/Page";
 import ListBanner from "../pages/(admin)/banner/_components/ListBanner";
 import GalleryPage from "../pages/(admin)/gallery/Page";
 import ListGallery from "../pages/(admin)/gallery/_components/ListGallery";
+
 
 const Router = () => {
   return (
@@ -54,11 +56,12 @@ const Router = () => {
           <Route path="add" element={<AddProductAdmin />} />
           <Route path="view/:id" element={<ViewProductAdmin />} />
         </Route>
-        <Route path="colors" element={<LayoutColor />} />
-        <Route path="categories" element={<CategoriesPage />} />
-        <Route path="categories/add" element={<CategoriesForm />} />
-        <Route path="categories/edit/:id" element={<CategoriesForm />} />
-        <Route path="auth" element={<PageAuthAdmin />}>
+        <Route path='colors' element={<LayoutColor />} />
+        <Route path='categories' element={<CategoriesPage />} />
+        <Route path='categories/add' element={<CategoriesForm />} />
+        <Route path='categories/edit/:id' element={<CategoriesForm />} />
+        <Route path='chat' element={<ChatWidget />} />
+        <Route path='auth' element={<PageAuthAdmin />} >
           <Route index element={<ListUser />} />
         </Route>
         <Route path="banners" element={<BannerPage />}>
