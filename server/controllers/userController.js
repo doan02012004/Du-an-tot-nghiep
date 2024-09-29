@@ -269,13 +269,14 @@ export const login = async (req, res) => {
                 ...orthers, accessToken
             })
         } else {
-            console.log(error.message)
+           
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message })
         }
 
 
     } catch (error) {
         console.log("lỗi đăng nhập", error.message)
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
+       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
     }
 }
 

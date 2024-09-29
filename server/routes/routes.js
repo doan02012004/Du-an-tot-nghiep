@@ -5,6 +5,7 @@ import categoryouter from "./categoryRouter.js";
 import colorRouter from "./colorRouter.js";
 import userRouter from "./userRouter.js";
 import cartRouter from "./cartRouter.js";
+import chatRouter from "./chatRouter.js";
 const routes = (app) => {
   app.use("/api/products", productRouter);
   app.use("/api/orders", orderRouter);
@@ -13,6 +14,7 @@ const routes = (app) => {
   app.use("/api/categories", categoryouter);
   app.use("/api/colors", colorRouter);
   app.use("/api/carts", cartRouter);
+  app.use("/api/chats", chatRouter);  
 };
 
 export default routes;
