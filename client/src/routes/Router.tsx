@@ -29,6 +29,9 @@ import BannerPage from "../pages/(admin)/banner/Page";
 import ListBanner from "../pages/(admin)/banner/_components/ListBanner";
 import GalleryPage from "../pages/(admin)/gallery/Page";
 import ListGallery from "../pages/(admin)/gallery/_components/ListGallery";
+import OrdersPage from "../pages/(admin)/order/Page";
+import OrderList from "../pages/(admin)/order/_components/OrderList";
+import OrderDetails from "../pages/(admin)/order/_components/OrderDetails";
 
 
 const Router = () => {
@@ -51,6 +54,10 @@ const Router = () => {
         </Route>
       </Route>
       <Route path="admin" element={<LayoutAdmin />}>
+        <Route path="orders" element={<OrdersPage/>}>
+          <Route index element={<OrderList />}/>
+          <Route path="details/:id" element={<OrderDetails />}/>
+        </Route>
         <Route path="products" element={<AdminProduct />}>
           <Route index element={<ListProduct />} />
           <Route path="add" element={<AddProductAdmin />} />
