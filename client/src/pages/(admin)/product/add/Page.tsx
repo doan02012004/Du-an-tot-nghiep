@@ -82,26 +82,32 @@ import FormInfor from "./_components/FormInfor";
 import Properties from "./_components/Properties";
 import { useEffect } from "react";
 import { setAttributes, setColors, setGallerys, SetIsSave, setProductInfor, setSizes } from "../../../../common/redux/features/productSlice";
+import { Button } from "antd";
+import { LeftOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 
 const AddProductAdmin = () => {
   const dispath = useDispatch()
-  useEffect(()=>{
+  useEffect(() => {
     dispath(setSizes([]))
     dispath(setProductInfor({}))
     dispath(setGallerys([]))
     dispath(setAttributes([]))
     dispath(setColors([]))
     dispath(SetIsSave(false))
-  },[])
+  }, [])
   return (
-    <div className="bg-gray-400 w-full h-[580px] overflow-y-scroll py-3 ">
-        <div className="w-8/12 p-3 bg-white rounded-lg mx-auto shadow-sm shadow-gray-700">
-          <h1 className="text-lg font-bold text-center mb-3">Thêm sản phẩm</h1>
-          <FormInfor />
-          <Properties />
-          <CreateProduct />
+    <div className=" w-full h-[580px] overflow-y-scroll">
+      <div className=" p-3 bg-white rounded-lg  shadow-sm shadow-gray-700">
+        <div className="flex items-center justify-between pb-3 mb-3 border-b">
+          <h1 className="text-3xl font-bold text-center mb-3 text-blue">Thêm sản phẩm</h1>
+          <Link to={'/admin/product'}><Button type="primary" ><LeftOutlined /> Quay Lại</Button></Link>
         </div>
+        <FormInfor />
+        <Properties />
+        <CreateProduct />
+      </div>
     </div>
   )
 }

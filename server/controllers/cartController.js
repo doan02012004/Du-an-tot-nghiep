@@ -38,11 +38,11 @@ export const addToCart = async (req, res) => {
                     productId: productId,
                     quantity: quantity,
                     attributeId: attributeId,
-                    total: Number(product.price_new * quantity),
+                    total: Number(attribute.price_new * quantity),
                     validateCart: true,
                     galleryId: galleryId
                 })
-                newCart.totalPrice = Number(product.price_new * quantity)
+                newCart.totalPrice = Number(attribute.price_new * quantity)
                 newCart.totalCart = quantity
                 await newCart.save()
                 return res.status(200).json({ message: "thêm mới giỏ hàng thành công" })
@@ -50,11 +50,11 @@ export const addToCart = async (req, res) => {
         } else {
             const checkProduct = carts.carts.find(item => (item.productId == productId && item.attributeId == attributeId))
             if (checkProduct) {
-                if (attribute.instock < quantity + checkProduct.quantity) {
+                if (Number(attribute.instock) < Number(quantity + checkProduct.quantity)) {
                     return res.status(400).json({ message: "sản phẩm không đủ hàng" })
                 } else {
                     checkProduct.quantity += quantity
-                    checkProduct.total = Number(product.price_new * checkProduct.quantity)
+                    checkProduct.total = Number(attribute.price_new * checkProduct.quantity)
                 }
             } else {
                 if (attribute.instock < quantity) {
@@ -64,7 +64,7 @@ export const addToCart = async (req, res) => {
                         productId: productId,
                         quantity: quantity,
                         attributeId: attributeId,
-                        total: Number(product.price_new * quantity),
+                        total: Number(attribute.price_new * quantity),
                         validateCart: true,
                         galleryId: galleryId
                     })
@@ -100,7 +100,7 @@ export const increaseProductCartQuantity = async (req,res)=>{
         // validate số lượng
         if (cartItem.quantity+1 <= attribute.instock) {
             cartItem.quantity++
-            cartItem.total = Number(cartItem.quantity * product.price_new)
+            cartItem.total = Number(cartItem.quantity * attribute.price_new)
             cart.totalPrice = cart.carts.reduce((total, item) => total + item.total, 0)
             cart.totalCart = cart.carts.reduce((total, item) => total + item.quantity, 0)
         }else{
@@ -130,7 +130,7 @@ export const decreaseProductCartQuantity  = async (req,res)=>{
         // validate số lượng
         if (cartItem.quantity-1 > 0) {
             cartItem.quantity--
-            cartItem.total = Number(cartItem.quantity * product.price_new)
+            cartItem.total = Number(cartItem.quantity * attribute.price_new)
         }else{
             const newCarts = cart.carts.filter((item)=> item._id !== cartItem._id)
             cart.carts = newCarts
@@ -162,7 +162,7 @@ export const onInputProductCartQuantity = async (req,res)=>{
         // validate số lượng
         if (quantity < attribute.instock && quantity>0) {
             cartItem.quantity = Number(quantity)
-            cartItem.total = Number(cartItem.quantity * product.price_new)
+            cartItem.total = Number(cartItem.quantity * attribute.price_new)
             cart.totalPrice = cart.carts.reduce((total, item) => total + item.total, 0)
             cart.totalCart = cart.carts.reduce((total, item) => total + item.quantity, 0)
         }else{

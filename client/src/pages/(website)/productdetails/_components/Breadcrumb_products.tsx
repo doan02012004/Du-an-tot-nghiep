@@ -5,7 +5,6 @@ type Props = {
 }
 
 const Breadcrumb_products = ({product}: Props) => {
-  console.log(product)
   return (
     <>
         {product && (

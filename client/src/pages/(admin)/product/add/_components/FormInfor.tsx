@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EditOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons'
-import { Button, Divider, Form, Input, InputNumber, InputRef, message, Radio, Select, Space, Switch } from 'antd'
+import { Button, Divider, Form, Input, InputRef, message, Radio, Select, Space, Switch } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
@@ -19,17 +19,6 @@ const FormInfor = () => {
     const productInfor = useSelector((state: any) => state.product.productInfor)
     const isSave = useSelector((state: any) => state.product.isSave)
     const dispath = useDispatch()
-    const onChangePriceNew: any = (priceNew: number) => {
-        const priceOld = form.getFieldValue('price_old')
-        if (priceNew > priceOld) {
-            form.setFieldValue('price_new', 0)
-            return message.error('Vui lòng không nhập cao hơn giá niêm yết')
-        }
-        if (priceOld) {
-            const discount = Math.ceil((priceOld - priceNew) / priceOld * 100)
-            form.setFieldValue('discount', discount)
-        }
-    }
     useEffect(() => {
         form.setFieldsValue(productInfor)
     }, [productInfor, form])
@@ -51,9 +40,13 @@ const FormInfor = () => {
         message.success("Bạn đã lưu thay đổi !")
     }
     return (
-        <>
-            {isSave && (
-                <div className='w-max mx-auto mb-2'>
+        <div className='border-b mb-3'>
+            <div className='w-max border-b border-red pr-5 mb-3'>
+                <h3 className='text-lg text-red'>Thông tin sản phẩm *</h3>
+            </div>
+          <div className='px-5'>
+          {isSave && (
+                <div className='w-full mb-2'>
                     <Button onClick={() => dispath(SetIsSave(false))} className='bg-yellow text-white'><EditOutlined />Chỉnh sửa thông tin</Button>
                 </div>
             )}
@@ -98,31 +91,6 @@ const FormInfor = () => {
                             />
                         </Form.Item>
                         <Form.Item
-                            label="Giá niêm yết (đ)"
-                            name={'price_old'}
-                            rules={[{ required: true, message: "Bắt buộc nhập" }]}
-                        >
-                            <InputNumber className="w-full" />
-                        </Form.Item>
-                        <div className="flex items-center gap-x-3">
-                            <Form.Item
-                                label="Giá ưu đãi (đ)"
-                                name={'price_new'}
-                                className="basis-1/2"
-                                rules={[{ required: true, message: "Bắt buộc nhập" }]}
-                            >
-                                <InputNumber className="w-full" onChange={onChangePriceNew} />
-                            </Form.Item>
-                            <Form.Item
-                                label="Khuyến mại (%)"
-                                name={'discount'}
-                                className="basis-1/2"
-                                rules={[{ required: true, message: "Bắt buộc nhập" }, { type: 'number', min: 0, message: "Không để giá trị âm" }]}
-                            >
-                                <InputNumber className="w-full" disabled />
-                            </Form.Item>
-                        </div>
-                        <Form.Item
                             label="Giới tính"
                             name={'gender'}
                             rules={[{ required: true, message: "Bắt buộc nhập" }]}
@@ -152,21 +120,22 @@ const FormInfor = () => {
                     </div>
 
                     {/* Mô tả  */}
-                    <div className="px-5 basis-1/2 w-max mx-auto ">
+                    <div className=" w-full mx-auto ">
                         <Form.Item
                             label="Mô tả sản phẩm"
                             name={'description'}
                         >
-                            <ReactQuill className="w-[500px]" />
+                            <ReactQuill className="w-full" />
                         </Form.Item>
                     </div>
-                    <Form.Item className='w-max mx-auto'>
-                        {!isSave && (<Button type="primary" htmlType="submit"><SaveOutlined />Lưu thay đổi</Button>)}
+                    <Form.Item >
+                        {!isSave && (<Button type="primary" htmlType="submit" ><SaveOutlined />Lưu thay đổi</Button>)}
                     </Form.Item>
                 </div>
             </Form>
+          </div>
 
-        </>
+        </div>
     )
 }
 

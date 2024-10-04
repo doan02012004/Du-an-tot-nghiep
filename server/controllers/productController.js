@@ -14,13 +14,16 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { min_price, max_price, size, color, sell_order } = req.query;
+    const { min_price,_limit,_page, max_price, size, color, sell_order } = req.query;
+    const limit = _limit|| 8 ;
+        const page = parseInt(_page)|| 1;
+        const skip = limit * (page-1)
     let sort = {};
     let query = {
-      $and: [
-        { price_new: { $gte: parseInt(min_price) || 0 } },
-        { price_new: { $lte: parseInt(max_price) || 10000000 } },
-      ],
+      // $and: [
+      //   { price_new: { $gte: parseInt(min_price) || 0 } },
+      //   { price_new: { $lte: parseInt(max_price) || 10000000 } },
+      // ],
     };
 
     if (sell_order) {
@@ -46,12 +49,20 @@ export const getAllProduct = async (req, res) => {
         },
       };
     }
-
+    console.log(query)
     const products = await ProductModel.find(query)
       .sort(sort)
+      .limit(limit)
+      .skip(skip)
       .populate("categoryId");
-
-    return res.status(200).json(products);
+      const total = await ProductModel.countDocuments(query)
+      const totalPage = Math.ceil(total/limit)
+    return res.status(200).json({
+      products,
+      total,
+      totalPage,
+      currentPage:page
+    });
   } catch (error) {
     return res.status(500).json({
       message: error.message,

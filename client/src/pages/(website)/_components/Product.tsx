@@ -17,6 +17,8 @@ const Product = ({ product }: Props) => {
   const [isOpenSize, setIsOpenSize] = useState(false)
   const [gallery, setGallery] = useState({} as Igallery)
   const [color, setColor] = useState('' as string)
+  const [variant,setVariant] = useState<Iattribute|null>(null)
+
   const [checkSizes, setCheckSizes] = useState([] as string[])
   const productId = useSelector((state: any) => state.product.productId)
   const dispath = useDispatch()
@@ -31,6 +33,8 @@ const Product = ({ product }: Props) => {
   useEffect(() => {
     setGallery(product?.gallerys[0])
     setColor(product.gallerys[0].name)
+    const newVariant = product?.attributes.reduce((current, item) =>item.price_new < current.price_new ? item: current, product?.attributes[0] )
+    setVariant(newVariant)
   }, [product])
 
   useEffect(() => {
@@ -82,9 +86,9 @@ const Product = ({ product }: Props) => {
             Best seller
           </span>
           {
-            product?.discount !== 0 && (
+            variant?.discount !== 0 && (
               <span className="absolute size-6 lg:size-10 rounded-full top-2 right-2 text-[12px]/[150%] font-semibold bg-black text-white flex justify-center items-center">
-                {product?.discount}%
+                {variant?.discount}%
               </span>
             )
           }
@@ -106,10 +110,10 @@ const Product = ({ product }: Props) => {
         <a href="#" className="block text-[12px]/[16px] lg:text-sm hover:text-rose-800 mb-2 lg:mb-[10px]">{product?.name}</a>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <span className=" text-sm font-semibold text-dark lg:text-base">{formatPrice(product?.price_new)}đ</span>
-            <span className=" text-[10px]/[150%] line-through lg:text-[12px]/[150%]">{formatPrice(product?.price_old)}đ</span>
+            <span className=" text-sm font-semibold text-dark lg:text-base">{variant? formatPrice(variant?.price_new): 0}đ</span>
+            <span className=" text-[10px]/[150%] line-through lg:text-[12px]/[150%]">{variant? formatPrice(variant?.price_old): 0}đ</span>
           </div>
-          <div className="relative btn-cart">
+          {/* <div className="relative btn-cart">
             <button onClick={() => onSetProductId(product)} className="card-add-to-cart size-5 text-[12px] border-dark border bg-dark rounded-tl-lg rounded-br-lg text-white transition duration-500 ease-in-out hover:bg-white lg:text-base hover:text-black lg:size-8">
               <i className="fa-solid fa-cart-arrow-down" />
             </button>
@@ -124,7 +128,7 @@ const Product = ({ product }: Props) => {
                 }
               </ul>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </>

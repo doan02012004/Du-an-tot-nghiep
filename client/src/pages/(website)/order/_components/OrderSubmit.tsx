@@ -35,7 +35,7 @@ const OrderSubmit = ({payment,address,cartUser,user}:Props) => {
                 productId:item.productId._id,
                 name:item.productId.name,
                 categoryId: item.productId.categoryId,
-                price:item.productId.price_new,
+                price:attribute?.price_new,
                 gallery,
                 attribute,
                 total:item.total,
