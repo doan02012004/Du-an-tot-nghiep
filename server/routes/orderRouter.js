@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOrder, deleteOrder, getAllOrder, getOrderById, updateOrderStatus } from "../controllers/orderController.js";
+import { createOrder, deleteOrder, getAllOrder, getOrderById, getOrderByUserId, updateOrderStatus } from "../controllers/orderController.js";
 
 
 const router = Router();
@@ -10,6 +10,8 @@ router.post("/",createOrder );
 router.get('/all', getAllOrder);
 // Route để lấy chi tiết một đơn hàng
 router.get('/:orderId', getOrderById);
+// Route để lấy don hang theo id user
+router.get('/order-manager/:userId', getOrderByUserId);
 // Route để cập nhật trạng thái đơn hàng
 router.put('/update-status', updateOrderStatus);
 

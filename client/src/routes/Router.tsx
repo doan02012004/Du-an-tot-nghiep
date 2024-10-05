@@ -32,6 +32,7 @@ import ListGallery from "../pages/(admin)/gallery/_components/ListGallery";
 import OrdersPage from "../pages/(admin)/order/Page";
 import OrderList from "../pages/(admin)/order/_components/OrderList";
 import OrderDetails from "../pages/(admin)/order/_components/OrderDetails";
+import OrderManager from "../pages/(website)/my-information/order-manager/Page";
 
 
 const Router = () => {
@@ -50,6 +51,7 @@ const Router = () => {
         <Route path="thanks" element={<ThanksPage />} />
         <Route path="customer" element={<MyInformation />}>
           <Route path="infor" element={<Account />} />
+          <Route path="order-manager" element={<OrderManager />} />
           <Route path="address_list" element={<AddressList />} />
         </Route>
       </Route>
