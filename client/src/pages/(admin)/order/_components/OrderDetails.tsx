@@ -1,5 +1,5 @@
-import { Button, Dropdown, Menu } from "antd";
 import { EditOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Menu, Table, TableProps } from "antd";
 import { Link, useParams } from "react-router-dom";
 import useOrderMutation from "../../../../common/hooks/orders/useOrderMutation";
 import { useOrderQuery } from "../../../../common/hooks/orders/useOrderQuery";
@@ -10,24 +10,26 @@ const OrderDetails = (props: Props) => {
     const { id } = useParams();
     const query = useOrderQuery(id);
     const mutation = useOrderMutation();
+    console.log(query.data)
     
     if (query.isLoading) return <div>Đang tải...</div>;
     if (query.isError) return <div>Lỗi khi tải chi tiết đơn hàng</div>;
 
     const order = query.data;
     const customer = order.customerInfor;
+    const items = order.items;
 
     // Map trạng thái đơn hàng sang tiếng Việt
     const getStatusText = (status: string) => {
         switch (status) {
             case 'pending':
-                return 'Đang chờ xử lý';
+                return 'Đang chờ xác nhận';
             case 'unpaid':
                 return 'Chưa thanh toán';
             case 'confirmed':
                 return 'Đã xác nhận';
             case 'shipped':
-                return 'Đã giao';
+                return 'Đang giao hàng';
             case 'delivered':
                 return 'Đã giao thành công';
             case 'cancelled':
@@ -49,20 +51,54 @@ const OrderDetails = (props: Props) => {
 
     const statusMenu = (
         <Menu>
-            <Menu.Item onClick={() => handleStatusChange('pending')}>Đang chờ xử lý</Menu.Item>
+            <Menu.Item onClick={() => handleStatusChange('pending')}>Đang chờ xác nhận</Menu.Item>
             <Menu.Item onClick={() => handleStatusChange('unpaid')}>Chưa thanh toán</Menu.Item>
             <Menu.Item onClick={() => handleStatusChange('confirmed')}>Đã xác nhận</Menu.Item>
-            <Menu.Item onClick={() => handleStatusChange('shipped')}>Đã giao</Menu.Item>
+            <Menu.Item onClick={() => handleStatusChange('shipped')}>Đang giao hàng</Menu.Item>
             <Menu.Item onClick={() => handleStatusChange('delivered')}>Đã giao thành công</Menu.Item>
             <Menu.Item onClick={() => handleStatusChange('cancelled')}>Đã hủy</Menu.Item>
             <Menu.Item onClick={() => handleStatusChange('received')}>Đã nhận hàng</Menu.Item>
         </Menu>
     );
 
+    // Cột cho bảng sản phẩm
+    const columns: TableProps<any>['columns'] = [
+        {
+            title: 'Ảnh',
+            dataIndex: ['gallery', 'avatar'],
+            render: (avatar: string) => <img src={avatar} alt="product" width="50" />,
+        },
+        {
+            title: 'Tên sản phẩm',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text: string) => <a className="text-black">{text}</a>,
+        },
+        {
+            title: 'Số lượng',
+            dataIndex: 'quantity',
+            key: 'quantity',
+        },
+        {
+            title: 'Màu sắc',
+            dataIndex: ['attribute', 'color'],
+        },
+        {
+            title: 'Size',
+            dataIndex: ['attribute', 'size'],
+        },
+        {
+            title: 'Giá tiền',
+            dataIndex: 'price',
+            key: 'price',
+            render: (price: number) => `${price.toLocaleString()} VND`,
+        },
+    ];
+
     return (
-        <>
+        <div className="overflow-y-auto h-[600px]">
             <div className="flex justify-between items-center mb-4">
-                <h6 className='font-semibold text-[20px]'>CHI TIẾT ĐƠN HÀNG #{order._id}</h6>
+                <h6 className='font-semibold text-[20px]'>CHI TIẾT ĐƠN HÀNG:</h6>
                 <Link to={`/admin/orders`}>
                     <Button type="primary">DANH SÁCH ĐƠN HÀNG</Button>
                 </Link>
@@ -71,7 +107,7 @@ const OrderDetails = (props: Props) => {
             <div className="grid grid-cols-2 gap-4 mt-4">
                 
                 {/* Thông tin đơn hàng */}
-                <div className="rounded bg-yellow-100 p-4 shadow-md">
+                <div className="rounded bg-yellow-100 p-4 shadow-md bg-sky-400">
                     <h3 className="font-bold text-lg mb-2">Thông tin đơn hàng</h3>
                     <hr />
                     <div className="pt-3">
@@ -96,20 +132,19 @@ const OrderDetails = (props: Props) => {
                             <p>Tổng giá:</p>
                             <p>{order.totalPrice.toLocaleString()} VND</p>
                         </div>
-                        <div className="grid grid-cols-2">
+                        {/* <div className="grid grid-cols-2">
                             <p>Phương thức thanh toán:</p>
-                            <p>
-                                {order.paymentMethod === 'cash' ? 'Tiền mặt' : 
+                            <p>{order.paymentMethod === 'cash' ? 'Tiền mặt' : 
                                 order.paymentMethod === 'momo' ? 'Momo' : 
                                 order.paymentMethod === 'atm' ? 'ATM' : 
                                 'Thẻ tín dụng'}
                             </p>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
                 {/* Thông tin người mua */}
-                <div className="rounded bg-green-100 p-4 shadow-md">
+                <div className="rounded bg-green-100 p-4 shadow-md bg-amber-400">
                     <h3 className="font-bold text-lg mb-2">Thông tin người mua</h3>
                     <hr />
                     <div className="pt-3">
@@ -133,34 +168,61 @@ const OrderDetails = (props: Props) => {
                 </div>
 
                 {/* Thông tin thanh toán */}
-                <div className="rounded bg-red-100 p-4 shadow-md">
+                <div className="rounded bg-red-100 p-4 shadow-md bg-slate-400">
                     <h3 className="font-bold text-lg mb-2">Thanh toán</h3>
                     <hr />
                     <div className="pt-3">
                         <div className="grid grid-cols-2">
                             <p>Phương thức thanh toán:</p>
-                            <p>{order.paymentMethod === 'cash' ? 'Thanh toán khi nhận hàng' : order.paymentMethod}</p>
+                            {/* <p>{order.paymentMethod === 'cash' ? 'Thanh toán khi nhận hàng' : order.paymentMethod}</p> */}
+                            <p>{order.paymentMethod === 'cash' ? 'Tiền mặt' : 
+                                order.paymentMethod === 'momo' ? 'Momo' : 
+                                order.paymentMethod === 'atm' ? 'ATM' : 
+                                'Thẻ tín dụng'}</p>
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Trạng thái thanh toán:</p>
-                            <p>{order.status === 'unpaid' ? 'Chưa thanh toán' : 'Đã thanh toán'}</p>
+                            {/* <p>{order.status === 'unpaid' ? 'Chưa thanh toán' : 'Đã thanh toán'}</p> */}
+                            <p>
+                            {order.paymentMethod === 'cash' && 
+                            (order.status === 'pending' || 
+                                order.status === 'unpaid' || 
+                                order.status === 'confirmed' || 
+                                order.status === 'shipped' || 
+                                order.status === 'cancelled') 
+                                ? 'Chưa thanh toán' 
+                                : 'Đã thanh toán'}
+                            </p>
                         </div>
                     </div>
                 </div>
 
                 {/* Thông tin giao hàng */}
-                <div className="rounded bg-blue-100 p-4 shadow-md">
+                <div className="rounded bg-blue-100 p-4 shadow-md bg-lime-400">
                     <h3 className="font-bold text-lg mb-2">Giao hàng</h3>
                     <hr />
                     <div className="pt-3">
                         <div className="grid grid-cols-2">
                             <p>Trạng thái giao hàng:</p>
-                            <p>{order.status === 'shipped' ? 'Đã giao' : 'Chưa giao'}</p>
+                            {/* <p>{order.status === 'shipped' ? 'Đã giao' : 'Chưa giao'}</p> */}
+                            <p>
+                            {(order.status === 'shipped' || 
+                                order.status === 'delivered' || 
+                                order.status === 'received') 
+                                ? 'Đã giao' 
+                                : 'Chưa giao'}
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
-        </>
+            {/* Chi tiết sản phẩm */}
+            <div className="rounded p-4 shadow-md">
+                <h3 className="font-bold text-lg mb-2">Chi tiết sản phẩm</h3>
+                <hr />
+                <Table columns={columns} dataSource={items} rowKey="_id" />
+            </div>
+        </div>
     );
 }
 

@@ -52,10 +52,10 @@ const OrderList = (props: Props) => {
 
     const getStatusLabel = (status: string) => {
         switch (status) {
-            case 'pending': return { label: 'Đang xử lý', color: 'orange' };
+            case 'pending': return { label: 'Đang chờ xác nhận', color: 'orange' };
             case 'unpaid': return { label: 'Chưa thanh toán', color: 'red' };
             case 'confirmed': return { label: 'Đã xác nhận', color: 'blue' };
-            case 'shipped': return { label: 'Đang giao', color: 'purple' };
+            case 'shipped': return { label: 'Đang giao hàng', color: 'purple' };
             case 'delivered': return { label: 'Đã giao hàng', color: 'green' };
             case 'received': return { label: 'Đã nhận', color: 'green' };
             case 'cancelled': return { label: 'Đã hủy', color: 'red' };
@@ -127,7 +127,9 @@ const OrderList = (props: Props) => {
             render: (createdAt: string) => {
                 const date = new Date(createdAt);
                 return date.toLocaleDateString('vi-VN');
-            }
+            },
+            sorter: (a: IOrder, b: IOrder) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+            defaultSortOrder: 'descend', // Sắp xếp theo thứ tự giảm dần (từ mới đến cũ)
         },
         {
             title: 'Tên khách hàng',
@@ -196,10 +198,10 @@ const OrderList = (props: Props) => {
                     style={{ width: 200, marginRight: 10 }}
                 >
                     <Option value="">Tất cả</Option>
-                    <Option value="pending">Đang xử lý</Option>
+                    <Option value="pending">Đang chờ xác nhận</Option>
                     <Option value="unpaid">Chưa thanh toán</Option>
                     <Option value="confirmed">Đã xác nhận</Option>
-                    <Option value="shipped">Đang giao</Option>
+                    <Option value="shipped">Đang giao hàng</Option>
                     <Option value="delivered">Đã giao hàng</Option>
                     <Option value="received">Đã nhận</Option>
                     <Option value="cancelled">Đã hủy</Option>
