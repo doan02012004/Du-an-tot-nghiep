@@ -10,7 +10,7 @@ const OrderDetails = (props: Props) => {
     const { id } = useParams();
     const query = useOrderQuery(id);
     const mutation = useOrderMutation();
-    console.log(query.data)
+    console.log(query.data);
     
     if (query.isLoading) return <div>Đang tải...</div>;
     if (query.isError) return <div>Lỗi khi tải chi tiết đơn hàng</div>;
@@ -41,11 +41,32 @@ const OrderDetails = (props: Props) => {
         }
     };
 
-    const handleStatusChange = (status: string) => {
+    // Hàm kiểm tra tính hợp lệ của việc chuyển đổi trạng thái
+    const validateStatusChange = (currentStatus: string, newStatus: string) => {
+        const invalidTransitions: Record<string, string[]> = {
+            cancelled: ['delivered', 'shipped', 'received'],
+            delivered: ['pending', 'unpaid', 'confirmed', 'cancelled'],
+            received: ['pending', 'unpaid', 'confirmed', 'shipped', 'cancelled'],
+        };
+
+        return !(invalidTransitions[currentStatus]?.includes(newStatus));
+    };
+
+    const handleStatusChange = (newStatus: string) => {
+        const currentStatus = order.status;
+        
+        // Kiểm tra tính hợp lệ của việc chuyển trạng thái
+        if (!validateStatusChange(currentStatus, newStatus)) {
+            // Hiển thị thông báo lỗi (có thể dùng notification hoặc alert)
+            alert(`Không thể chuyển từ trạng thái "${getStatusText(currentStatus)}" sang "${getStatusText(newStatus)}"`);
+            return;
+        }
+
+        // Nếu hợp lệ, thực hiện cập nhật trạng thái
         mutation.mutate({
             action: "updateStatus",
             orderId: order._id,
-            status,
+            status: newStatus,
         });
     };
 
