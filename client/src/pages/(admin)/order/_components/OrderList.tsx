@@ -13,7 +13,7 @@ type Props = {}
 
 const OrderList = (props: Props) => {
     const [Orders, SetOrders] = useState<IOrder[]>([]);
-    const query = useOrderQuery();
+    const query = useOrderQuery({isAdmin:true});
     const mutation = useOrderMutation();
 
     // Trạng thái tìm kiếm
@@ -46,9 +46,9 @@ const OrderList = (props: Props) => {
         onChange: onSelectChange,
     };
 
-    const handleAction = (key: React.Key) => {
-        console.log(`Chi tiết đơn hàng ${key}`);
-    };
+    // const handleAction = (key: React.Key) => {
+    //     console.log(`Chi tiết đơn hàng ${key}`);
+    // };
 
     const getStatusLabel = (status: string) => {
         switch (status) {
@@ -65,7 +65,7 @@ const OrderList = (props: Props) => {
 
     const handleSearch = () => {
         const filteredOrders = query.data.filter((order: IOrder) => {
-            const isMatchId = order._id.includes(searchParams.orderId);
+            const isMatchId = order.orderNumber.includes(searchParams.orderId);
             const isMatchCustomer = order.customerInfor.fullname.toLowerCase().includes(searchParams.customerName.toLowerCase());
             const isMatchStatus = !searchParams.status || order.status === searchParams.status;
             const isMatchDate = !searchParams.dateRange || (

@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react'
+import { useContext } from 'react';
+import { AppContext } from '../../../../common/contexts/AppContextProvider';
+import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
 import { formatPrice } from '../../../../common/utils/product';
-import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 
 
 const OrderManager = () => {
 
-  const storedUser = localStorage.getItem('tt_user');
-  const infoUser = storedUser ? JSON.parse(storedUser) : null;
+  const {currentUser} = useContext(AppContext)
+  // const storedUser = localStorage.getItem('tt_user');
+  // const infoUser = storedUser ? JSON.parse(storedUser) : null;
 
   const mutation = useOrderMutation();
 
-  const orders = useOrderQuery(undefined, infoUser._id)
+  const orders = useOrderQuery({userId:currentUser?._id})
 
   const renderOrderStatus = (status : string) => {
     switch (status) {

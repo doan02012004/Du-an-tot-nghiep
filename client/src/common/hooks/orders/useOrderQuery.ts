@@ -1,21 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchOrderById,fetchOrdersByUserId , fetchOrders } from '../../../services/order';
-import { Iuser } from '../../interfaces/auth';
+import { fetchOrderById, fetchOrders, fetchOrdersByUserId } from '../../../services/order';
 
-export const useOrderQuery = (orderId?: string, userId?:string) => {
+export const useOrderQuery = (options:{orderId?: string, userId?:string, isAdmin?:boolean}) => {
     return useQuery({
-        queryKey: ['ORDERS', orderId, userId],
+        queryKey: ['ORDERS', options],
         queryFn: async () => {
-            if (orderId) {
-                return await fetchOrderById(orderId);
-            }else if (userId) {
-                return await fetchOrdersByUserId(userId);
-            } else {
+            if (options?.orderId) {
+                return await fetchOrderById(options.orderId);
+            }
+             if (options?.userId) {
+                return await fetchOrdersByUserId(options?.userId);
+            }
+            if (options?.isAdmin) {
                 return await fetchOrders();
             }
         },
-        onError: (error) => {
-            console.error('Error fetching order data:', error);
-        },
+        enabled:!!options?.orderId||!!options?.userId||!!options?.isAdmin
     });
 };

@@ -8,7 +8,7 @@ type Props = {}
 
 const OrderDetails = (props: Props) => {
     const { id } = useParams();
-    const query = useOrderQuery(id);
+    const query = useOrderQuery({orderId:id});
     const mutation = useOrderMutation();
     console.log(query.data);
     
