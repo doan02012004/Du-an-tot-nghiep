@@ -13,7 +13,9 @@ type PropertiesUpdate = {
 const PropertiesUpdate = ({product}:PropertiesUpdate) => {
     return (
         <div className=''>
-            <h1 className='font-bold text-xl mb-3 text-center'>Thuộc tính</h1>
+           <div className='w-max border-b border-red pr-5 mb-3'>
+                <h3 className='text-lg text-red'>Thuộc tính sản phẩm *</h3>
+            </div>
             {/* Nhập thuộc tính  */}
             <ChoicePropertiesUpdate product={product}/>
             <AddProperties product={product}/>
@@ -21,7 +23,7 @@ const PropertiesUpdate = ({product}:PropertiesUpdate) => {
             <div className=' '>
                 {/* Setup ảnh cho màu sắc  */}
                 <div className=' mb-4 px-5  '>
-                    <h3  className='font-bold text-sm mb-2 text-center'>Màu sắc</h3>
+                <h3 className='font-bold text-base mb-2 text-red'>Màu sắc *</h3>
                     <div >
                         {product?.gallerys?.map((item:Igallery,index:number)=>(
                              <ColorItemUpdate data={item} product={product} key={index} />
@@ -30,7 +32,7 @@ const PropertiesUpdate = ({product}:PropertiesUpdate) => {
                 </div>
                 {/* Setup biến thể  */}
                 <div className='mb-4 px-5'>
-                    <h3  className='font-bold text-sm mb-2 text-center'>Các biến thể</h3>
+                <h3 className='font-bold text-base mb-2 text-red'>Các biến thể *</h3>
                     <div className='grid grid-cols-2 gap-4' >
                         {product?.attributes?.map((attribute:Iattribute,index:number)=>(
                              <AttributeItemUpdate data={attribute} product={product} key={index}/>

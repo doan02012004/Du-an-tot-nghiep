@@ -47,7 +47,7 @@ const Slider_product_details = ({product}: Props) => {
             setIsMobile(window.innerWidth)
         })
     }, []);
-    console.log(gallery)
+
   return (
     <>
         <div className='lg:flex lg:justify-between'>

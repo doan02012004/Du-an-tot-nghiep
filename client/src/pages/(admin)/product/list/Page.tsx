@@ -1,20 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Popconfirm, Space, Table } from 'antd'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { formatPrice } from '../../../../common/utils/product'
 import { useEffect, useState } from 'react'
-import { Iproduct } from '../../../../common/interfaces/product'
+import { Igallery, Iproduct } from '../../../../common/interfaces/product'
 import useProductQuery from '../../../../common/hooks/products/useProductQuery'
 import useProductMutation from '../../../../common/hooks/products/useProductMutation'
 
 const ListProduct = () => {
     const [products, setProducts] = useState([] as Iproduct[])
-    const productQuery = useProductQuery()
+    const productQuery = useProductQuery(undefined)
     const mutation = useProductMutation()
+  
+   
     useEffect(() => {
         if (productQuery.data) {
-            const newProducts = productQuery?.data?.map((item: Iproduct, index: number) => (
+            const newProducts = productQuery?.data?.products?.map((item: Iproduct, index: number) => (
                 {
                     ...item,
                     key: index + 1,
@@ -25,11 +27,13 @@ const ListProduct = () => {
     }, [productQuery.data])
     const columns = [
         {
-            title: "STT",
-            dataIndex: "key",
-            key: "key",
-            render: (key:number) => (
-                <p>{key}</p>
+            title: "Ảnh",
+            dataIndex: "gallerys",
+            key: "gallerys",
+            render: (gallerys:Igallery[]) => (
+                <div className='h-20 w-16 '>
+                    <img src={gallerys[0]?.avatar} alt="" className=' object-cover h-full w-full' />
+                </div>
             )
         },
         {
@@ -50,20 +54,12 @@ const ListProduct = () => {
         },
         {
             title: "Giá",
-            render: (product: any) => (
+            render: (product: any) => 
                 <div className='relative'>
-                    <p className='font-semibold text-red'>{formatPrice(product.price_new)}đ</p>
-                    <p className=' text-[12px]/[150%] absolute -top-2 right-0 line-through text-gray-400 '>{formatPrice(product.price_old)}đ</p>
+                    <p className='font-semibold text-red'>{formatPrice(product.attributes[0].price_new)}đ</p>
+                    <p className=' text-[12px]/[150%] absolute -top-2 right-0 line-through text-gray-400 '>{formatPrice(product.attributes[0].price_old)}đ</p>
                 </div>
-            )
-        },
-        {
-            title: "Giảm giá",
-            dataIndex: "discount",
-            key: "discount",
-            render: (discount: number) => (
-                <p className=' text-green-500'>{discount}%</p>
-            )
+            
         },
         {
             title: "Hoạt động",

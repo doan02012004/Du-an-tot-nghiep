@@ -25,10 +25,8 @@ const AddSizes = ({ product,setOption }: AddSizesProps) => {
   const attributeMutation = useAttributeMutation()
   const dispath = useDispatch()
   useEffect(() => {
-    if (product?.sizes?.length > 0) {
-      const newSizes = sizeLocal.filter((item: string) => !product?.sizes?.includes(item))
+      const newSizes = sizeLocal?.filter((item: string) => !product?.sizes?.includes(item))
       setSizes(newSizes)
-    }
     setColors(product?.colors)
   }, [product, colorQuery.data])
   useEffect(() => {
@@ -42,6 +40,10 @@ const AddSizes = ({ product,setOption }: AddSizesProps) => {
           newAttributes.push({
             size: size,
             color: color.name,
+            price_new:0,
+            price_old:0,
+            discount: 0,
+            isCheck: false,
             instock: 0
           });
         } else {
@@ -64,7 +66,7 @@ const AddSizes = ({ product,setOption }: AddSizesProps) => {
   }
   return (
     <div className='fixed top-0 z-20 left-0 w-full h-full bg-black/30 flex justify-center items-center'>
-      <div className='w-[630px] p-3 relative bg-gray-800 rounded-lg h-[90vh] overflow-y-scroll'>
+      <div className='w-[900px] p-3 relative bg-gray-800 rounded-lg h-[90vh] overflow-y-scroll'>
         <Button onClick={()=>{setOption(null)}} className='size-8 rounded-full bg-white absolute top-2 right-2'><CloseOutlined /></Button>
         <h1 className='text-white text-center font-bold text-lg mb-4'>Thêm size</h1>
         {/* Chọn size và màu  */}
@@ -99,14 +101,14 @@ const AddSizes = ({ product,setOption }: AddSizesProps) => {
           {/* Setup biến thể  */}
           <div className='mb-4 px-5'>
                     <h3  className='font-bold text-sm mb-2 text-center text-white'>Các biến thể</h3>
-                    <div className='grid grid-cols-2 gap-4' >
+                    <div >
                         {attributes?.map((attribute:Iattribute,index:number)=>(
                              <AttributeItem data={attribute} index={index} key={index}/>
                         ))}
                     </div>
           </div>
          <div className='w-max mx-auto'>
-         <Button type='primary' onClick={onSubmit}>Thêm size</Button>
+         { !attributes.some((item:Iattribute)=> item.isCheck == false) && choiceSizes.length > 0 && (<Button type='primary' onClick={onSubmit}>Thêm size</Button>)}
          </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { Iattribute, Igallery } from '../../../../common/interfaces/product'
 import useCartMutation from '../../../../common/hooks/carts/useCartMutation'
 import { IcartItem } from '../../../../common/interfaces/cart'
 import { Link } from 'react-router-dom'
+import { message } from 'antd'
 type Props = {
     cart: IcartItem
 }
@@ -30,9 +31,9 @@ const ItemTable = ({ cart }: Props) => {
         }
     },[cart?.galleryId])
     const increaseQuantity = ()=>{
+        if(Number(inputRef.current.value)+ 1 > attribute?.instock) return message.error("Đã đạt số lượng tối đa")
         const newCart  = {
             productId:cart.productId._id as string,
-
             attributeId: cart.attributeId as string,
         }
         cartMutation.mutate({action:"increase",cart:newCart})
@@ -86,7 +87,7 @@ const ItemTable = ({ cart }: Props) => {
                 </td>
                 <td className="align-top">
                     <div className="text-left">
-                        <span className='text-sm'>{formatPrice(cart?.productId?.price_new) }đ</span>
+                        <span className='text-sm'>{attribute? formatPrice(attribute?.price_new):0 }đ</span>
                         {/* <p className="text-red text-xs font-bold">( -60% )</p> */}
                     </div>
                 </td>

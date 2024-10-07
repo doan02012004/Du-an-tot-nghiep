@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Chat from './Chat';
+import iconChat from '../../../assets/icons/facebook-chat-icon.png'
 
 const ChatWidget = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -13,10 +14,11 @@ const ChatWidget = () => {
       {/* Icon chat ở góc phải */}
       <div
         onClick={toggleChat}
-        className="fixed bottom-5 right-5 w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer shadow-lg z-50"
+        className="fixed bottom-5 right-5 w-16 h-16 rounded-full flex items-center justify-center cursor-pointer shadow-lg z-50 bg-white"
       >
         <img
-          src="https://img.icons8.com/ios-filled/50/ffffff/chat.png"
+          src={iconChat}
+          className=' object-cover w-full h-full'
           alt="Chat Icon"
         />
       </div>

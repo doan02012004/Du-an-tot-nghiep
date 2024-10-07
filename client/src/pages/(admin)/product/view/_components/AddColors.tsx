@@ -57,6 +57,10 @@ const AddColors = ({ product,setOption }: AddPropertiesProps) => {
           newAttributes.push({
             size: size,
             color: color.name,
+            price_new:0,
+            price_old:0,
+            discount: 0,
+            isCheck: false,
             instock: 0
           });
         } else {
@@ -121,14 +125,15 @@ const AddColors = ({ product,setOption }: AddPropertiesProps) => {
         </div>
         <div className='mb-4 px-5'>
           <h3 className='font-bold text-sm mb-2 text-center text-white'>Các biến thể</h3>
-          <div className='grid grid-cols-2 gap-4' >
+          <div >
             {attributes?.map((attribute: Iattribute, index: number) => (
               <AttributeItem data={attribute} index={index} key={index} />
             ))}
           </div>
         </div>
         <div className='mx-auto w-max'>
-          <Button onClick={onSubmit} type='primary'><PlusOutlined /> Thêm</Button>
+          {!attributes.some((item:Iattribute)=> item.isCheck == false) && choiceColors.length > 0 && (<Button onClick={onSubmit} type='primary'><PlusOutlined /> Thêm</Button>)}
+          
         </div>
       </div>
     </div>
