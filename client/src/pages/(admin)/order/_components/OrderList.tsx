@@ -119,7 +119,7 @@ const OrderList = (props: Props) => {
     const columns: TableColumnsType<IOrder> = [
         {
             title: 'Mã đơn hàng',
-            dataIndex: '_id',
+            dataIndex: 'orderNumber',
         },
         {
             title: 'Ngày đặt hàng',

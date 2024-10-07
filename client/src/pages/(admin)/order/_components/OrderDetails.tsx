@@ -72,13 +72,48 @@ const OrderDetails = (props: Props) => {
 
     const statusMenu = (
         <Menu>
-            <Menu.Item onClick={() => handleStatusChange('pending')}>Đang chờ xác nhận</Menu.Item>
-            <Menu.Item onClick={() => handleStatusChange('unpaid')}>Chưa thanh toán</Menu.Item>
-            <Menu.Item onClick={() => handleStatusChange('confirmed')}>Đã xác nhận</Menu.Item>
-            <Menu.Item onClick={() => handleStatusChange('shipped')}>Đang giao hàng</Menu.Item>
-            <Menu.Item onClick={() => handleStatusChange('delivered')}>Đã giao thành công</Menu.Item>
-            <Menu.Item onClick={() => handleStatusChange('cancelled')}>Đã hủy</Menu.Item>
-            <Menu.Item onClick={() => handleStatusChange('received')}>Đã nhận hàng</Menu.Item>
+            <Menu.Item 
+                onClick={() => handleStatusChange('pending')} 
+                disabled={!validateStatusChange(order.status, 'pending')}
+            >
+                Đang chờ xác nhận
+            </Menu.Item>
+            <Menu.Item 
+                onClick={() => handleStatusChange('unpaid')} 
+                disabled={!validateStatusChange(order.status, 'unpaid')}
+            >
+                Chưa thanh toán
+            </Menu.Item>
+            <Menu.Item 
+                onClick={() => handleStatusChange('confirmed')} 
+                disabled={!validateStatusChange(order.status, 'confirmed')}
+            >
+                Đã xác nhận
+            </Menu.Item>
+            <Menu.Item 
+                onClick={() => handleStatusChange('shipped')} 
+                disabled={!validateStatusChange(order.status, 'shipped')}
+            >
+                Đang giao hàng
+            </Menu.Item>
+            <Menu.Item 
+                onClick={() => handleStatusChange('delivered')} 
+                disabled={!validateStatusChange(order.status, 'delivered')}
+            >
+                Đã giao thành công
+            </Menu.Item>
+            <Menu.Item 
+                onClick={() => handleStatusChange('cancelled')} 
+                disabled={!validateStatusChange(order.status, 'cancelled')}
+            >
+                Đã hủy
+            </Menu.Item>
+            <Menu.Item 
+                onClick={() => handleStatusChange('received')} 
+                disabled={!validateStatusChange(order.status, 'received')}
+            >
+                Đã nhận hàng
+            </Menu.Item>
         </Menu>
     );
 
@@ -134,7 +169,7 @@ const OrderDetails = (props: Props) => {
                     <div className="pt-3">
                         <div className="grid grid-cols-2">
                             <p>Mã đơn hàng:</p>
-                            <p>{order._id}</p>
+                            <p>{order.orderNumber}</p>
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Ngày tạo:</p>
@@ -153,14 +188,6 @@ const OrderDetails = (props: Props) => {
                             <p>Tổng giá:</p>
                             <p>{order.totalPrice.toLocaleString()} VND</p>
                         </div>
-                        {/* <div className="grid grid-cols-2">
-                            <p>Phương thức thanh toán:</p>
-                            <p>{order.paymentMethod === 'cash' ? 'Tiền mặt' : 
-                                order.paymentMethod === 'momo' ? 'Momo' : 
-                                order.paymentMethod === 'atm' ? 'ATM' : 
-                                'Thẻ tín dụng'}
-                            </p>
-                        </div> */}
                     </div>
                 </div>
 
@@ -195,7 +222,6 @@ const OrderDetails = (props: Props) => {
                     <div className="pt-3">
                         <div className="grid grid-cols-2">
                             <p>Phương thức thanh toán:</p>
-                            {/* <p>{order.paymentMethod === 'cash' ? 'Thanh toán khi nhận hàng' : order.paymentMethod}</p> */}
                             <p>{order.paymentMethod === 'cash' ? 'Tiền mặt' : 
                                 order.paymentMethod === 'momo' ? 'Momo' : 
                                 order.paymentMethod === 'atm' ? 'ATM' : 
@@ -203,7 +229,6 @@ const OrderDetails = (props: Props) => {
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Trạng thái thanh toán:</p>
-                            {/* <p>{order.status === 'unpaid' ? 'Chưa thanh toán' : 'Đã thanh toán'}</p> */}
                             <p>
                             {order.paymentMethod === 'cash' && 
                             (order.status === 'pending' || 
@@ -225,7 +250,6 @@ const OrderDetails = (props: Props) => {
                     <div className="pt-3">
                         <div className="grid grid-cols-2">
                             <p>Trạng thái giao hàng:</p>
-                            {/* <p>{order.status === 'shipped' ? 'Đã giao' : 'Chưa giao'}</p> */}
                             <p>
                             {(order.status === 'shipped' || 
                                 order.status === 'delivered' || 
