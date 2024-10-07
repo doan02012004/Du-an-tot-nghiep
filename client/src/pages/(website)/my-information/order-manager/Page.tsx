@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
 import { formatPrice } from '../../../../common/utils/product';
+import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 
 
 const OrderManager = () => {
@@ -8,11 +9,30 @@ const OrderManager = () => {
   const storedUser = localStorage.getItem('tt_user');
   const infoUser = storedUser ? JSON.parse(storedUser) : null;
 
-
+  const mutation = useOrderMutation();
 
   const orders = useOrderQuery(undefined, infoUser._id)
 
-  console.log(orders.data);
+  const renderOrderStatus = (status : string) => {
+    switch (status) {
+      case 'pending':
+        return 'Đơn chờ xử lý'
+      case 'unpaid':
+        return 'Chưa thanh toán';
+      case 'confirmed':
+        return 'Đã xác nhận';
+      case 'shipped':
+        return 'Đã giao';
+      case 'delivered':
+        return 'Đã giao thành công';
+      case 'cancelled':
+        return 'Đã hủy';
+      case 'received':
+        return 'Đã nhận hàng';
+      default:
+        return 'Không xác định';
+    }
+  };
 
   return (
     <div className="w-full">
@@ -48,8 +68,8 @@ const OrderManager = () => {
             </tr>
           </thead>
           <tbody>
-            {orders && orders?.data?.map((order: any, index: number) => 
-            { 
+            {orders && orders?.data?.map((order: any, index: number) => {
+              console.log(order);
               const date = new Date(order.createdAt);
               const formattedDate = date.toLocaleString('vi-VN', {
                 year: 'numeric',
@@ -60,21 +80,29 @@ const OrderManager = () => {
                 second: '2-digit'
               });
               return (
-              <tr className="flex flex-wrap lg:table-row ">
-                <td className="flex-[50%] lg:table-cell pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']  underline lg:no-underline">{order.orderNumber}</td>
-                <td className="lg:table-cell  pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']">{formattedDate}</td>
-                <td className="order-4 pt-5 py-3 lg:border-t-[1px] border-b-[1px] lg:border-['#f7f8f9']">
-                  <div className="flex items-center gap-2">
-                    <img className="w-4 h-4" src="public/icons/loading.svg" alt="" srcSet="" />
-                    <span>{order.status}</span>
-                  </div>
-                </td>
-                <td className="order-2 flex-[100%] lg:table-cell pt-5 py-3 lg:border-t-[1px] lg:border-b-[1px] lg:border-['#f7f8f9']">{
-                    order.items.map((item : any ) => (item.name))
+                <tr className="flex flex-wrap lg:table-row ">
+                  <td className="flex-[50%] lg:table-cell pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']  underline lg:no-underline">{order.orderNumber}</td>
+                  <td className="lg:table-cell  pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']">{formattedDate}</td>
+                  <td className="order-4 pt-5 py-3 lg:border-t-[1px] border-b-[1px] lg:border-['#f7f8f9']">
+                    <div className="flex items-center gap-2">
+                      <img className="w-4 h-4" src="public/icons/loading.svg" alt="" srcSet="" />
+                      <span>{renderOrderStatus(order.status)}</span>
+                    </div>
+                    {order.status === "pending" && (
+                      <div onClick={() => mutation.mutate({ action: "updateStatus", orderId: order._id, status: "cancelled" })} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
+                        Hủy đơn
+                      </div>
+                    )}
+                  </td>
+                  <td className="order-2 flex-[100%] lg:table-cell pt-5 py-3 lg:border-t-[1px] lg:border-b-[1px] lg:border-['#f7f8f9']">{
+                    order.items.map((item: any) => (
+                      <div className="">{item.quantity}x {item.name}</div>
+                    ))
                   }</td>
-                <td className="order-3 flex-[50%] pt-5 py-3 lg:border-t-[1px] border-b-[1px] font-bold border-['#f7f8f9']"> {formatPrice(order.totalPrice)}₫</td>
-              </tr>
-            )})}
+                  <td className="order-3 flex-[50%] pt-5 py-3 lg:border-t-[1px] border-b-[1px] font-bold border-['#f7f8f9']"> {formatPrice(order.totalPrice)}₫</td>
+                </tr>
+              )
+            })}
 
           </tbody>
         </table>

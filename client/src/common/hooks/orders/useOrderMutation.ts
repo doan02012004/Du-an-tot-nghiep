@@ -8,7 +8,8 @@ const useOrderMutation = () => {
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey:['ORDERS'],
-        mutationFn: async(option:{action:string,newOrder:any, orderData?: any; orderId?: string; status?: string}) =>{
+        mutationFn: async(option:{action:string,newOrder?:any, orderData?: any; orderId?: string; status?: string}) =>{
+            console.log(option)
             switch (option.action) {
                 case "create":
                     try {
@@ -16,10 +17,11 @@ const useOrderMutation = () => {
                         return data
                     } catch (error) {
                         console.log(error)
-                    }
+                    }   
                     break;
                     case 'updateStatus':
                         try {
+                            console.log(1)
                             const response = await updateOrderStatus(option.orderId, option.status);
                             message.success('Cập nhật trạng thái thành công');
                             return response.data;
