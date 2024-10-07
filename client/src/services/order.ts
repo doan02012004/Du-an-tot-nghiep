@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import instance from "../common/config/axios"
+import { Iuser } from "../common/interfaces/auth"
 
 export const createOrder = async(option:any) =>{
     try {
@@ -13,6 +14,12 @@ export const createOrder = async(option:any) =>{
 // Lấy danh sách đơn hàng
 export const fetchOrders = async () => {
     const response = await instance.get('/orders/all');
+    return response.data;
+};
+
+// Lấy don hang theo user id
+export const fetchOrdersByUserId = async (userId : string) => {
+    const response = await instance.get(`/orders/order-manager/${userId}`);
     return response.data;
 };
 

@@ -4,6 +4,7 @@ import { Modal, message } from 'antd'
 import { logoutUser } from '../../../services/auth'
 import { useDispatch } from 'react-redux'
 import { logoutFailed, logoutStart, logoutSuccess } from '../../../common/redux/features/authSlice'
+import { Link } from 'react-router-dom'
 // import { useNavigate } from 'react-router-dom'
 
 const ActionsSupportUser = () => {
@@ -126,10 +127,10 @@ const ActionsSupportUser = () => {
                                 </a>
                             </li>
                             <li className="group mb-6">
-                                <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
+                                <Link to={"customer/order-manager"} className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
                                     <span className="mr-3 "><i className="fa-solid fa-arrows-rotate" /></span>
                                     Quản lý đơn hàng
-                                </a>
+                                </Link>
                             </li>
                             <li className="group mb-6">
                                 <a href="/customer/address_list" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">

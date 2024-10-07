@@ -33,7 +33,7 @@ export const getAllOrder = async (req, res) => {
 };
 
 export const getOrderById = async (req, res) => {
-    const { orderId } = req.params;
+    const { orderId} = req.params;
 
     try {
         // Tìm đơn hàng theo ID và populate thông tin người dùng và sản phẩm
@@ -41,6 +41,22 @@ export const getOrderById = async (req, res) => {
             .populate('userId', 'fullname email phone')
             .populate('items.productId', 'name price');
 
+        if (!order) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
+        }
+
+        return res.status(StatusCodes.OK).json(order);
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+};
+export const getOrderByUserId = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        console.log(userId);
+        const order = await orderModel.find({userId})
+
+        console.log(order)    
         if (!order) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
         }

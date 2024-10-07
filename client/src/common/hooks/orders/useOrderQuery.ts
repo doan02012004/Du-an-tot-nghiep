@@ -1,12 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchOrderById, fetchOrders } from '../../../services/order';
+import { fetchOrderById,fetchOrdersByUserId , fetchOrders } from '../../../services/order';
+import { Iuser } from '../../interfaces/auth';
 
-export const useOrderQuery = (orderId?: string) => {
+export const useOrderQuery = (orderId?: string, userId?:string) => {
     return useQuery({
-        queryKey: ['ORDERS', orderId],
+        queryKey: ['ORDERS', orderId, userId],
         queryFn: async () => {
             if (orderId) {
                 return await fetchOrderById(orderId);
+            }else if (userId) {
+                return await fetchOrdersByUserId(userId);
             } else {
                 return await fetchOrders();
             }
