@@ -2,20 +2,17 @@
 import { message } from "antd";
 import instance from "../common/config/axios";
 import { Isignin, Isignup, Iuser } from "../common/interfaces/auth";
-import { loginFailed, loginStart, loginSuccess, registerFailed, registerStart, registerSuccess } from "../common/redux/features/authSlice";
+import { registerFailed, registerStart, registerSuccess } from "../common/redux/features/authSlice";
 
 
 
-export const loginUser = async (user: Isignin, dispatch: any, navigate: any, setAccesToken: any, setIsLogin: any) => {
-    dispatch(loginStart())
+export const loginUser = async (user: Isignin) => {
+  
     try {
         const res = await instance.post("/users/login", user)
-        dispatch(loginSuccess(res.data))
-        setAccesToken(res.data.accessToken)
-        setIsLogin(true)
-        navigate("/")
+        return res.data
     } catch (error) {
-        dispatch(loginFailed())
+        console.log(error)
     }
 }
 

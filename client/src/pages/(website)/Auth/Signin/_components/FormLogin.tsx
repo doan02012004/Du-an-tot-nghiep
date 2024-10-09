@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useContext, useEffect, useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
+
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { loginUser } from '../../../../../services/auth'
@@ -19,7 +19,7 @@ type LoginFormInputs = {
 const FormLogin = ({ state, onChangeForm }: FormLoginProps) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 576)
     const formRef = useRef<any>()
-    const { setAccesToken, setIsLogin } = useContext(AppContext)
+    const { setAccesToken, setIsLogin,previousURL,setPreviousURL } = useContext(AppContext)
 
     const {
         register,
@@ -48,16 +48,29 @@ const FormLogin = ({ state, onChangeForm }: FormLoginProps) => {
             formRef.current.style.height = 'auto'
         }
     }, [state, isMobile])
-
-    const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const onSubmit = (data: LoginFormInputs) => {
-        const newUser = {
-            email: data.email,
-            password: data.password
+    const onSubmit = async (data: LoginFormInputs) => {
+        try {
+            const newUser = {
+                email: data.email,
+                password: data.password
+            }
+            const res = await loginUser(newUser)
+            if (res) {
+                setAccesToken(res.accessToken)
+                setIsLogin(true)
+                if(previousURL){
+                    navigate(`${previousURL}`)
+                    setPreviousURL(null)
+                }else{
+                    navigate("/")
+                }
+              
+            }
+        } catch (error) {
+            console.log(error)
         }
-        loginUser(newUser, dispatch, navigate, setAccesToken, setIsLogin)
     }
 
     return (
@@ -71,7 +84,7 @@ const FormLogin = ({ state, onChangeForm }: FormLoginProps) => {
             </span>
             {/* Mobile */}
             <p className="text-base hidden pb-3 lg:text-xl font-semibold lg:cursor-auto lg:block">
-                Bạn đã có tài khoản 
+                Bạn đã có tài khoản
             </p>
             <div
                 ref={formRef}

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Breadcrumb_products from "./_components/Breadcrumb_products";
 import Product_information from "./_components/Product_information";
 import Slider_product_details from "./_components/Slider_product_details";
@@ -20,12 +21,19 @@ type Props = {}
 const ProductDetailsPage = (props: Props) => {
   const {id} = useParams()
   const query = useProductQuery(id)
-  const { choiceColor,setChoiceColor } = useContext(AppContext);
+  const { setChoiceColor } = useContext(AppContext);
   useEffect(()=>{
     if(query.data){
       setChoiceColor(query.data.colors[0].name)
     }
   },[query.data,id])
+  useEffect(()=>{
+    // Cuộn lên đầu trang một cách mượt mà khi component được mount
+       window.scrollTo({
+        top: 0,
+        behavior: 'smooth', // Thêm cuộn mượt
+      });
+  },[id])
   return (
     <div>
         <div>

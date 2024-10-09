@@ -44,6 +44,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [accessToken, setAccesToken] = useLocalStorage('accessToken', null)
   const [isLogin, setIsLogin] = useLocalStorage('login', null)
   const [location, setLocation] = useLocalStorage('location', null)
+  const [previousURL , setPreviousURL ] = useLocalStorage('previousURL', null)
   const socket: any = useRef(null)
   const [adminId,] = useState(adminId_env)
   // Interceptor request axios
@@ -135,7 +136,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     }
   }, [socket.current,currentUser])
   return (
-    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location, adminId ,socket}}>
+    <AppContext.Provider value={{ previousURL,setPreviousURL,collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location, adminId ,socket}}>
       {children}
     </AppContext.Provider>
   )

@@ -7,19 +7,22 @@ import { AppContext } from '../../../../common/contexts/AppContextProvider'
 import { formatPrice } from '../../../../common/utils/product'
 import { InewCart } from '../../../../common/interfaces/cart'
 import useCartMutation from '../../../../common/hooks/carts/useCartMutation'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 type Props = {
     product: Iproduct
 }
 
 const Product_information = ({ product }: Props) => {
-    const { choiceColor, setChoiceColor } = useContext(AppContext)
+    const { choiceColor, setChoiceColor,currentUser,setPreviousURL } = useContext(AppContext)
     const [minPrice, setMinPrice] = useState<number | null>(null)
     const [maxPrice, setMaxPrice] = useState<number | null>(null)
     const [choiceSize, setChoiceSize] = useState('')
+    const location = useLocation()
     const [curentAttribute, setCurentAttribute] = useState<Iattribute | null>(null)
     const inputRef = useRef<any>(null)
     const cartMutation = useCartMutation()
+    const navigate = useNavigate()
     useEffect(() => {
         if (product && product.colors && choiceColor === "") {
             setChoiceColor(product.colors[0]?.name || ""); // Đảm bảo giá trị không gây lỗi
@@ -116,13 +119,18 @@ const Product_information = ({ product }: Props) => {
         const gallery = product?.gallerys.find((item:Igallery)=> item.name == curentAttribute?.color)
         if(!curentAttribute) return message.error("Vui lòng chọn size")
         if(!gallery) return message.error("Vui lòng thao tác lại")
+        if(!currentUser){
+            setPreviousURL(location.pathname)
+            navigate('/signin')
+            return
+        }
         const newCart = {
           productId: product._id,
           quantity: Number(inputRef.current.value),
           attributeId: curentAttribute?._id,
           galleryId: gallery?._id
         } as InewCart
-        console.log(newCart)
+       
         cartMutation.mutate({action:'addtocart', cart: newCart})
     }
 
