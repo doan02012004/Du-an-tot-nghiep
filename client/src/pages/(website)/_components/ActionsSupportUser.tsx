@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../../common/contexts/AppContextProvider'
 import { Modal, message } from 'antd'
 import { logoutUser } from '../../../services/auth'
@@ -9,10 +9,10 @@ import { logoutFailed, logoutStart, logoutSuccess } from '../../../common/redux/
 const ActionsSupportUser = () => {
     const [actionSupport, setActionSupport] = useState(false)
     const [actionUser, setActionUser] = useState(false)
-    const { accessToken, setAccesToken, setCurrentUser, setIsLogin } = useContext(AppContext)
+    const { accessToken, setAccesToken, setCurrentUser, setIsLogin, currentUser } = useContext(AppContext)
+    console.log(currentUser)
     const { confirm } = Modal;
     const dispatch = useDispatch()
-
     const onHandeActionSupport = () => {
         setActionSupport(!actionSupport)
         setActionUser(false)
@@ -21,8 +21,6 @@ const ActionsSupportUser = () => {
         setActionUser(!actionUser)
         setActionSupport(false)
     }
-
-
     const onHandleLogout = async () => {
         confirm({
             title: 'Bạn có chắc chắn muốn đăng xuất không?',
@@ -32,17 +30,17 @@ const ActionsSupportUser = () => {
             cancelText: 'Hủy',
             onOk: async () => {
                 dispatch(logoutStart());
-    
+
                 try {
                     const data = await logoutUser();
-    
+
                     if (data.SC == 1) {
                         setCurrentUser({});
                         setIsLogin(false);
                         setAccesToken(null);
                         window.location.reload();
                     }
-    
+
                     dispatch(logoutSuccess());
                 } catch (error) {
                     message.error('Đăng xuất thất bại');
@@ -125,6 +123,17 @@ const ActionsSupportUser = () => {
                                     Thông tin tài khoản
                                 </a>
                             </li>
+                            {currentUser && currentUser.role === 'admin' && (
+                                <li className="group mb-6">
+                                    <a href="/" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
+                                        <span className="mr-3">
+                                            <i className="fa-solid fa-user-pen"></i>
+                                        </span>
+                                        Admin
+                                    </a>
+                                </li>
+                                ) 
+                            }
                             <li className="group mb-6">
                                 <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
                                     <span className="mr-3 "><i className="fa-solid fa-arrows-rotate" /></span>
