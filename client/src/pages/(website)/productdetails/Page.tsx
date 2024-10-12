@@ -12,12 +12,20 @@ import useProductQuery from "../../../common/hooks/products/useProductQuery";
 import Banner from "./_components/Banner";
 import Similar_product from "./_components/Similar_product";
 import Viewed_products from "./_components/Viewed_products";
+import { useContext, useEffect } from "react";
+import { AppContext } from "../../../common/contexts/AppContextProvider";
 
 type Props = {}
 
 const ProductDetailsPage = (props: Props) => {
   const {id} = useParams()
   const query = useProductQuery(id)
+  const { choiceColor,setChoiceColor } = useContext(AppContext);
+  useEffect(()=>{
+    if(query.data){
+      setChoiceColor(query.data.colors[0].name)
+    }
+  },[query.data,id])
   return (
     <div>
         <div>

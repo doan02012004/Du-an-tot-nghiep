@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons'
 import { Button, message } from 'antd'
 import { useEffect, useState } from 'react'
 import {  useSelector } from 'react-redux'
-import { Igallery } from '../../../../../common/interfaces/product'
+import { Iattribute, Igallery } from '../../../../../common/interfaces/product'
 
 import useProductMutation from '../../../../../common/hooks/products/useProductMutation'
 import useColorQuery from '../../../../../common/hooks/color/useColorQuery'
@@ -24,12 +24,15 @@ const CreateProduct = () => {
     const isSave = useSelector((state:any)=>state.product.isSave)
     const colorQuery = useColorQuery()
     useEffect(()=>{
-       if(gallerys.length == 0){
+       if(gallerys.length == 0 || attributes?.length == 0 ){
         setCheckAdd(false)
        }else{
-        setCheckAdd(!gallerys?.some((item:Igallery)=> item.check == false))
+            if(!gallerys?.some((item:Igallery)=> item.check == false) && !attributes?.some((item:Iattribute)=> item.isCheck == false)){
+                setCheckAdd(true)
+            }
        }
-    },[gallerys])
+    },[gallerys,attributes])
+
     useEffect(()=>{
         const newColor = colorQuery?.data?.filter((item:IColor)=> colors.includes(item._id) )
         setNewColors(newColor)
@@ -39,6 +42,8 @@ const CreateProduct = () => {
             return message.error("Vui lòng nhập dữ liệu thông tin sản phẩm")
         }
         if(isSave == false) return  message.error("Bạn chưa lưu thay đổi thông tin sản phẩm")
+        const check = attributes.some((item:Iattribute) => item.isCheck == false)
+        if(check) return message.error("Bạn chưa lưu thay đổi thuộc tính")
         const newProduct = {
             ...productInfor,
             sizes:sizes,

@@ -27,7 +27,7 @@ const ProductPage = () => {
           <div className="main-prod lg:mb-[54px]">
             <Top_main_prod  />
             {/* <!-------------------------------------------------------end top-main-prod-----------------------------  --> */}
-            <Sub_main_prod products={response.data} />
+            <Sub_main_prod data={response?.data} />
 
           </div>
         </section>

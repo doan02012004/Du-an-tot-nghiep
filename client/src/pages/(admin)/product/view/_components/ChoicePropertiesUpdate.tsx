@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Iproduct } from '../../../../../common/interfaces/product'
 import { IColor } from '../../../../../common/interfaces/Color'
-import { Button, Popconfirm } from 'antd'
+import { Button, message, Popconfirm } from 'antd'
 import useAttributeMutation from '../../../../../common/hooks/products/useAttributeMutation'
 type PropertiesUpdateProps = {
     product:Iproduct
@@ -33,7 +33,13 @@ const ChoicePropertiesUpdate = ({product}:PropertiesUpdateProps) => {
                 okText="Có"
                 cancelText="Không"
                 key={index}
-                onConfirm={()=> attributeMutation.mutate({action:'deleteColor',color:item,productId:product._id})}
+                onConfirm={()=> {
+                  if(product?.colors?.length == 1){
+                    return message.error("Vui lòng không xóa hết size")
+                  }else{
+                    attributeMutation.mutate({action:'deleteColor',color:item,productId:product._id})
+                  }
+                }}
               >
                 <Button>{item.name}</Button>
               </Popconfirm>

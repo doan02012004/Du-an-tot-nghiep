@@ -1,6 +1,5 @@
 
-import useCartQuery from '../../../../common/hooks/carts/useCartQuery'
-import { ICart } from '../../../../common/interfaces/cart'
+import { ICart, IcartItem } from '../../../../common/interfaces/cart'
 import ItemCartMobile from './ItemCartMobile'
 import ItemTable from './ItemTable'
 
@@ -24,7 +23,7 @@ const Table = ({cartUser}:Props) => {
                         </tr>
                     </thead>
                     {
-                        cartUser?.carts?.map((item:any)=>(
+                        cartUser?.carts?.map((item:IcartItem)=>(
                             <ItemTable cart={item} key={item.attributeId}/>
                         ))
                     }
@@ -32,7 +31,7 @@ const Table = ({cartUser}:Props) => {
                 </table>
             </div>
             {
-                cartUser?.carts?.map((item:any)=>(
+                cartUser?.carts?.map((item:IcartItem)=>(
                     <ItemCartMobile cart={item} key={item.attributeId}/>
                 ))
             }
