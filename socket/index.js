@@ -13,7 +13,7 @@ io.on("connection", (socket) => {
                     ...user,
                     socketId: socket.id
                 })
-                console.log(activeUsers)
+               
             }
         }
         io.emit('getUsers', activeUsers)
@@ -39,6 +39,11 @@ io.on("connection", (socket) => {
     })
   
 //    io.emit('welcome', 'Welcome to the chat')
+    // update product price theo time
+    socket.on("adminUpdatePrice",(updatedProduct)=>{
+        // Phát sự kiện 'updateAttributeProduct' đến tất cả các client đang kết nối
+        io.emit('adminUpdateProduct',updatedProduct)
+    })
 })
 
 

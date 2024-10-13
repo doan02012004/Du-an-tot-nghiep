@@ -105,7 +105,8 @@ export const updateAttributeProduct = async (req, res) => {
     product.attributes = newAttributes;
     await product.save();
     return res.status(200).json({
-      message: "Cập nhật số lượng thành công",
+      data:product,
+      message: "Cập nhật thuộc tính thành công",
     });
   } catch (error) {
     return res.status(500).json({

@@ -110,8 +110,8 @@ export const updateProductAttribute = async (
       `/products/updateAtb/${productId}`,
       attribute
     );
-    message.success("Cập nhật số lượng thành công");
-    return res.data;
+    message.success("Cập nhật thuộc tính thành công");
+    return res;
   } catch (error) {
     console.log(error);
     message.error("Cập nhật số lượng thất bại");
