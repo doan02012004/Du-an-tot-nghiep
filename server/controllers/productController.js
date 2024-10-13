@@ -14,10 +14,11 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { min_price,_limit,_page, max_price, size, color, sell_order } = req.query;
-    const limit = _limit|| 8 ;
-        const page = parseInt(_page)|| 1;
-        const skip = limit * (page-1)
+    const { min_price, _limit, _page, max_price, size, color, sell_order } =
+      req.query;
+    const limit = _limit || 8;
+    const page = parseInt(_page) || 1;
+    const skip = limit * (page - 1);
     let sort = {};
     let query = {
       // $and: [
@@ -49,19 +50,19 @@ export const getAllProduct = async (req, res) => {
         },
       };
     }
-    console.log(query)
+    console.log(query);
     const products = await ProductModel.find(query)
       .sort(sort)
       .limit(limit)
       .skip(skip)
-      .populate("categoryId");
-      const total = await ProductModel.countDocuments(query)
-      const totalPage = Math.ceil(total/limit)
+      .populate("categoryId brandId");
+    const total = await ProductModel.countDocuments(query);
+    const totalPage = Math.ceil(total / limit);
     return res.status(200).json({
       products,
       total,
       totalPage,
-      currentPage:page
+      currentPage: page,
     });
   } catch (error) {
     return res.status(500).json({
@@ -171,6 +172,7 @@ export const updateInforProduct = async (req, res) => {
       {
         name: req.body.name,
         categoryId: req.body.categoryId,
+        brandId: req.body.brandId,
         discount: req.body.discount,
         price_new: req.body.price_new,
         price_old: req.body.price_old,
