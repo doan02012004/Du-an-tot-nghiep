@@ -56,10 +56,28 @@ const MiniCart = () => {
 
     }, [cartUser?.carts])
     useEffect(()=>{
-        socket.current.on("adminUpdateProduct",(newProduct:Iproduct)=>{
-            console.log(newProduct)
-        })
-    },[socket])
+        if(socket?.current){
+            socket?.current?.on("adminUpdateProduct",(option:{newProduct:Iproduct,attributeId:string})=>{
+                if(carts.length> 0){
+                    const cart = carts.find((cart:IcartItem)=>( cart.productId._id === option.newProduct._id && cart.attributeId === option.attributeId)) as IcartItem
+                   if(cart){
+                        const attribute = option.newProduct.attributes.find((item:Iattribute)=> item._id === option.attributeId) as Iattribute
+                        
+                    //    const newTotal = Number(cart.quantity * attribute?.price_new )
+                       const newCart = {
+                        ...cart,
+                        productId:option.newProduct,
+                        total:Number(cart.quantity * attribute?.price_new )
+                       } as IcartItem
+                       const newCarts = carts.map((cart:IcartItem)=>( cart.productId._id === newCart.productId._id && cart.attributeId === newCart.attributeId) ?newCart: cart)
+                       const totalCart = newCarts.reduce((sum:number, cart:IcartItem)=> sum+ cart.total ,0 )
+                       dispath(setCarts(newCarts))
+                       dispath(setTotalCart(totalCart))
+                   }
+                }
+            })
+        }
+    },[socket?.current,carts])
     return (
         <div className="relative pr-5">
             <span onClick={onMiniCart} className="block open-mini-cart cursor-pointer text-base hover:text-gray-800 ">

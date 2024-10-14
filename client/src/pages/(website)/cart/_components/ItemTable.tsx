@@ -23,7 +23,7 @@ const ItemTable = ({ cart }: Props) => {
         if (findAttribute) {
             setAttribute(findAttribute)
         }
-    },[cart?.attributeId])
+    },[cart?.attributeId,cart?.total])
     useEffect(()=>{
         const findGallery = cart?.productId?.gallerys?.find((item:Igallery)=> item._id == cart?.galleryId)
         if (findGallery) {

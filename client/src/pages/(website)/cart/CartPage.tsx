@@ -4,13 +4,43 @@ import Status from './_components/Status'
 import Table from './_components/Table'
 import Total from './_components/Total'
 import { message } from 'antd'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { useContext, useEffect } from 'react'
+import { AppContext } from '../../../common/contexts/AppContextProvider'
+import { Iattribute, Iproduct } from '../../../common/interfaces/product'
+import { IcartItem } from '../../../common/interfaces/cart'
+import { setCarts, setTotalCart } from '../../../common/redux/features/cartSlice'
 
 const CartPage = () => {
+    const {socket} = useContext(AppContext)
+    const dispath = useDispatch()
     const carts = useSelector((state: any) => state.cart.carts)
     const totalCart = useSelector((state: any) => state.cart.totalCart)
     const totalProduct = useSelector((state: any) => state.cart.totalProduct)
     const navigate = useNavigate()
+    // useEffect(()=>{
+    //     if(socket?.current){
+    //         socket?.current?.on("adminUpdateProduct",(option:{newProduct:Iproduct,attributeId:string})=>{
+    //             if(carts.length> 0){
+    //                 const cart = carts.find((cart:IcartItem)=>( cart.productId._id === option.newProduct._id && cart.attributeId === option.attributeId)) as IcartItem
+    //                if(cart){
+    //                     const attribute = option.newProduct.attributes.find((item:Iattribute)=> item._id === option.attributeId) as Iattribute
+                        
+    //                 //    const newTotal = Number(cart.quantity * attribute?.price_new )
+    //                    const newCart = {
+    //                     ...cart,
+    //                     productId:option.newProduct,
+    //                     total:Number(cart.quantity * attribute?.price_new )
+    //                    } as IcartItem
+    //                    const newCarts = carts.map((cart:IcartItem)=>( cart.productId._id === newCart.productId._id && cart.attributeId === newCart.attributeId) ?newCart: cart)
+    //                    const totalCart = newCarts.reduce((sum:number, cart:IcartItem)=> sum+ cart.total ,0 )
+    //                    dispath(setCarts(newCarts))
+    //                    dispath(setTotalCart(totalCart))
+    //                }
+    //             }
+    //         })
+    //     }
+    // },[socket?.current,carts])
     const onHandleCheckToOrder = () => {
         if (!carts || carts?.length == 0) {
             return message.error("Hiện tại chưa có sản phẩm nào")
@@ -19,6 +49,7 @@ const CartPage = () => {
             return navigate("/order")
         }
     }
+    
     return (
         <section>
             <div>

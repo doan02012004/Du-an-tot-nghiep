@@ -40,9 +40,9 @@ io.on("connection", (socket) => {
   
 //    io.emit('welcome', 'Welcome to the chat')
     // update product price theo time
-    socket.on("adminUpdatePrice",(updatedProduct)=>{
+    socket.on("adminUpdatePrice",(option)=>{
         // Phát sự kiện 'updateAttributeProduct' đến tất cả các client đang kết nối
-        io.emit('adminUpdateProduct',updatedProduct)
+        io.emit('adminUpdateProduct',option)
     })
 })
 

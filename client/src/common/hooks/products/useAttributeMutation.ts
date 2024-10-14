@@ -26,7 +26,7 @@ const useAttributeMutation = () => {
                     try {
                        const res = await updateProductAttribute(option.productId, option.attribute)
                        if(res?.status === 200){
-                         socket.current.emit('adminUpdatePrice',res?.data?.data)
+                         socket.current.emit('adminUpdatePrice',{newProduct:res?.data?.data,attributeId:option.attribute._id})
                        }
                     } catch (error) {
                         console.log(error)
