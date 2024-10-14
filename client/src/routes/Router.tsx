@@ -33,6 +33,8 @@ import OrdersPage from "../pages/(admin)/order/Page";
 import OrderList from "../pages/(admin)/order/_components/OrderList";
 import OrderDetails from "../pages/(admin)/order/_components/OrderDetails";
 import OrderManager from "../pages/(website)/my-information/order-manager/Page";
+import BrandsPage from "../pages/(admin)/brands/Page";
+import BrandsForm from "../pages/(admin)/brands/_components/BrandForm";
 
 
 const Router = () => {
@@ -69,6 +71,9 @@ const Router = () => {
         <Route path='categories' element={<CategoriesPage />} />
         <Route path='categories/add' element={<CategoriesForm />} />
         <Route path='categories/edit/:id' element={<CategoriesForm />} />
+        <Route path='brands' element={<BrandsPage />} />
+        <Route path='brands/add' element={<BrandsForm />} />
+        <Route path='brands/edit/:id' element={<BrandsForm />} />
         <Route path='chat' element={<ChatWidget />} />
         <Route path='auth' element={<PageAuthAdmin />} >
           <Route index element={<ListUser />} />

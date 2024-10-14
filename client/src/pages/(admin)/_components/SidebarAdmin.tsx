@@ -123,6 +123,23 @@ const SidebarAdmin = () => {
             icon: <MessageOutlined />,
             label: <Link to={"/admin/chat"}>Tin Nhắn</Link>,
           },
+          {
+            key: "10",
+            icon: <OrderedListOutlined />,
+            label: "Thương Hiệu",
+            children: [
+              {
+                key: "10.1",
+                label: <NavLink to={`/admin/brands`}>Thương Hiệu</NavLink>,
+              },
+              {
+                key: "10.2",
+                label: (
+                  <NavLink to={`/admin/brands/add`}>Thêm thương hiệu</NavLink>
+                ),
+              },
+            ],
+          },
         ]}
       />
     </Sider>

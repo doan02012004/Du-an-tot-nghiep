@@ -20,6 +20,7 @@ const colorSchema = new mongoose.Schema({
 const productShema = new mongoose.Schema({
     name:{type:String, required:true},
     categoryId:{type:mongoose.Schema.Types.ObjectId, ref:'Categories'},
+    brandId:{type:mongoose.Schema.Types.ObjectId, ref:'Brands'},
     gallerys:[gallerySchema],
     sizes:[
         {type:String, default:"FREESIZE"}
