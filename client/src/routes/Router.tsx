@@ -25,7 +25,6 @@ import ListUser from '../pages/(admin)/users/_components/ListUser'
 import ViewProductAdmin from '../pages/(admin)/product/view/Page'
 import ChatWidget from '../pages/(admin)/chatwiget/Page'
 import AddressList from '../pages/(website)/my-information/address/Page'
-import HistoryUpdateUser from '../pages/(admin)/users/_components/HistoryUpdateUser'
 import BannerPage from "../pages/(admin)/banner/Page";
 import ListBanner from "../pages/(admin)/banner/_components/ListBanner";
 import GalleryPage from "../pages/(admin)/gallery/Page";
@@ -36,6 +35,7 @@ import OrderDetails from "../pages/(admin)/order/_components/OrderDetails";
 import OrderManager from "../pages/(website)/my-information/order-manager/Page";
 import BrandsPage from "../pages/(admin)/brands/Page";
 import BrandsForm from "../pages/(admin)/brands/_components/BrandForm";
+import HistoryUpdateUser from "../pages/(admin)/users/_components/HistoryUpdateUser";
 
 
 const Router = () => {
