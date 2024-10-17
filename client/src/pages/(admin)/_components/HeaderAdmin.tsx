@@ -20,7 +20,7 @@ const HeaderAdmin = () => {
                 height: 64,
               }}
             />
-             <Link className='float-right' to={'/'} >Quay lại trang chủ</Link>
+             <Link className='float-right mx-2' to={'/'} ><Button type='primary'>Quay lại trang chủ</Button></Link>
           </Header>
     )
   }

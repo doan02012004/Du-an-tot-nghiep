@@ -8,6 +8,9 @@ const gallerySchema = new mongoose.Schema({
 const attributeSchema = new mongoose.Schema({
     size:{type:String},
     color:{type:String},
+    price_old:{type:Number, required:true},
+    price_new: {type:Number,required:true},
+    discount:{type:Number, default:0},
     instock:{type:Number,default:0}
 })
 const colorSchema = new mongoose.Schema({
@@ -17,9 +20,7 @@ const colorSchema = new mongoose.Schema({
 const productShema = new mongoose.Schema({
     name:{type:String, required:true},
     categoryId:{type:mongoose.Schema.Types.ObjectId, ref:'Categories'},
-    price_old:{type:Number, required:true},
-    price_new: {type:Number,required:true},
-    discount:{type:Number, default:0},
+    brandId:{type:mongoose.Schema.Types.ObjectId, ref:'Brands'},
     gallerys:[gallerySchema],
     sizes:[
         {type:String, default:"FREESIZE"}

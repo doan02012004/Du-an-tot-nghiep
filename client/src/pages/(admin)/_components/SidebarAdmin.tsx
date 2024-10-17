@@ -1,6 +1,7 @@
-
 import {
   BarChartOutlined,
+  BgColorsOutlined,
+  FileImageOutlined,
   MessageOutlined,
   OrderedListOutlined,
   PlusOutlined,
@@ -13,7 +14,6 @@ import Sider from "antd/es/layout/Sider";
 import { useContext } from "react";
 import { AppContext } from "../../../common/contexts/AppContextProvider";
 import { Link, NavLink } from "react-router-dom";
-
 
 const SidebarAdmin = () => {
   const { collapsed } = useContext(AppContext);
@@ -31,28 +31,52 @@ const SidebarAdmin = () => {
             label: "Thống kê",
           },
           {
-            key: '2',
+            key: "2",
             icon: <OrderedListOutlined />,
-            label: 'Danh mục',
-            children:[
+            label: "Danh mục",
+            children: [
               {
-                key:"2.1",
-                label:<NavLink to={`/admin/categories`}>Danh mục</NavLink>
+                key: "2.1",
+                label: <NavLink to={`/admin/categories`}>Danh mục</NavLink>,
               },
               {
-                key:"2.2",
-                label:<NavLink to={`/admin/categories/add`}>Thêm danh  mục</NavLink>
-              }
-            ]
+                key: "2.2",
+                label: (
+                  <NavLink to={`/admin/categories/add`}>Thêm danh mục</NavLink>
+                ),
+              },
+            ],
           },
           {
             key: "7",
-            icon: <OrderedListOutlined />,
+            icon: <BgColorsOutlined />,
             label: "Màu sắc",
             children: [
               {
                 key: "7.1",
                 label: <NavLink to={"/admin/colors"}>Danh sách</NavLink>,
+              },
+            ],
+          },
+          {
+            key: "8",
+            icon: <FileImageOutlined />,
+            label: "Banner",
+            children: [
+              {
+                key: "8.1",
+                label: <NavLink to={"/admin/banners"}>Danh sách</NavLink>,
+              },
+            ],
+          },
+          {
+            key: "9",
+            icon: <FileImageOutlined />,
+            label: "Gallery",
+            children: [
+              {
+                key: "9.1",
+                label: <NavLink to={"/admin/gallerys"}>Danh sách</NavLink>,
               },
             ],
           },
@@ -80,10 +104,6 @@ const SidebarAdmin = () => {
               {
                 key:"4.1",
                 label:<Link to={'/admin/auth'}>Danh sách</Link>
-              },
-              {
-                key:"4.2",
-                label:<Link to={'/admin/auth/historyupdate'}>Lịch sử update user</Link>
               }
             ],
           },
@@ -93,7 +113,7 @@ const SidebarAdmin = () => {
             label: "Đơn hàng",
             children: [
               {
-                key: "5.1",
+                key: "4.1",
                 label: <Link to={"/"}>Danh sách</Link>,
               },
             ],
@@ -102,6 +122,23 @@ const SidebarAdmin = () => {
             key: "6",
             icon: <MessageOutlined />,
             label: <Link to={"/admin/chat"}>Tin Nhắn</Link>,
+          },
+          {
+            key: "10",
+            icon: <OrderedListOutlined />,
+            label: "Thương Hiệu",
+            children: [
+              {
+                key: "10.1",
+                label: <NavLink to={`/admin/brands`}>Thương Hiệu</NavLink>,
+              },
+              {
+                key: "10.2",
+                label: (
+                  <NavLink to={`/admin/brands/add`}>Thêm thương hiệu</NavLink>
+                ),
+              },
+            ],
           },
         ]}
       />

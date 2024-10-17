@@ -41,7 +41,11 @@ export interface Iattribute {
     _id?: string | number,
     size: string,
     color: string,
-    instock: number
+    price_new:number,
+    price_old:number,
+    discount:number,
+    instock: number,
+    isCheck:boolean
 }
 
 export interface InewSize {

@@ -8,40 +8,41 @@ import OrderFormAddress from "./_components/OrderFormAddress"
 import { AppContext } from "../../../common/contexts/AppContextProvider"
 import OrderTotal from "./_components/OrderTotal"
 import OrderPaymentMethod from "./_components/OrderPaymentMethod"
-import useCartQuery from "../../../common/hooks/carts/useCartQuery"
 import OrderSubmit from "./_components/OrderSubmit"
 import OrderStep from "./_components/OrderStep"
 import { useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
 
 const OrderPage = () => {
-    const [payment, setPayment] = useState<"cash"|"atm"|"momo"|"credit">('cash')
+    const [payment, setPayment] = useState<"cash" | "atm" | "momo" | "credit">('cash')
     const { currentUser } = useContext(AppContext)
     const [addressDefault, setAddressDefault] = useState<Iaddress | null>(null)
     const addressQuery = useAddressQuery()
-    const cartQuery  = useCartQuery()
     const navigate = useNavigate()
+    const carts = useSelector((state: any) => state.cart.carts)
+    const totalCart = useSelector((state: any) => state.cart.totalCart)
+    const totalProduct = useSelector((state: any) => state.cart.totalProduct)
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
             const findAddressDefault = addressQuery?.data?.find((item: Iaddress) => item.isDefault == true)
             setAddressDefault(findAddressDefault)
         }
     }, [addressQuery?.data])
-    useEffect(()=>{
-       
-        if(cartQuery?.data?.totalPrice == 0 ){
-           return   navigate("/cart")
+    useEffect(() => {
+        if (carts.lenght == 0) {
+            return navigate("/cart")
         }
-        if(!currentUser){
-            return   navigate("/signin")
+        if (!currentUser) {
+            return navigate("/signin")
         }
-    },[cartQuery?.data?.totalPrice])
+    }, [carts, currentUser])
     return (
         <section>
             <div>
                 <div className="container mx-auto lg:flex pt-11 pb-4 gap-10">
                     <div className="lg:w-[68%]">
                         <div className=''>
-                          <OrderStep />
+                            <OrderStep />
                             <div className=''>
                                 <div className="pb-4">
                                     <span className="text-lg lg:text-xl text-black font-semibold">Địa chỉ giao hàng</span>
@@ -89,9 +90,9 @@ const OrderPage = () => {
                         </div>
                     </div>
                     <div className="lg:w-[32%]">
-                        <OrderTotal cartUser={cartQuery?.data} />
+                        <OrderTotal totalCart={totalCart} />
 
-                        <OrderSubmit user={currentUser} payment={payment} address={addressDefault} cartUser={cartQuery?.data} />
+                        <OrderSubmit user={currentUser} payment={payment} address={addressDefault} carts={carts} totalCart={totalCart} totalProduct={totalProduct} />
                     </div>
                 </div>
             </div>

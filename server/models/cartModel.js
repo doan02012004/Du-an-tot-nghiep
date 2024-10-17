@@ -12,14 +12,6 @@ const cartItem = new mongoose.Schema(
         attributeId: {
             type: String
         },
-        total: {
-            type: Number,
-            default: 0
-        },
-        validateCart: {
-            type: Boolean,
-            default: true
-        },
         galleryId: {
             type: String
         }
@@ -32,17 +24,9 @@ const cartSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     },
-    totalPrice: {
-        type: Number,
-        default: 0
-    },
     carts: [
         cartItem
     ],
-    totalCart: {
-        type: Number,
-        default: 0
-    }
 }, { timestamps: true, versionKey: false })
 
 

@@ -3,10 +3,12 @@ import Product from '../../_components/Product'
 import Pagination from './Pagination'
 
 type Props = {
-  products: Iproduct[];
+  data: {
+    products:Iproduct[]
+  }
 }
 
-const Sub_main_prod = ({ products }: Props) => {
+const Sub_main_prod = ({ data }: Props) => {
 
 
 
@@ -15,7 +17,7 @@ const Sub_main_prod = ({ products }: Props) => {
       <div className="sub-main-prod mt-3 lg:mt-[26px]">
         <div className="list-products">
           <div className="item-cat-product grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-9">
-            {products?.map((product: Iproduct) => (
+            {data?.products?.map((product: Iproduct) => (
               
                 <Product
                   key={product._id}

@@ -7,8 +7,6 @@ export const getCartByUserId = async (req, res) => {
         const cart = await CartModel.findOne({ userId: req.params.userId }).populate("carts.productId")
         const cartData = {
             carts: cart.carts,
-            totalPrice: cart.totalPrice,
-            totalCart: cart.totalCart
         }
         return res.status(200).json(cartData)
 
@@ -30,31 +28,24 @@ export const addToCart = async (req, res) => {
             } else {
                 const newCart = new CartModel({
                     userId,
-                    totalPrice: 0,
                     carts: [],
-                    totalCart: 0
                 })
                 newCart.carts.push({
                     productId: productId,
                     quantity: quantity,
                     attributeId: attributeId,
-                    total: Number(product.price_new * quantity),
-                    validateCart: true,
                     galleryId: galleryId
                 })
-                newCart.totalPrice = Number(product.price_new * quantity)
-                newCart.totalCart = quantity
                 await newCart.save()
                 return res.status(200).json({ message: "thêm mới giỏ hàng thành công" })
             }
         } else {
             const checkProduct = carts.carts.find(item => (item.productId == productId && item.attributeId == attributeId))
             if (checkProduct) {
-                if (attribute.instock < quantity + checkProduct.quantity) {
+                if (Number(attribute.instock) < Number(quantity + checkProduct.quantity)) {
                     return res.status(400).json({ message: "sản phẩm không đủ hàng" })
                 } else {
                     checkProduct.quantity += quantity
-                    checkProduct.total = Number(product.price_new * checkProduct.quantity)
                 }
             } else {
                 if (attribute.instock < quantity) {
@@ -64,14 +55,10 @@ export const addToCart = async (req, res) => {
                         productId: productId,
                         quantity: quantity,
                         attributeId: attributeId,
-                        total: Number(product.price_new * quantity),
-                        validateCart: true,
                         galleryId: galleryId
                     })
                 }
                 }
-                carts.totalPrice = carts.carts.reduce((total, item) => total + item.total, 0)
-                carts.totalCart = carts.carts.reduce((total, item) => total + item.quantity, 0)
                 await carts.save()
                 return res.status(200).json({ message: "thêm sản phẩm vào giỏ hàng thành công" })
             }
@@ -100,9 +87,6 @@ export const increaseProductCartQuantity = async (req,res)=>{
         // validate số lượng
         if (cartItem.quantity+1 <= attribute.instock) {
             cartItem.quantity++
-            cartItem.total = Number(cartItem.quantity * product.price_new)
-            cart.totalPrice = cart.carts.reduce((total, item) => total + item.total, 0)
-            cart.totalCart = cart.carts.reduce((total, item) => total + item.quantity, 0)
         }else{
             return res.status(StatusCodes.BAD_REQUEST).json({message:"Số lượng sản phẩm không đủ"})
         }
@@ -130,14 +114,10 @@ export const decreaseProductCartQuantity  = async (req,res)=>{
         // validate số lượng
         if (cartItem.quantity-1 > 0) {
             cartItem.quantity--
-            cartItem.total = Number(cartItem.quantity * product.price_new)
         }else{
             const newCarts = cart.carts.filter((item)=> item._id !== cartItem._id)
             cart.carts = newCarts
         }
-        
-        cart.totalPrice = cart.carts.reduce((total, item) => total + item.total, 0)
-        cart.totalCart = cart.carts.reduce((total, item) => total + item.quantity, 0)
         // 
         await cart.save()
         res.status(StatusCodes.OK).json(cart)
@@ -160,15 +140,11 @@ export const onInputProductCartQuantity = async (req,res)=>{
             return res.status(StatusCodes.NOT_FOUND).json({message:"Product not found in cart"})
         }
         // validate số lượng
-        if (quantity < attribute.instock && quantity>0) {
+        if (quantity <= attribute.instock && quantity>0) {
             cartItem.quantity = Number(quantity)
-            cartItem.total = Number(cartItem.quantity * product.price_new)
-            cart.totalPrice = cart.carts.reduce((total, item) => total + item.total, 0)
-            cart.totalCart = cart.carts.reduce((total, item) => total + item.quantity, 0)
         }else{
             return res.status(StatusCodes.BAD_REQUEST).json({message:"Số lượng không hợp lệ"})
         }
-
         // 
         await cart.save()
         res.status(StatusCodes.OK).json(cart)
@@ -193,8 +169,6 @@ export const removeProductCartQuantity  = async (req,res)=>{
         }
         const newCarts = cart.carts.filter((item)=> item._id !== cartItem._id)
         cart.carts = newCarts
-        cart.totalPrice = cart.carts.reduce((total, item) => total + item.total, 0)
-        cart.totalCart = cart.carts.reduce((total, item) => total + item.quantity, 0)
         await cart.save()
         res.status(StatusCodes.OK).json(cart)
     } catch (error) {
