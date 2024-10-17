@@ -18,17 +18,17 @@ import { AppContext } from "../../../common/contexts/AppContextProvider";
 type Props = {}
 
 const ProductDetailsPage = (props: Props) => {
-  const { id } = useParams()
-  const query = useProductQuery(id)
+  const { slug } = useParams()
+  const query = useProductQuery(slug)
   const { choiceColor, setChoiceColor } = useContext(AppContext);
   useEffect(() => {
     if (query.data) {
       setChoiceColor(query.data.colors[0].name)
     }
-  }, [query.data, id])
+  }, [query.data, slug])
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" })
-  }, [id])
+  }, [slug])
   return (
     <div>
       <div>

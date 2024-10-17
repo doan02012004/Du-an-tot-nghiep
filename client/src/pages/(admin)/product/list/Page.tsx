@@ -104,7 +104,7 @@ const ListProduct = () => {
                     >
                         <Button type='primary' danger><DeleteOutlined /></Button>
                     </Popconfirm>
-                    <Link to={`/admin/products/view/${product._id}`}><Button className='text-white bg-yellow'><EyeOutlined /></Button></Link>
+                    <Link to={`/admin/products/view/${product.slug}`}><Button className='text-white bg-yellow'><EyeOutlined /></Button></Link>
                 </Space>
             )
         }

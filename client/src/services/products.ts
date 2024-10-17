@@ -46,9 +46,9 @@ export const getProducts = async (dataFilter: {} | undefined) => {
 //     }
 // }
 
-export const getProductById = async (id: string | number) => {
+export const getProductBySlug = async (slug: string) => {
   try {
-    const res = await instance.get(`/products/${id}`);
+    const res = await instance.get(`/products/${slug}`);
     return res.data;
   } catch (error) {
     console.log(error);

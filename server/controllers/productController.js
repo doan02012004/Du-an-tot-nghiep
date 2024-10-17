@@ -1,9 +1,14 @@
 import { query } from "express";
 import ProductModel from "../models/productModel.js";
+import slugify from "slugify";
 
 export const createProduct = async (req, res) => {
   try {
-    const product = await ProductModel.create(req.body);
+    const newProduct= {
+      ...req.body,
+      slug: slugify(req.body.name, "-")
+    }
+    const product = await ProductModel.create(newProduct);
     return res.status(200).json(product);
   } catch (error) {
     return res.status(500).json({
@@ -149,9 +154,9 @@ export const addColors = async (req, res) => {
     });
   }
 };
-export const getByIdProduct = async (req, res) => {
+export const getBySlugProduct = async (req, res) => {
   try {
-    const product = await ProductModel.findById(req.params.productId).populate(
+    const product = await ProductModel.findOne({slug:req.params.slug}).populate(
       "categoryId colors"
     );
     if (!product) {
@@ -172,6 +177,7 @@ export const updateInforProduct = async (req, res) => {
       { _id: req.params.productId },
       {
         name: req.body.name,
+        slug: slugify(req.body.name, "-"),
         categoryId: req.body.categoryId,
         brandId: req.body.brandId,
         discount: req.body.discount,

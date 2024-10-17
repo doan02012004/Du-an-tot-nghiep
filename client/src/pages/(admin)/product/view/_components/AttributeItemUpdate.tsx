@@ -12,11 +12,11 @@ type AttributeItemProps = {
 const AttributeItemUpdate = ({ data, product }: AttributeItemProps) => {
     const [form] = Form.useForm()
     const attributeMutation = useAttributeMutation()
-    useEffect(()=>{
-        if(data){
-          form.setFieldsValue(data)
+    useEffect(() => {
+        if (data) {
+            form.setFieldsValue(data)
         }
-      },[data,form])
+    }, [data, form])
     // const onSetInstock = (event: any) => {
     //     if (parseInt(event.target.value) < 0 || isNaN(event.target.value) || event.target.value == null || event.target.value == '') {
     //         form.setFieldValue('instock', data.instock)
@@ -30,17 +30,17 @@ const AttributeItemUpdate = ({ data, product }: AttributeItemProps) => {
         const priceOld = form.getFieldValue('price_old')
         console.log("Price old >", priceOld)
         if (priceNew > priceOld) {
-          form.setFieldValue('price_new', 0)
-          return message.error('Vui lòng không nhập cao hơn giá niêm yết')
+            form.setFieldValue('price_new', 0)
+            return message.error('Vui lòng không nhập cao hơn giá niêm yết')
         }
         if (priceOld) {
-          const discount = Math.ceil((priceOld - priceNew) / priceOld * 100)
-          form.setFieldValue('discount', discount)
+            const discount = Math.ceil((priceOld - priceNew) / priceOld * 100)
+            form.setFieldValue('discount', discount)
         }
-      }
-    const onSubmit = (newAttribute:Iattribute) =>{
-        const newData = {...newAttribute,size:data.size,color:data.color,_id:data._id}
-        attributeMutation.mutate({action:'updateAtb',productId:product._id,attribute:newData})
+    }
+    const onSubmit = (newAttribute: Iattribute) => {
+        const newData = { ...newAttribute, size: data.size, color: data.color, _id: data._id }
+        attributeMutation.mutate({ action: 'updateAtb', productId: product._id, attribute: newData })
     }
     return (
         <>
@@ -56,7 +56,7 @@ const AttributeItemUpdate = ({ data, product }: AttributeItemProps) => {
                         onFinish={onSubmit}
                         disabled={data?.isCheck}
                     >
-                        <div className='grid grid-cols-4 gap-4'>
+                        <div className='grid grid-cols-2 gap-4'>
                             <Form.Item
                                 name="price_old"
                                 label="Giá niêm yết"
@@ -77,6 +77,13 @@ const AttributeItemUpdate = ({ data, product }: AttributeItemProps) => {
                                 rules={[{ required: true }, { type: "number", min: 0 }]}
                             >
                                 <InputNumber className='w-full' disabled />
+                            </Form.Item>
+                            <Form.Item
+                                name="weight"
+                                label="Khối lượng (gram)"
+                                rules={[{ required: true }, { type: "number", min: 0 }]}
+                            >
+                                <InputNumber className='w-full' />
                             </Form.Item>
                             <Form.Item
                                 name="instock"

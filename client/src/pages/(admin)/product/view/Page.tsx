@@ -10,11 +10,11 @@ import { LeftOutlined } from "@ant-design/icons"
 
 const ViewProductAdmin = () => {
     const [product,setProduct] = useState<Iproduct>({} as Iproduct)
-    const {id} = useParams()
-    const productQuery = useProductQuery(id)
+    const {slug} = useParams()
+    const productQuery = useProductQuery(slug)
     useEffect(()=>{
         setProduct(productQuery.data)
-    },[id,productQuery.data])
+    },[slug,productQuery.data])
   return (
     <div className=" w-full h-[580px] overflow-y-scroll">
         <div className=" p-3 bg-white rounded-lg  shadow-sm shadow-gray-700">

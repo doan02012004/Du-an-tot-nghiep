@@ -44,7 +44,7 @@ const Router = () => {
       <Route path="/" element={<LayoutWebsite />}>
         <Route index element={<HomePage />} />
         <Route path="product" element={<ProductPage />} />
-        <Route path="productdetails/:id" element={<ProductDetailsPage />} />
+        <Route path="productdetails/:slug" element={<ProductDetailsPage />} />
         <Route path="signin" element={<PageSignin />} />
         <Route path="signup" element={<PageSignup />} />
         <Route path="blog" element={<PageBlog />} />
@@ -66,7 +66,7 @@ const Router = () => {
         <Route path="products" element={<AdminProduct />}>
           <Route index element={<ListProduct />} />
           <Route path="add" element={<AddProductAdmin />} />
-          <Route path="view/:id" element={<ViewProductAdmin />} />
+          <Route path="view/:slug" element={<ViewProductAdmin />} />
         </Route>
         <Route path='colors' element={<LayoutColor />} />
         <Route path='categories' element={<CategoriesPage />} />

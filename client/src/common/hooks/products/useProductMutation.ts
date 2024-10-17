@@ -33,7 +33,10 @@ const useProductMutation = () => {
                     break;
                 case 'updateInfor':
                     try {
-                        await updateProductInfor(option.productInfor)
+                       const data = await updateProductInfor(option.productInfor) as Iproduct
+                       if(data?.slug){
+                        navigate(`/admin/products/view/${data?.slug}`)
+                       }
                     } catch (error) {
                         console.log(error)
                     }

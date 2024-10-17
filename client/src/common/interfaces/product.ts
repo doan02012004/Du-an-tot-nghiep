@@ -6,6 +6,7 @@ import { IColor } from "./Color"
 export interface Iproduct {
     _id?: string | number,
     name: string,
+    slug:string,
     categoryId:ICategories,
     description: string,
     price_new: number,
@@ -41,6 +42,7 @@ export interface Iattribute {
     _id?: string | number,
     size: string,
     color: string,
+    weight:number,
     price_new:number,
     price_old:number,
     discount:number,

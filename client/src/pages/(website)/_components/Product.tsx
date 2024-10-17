@@ -79,7 +79,7 @@ const Product = ({ product }: Props) => {
     <>
       <div>
         <div className="h-[236px] lg:h-[350px] w-full relative overflow-hidden mb-4">
-          <Link to={`/productdetails/${product._id}`} className="block w-full h-full">
+          <Link to={`/productdetails/${product.slug}`} className="block w-full h-full">
             <img src={gallery?.avatar} className="w-full h-full object-cover" />
           </Link>
           <span className="absolute top-0 left-0 text-[12px]/[150%] font-semibold py-1 px-3 bg-rose-900 text-white rounded-br-full">

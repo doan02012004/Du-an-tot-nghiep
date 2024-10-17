@@ -7,7 +7,7 @@ import {
   deleteProduct,
   deleteSize,
   getAllProduct,
-  getByIdProduct,
+  getBySlugProduct,
   getProductSlider,
   updateAttributeProduct,
   updateGallery,
@@ -27,6 +27,6 @@ router.put("/addColors/:productId", addColors);
 router.put("/deleteColor/:productId", deleteColor);
 router.put("/deleteSize/:productId", deleteSize);
 router.delete("/:productId", deleteProduct),
-  router.get("/:productId", getByIdProduct);
+  router.get("/:slug", getBySlugProduct);
 
 export default router;

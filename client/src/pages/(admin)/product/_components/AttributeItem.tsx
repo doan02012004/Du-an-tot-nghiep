@@ -71,7 +71,7 @@ const onOpenForm = () =>{
             onFinish={onSubmit}
             disabled={data?.isCheck}
           >
-            <div className='grid grid-cols-4 gap-4'>
+            <div className='grid grid-cols-2 gap-4'>
               <Form.Item
                 name="price_old"
                 label="Giá niêm yết"
@@ -92,6 +92,13 @@ const onOpenForm = () =>{
                 rules={[{ required: true }, { type: "number", min: 0 }]}
               >
                 <InputNumber className='w-full' disabled />
+              </Form.Item>
+              <Form.Item
+                name="weight"
+                label="Khối lượng (gram)"
+                rules={[{ required: true }, { type: "number", min: 0 }]}
+              >
+                <InputNumber className='w-full'  />
               </Form.Item>
               <Form.Item
                 name="instock"
