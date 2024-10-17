@@ -80,6 +80,10 @@ const SidebarAdmin = () => {
               {
                 key:"4.1",
                 label:<Link to={'/admin/auth'}>Danh sách</Link>
+              },
+              {
+                key:"4.2",
+                label:<Link to={'/admin/auth/historyupdate'}>Lịch sử update user</Link>
               }
             ],
           },
@@ -89,7 +93,7 @@ const SidebarAdmin = () => {
             label: "Đơn hàng",
             children: [
               {
-                key: "4.1",
+                key: "5.1",
                 label: <Link to={"/"}>Danh sách</Link>,
               },
             ],

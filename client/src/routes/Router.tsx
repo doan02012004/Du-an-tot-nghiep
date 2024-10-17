@@ -25,6 +25,7 @@ import ListUser from '../pages/(admin)/users/_components/ListUser'
 import ViewProductAdmin from '../pages/(admin)/product/view/Page'
 import ChatWidget from '../pages/(admin)/chatwiget/Page'
 import AddressList from '../pages/(website)/my-information/address/Page'
+import HistoryUpdateUser from '../pages/(admin)/users/_components/HistoryUpdateUser'
 
 
 const Router = () => {
@@ -59,6 +60,7 @@ const Router = () => {
         <Route path='chat' element={<ChatWidget />} />
         <Route path='auth' element={<PageAuthAdmin />} >
           <Route index element={<ListUser />} />
+          <Route path='historyupdate' element={<HistoryUpdateUser />} />
         </Route>
       </Route>
     </Routes>
