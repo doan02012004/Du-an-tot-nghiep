@@ -12,6 +12,7 @@ export interface IcartItem {
     quantity:number,
     galleryId?:string,
     total:number,
+    weight:number,
     validateCart: boolean
 }
 

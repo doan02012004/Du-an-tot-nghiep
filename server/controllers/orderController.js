@@ -1,6 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import orderModel from "../models/orderModel.js";
 import CartModel from "../models/cartModel.js";
+
+
 export const createOrder = async (req, res) => {
     try {
         const order = await orderModel.create(req.body);

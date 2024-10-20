@@ -6,6 +6,7 @@ import {  IcartItem } from "../../../../common/interfaces/cart"
 import { Iattribute, Igallery } from "../../../../common/interfaces/product"
 import { message } from "antd"
 import { useNavigate } from "react-router-dom"
+import { IshipItem } from "../../../../common/interfaces/orderInterfaces"
 
 type Props = {
     payment: "cash" | "atm" | "momo" | "credit",
@@ -13,10 +14,11 @@ type Props = {
     user: Iuser,
     carts: IcartItem[],
     totalCart: number,
-    totalProduct: number
+    totalProduct: number,
+    ship: IshipItem | null
 }
 
-const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts }: Props) => {
+const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, ship }: Props) => {
     const orderMutation = useOrderMutation()
     const navigate = useNavigate()
     useEffect(() => {
@@ -29,6 +31,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts }:
 
         }
     }, [orderMutation?.data])
+
     const onHandleOrder = async () => {
         const newProductsOrder = await carts.map((item: IcartItem) => {
             const gallery = item.productId.gallerys.find((gallery: Igallery) => gallery._id == item.galleryId)
@@ -53,7 +56,8 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts }:
             paymentMethod: payment,
             status: "pending",
             totalOrder: totalProduct,
-            totalPrice: totalCart
+            totalPrice: totalCart,
+            ship: ship
         }
         orderMutation.mutate({ action: "create", newOrder: newOrder })
 

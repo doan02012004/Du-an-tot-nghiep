@@ -36,3 +36,10 @@ export interface IOrder {
     totalOrder: number;
     createdAt: Date;
 }
+
+export interface IshipItem {
+    minWeight: number;
+    maxWeight: number;
+    price: number;
+}
+

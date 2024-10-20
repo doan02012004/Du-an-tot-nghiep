@@ -11,9 +11,32 @@ import OrderPaymentMethod from "./_components/OrderPaymentMethod"
 import OrderSubmit from "./_components/OrderSubmit"
 import OrderStep from "./_components/OrderStep"
 import { useNavigate } from "react-router-dom"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { IcartItem } from "../../../common/interfaces/cart"
+import { IshipItem } from "../../../common/interfaces/orderInterfaces"
+import { setTotalCart } from "../../../common/redux/features/cartSlice"
+
+const shipOption = [
+    {
+        minWeight: 0,
+        maxWeight: 500,
+        price: 3000
+    },
+    {
+        minWeight: 501,
+        maxWeight: 2000,
+        price: 8000
+    },
+    {
+        minWeight: 2001,
+        maxWeight: 5000,
+        price: 15000
+    }
+]
+
 
 const OrderPage = () => {
+    const [ship, setShip] = useState<IshipItem | null>(null)
     const [payment, setPayment] = useState<"cash" | "atm" | "momo" | "credit">('cash')
     const { currentUser } = useContext(AppContext)
     const [addressDefault, setAddressDefault] = useState<Iaddress | null>(null)
@@ -22,6 +45,9 @@ const OrderPage = () => {
     const carts = useSelector((state: any) => state.cart.carts)
     const totalCart = useSelector((state: any) => state.cart.totalCart)
     const totalProduct = useSelector((state: any) => state.cart.totalProduct)
+    const dispath = useDispatch()
+    
+
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
             const findAddressDefault = addressQuery?.data?.find((item: Iaddress) => item.isDefault == true)
@@ -36,6 +62,19 @@ const OrderPage = () => {
             return navigate("/signin")
         }
     }, [carts, currentUser])
+
+    useEffect(() => {
+        if (carts.length > 0) {
+            const sumWeight = carts.reduce((sum: number, cart: IcartItem) => sum + cart.weight, 0)
+            const findShip = shipOption.find((shipLV: IshipItem) => shipLV.minWeight <= sumWeight && shipLV.maxWeight >= sumWeight) as IshipItem
+            if(findShip){
+                dispath(setTotalCart(totalCart + findShip.price))
+            }
+            setShip(findShip)
+        }
+    }, [carts])
+
+
     return (
         <section>
             <div>
@@ -90,9 +129,9 @@ const OrderPage = () => {
                         </div>
                     </div>
                     <div className="lg:w-[32%]">
-                        <OrderTotal totalCart={totalCart} />
+                        <OrderTotal totalCart={totalCart} ship={ship} />
 
-                        <OrderSubmit user={currentUser} payment={payment} address={addressDefault} carts={carts} totalCart={totalCart} totalProduct={totalProduct} />
+                        <OrderSubmit user={currentUser} payment={payment} address={addressDefault} carts={carts} totalCart={totalCart} totalProduct={totalProduct} ship={ship} />
                     </div>
                 </div>
             </div>

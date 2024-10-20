@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { formatPrice } from '../../../../common/utils/product'
+import { IshipItem } from '../../../../common/interfaces/orderInterfaces'
 
 type Props = {
     totalCart: number
+    ship: IshipItem | null
 }
-const OrderTotal = ({ totalCart }: Props) => {
+const OrderTotal = ({ totalCart, ship }: Props) => {
     const [displayVoucher, setDisplayVoucher] = useState(false)
-
+    
     return (
         <>
             <div className="bg-[#FBFBFC]">
@@ -14,19 +16,19 @@ const OrderTotal = ({ totalCart }: Props) => {
                     <span className="text-xl text-[#000000] font-medium">Tóm tắt đơn hàng</span>
                     <div className="flex justify-between items-center">
                         <span className="text-sm">Tổng tiền hàng</span>
-                        <span className="text-sm">{totalCart ? formatPrice(totalCart) : "0"}đ</span>
+                        <span className="text-sm">{totalCart ? formatPrice(totalCart - ship?.price) : "0"}đ</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-sm">Tạm tính</span>
-                        <span className="text-sm">{totalCart ? formatPrice(totalCart) : "0"}đ</span>
+                        <span className="text-sm">{totalCart ? formatPrice(totalCart - ship?.price) : "0"}đ</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-sm">Phí vận chuyển</span>
-                        <span className="text-sm">0đ</span>
+                        <span className="text-sm">{ship ? formatPrice(ship.price) : "0"}đ</span>
                     </div>
                     <div className="flex justify-between items-center border-b pb-5">
                         <span className="text-sm">Tiền thanh toán</span>
-                        <span className="text-lg text-dark font-semibold">{totalCart ? formatPrice(totalCart) : "0"}đ</span>
+                        <span className="text-lg text-dark font-semibold">{ formatPrice(totalCart) }đ</span>
                     </div>
                 </div>
                 <div className="px-5 pb-8 flex flex-col gap-4">
