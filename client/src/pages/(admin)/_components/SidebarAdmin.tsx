@@ -114,7 +114,7 @@ const SidebarAdmin = () => {
             children: [
               {
                 key: "4.1",
-                label: <Link to={"/"}>Danh sách</Link>,
+                label: <Link to={"/admin/orders"}>Danh sách</Link>,
               },
             ],
           },
