@@ -1,11 +1,19 @@
 
+import { useState } from 'react'
 import { Iaddress } from '../../../../common/interfaces/address'
+import OrderListAddress from './OrderListAddress'
 
 type Props = {
-    address: Iaddress
+    address: Iaddress,
+    listAddress : Iaddress[]
 }
 
-const OrderAddressItem = ({ address }: Props) => {
+const OrderAddressItem = ({ address, listAddress }: Props) => {
+    const [isOpenAddress, setIsOpenAddress] = useState(false)
+
+
+    console.log(isOpenAddress)
+
     return (
         <div className=" py-6">
             <div className="my-4 border rounded-tl-[30px] rounded-br-[30px]">
@@ -13,13 +21,16 @@ const OrderAddressItem = ({ address }: Props) => {
                     <div className="flex items-center justify-between">
                         <span className="text-lg text-black font-semibold">{address?.fullname} {address.option == "house" ? "(Nhà riêng)" : "(Cơ quan)"}</span>
                         <div className="flex items-center gap-2">
-                            <a href=''><u>Chọn địa chỉ khác</u></a>
-                            <button className="bg-black rounded-tl-[10px] rounded-br-[10px] px-4 py-2 text-white hover:bg-white hover:text-black hover:border hover:border-black">MẶC ĐỊNH</button>
+                            <button onClick={() => setIsOpenAddress(!isOpenAddress)} className='underline'><u>Chọn địa chỉ khác</u></button>
+                            <button disabled className="bg-black rounded-tl-[10px] cursor-pointer rounded-br-[10px] px-4 py-2 text-white hover:bg-white hover:text-black hover:border hover:border-black">MẶC ĐỊNH</button>
                         </div>
                     </div>
+                    {isOpenAddress && (
+                        <OrderListAddress listAddress={listAddress} isOpenAddress={isOpenAddress}/>
+                    )}
                     <div className="flex flex-col gap-2">
                         <span className='text-sm'>Điện thoại: {address?.phone}</span>
-                        <span className='text-sm'>Địa chỉ: {address?.district}, {address?.city}</span>
+                        <span className='text-sm'>Địa chỉ: {address.address}, {address?.district}, {address?.city}</span>
                     </div>
                 </div>
             </div>

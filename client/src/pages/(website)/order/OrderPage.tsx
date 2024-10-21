@@ -12,6 +12,8 @@ import OrderSubmit from "./_components/OrderSubmit"
 import OrderStep from "./_components/OrderStep"
 import { useNavigate } from "react-router-dom"
 import { useSelector } from "react-redux"
+import FormAddress from "../my-information/address/_components/FormAddress"
+import { PlusCircleFilled } from "@ant-design/icons"
 
 const OrderPage = () => {
     const [payment, setPayment] = useState<"cash" | "atm" | "momo" | "credit">('cash')
@@ -22,6 +24,8 @@ const OrderPage = () => {
     const carts = useSelector((state: any) => state.cart.carts)
     const totalCart = useSelector((state: any) => state.cart.totalCart)
     const totalProduct = useSelector((state: any) => state.cart.totalProduct)
+    const [isOpenForm, setIsOpenForm] = useState(false)
+
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
             const findAddressDefault = addressQuery?.data?.find((item: Iaddress) => item.isDefault == true)
@@ -63,13 +67,19 @@ const OrderPage = () => {
 
                                     {
                                         addressDefault && (
-                                            <OrderAddressItem address={addressDefault} />
+                                            <OrderAddressItem address={addressDefault} listAddress={addressQuery.data} />
                                         )
                                     }
+
+                                    <button onClick={() => { setIsOpenForm(true) }} className="rounded-tl-[20px] rounded-br-[20px] px-6 py-4  border text-white bg-dark hover:text-black hover:bg-white font-medium"><PlusCircleFilled /> Thêm địa chỉ </button>
+                                    {isOpenForm && (
+                                        <FormAddress setIsOpenForm={setIsOpenForm} />
+                                    )}
                                 </div>
                                 {!currentUser && (
                                     <OrderFormAddress />
                                 )}
+
                             </div>
                             {/*  */}
                             <div className="py-6">
