@@ -36,6 +36,10 @@ import OrderManager from "../pages/(website)/my-information/order-manager/Page";
 import BrandsPage from "../pages/(admin)/brands/Page";
 import BrandsForm from "../pages/(admin)/brands/_components/BrandForm";
 import HistoryUpdateUser from "../pages/(admin)/users/_components/HistoryUpdateUser";
+import VouchersPage from "../pages/(admin)/vouchers/Page";
+import VoucherList from "../pages/(admin)/vouchers/_components/VoucherList";
+import VoucherAdd from "../pages/(admin)/vouchers/_components/VoucherAdd";
+import VoucherEdit from "../pages/(admin)/vouchers/_components/VoucherEdit";
 
 
 const Router = () => {
@@ -59,6 +63,11 @@ const Router = () => {
         </Route>
       </Route>
       <Route path="admin" element={<LayoutAdmin />}>
+        <Route path="vouchers" element={<VouchersPage />}>
+          <Route index element={<VoucherList />}/>
+          <Route path="add" element={<VoucherAdd />}/>
+          <Route path="/admin/vouchers/:id" element={<VoucherEdit />} />
+        </Route>
         <Route path="orders" element={<OrdersPage/>}>
           <Route index element={<OrderList />}/>
           <Route path="details/:id" element={<OrderDetails />}/>

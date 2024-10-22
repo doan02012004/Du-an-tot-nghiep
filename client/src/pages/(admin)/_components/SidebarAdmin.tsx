@@ -1,19 +1,20 @@
 import {
   BarChartOutlined,
   BgColorsOutlined,
+  CreditCardOutlined,
   FileImageOutlined,
   MessageOutlined,
   OrderedListOutlined,
   PlusOutlined,
   ProductOutlined,
   ShoppingCartOutlined,
-  UserOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { useContext } from "react";
-import { AppContext } from "../../../common/contexts/AppContextProvider";
 import { Link, NavLink } from "react-router-dom";
+import { AppContext } from "../../../common/contexts/AppContextProvider";
 
 const SidebarAdmin = () => {
   const { collapsed } = useContext(AppContext);
@@ -48,92 +49,97 @@ const SidebarAdmin = () => {
             ],
           },
           {
-            key: "7",
+            key: "3",
             icon: <BgColorsOutlined />,
             label: "Màu sắc",
             children: [
               {
-                key: "7.1",
+                key: "3.1",
                 label: <NavLink to={"/admin/colors"}>Danh sách</NavLink>,
               },
             ],
           },
           {
-            key: "8",
+            key: "4",
             icon: <FileImageOutlined />,
             label: "Banner",
             children: [
               {
-                key: "8.1",
+                key: "4.1",
                 label: <NavLink to={"/admin/banners"}>Danh sách</NavLink>,
               },
             ],
           },
           {
-            key: "9",
+            key: "5",
             icon: <FileImageOutlined />,
             label: "Gallery",
             children: [
               {
-                key: "9.1",
+                key: "5.1",
                 label: <NavLink to={"/admin/gallerys"}>Danh sách</NavLink>,
               },
             ],
           },
           {
-            key: "3",
+            key: "6",
             icon: <ProductOutlined />,
             label: "Sản phẩm",
             children: [
               {
-                key: "3.1",
+                key: "6.1",
                 label: <NavLink to={"/admin/products"}>Danh sách</NavLink>,
               },
               {
-                key: "3.2",
+                key: "6.2",
                 icon: <PlusOutlined />,
                 label: <NavLink to={"/admin/products/add"}>Sản phẩm</NavLink>,
               },
             ],
           },
           {
-            key: "4",
+            key: "7",
             icon: <UserOutlined />,
             label: "Người dùng",
             children: [
               {
-                key:"4.1",
+                key:"7.1",
                 label:<Link to={'/admin/auth'}>Danh sách</Link>
               }
             ],
           },
           {
-            key: "5",
+            key: "8",
             icon: <ShoppingCartOutlined />,
             label: "Đơn hàng",
             children: [
               {
-                key: "4.1",
+                key: "8.1",
                 label: <Link to={"/admin/orders"}>Danh sách</Link>,
               },
             ],
           },
           {
-            key: "6",
+            key: "9",
+            icon: <CreditCardOutlined />,
+            label: <Link to={"/admin/vouchers"}>Mã Voucher</Link>,
+          },
+          {
+            key: "10",
             icon: <MessageOutlined />,
             label: <Link to={"/admin/chat"}>Tin Nhắn</Link>,
           },
           {
-            key: "10",
+            key: "11",
             icon: <OrderedListOutlined />,
             label: "Thương Hiệu",
             children: [
               {
-                key: "10.1",
+                key: "11.1",
                 label: <NavLink to={`/admin/brands`}>Thương Hiệu</NavLink>,
               },
               {
-                key: "10.2",
+                key: "11.2",
                 label: (
                   <NavLink to={`/admin/brands/add`}>Thêm thương hiệu</NavLink>
                 ),

@@ -10,6 +10,19 @@ import {
 } from "../common/interfaces/product";
 import { IColor } from "../common/interfaces/Color";
 
+// -----------------------------------------------///
+// Hàm lấy tất cả sản phẩm
+export const getAllProducts = async () => {
+  try {
+    const res = await instance.get("/products"); // Thay URL nếu cần thiết
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách sản phẩm:", error);
+    throw error;
+  }
+};
+
+//----------------------------------------------------///
 export const getProductSlider = async (options: any) => {
     try {
       const res = await instance.get("/products/slider", {

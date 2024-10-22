@@ -1,0 +1,31 @@
+import express from 'express';
+import { 
+    createVoucher, 
+    checkVoucher, 
+    getAllVouchers, 
+    updateVoucher, 
+    getVoucherById,  // Thêm hàm getVoucherById
+    deleteVoucher     // Thêm hàm deleteVoucher
+} from '../controllers/voucherController.js';
+
+const router = express.Router();
+
+// Route tạo voucher
+router.post('/', createVoucher);
+
+// Route hiển thị tất cả voucher
+router.get('/', getAllVouchers);
+
+// Route hiển thị voucher theo ID
+router.get('/:voucherId', getVoucherById);  // Thêm route lấy voucher theo ID
+
+// Route cập nhật voucher
+router.put('/:voucherId', updateVoucher);
+
+// Route kiểm tra voucher
+router.post('/check', checkVoucher);
+
+// Route xóa voucher
+router.delete('/:voucherId', deleteVoucher);  // Thêm route xóa voucher theo ID
+
+export default router;
