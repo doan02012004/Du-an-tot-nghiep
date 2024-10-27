@@ -143,6 +143,12 @@ input[type="number"] {
         }
     }
 
+    @keyframes order_change_address{
+           from {
+            
+           }
+    }
+
     @keyframes card_list_size_close {
         from {
             bottom: 35px;
