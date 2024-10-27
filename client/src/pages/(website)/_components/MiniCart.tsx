@@ -41,7 +41,8 @@ const MiniCart = () => {
                 return {
                     ...cart,
                     total: Number(attribute?.price_new * cart?.quantity),
-                    weight: Number(attribute?.weight * cart?.quantity)
+                    weight: Number(attribute?.weight * cart?.quantity),
+                    volume: Number(attribute?.volume * cart?.quantity)
                 }
             })
             const totalProduct = newCarts.reduce((sum:number, cart:IcartItem)=> sum+ cart.quantity ,0 )
