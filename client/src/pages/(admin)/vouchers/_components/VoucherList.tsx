@@ -14,7 +14,7 @@ const VoucherList = (props: Props) => {
     const [filterType, setFilterType] = useState<'discount' | 'shipping'>('discount'); // Mặc định lọc voucher giảm giá
     const [filterStatus, setFilterStatus] = useState<'active' | 'inactive'>('active'); // Mặc định lọc voucher đang hoạt động
     const [searchTerm, setSearchTerm] = useState(''); // Dùng để tìm kiếm mã code hoặc tên voucher
-    const query = useVoucherQuery();
+    const query = useVoucherQuery({});
     const mutation = useVoucherMutation();
 
     useEffect(() => {
@@ -88,7 +88,7 @@ const VoucherList = (props: Props) => {
             dataIndex: 'quantity',
         },
         {
-            title: 'Giá tối thiểu',
+            title: 'Giá trị đơn tối thiểu',
             dataIndex: 'minOrderValue',
         },
         {

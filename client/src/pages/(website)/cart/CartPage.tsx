@@ -7,10 +7,6 @@ import { message } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 import { useContext, useEffect } from 'react'
 import { AppContext } from '../../../common/contexts/AppContextProvider'
-import { Iattribute, Iproduct } from '../../../common/interfaces/product'
-import { IcartItem } from '../../../common/interfaces/cart'
-import { setCarts, setTotalCart } from '../../../common/redux/features/cartSlice'
-
 const CartPage = () => {
     const {socket} = useContext(AppContext)
     const dispath = useDispatch()

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { message } from 'antd';
 import { IVoucher } from '../../interfaces/voucher';
-import { createVoucher, updateVoucher, deleteVoucher } from '../../../services/voucher';
+import { createVoucher, updateVoucher, deleteVoucher, checkVoucher } from '../../../services/voucher';
 
 const useVoucherMutation = () => {
     const queryClient = useQueryClient();
@@ -36,8 +36,17 @@ const useVoucherMutation = () => {
                         throw error;
                     }
                     break;
-                    default:
-                        break;
+                    case "checkVoucher":
+                    try {
+                        // await  checkVoucher(options.voucher._id!);
+                        message.success("Xóa voucher thành công");
+                    } catch (error) {
+                        message.error("Xóa voucher thất bại");
+                        throw error;
+                    }
+                    break;
+                default:
+                    break;
             }
         },
         onSuccess: () => {

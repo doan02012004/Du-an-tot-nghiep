@@ -12,16 +12,27 @@ import OrderSubmit from "./_components/OrderSubmit"
 import OrderStep from "./_components/OrderStep"
 import { useNavigate } from "react-router-dom"
 import { useSelector } from "react-redux"
+import useVoucherQuery from "../../../common/hooks/voucher/useVoucherQuery"
+import { IVoucher } from "../../../common/interfaces/voucher"
 
 const OrderPage = () => {
     const [payment, setPayment] = useState<"cash" | "atm" | "momo" | "credit">('cash')
     const { currentUser } = useContext(AppContext)
     const [addressDefault, setAddressDefault] = useState<Iaddress | null>(null)
+    const [vouchers,setVouchers] = useState<IVoucher[]>([])
     const addressQuery = useAddressQuery()
+    const voucherQuery = useVoucherQuery({})
     const navigate = useNavigate()
     const carts = useSelector((state: any) => state.cart.carts)
     const totalCart = useSelector((state: any) => state.cart.totalCart)
     const totalProduct = useSelector((state: any) => state.cart.totalProduct)
+
+    useEffect(()=>{
+        if (voucherQuery.data && voucherQuery.data.length >0) {
+            setVouchers(voucherQuery.data)
+        }
+    },[voucherQuery.data])
+
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
             const findAddressDefault = addressQuery?.data?.find((item: Iaddress) => item.isDefault == true)
@@ -90,9 +101,9 @@ const OrderPage = () => {
                         </div>
                     </div>
                     <div className="lg:w-[32%]">
-                        <OrderTotal totalCart={totalCart} />
+                        <OrderTotal totalCart={totalCart} vouchers={vouchers}/>
 
-                        <OrderSubmit user={currentUser} payment={payment} address={addressDefault} carts={carts} totalCart={totalCart} totalProduct={totalProduct} />
+                        <OrderSubmit user={currentUser} payment={payment} address={addressDefault} carts={carts} totalCart={totalCart} totalProduct={totalProduct}/>
                     </div>
                 </div>
             </div>

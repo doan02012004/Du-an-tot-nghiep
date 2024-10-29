@@ -3,7 +3,7 @@ import VoucherModel from "../models/voucherModel.js";
 // Tạo voucher mới
 export const createVoucher = async (req, res) => {
     try {
-        const { name, code, type, value, minOrderValue, maxDiscountValue, quantity, category, startDate, endDate, applicableProducts, status } = req.body;
+        const { name, code, type, value, minOrderValue, maxDiscountValue, quantity, category, startDate, endDate, applicableProducts, status,scope } = req.body;
 
         // Kiểm tra độ dài của mã voucher phải đúng 5 ký tự
         if (code.length !== 5) {
@@ -29,7 +29,7 @@ export const createVoucher = async (req, res) => {
             maxDiscountValue,
             quantity,
             category,
-            scope: applicableProducts ? 'specific' : 'all',
+            scope,
             applicableProducts,
             startDate: new Date(formattedStartDate),
             endDate: new Date(formattedEndDate),
@@ -68,10 +68,23 @@ export const getVoucherById = async (req, res) => {
     }
 };
 
+export const getVoucherByCode = async (req, res) => {
+    try {
+        const voucher = await VoucherModel.findOne({code:req.params.voucherCode});
+        if (!voucher) {
+            return res.status(404).json({ success: false, message: 'Voucher không tồn tại' });
+        }
+
+        return res.status(200).json(voucher);
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 // Cập nhật voucher
 export const updateVoucher = async (req, res) => {
     try {
-        const { name, code, type, value, minOrderValue, maxDiscountValue, quantity, category, startDate, endDate, applicableProducts, status } = req.body;
+        const { name, code, type, value, minOrderValue, maxDiscountValue, quantity, category,scope, startDate, endDate, applicableProducts, status } = req.body;
 
         // Chuyển đổi định dạng ngày từ DD/MM/YYYY sang YYYY-MM-DD
         const formattedStartDate = startDate.split("/").reverse().join("-");

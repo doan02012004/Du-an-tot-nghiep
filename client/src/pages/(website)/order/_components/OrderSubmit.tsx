@@ -33,6 +33,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts }:
         const newProductsOrder = await carts.map((item: IcartItem) => {
             const gallery = item.productId.gallerys.find((gallery: Igallery) => gallery._id == item.galleryId)
             const attribute = item.productId.attributes.find((attribute: Iattribute) => attribute._id == item.attributeId)
+            console.log(item.total)
             return {
                 productId: item.productId._id,
                 name: item.productId.name,
@@ -43,6 +44,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts }:
                 total: item.total,
                 quantity: item.quantity
             }
+            
         })
         const newOrder = {
             userId: user?._id,

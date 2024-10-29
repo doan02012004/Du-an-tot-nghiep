@@ -15,7 +15,18 @@ export const getAllVouchers = async () => {
 // Lấy voucher theo ID
 export const getVoucherById = async (id: string) => {
   try {
-    const { data } = await instance.get(`/vouchers/${id}`);
+    const { data } = await instance.get(`/vouchers/id/${id}`);
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+// Lấy voucher theo ID
+export const getVoucherByCode = async (code: string) => {
+  try {
+    const { data } = await instance.get(`/vouchers/code/${code}`);
     return data;
   } catch (error) {
     console.log(error);
@@ -55,3 +66,14 @@ export const deleteVoucher = async (id: string) => {
     throw error;
   }
 };
+
+
+export const checkVoucher = async(voucher: IVoucher)=>{
+  try {
+    const { data } = await instance.put(`/vouchers/${voucher._id}`, voucher);
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

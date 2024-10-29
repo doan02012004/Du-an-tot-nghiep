@@ -1,13 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
-import { getAllVouchers, getVoucherById } from '../../../services/voucher';
+import { getAllVouchers, getVoucherByCode, getVoucherById } from '../../../services/voucher';
 
-const useVoucherQuery = (id ?: string) => {
+const useVoucherQuery = (option:{id ?: string,code ?:string}) => {
     const query = useQuery({
-        queryKey: ['VOUCHERS', id],
+        queryKey: ['VOUCHERS', option],
         queryFn: async () => {
             try {
-                const data = id ? await getVoucherById(id) : await getAllVouchers();
-                return data;
+                if (option.id) {
+                    const data =  await getVoucherById(option.id)
+                    return data
+                }else if (option.code){
+                    const data = await getVoucherByCode(option.code)
+                    return data
+                }else {
+                    const data = await getAllVouchers()
+                    return data
+                }
+                
             } catch (error) {
                 console.error(error);
                 throw error;
@@ -16,5 +25,7 @@ const useVoucherQuery = (id ?: string) => {
     });
     return query;
 };
+
+
 
 export default useVoucherQuery;

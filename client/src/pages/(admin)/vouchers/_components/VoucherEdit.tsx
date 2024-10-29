@@ -30,10 +30,9 @@ const VoucherEdit = (props: Props) => {
     const [products, setProducts] = useState([]); // Lưu danh sách sản phẩm
     const [voucherType, setVoucherType] = useState<'fixed' | 'percentage'>('fixed'); // Lưu trạng thái loại voucher
     const [voucherStatus, setVoucherStatus] = useState<'active' | 'inactive'>('active'); // Lưu trạng thái của voucher
-
     // Lấy voucher hiện tại để chỉnh sửa
-    const { data: voucher, isLoading } = useVoucherQuery(voucherId); // Giả sử có hook lấy dữ liệu voucher theo ID
-
+    const { data: voucher, isLoading } = useVoucherQuery({id:voucherId}); // Giả sử có hook lấy dữ liệu voucher theo ID
+    console.log(voucher)
     useEffect(() => {
         if (voucher) {
             form.setFieldsValue({
@@ -41,9 +40,10 @@ const VoucherEdit = (props: Props) => {
                 startDate: moment(voucher.startDate),
                 endDate: moment(voucher.endDate),
                 status: voucher.status ? 'active' : 'inactive', // Đặt giá trị cho trường status
+                
             });
             setVoucherCode(voucher.code);
-            setScope(voucher.scope);
+            setScope(voucher.scope === 'all' ? 'all' : 'specific')
             setVoucherType(voucher.type);
             setVoucherStatus(voucher.status ? 'active' : 'inactive'); // Cập nhật trạng thái khi nhận dữ liệu voucher
         }
@@ -83,8 +83,8 @@ const VoucherEdit = (props: Props) => {
             category: values.category,
             scope: values.scope,
             applicableProducts: values.applicableProducts || [],
-            startDate: moment(values.startDate).format('YYYY-MM-DD'),
-            endDate: moment(values.endDate).format('YYYY-MM-DD'),
+            startDate: values.startDate.format('YYYY-MM-DD'),
+            endDate: values.endDate.format('YYYY-MM-DD'),
             status: values.status === 'active',
         };
 

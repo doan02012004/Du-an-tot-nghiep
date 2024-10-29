@@ -61,14 +61,14 @@ const VoucherAdd = (props: Props) => {
             category: values.category,
             scope: values.scope,
             applicableProducts: values.applicableProducts || [],
-            startDate: moment(values.startDate).format('YYYY-MM-DD'),
-            endDate: moment(values.endDate).format('YYYY-MM-DD'),
+            startDate: values.startDate.format('YYYY-MM-DD'),
+            endDate: values.endDate.format('YYYY-MM-DD'),
             status: values.status === 'active',
         };
 
         mutation.mutate({ action: 'add', voucher: newVoucher }, {
             onSuccess: () => {
-                message.success('Thêm voucher thành công!');
+                // message.success('Thêm voucher thành công!');
                 form.resetFields();
                 setVoucherCode('');
             },
