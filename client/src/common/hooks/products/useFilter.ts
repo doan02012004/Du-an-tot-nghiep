@@ -6,10 +6,12 @@ export const useFilterParams = () => {
 
         if (!dataFilter) return;
 
-        const { sellOrder = '', color = [], minPrice, maxPrice, size = '' } = dataFilter;
+        const {limit = 12,page = 1, sellOrder = '', color = [], minPrice, maxPrice, size = '' } = dataFilter;
 
         const params = new URLSearchParams();
 
+        params.append('limit', limit);
+        params.append('page', page || null);
         params.append('size', size || "");
         params.append('color', Array.isArray(color) ? color.join(',') : color);
         params.append('min_price', (minPrice !== null && minPrice !== undefined ? minPrice : 0).toString());
@@ -22,6 +24,8 @@ export const useFilterParams = () => {
     const getFiltersFromUrl = () => {
         const params = new URLSearchParams(window.location.search);
         const filters = {
+            limit : params.get('limit'),
+            page : params.get('page'),
             size: params.get('size'),
             color: params.get('color'),
             minPrice: params.get('min_price'),

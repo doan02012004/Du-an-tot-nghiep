@@ -19,10 +19,11 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { min_price, _limit, _page, max_price, size, color, sell_order } =
+    const { min_price, limit, page, max_price, size, color, sell_order } =
       req.query;
-    const limit = _limit || 8;
-    const page = parseInt(_page) || 1;
+      console.log(req.query)
+    // const limit = _limit || 8;
+    // const page = parseInt(_page) || 1;
     const skip = limit * (page - 1);
     let sort = {};
     let query = {

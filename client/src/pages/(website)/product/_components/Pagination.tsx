@@ -2,7 +2,7 @@ import React from 'react'
 
 type Props = {}
 
-const Pagination = (props: Props) => {
+const .Pagination = (props: Props) => {
   return (
     <>
         <ul className="list-inline-pagination flex justify-center items-center lg:mt-[70px]  mt-[32px]">
