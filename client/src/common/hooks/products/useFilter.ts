@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router-dom';
 export const useFilterParams = () => {
     const setFilterParams = useCallback((dataFilter?: any) => {
 
+        console.log(dataFilter)
+
         if (!dataFilter) return;
 
         const {limit = 12,page = 1, sellOrder = '', color = [], minPrice, maxPrice, size = '' } = dataFilter;
+
 
         const params = new URLSearchParams();
 

@@ -19,12 +19,14 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { min_price, limit, page, max_price, size, color, sell_order } =
+    const { min_price, limit, page = 1, max_price, size, color, sell_order } =
       req.query;
       console.log(req.query)
-    // const limit = _limit || 8;
+    const _limit = limit || 12;
     // const page = parseInt(_page) || 1;
-    const skip = limit * (page - 1);
+    console.log(_limit)
+    const skip = _limit * (page - 1);
+    console.log(skip);
     let sort = {};
     let query = {
       // $and: [
@@ -59,11 +61,12 @@ export const getAllProduct = async (req, res) => {
     console.log(query);
     const products = await ProductModel.find(query)
       .sort(sort)
-      .limit(limit)
+      .limit(_limit)
       .skip(skip)
       .populate("categoryId brandId");
+      console.log(products);
     const total = await ProductModel.countDocuments(query);
-    const totalPage = Math.ceil(total / limit);
+    const totalPage = Math.ceil(total / _limit);
     return res.status(200).json({
       products,
       total,
