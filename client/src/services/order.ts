@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import instance from "../common/config/axios"
-import { Iuser } from "../common/interfaces/auth"
 
 export const createOrder = async(option:any) =>{
     try {

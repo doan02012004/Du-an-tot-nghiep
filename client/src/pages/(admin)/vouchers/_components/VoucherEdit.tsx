@@ -30,6 +30,7 @@ const VoucherEdit = (props: Props) => {
     const [products, setProducts] = useState([]); // Lưu danh sách sản phẩm
     const [voucherType, setVoucherType] = useState<'fixed' | 'percentage'>('fixed'); // Lưu trạng thái loại voucher
     const [voucherStatus, setVoucherStatus] = useState<'active' | 'inactive'>('active'); // Lưu trạng thái của voucher
+    const [voucherCategory,setVoucherCategory] = useState<'discount'|'shipping'>('shipping')
     // Lấy voucher hiện tại để chỉnh sửa
     const { data: voucher, isLoading } = useVoucherQuery({id:voucherId}); // Giả sử có hook lấy dữ liệu voucher theo ID
     console.log(voucher)
@@ -145,24 +146,25 @@ const VoucherEdit = (props: Props) => {
 
                 {/* Row 2: Loại voucher và giá trị giảm */}
                 <Row gutter={16}>
+                <Col span={12}>
+                        <Form.Item label="Loại voucher" name="category">
+                            <Select onChange={(value) => setVoucherCategory(value)}>
+                                <Option value="discount">Voucher giảm giá</Option>
+                                <Option value="shipping">Voucher vận chuyển</Option>
+                            </Select>
+                        </Form.Item>
+                    </Col>
                     <Col span={12}>
                         <Form.Item label="Loại voucher" name="type">
                             <Select onChange={(value) => setVoucherType(value)}>
                                 <Option value="fixed">Giảm giá cố định</Option>
                                 <Option value="percentage">Giảm giá phần trăm</Option>
+                                <Option value="freeship">Miễn phí vận chuyển</Option>
                             </Select>
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
-                        <Form.Item
-                            label="Giá trị giảm"
-                            name="value"
-                            rules={[{ required: true, message: 'Giá trị giảm là bắt buộc' }]}
-                        >
-                            <InputNumber min={0} style={{ width: '100%' }} />
-                        </Form.Item>
-                    </Col>
+                   
                 </Row>
 
                 {/* Row 3: Giá trị đơn hàng tối thiểu và giá trị giảm tối đa */}
@@ -182,7 +184,7 @@ const VoucherEdit = (props: Props) => {
                             label="Giá trị giảm tối đa (cho phần trăm)"
                             name="maxDiscountValue"
                         >
-                            <InputNumber min={0} style={{ width: '100%' }} disabled={voucherType !== 'percentage'} />
+                            <InputNumber min={0} style={{ width: '100%' }} disabled={voucherType == 'fixed'} />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -198,15 +200,16 @@ const VoucherEdit = (props: Props) => {
                             <InputNumber min={1} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
-
                     <Col span={12}>
-                        <Form.Item label="Loại voucher" name="category">
-                            <Select>
-                                <Option value="discount">Voucher giảm giá</Option>
-                                <Option value="shipping">Voucher vận chuyển</Option>
-                            </Select>
+                        <Form.Item
+                            label="Giá trị giảm"
+                            name="value"
+                            // rules={[{ required: true, message: 'Giá trị giảm là bắt buộc' }]}
+                        >
+                            <InputNumber min={0} style={{ width: '100%' }} disabled={voucherCategory == 'shipping'}/>
                         </Form.Item>
                     </Col>
+                   
                 </Row>
 
                 {/* Row 5: Phạm vi áp dụng và Chọn sản phẩm */}

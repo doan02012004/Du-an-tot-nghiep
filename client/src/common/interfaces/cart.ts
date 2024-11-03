@@ -12,6 +12,8 @@ export interface IcartItem {
     quantity:number,
     galleryId?:string,
     total:number,
+    weight:number,
+    volume:number,
     validateCart: boolean
 }
 
@@ -21,3 +23,4 @@ export interface ICart {
     totalCart:number,
     totalPrice:number
 }
+

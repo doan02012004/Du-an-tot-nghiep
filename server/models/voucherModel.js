@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const voucherSchema = new mongoose.Schema({
     name: { type: String, required: true }, // Tên của voucher
     code: { type: String, required: true, unique: true }, // Mã voucher
-    type: { type: String, enum: ['percentage', 'fixed'], required: true }, // Loại voucher: phần trăm hoặc cố định
-    value: { type: Number, required: true }, // Giá trị giảm giá
+    type: { type: String, enum: ['percentage', 'fixed','freeship'], required: true }, // Loại voucher: phần trăm hoặc cố định
+    value: { type: Number}, // Giá trị giảm giá
     minOrderValue: { type: Number }, // Giá trị đơn hàng tối thiểu để áp dụng voucher
     maxDiscountValue: { type: Number }, // Giá trị giảm tối đa (nếu có)
     quantity: { type: Number, required: true }, // Số lượng voucher có thể sử dụng

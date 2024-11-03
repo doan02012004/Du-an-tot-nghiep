@@ -13,13 +13,13 @@ const cartSlice = createSlice({
     name: "cart",
     initialState,
     reducers: {
-        setCarts: (state,action)=>{
+        setCarts: (state, action) => {
             state.carts = action.payload
         },
-        setTotalProduct: (state,action)=>{
+        setTotalProduct: (state, action) => {
             state.totalProduct = action.payload
         },
-        setTotalCart: (state,action)=>{
+        setTotalCart: (state, action) => {
             state.totalCart = action.payload
         },
         setVoucher: (state,action)=>{

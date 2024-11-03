@@ -49,7 +49,7 @@ const ListProduct = () => {
             dataIndex: "categoryId",
             key: "categoryId",
             render: (categoryId: any) => (
-                <p>{categoryId.name}</p>
+                <p>{categoryId?.name}</p>
             )
         },
         {

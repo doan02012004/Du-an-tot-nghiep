@@ -1,21 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react"
-
-import OrderAddressItem from "./_components/OrderAddressItem"
+import { useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import { AppContext } from "../../../common/contexts/AppContextProvider"
 import useAddressQuery from "../../../common/hooks/address/useAddressQuery"
 import { Iaddress } from "../../../common/interfaces/address"
+import OrderAddressItem from "./_components/OrderAddressItem"
 import OrderFormAddress from "./_components/OrderFormAddress"
-import { AppContext } from "../../../common/contexts/AppContextProvider"
-import OrderTotal from "./_components/OrderTotal"
 import OrderPaymentMethod from "./_components/OrderPaymentMethod"
 import OrderSubmit from "./_components/OrderSubmit"
 import OrderStep from "./_components/OrderStep"
-import { useNavigate } from "react-router-dom"
-import { useSelector } from "react-redux"
 import useVoucherQuery from "../../../common/hooks/voucher/useVoucherQuery"
 import { IVoucher } from "../../../common/interfaces/voucher"
+import OrderTotal from "./_components/OrderTotal"
+import OrderOptionShip from "./_components/OrderOptionShip"
+import { IshipItem, IshipSubmit } from "../../../common/interfaces/orderInterfaces"
+
 
 const OrderPage = () => {
+    // const [ship, setShip] = useState<IshipItem | null>(null)
+    const [shippingCost, setShippingCost] = useState<IshipSubmit | null>(null);
     const [payment, setPayment] = useState<"cash" | "atm" | "momo" | "credit">('cash')
     const { currentUser } = useContext(AppContext)
     const [addressDefault, setAddressDefault] = useState<Iaddress | null>(null)
@@ -33,12 +37,14 @@ const OrderPage = () => {
         }
     },[voucherQuery.data])
 
+
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
             const findAddressDefault = addressQuery?.data?.find((item: Iaddress) => item.isDefault == true)
             setAddressDefault(findAddressDefault)
         }
     }, [addressQuery?.data])
+
     useEffect(() => {
         if (carts.lenght == 0) {
             return navigate("/cart")
@@ -47,6 +53,12 @@ const OrderPage = () => {
             return navigate("/signin")
         }
     }, [carts, currentUser])
+
+
+    const handleShippingCostChange = (ship: IshipSubmit) => {
+        setShippingCost(ship);
+    };
+
     return (
         <section>
             <div>
@@ -82,16 +94,8 @@ const OrderPage = () => {
                                     <OrderFormAddress />
                                 )}
                             </div>
-                            {/*  */}
-                            <div className="py-6">
-                                <span className="text-lg lg:text-xl text-black font-semibold">Phương thức giao hàng</span>
-                                <div className="my-4 border rounded-tl-[30px] rounded-br-[30px]">
-                                    <div className="px-5 py-6 flex items-center gap-2 lg:py-8 lg:px-10">
-                                        <span className="size-3 text-[10px] bg-black rounded-full text-white lg:size-4 flex justify-center items-center lg:text-[12px]"><i className="fa-solid fa-check " /></span>
-                                        <p className="text-sm text-black font-semibold">Chuyển phát nhanh</p>
-                                    </div>
-                                </div>
-                            </div>
+                            {/* phương thức giao hàng  */}
+                            <OrderOptionShip onShippingCostChange={handleShippingCostChange} />
                             <OrderPaymentMethod setPayment={setPayment} payment={payment} />
                             <div className="py-7">
                                 <div className="w-[60%] flex group items-center border border-black lg:w-[35%] py-3 justify-center gap-2 rounded-tl-[20px] rounded-br-[20px] hover:bg-white bg-black">
@@ -101,9 +105,8 @@ const OrderPage = () => {
                         </div>
                     </div>
                     <div className="lg:w-[32%]">
-                        <OrderTotal totalCart={totalCart} vouchers={vouchers}/>
-
-                        <OrderSubmit user={currentUser} payment={payment} address={addressDefault} carts={carts} totalCart={totalCart} totalProduct={totalProduct}/>
+                        <OrderTotal totalCart={totalCart} vouchers={vouchers} shippingCost={shippingCost} />
+                        <OrderSubmit user={currentUser} payment={payment} address={addressDefault} carts={carts} totalCart={totalCart} totalProduct={totalProduct} ship={shippingCost} />
                     </div>
                 </div>
             </div>

@@ -36,3 +36,30 @@ export interface IOrder {
     totalOrder: number;
     createdAt: Date;
 }
+
+export interface WeightRange {
+    minWeight: number;
+    maxWeight: number;
+    price: number;
+}
+
+export interface VolumeRange {
+    minVolume: number;
+    maxVolume: number;
+    price: number;
+}
+
+export interface IshipItem {
+    nameBrand: string;
+    weight: WeightRange[];  
+    volume: VolumeRange[];  
+}
+
+export interface IshipSubmit{
+    nameBrand: string;
+    value: WeightRange | VolumeRange;
+}
+
+
+
+

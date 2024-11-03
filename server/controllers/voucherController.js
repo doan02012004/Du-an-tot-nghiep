@@ -101,7 +101,7 @@ export const updateVoucher = async (req, res) => {
                 maxDiscountValue,
                 quantity,
                 category,
-                scope: applicableProducts ? 'specific' : 'all',
+                scope,
                 applicableProducts,
                 startDate: new Date(formattedStartDate),
                 endDate: new Date(formattedEndDate),

@@ -71,12 +71,12 @@ const ItemTable = ({ cart }: Props) => {
             <tr className="border-b border-t *:py-5">
                 <td className="w-[27rem]">
                     <div className="flex mt-0 pt-0 w-[25rem]">
-                        <div className="max-w-36 flex-none ">
-                            <Link to={`/productdetails/${cart?.productId?._id}`} className='block h-[205px] w-[140px]'>
-                                <img src={gallery?.avatar} className='h-full w-full object-cover' />
+                        <div className="flex-none max-w-36 ">
+                            <Link to={`/productdetails/${cart?.productId?.slug}`} className='block h-[205px] w-[140px]'>
+                                <img src={gallery?.avatar} className='object-cover w-full h-full' />
                             </Link>
                         </div>
-                        <div className="flex-grow ml-4 p-0 m-0">
+                        <div className="flex-grow p-0 m-0 ml-4">
                             <span className='text-wrap'> {cart?.productId?.name}</span>
                             <div className="flex gap-4 pt-5">
                                 <span className="text-[12px]">Màu sắc: {attribute && attribute?.color}</span>
@@ -88,19 +88,19 @@ const ItemTable = ({ cart }: Props) => {
                 <td className="align-top">
                     <div className="text-left">
                         <span className='text-sm'>{attribute? formatPrice(attribute?.price_new):0 }đ</span>
-                        {/* <p className="text-red text-xs font-bold">( -60% )</p> */}
+                        {/* <p className="text-xs font-bold text-red">( -60% )</p> */}
                     </div>
                 </td>
-                <td className="align-top w-24">
+                <td className="w-24 align-top">
                     <div className="border grid grid-cols-3 items-center rounded-tl-[20px] rounded-br-[20px]">
                         <button onClick={decreaseQuantity} className=" border border-t-0 border-l-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">-</button>
-                        <input ref={inputRef} onBlur={onInput} className="text-center text-xs outline-0 bg-transparent  h-full " defaultValue={cart?.quantity}/>
+                        <input ref={inputRef} onBlur={onInput} className="h-full text-xs text-center bg-transparent outline-0 " defaultValue={cart?.quantity}/>
                         <button onClick={increaseQuantity} className=" border border-t-0 border-r-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">+</button>
                     </div>
                 </td>
                 <td className="align-top">
                     <div className=''>
-                        <span className="text-black font-bold text-sm pl-4">{formatPrice( cart?.total)}đ</span>
+                        <span className="pl-4 text-sm font-bold text-black">{formatPrice( cart?.total)}đ</span>
                     </div>
                 </td>
                 <td className="align-top">

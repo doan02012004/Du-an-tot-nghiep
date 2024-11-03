@@ -7,38 +7,42 @@ import { message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVoucher } from '../../../../common/redux/features/cartSlice';
 import VoucherDiscount from './VoucherDiscount';
+import { IshipSubmit } from '../../../../common/interfaces/orderInterfaces'
+import VoucherShipping from './VoucherShipping';
 
 type Props = {
     totalCart: number;
     vouchers: IVoucher[];
+    shippingCost: IshipSubmit | null // Thêm shippingCost vào props
 };
 
-const OrderTotal = ({ totalCart, vouchers }: Props) => {
+const OrderTotal = ({ totalCart, vouchers, shippingCost }: Props) => {
     const [displayVoucher, setDisplayVoucher] = useState(false);
     const [selectedVoucherCode, setSelectedVoucherCode] = useState(''); // State để lưu mã voucher
-    const voucher = useSelector((state:any) => state.cart.voucher) as IVoucher
-    const totalSubmit = useSelector((state:any)=> state.cart.totalSubmit)
+    const voucher = useSelector((state: any) => state.cart.voucher) as IVoucher
+    const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
     const dispatch = useDispatch()
     // Hàm xử lý khi chọn voucher
     const handleVoucherSelect = (voucherCode: string) => {
         setSelectedVoucherCode(voucherCode); // Cập nhật mã voucher vào state
     };
-    const onAplly = async()=>{
+    const onAplly = async () => {
         if (selectedVoucherCode) {
             try {
                 const data = await getVoucherByCode(selectedVoucherCode)// Gọi API lấy voucher theo mã 
-                if(data){
+                if (data) {
                     dispatch(setVoucher(data))
-                }else{
+                } else {
                     dispatch(setVoucher(null))
                 }
             } catch (error) {
                 console.log(error)
             }
-        }else{
+        } else {
             message.error("Chưa tồn tại mã")
         }
     }
+
     return (
         <>
             <div className="bg-[#FBFBFC]">
@@ -46,22 +50,26 @@ const OrderTotal = ({ totalCart, vouchers }: Props) => {
                     <span className="text-xl text-[#000000] font-medium">Tóm tắt đơn hàng</span>
                     <div className="flex justify-between items-center">
                         <span className="text-sm">Tổng tiền hàng</span>
-                        <span className="text-sm">{totalCart ? formatPrice(totalCart) : "0"}đ</span>
+                        <span className="text-sm">{formatPrice(totalCart)}đ</span> {/* chỉ hiển thị tổng tiền hàng */}
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-sm">Tạm tính</span>
-                        <span className="text-sm">{totalCart ? formatPrice(totalCart) : "0"}đ</span>
+                        <span className="text-sm">{formatPrice(totalCart)}đ</span> {/* giống tổng tiền hàng */}
                     </div>
-                {voucher && voucher.category =='discount' && (
-                    <VoucherDiscount voucher={voucher} setSelectedVoucherCode={selectedVoucherCode} />
-                )}
+                    {voucher && voucher.category == 'discount' && (
+                        <VoucherDiscount voucher={voucher} setSelectedVoucherCode={selectedVoucherCode} />
+                    )}
+                    {voucher && voucher.category == 'shipping' && (
+                        <VoucherShipping voucher={voucher} setSelectedVoucherCode={selectedVoucherCode} shippingCost={shippingCost}/>
+                    )}
                     <div className="flex justify-between items-center">
                         <span className="text-sm">Phí vận chuyển</span>
-                        <span className="text-sm">0đ</span>
+                        <span className="text-sm">{shippingCost ? formatPrice(shippingCost?.value?.price) : "0"}đ</span>
                     </div>
                     <div className="flex justify-between items-center border-b pb-5">
                         <span className="text-sm">Tiền thanh toán</span>
-                        <span className="text-lg text-dark font-semibold">{totalCart > 0 ? (voucher && totalSubmit ? formatPrice(totalSubmit) : formatPrice(totalCart)) : "0"}đ</span>
+                        {/* <span className="text-lg text-dark font-semibold">{totalCart > 0 ? (voucher && totalSubmit ? formatPrice(totalSubmit) : formatPrice(totalCart)) : "0"}đ</span> */}
+                        <span className="text-lg text-dark font-semibold">{shippingCost ? (totalSubmit > 0 ? formatPrice(totalSubmit + shippingCost?.value?.price) : formatPrice(totalCart + shippingCost?.value?.price)) : formatPrice(totalCart)}đ</span>
                     </div>
                 </div>
                 <div className="px-5 pb-8 flex flex-col gap-4">
@@ -71,13 +79,14 @@ const OrderTotal = ({ totalCart, vouchers }: Props) => {
                         <button className="lg:text-lg text-gray-400 font-semibold" id="zoomVoucher" onClick={() => setDisplayVoucher(!displayVoucher)}>
                             Mã của tôi
                         </button>
+                        {/* <button className="lg:text-lg text-gray-400 font-semibold" onClick={() => setDisplayVoucher(!displayVoucher)}>Mã của tôi</button> */}
                     </div>
                     <div className="flex items-center gap-3 justify-between">
                         {/* Ô input sử dụng giá trị từ selectedVoucherCode */}
-                        <input 
-                            type="text" 
-                            className="placeholder:text-sm border rounded-md py-3 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:placeholder:text-base" 
-                            placeholder="Mã giảm giá" 
+                        <input
+                            type="text"
+                            className="placeholder:text-sm border rounded-md py-3 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:placeholder:text-base"
+                            placeholder="Mã giảm giá"
                             value={selectedVoucherCode} // Hiển thị mã đã chọn
                             readOnly // Chỉ đọc, người dùng không thể sửa trực tiếp
                         />
@@ -86,19 +95,20 @@ const OrderTotal = ({ totalCart, vouchers }: Props) => {
                         >
                             ÁP DỤNG
                         </button>
+
                     </div>
                     <div>
-                        <select name='' id='' className="text-sm border w-full rounded-md py-3 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base">
+                        <select className="text-sm border w-full rounded-md py-3 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base">
                             <option value=''>Mã nhân viên hỗ trợ</option>
                         </select>
                     </div>
                 </div>
             </div>
             {/* Modal chọn voucher */}
-            <ListVoucher 
-                displayVoucher={displayVoucher} 
-                setDisplayVoucher={setDisplayVoucher} 
-                vouchers={vouchers} 
+            <ListVoucher
+                displayVoucher={displayVoucher}
+                setDisplayVoucher={setDisplayVoucher}
+                vouchers={vouchers}
                 onVoucherSelect={handleVoucherSelect} // Truyền callback để cập nhật voucher
             />
         </>
@@ -106,3 +116,4 @@ const OrderTotal = ({ totalCart, vouchers }: Props) => {
 };
 
 export default OrderTotal;
+

@@ -55,7 +55,7 @@ export const getAllProduct = async (req, res) => {
         },
       };
     }
-    console.log(query);
+
     const products = await ProductModel.find(query)
       .sort(sort)
       .limit(limit)

@@ -2,7 +2,7 @@ export interface IVoucher {
     _id?: string; // ID của voucher
     name: string; // Tên voucher
     code: string; // Mã voucher (5 ký tự)
-    type: 'fixed' | 'percentage'; // Loại voucher: cố định hoặc phần trăm
+    type: 'fixed' | 'percentage' | 'freeship'; // Loại voucher: cố định hoặc phần trăm
     value: number; // Giá trị giảm giá
     minOrderValue: number; // Giá trị đơn hàng tối thiểu
     maxDiscountValue?: number; // Giá trị giảm giá tối đa (cho phần trăm)

@@ -66,11 +66,11 @@ const ItemCartMobile = ({cart}: Props) => {
         cartMutation.mutate({action:"remove",cart:newCart})
     }
   return (
-    <div className="lg:hidden flex justify-between mb-3">
-                <div className="flex gap-4 w-2/3">
+    <div className="flex justify-between mb-3 lg:hidden">
+                <div className="flex w-2/3 gap-4">
                     <div className="">
-                        <Link to={`/productdetails/${cart?.productId?._id}`} className='block h-[103px] w-[72px]'>
-                            <img src={gallery?.avatar} className='h-full w-full object-cover' />
+                        <Link to={`/productdetails/${cart?.productId?.slug}`} className='block h-[103px] w-[72px]'>
+                            <img src={gallery?.avatar} className='object-cover w-full h-full' />
                         </Link>
                     </div>
                     <div className="flex flex-col gap-[6px]">
@@ -81,7 +81,7 @@ const ItemCartMobile = ({cart}: Props) => {
                         </div>
                         <div className="flex flex-col">
                             <span className='text-sm'>Giá: {formatPrice(cart?.total)}</span>
-                            {/* <span className="text-sm text-red font-semibold">( -30% )</span> */}
+                            {/* <span className="text-sm font-semibold text-red">( -30% )</span> */}
                         </div>
                     </div>
                 </div>
@@ -89,7 +89,7 @@ const ItemCartMobile = ({cart}: Props) => {
                     <span onClick={remove}><i className="fa-solid fa-trash-can" /></span>
                     <div className="border grid grid-cols-3 items-center rounded-tl-[10px] rounded-br-[10px]">
                         <button onClick={decreaseQuantity} className=" border border-t-0 border-l-0 border-b-0 rounded-tl-[10px] rounded-br-[10px] px-2 text-xl">-</button>
-                        <input ref={inputRef} onBlur={onInput} className="w-7 text-center text-xs outline-0 bg-transparent  h-full " defaultValue={cart?.quantity}></input>
+                        <input ref={inputRef} onBlur={onInput} className="h-full text-xs text-center bg-transparent w-7 outline-0 " defaultValue={cart?.quantity}></input>
                         <button onClick={increaseQuantity} className=" border border-t-0 border-r-0 border-b-0 rounded-tl-[10px] rounded-br-[10px]  px-2 text-xl">+</button>
                     </div>
                 </div>

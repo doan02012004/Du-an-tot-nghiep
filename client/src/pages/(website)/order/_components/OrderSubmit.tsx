@@ -2,10 +2,11 @@ import { useEffect } from "react"
 import useOrderMutation from "../../../../common/hooks/orders/useOrderMutation"
 import { Iaddress } from "../../../../common/interfaces/address"
 import { Iuser } from "../../../../common/interfaces/auth"
-import {  IcartItem } from "../../../../common/interfaces/cart"
+import { IcartItem } from "../../../../common/interfaces/cart"
 import { Iattribute, Igallery } from "../../../../common/interfaces/product"
 import { message } from "antd"
 import { useNavigate } from "react-router-dom"
+import { IshipSubmit } from "../../../../common/interfaces/orderInterfaces"
 
 type Props = {
     payment: "cash" | "atm" | "momo" | "credit",
@@ -13,10 +14,11 @@ type Props = {
     user: Iuser,
     carts: IcartItem[],
     totalCart: number,
-    totalProduct: number
+    totalProduct: number,
+    ship: IshipSubmit | null
 }
 
-const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts }: Props) => {
+const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, ship }: Props) => {
     const orderMutation = useOrderMutation()
     const navigate = useNavigate()
     useEffect(() => {
@@ -29,11 +31,11 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts }:
 
         }
     }, [orderMutation?.data])
+
     const onHandleOrder = async () => {
         const newProductsOrder = await carts.map((item: IcartItem) => {
             const gallery = item.productId.gallerys.find((gallery: Igallery) => gallery._id == item.galleryId)
             const attribute = item.productId.attributes.find((attribute: Iattribute) => attribute._id == item.attributeId)
-            console.log(item.total)
             return {
                 productId: item.productId._id,
                 name: item.productId.name,
@@ -55,7 +57,8 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts }:
             paymentMethod: payment,
             status: "pending",
             totalOrder: totalProduct,
-            totalPrice: totalCart
+            totalPrice: ship?.value?.price ? totalCart + ship?.value?.price : totalCart,
+            ship: ship
         }
         orderMutation.mutate({ action: "create", newOrder: newOrder })
 
