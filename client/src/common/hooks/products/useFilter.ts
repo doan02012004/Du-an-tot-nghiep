@@ -13,13 +13,13 @@ export const useFilterParams = () => {
 
         const params = new URLSearchParams();
 
-        params.append('limit', limit);
-        params.append('page', page || null);
+        params.append('limit', limit || 12);
+        params.append('page', page || 1);
         params.append('size', size || "");
-        params.append('color', Array.isArray(color) ? color.join(',') : color);
+        params.append('color', Array.isArray(color) ? color.join(',') : color || '');
         params.append('min_price', (minPrice !== null && minPrice !== undefined ? minPrice : 0).toString());
         params.append('max_price', (maxPrice !== null && maxPrice !== undefined ? maxPrice : 10000000).toString());
-        params.append('sell_order', sellOrder);
+        params.append('sell_order', sellOrder || '');               
 
         return params;
     }, []);
