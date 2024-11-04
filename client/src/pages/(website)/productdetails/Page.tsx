@@ -29,6 +29,8 @@ const ProductDetailsPage = (props: Props) => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }, [slug])
+  const {data} = useProductQuery()
+  
   return (
     <div>
       <div>
@@ -45,7 +47,7 @@ const ProductDetailsPage = (props: Props) => {
         </section>
         {/*  */}
         {/* -----------------------------------------------end productdetails------------------------- */}
-        <Similar_product />
+        <Similar_product product={query?.data} item={data?.products} />
         {/* ---------------- */}
         <Viewed_products />
         <Banner />
