@@ -17,6 +17,7 @@
     "@types/react-highlight-words": "^0.20.0",
     "antd": "^5.19.3",
     "axios": "^1.7.2",
+    "chart.js": "^4.4.6",
     "client": "file:",
     "dotenv": "^16.4.5",
     "moment": "^2.30.1",

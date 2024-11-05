@@ -36,6 +36,7 @@ import OrderManager from "../pages/(website)/my-information/order-manager/Page";
 import BrandsPage from "../pages/(admin)/brands/Page";
 import BrandsForm from "../pages/(admin)/brands/_components/BrandForm";
 import HistoryUpdateUser from "../pages/(admin)/users/_components/HistoryUpdateUser";
+import DashBoardPage from "../pages/(admin)/dash-board/Page";
 
 
 const Router = () => {
@@ -86,6 +87,7 @@ const Router = () => {
         <Route path="gallerys" element={<GalleryPage />}>
           <Route index element={<ListGallery />} />
         </Route>
+        <Route index element={<DashBoardPage />} />
       </Route>
     </Routes>
   );
