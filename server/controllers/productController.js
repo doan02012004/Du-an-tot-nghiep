@@ -4,7 +4,7 @@ import slugify from "slugify";
 
 export const createProduct = async (req, res) => {
   try {
-    const newProduct= {
+    const newProduct = {
       ...req.body,
       slug: slugify(req.body.name, "-")
     }
@@ -19,38 +19,37 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { min_price, limit, page = 1, max_price, size, color, sell_order } =
-      req.query;
-      console.log(req.query)
-    const _limit = limit || 12;
-    // const page = parseInt(_page) || 1;
-    console.log(_limit)
-    const skip = _limit * (page - 1);
-    console.log(skip);
+    const { min_price, limit, page, max_price, size, color, sell_order } = req.query;
+    const _limit = parseInt(limit) || 12;
+    const _page = parseInt(page) || 1;
+    const skip = _limit * (_page - 1);
+
     let sort = {};
     let query = {
-      // $and: [
-      //   { price_new: { $gte: parseInt(min_price) || 0 } },
-      //   { price_new: { $lte: parseInt(max_price) || 10000000 } },
-      // ],
+      $and: [
+        { "attributes.price_new": { $gte: parseInt(min_price) || 0 } },
+        { "attributes.price_new": { $lte: parseInt(max_price) || 10000000 } },
+      ],
     };
 
     if (sell_order) {
-      if (sell_order == "new") {
-        sort["createdAt"] = -1;
+      if (sell_order === "new") {
+        sort["createdAt"] = -1; 
       }
-      if (sell_order == "asc") {
-        sort["price_new"] = 1;
+      if (sell_order === "asc") {
+        sort["attributes.price_new"] = 1; // Giá tăng dần
       }
-      if (sell_order == "desc") {
-        sort["price_new"] = -1;
+      if (sell_order === "desc") {
+        sort["attributes.price_new"] = -1; // Giá giảm dần
       }
     }
 
+    // Lọc theo size nếu có
     if (size) {
       query["sizes"] = { $in: size.split(",") };
     }
 
+    // Lọc theo color nếu có
     if (color) {
       query["colors"] = {
         $elemMatch: {
@@ -58,20 +57,22 @@ export const getAllProduct = async (req, res) => {
         },
       };
     }
-    console.log(query);
+
     const products = await ProductModel.find(query)
       .sort(sort)
       .limit(_limit)
       .skip(skip)
       .populate("categoryId brandId");
-      console.log(products);
+
     const total = await ProductModel.countDocuments(query);
+    console.log(total);
     const totalPage = Math.ceil(total / _limit);
+
     return res.status(200).json({
       products,
       total,
       totalPage,
-      currentPage: page,
+      currentPage: _page,
     });
   } catch (error) {
     return res.status(500).json({
@@ -79,6 +80,7 @@ export const getAllProduct = async (req, res) => {
     });
   }
 };
+
 
 export const getProductSlider = async (req, res) => {
   try {
@@ -115,7 +117,7 @@ export const updateAttributeProduct = async (req, res) => {
     product.attributes = newAttributes;
     await product.save();
     return res.status(200).json({
-      data:product,
+      data: product,
       message: "Cập nhật thuộc tính thành công",
     });
   } catch (error) {
@@ -160,7 +162,7 @@ export const addColors = async (req, res) => {
 };
 export const getBySlugProduct = async (req, res) => {
   try {
-    const product = await ProductModel.findOne({slug:req.params.slug}).populate(
+    const product = await ProductModel.findOne({ slug: req.params.slug }).populate(
       "categoryId colors"
     );
     if (!product) {

@@ -2,9 +2,9 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const useFilterParams = () => {
+
     const setFilterParams = useCallback((dataFilter?: any) => {
 
-        console.log(dataFilter)
 
         if (!dataFilter) return;
 

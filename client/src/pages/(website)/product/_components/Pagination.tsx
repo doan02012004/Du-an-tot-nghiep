@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useFilterParams } from '../../../../common/hooks/products/useFilter'
 
 type Props = {
@@ -11,12 +11,15 @@ type Props = {
 const Pagination = ({ dataPage }: Props) => {
   const { setFilterParams,} = useFilterParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
 
   const handleApply = (pageData: any) => {
-    console.log(pageData);
-    const params = setFilterParams({ page: pageData });
+
+    const params = setFilterParams();
     navigate(`?${params?.toString()}`);
+    searchParams.set('page', pageData.toString());
+    setSearchParams(searchParams);
   };
 
   return (
