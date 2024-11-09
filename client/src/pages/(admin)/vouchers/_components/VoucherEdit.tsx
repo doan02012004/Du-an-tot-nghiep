@@ -28,7 +28,7 @@ const VoucherEdit = (props: Props) => {
     const [voucherCode, setVoucherCode] = useState('');
     const [scope, setScope] = useState<'all' | 'specific'>('all');
     const [products, setProducts] = useState([]); // Lưu danh sách sản phẩm
-    const [voucherType, setVoucherType] = useState<'fixed' | 'percentage'>('fixed'); // Lưu trạng thái loại voucher
+    const [voucherType, setVoucherType] = useState<'fixed' | 'percentage' | 'freeship'>('fixed'); // Lưu trạng thái loại voucher
     const [voucherStatus, setVoucherStatus] = useState<'active' | 'inactive'>('active'); // Lưu trạng thái của voucher
     const [voucherCategory,setVoucherCategory] = useState<'discount'|'shipping'>('shipping')
     // Lấy voucher hiện tại để chỉnh sửa
@@ -184,7 +184,7 @@ const VoucherEdit = (props: Props) => {
                             label="Giá trị giảm tối đa (cho phần trăm)"
                             name="maxDiscountValue"
                         >
-                            <InputNumber min={0} style={{ width: '100%' }} disabled={voucherType == 'fixed'} />
+                            <InputNumber min={0} style={{ width: '100%' }} disabled={voucherType !== 'percentage'} />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -206,7 +206,7 @@ const VoucherEdit = (props: Props) => {
                             name="value"
                             // rules={[{ required: true, message: 'Giá trị giảm là bắt buộc' }]}
                         >
-                            <InputNumber min={0} style={{ width: '100%' }} disabled={voucherCategory == 'shipping'}/>
+                            <InputNumber min={0} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                    

@@ -18,6 +18,10 @@ const OrderDetails = (props: Props) => {
     const order = query.data;
     const customer = order.customerInfor;
     const items = order.items;
+    const ship = order.ship;
+    const voucher = order.voucher
+    const Goodsmoney = order.totalPrice-ship.value?.price
+    const Totalamount = order.totalPrice - voucher.discountValue
 
     // Map trạng thái đơn hàng sang tiếng Việt
     const getStatusText = (status: string) => {
@@ -163,7 +167,7 @@ const OrderDetails = (props: Props) => {
             <div className="grid grid-cols-2 gap-4 mt-4">
                 
                 {/* Thông tin đơn hàng */}
-                <div className="rounded bg-yellow-100 p-4 shadow-md bg-sky-400">
+                <div className="rounded bg-yellow-100 p-4 shadow-md border border-black ">
                     <h3 className="font-bold text-lg mb-2">Thông tin đơn hàng</h3>
                     <hr />
                     <div className="pt-3">
@@ -185,14 +189,26 @@ const OrderDetails = (props: Props) => {
                             </div>
                         </div>
                         <div className="grid grid-cols-2">
-                            <p>Tổng giá:</p>
-                            <p>{order.totalPrice.toLocaleString()} VND</p>
+                            <p>Tổng tiền hàng:</p>
+                            <p>{Goodsmoney.toLocaleString()} VND</p>
+                        </div>
+                        <div className="grid grid-cols-2">
+                            <p>Phí vận chuyển:</p>
+                            <p>{ship.value?.price.toLocaleString()} VND</p>
+                        </div>
+                        <div className="grid grid-cols-2">
+                            <p>Giảm giá:</p>
+                            <p>{voucher.discountValue.toLocaleString()} VND</p>
+                        </div>
+                        <div className="grid grid-cols-2">
+                            <p>Tổng giá trị đơn hàng:</p>
+                            <p>{Totalamount.toLocaleString()} VND</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Thông tin người mua */}
-                <div className="rounded bg-green-100 p-4 shadow-md bg-amber-400">
+                <div className="rounded  p-4 shadow-md border border-black ">
                     <h3 className="font-bold text-lg mb-2">Thông tin người mua</h3>
                     <hr />
                     <div className="pt-3">
@@ -216,7 +232,7 @@ const OrderDetails = (props: Props) => {
                 </div>
 
                 {/* Thông tin thanh toán */}
-                <div className="rounded bg-red-100 p-4 shadow-md bg-slate-400">
+                <div className="rounded p-4 shadow-md border border-black ">
                     <h3 className="font-bold text-lg mb-2">Thanh toán</h3>
                     <hr />
                     <div className="pt-3">
@@ -225,7 +241,7 @@ const OrderDetails = (props: Props) => {
                             <p>{order.paymentMethod === 'cash' ? 'Tiền mặt' : 
                                 order.paymentMethod === 'momo' ? 'Momo' : 
                                 order.paymentMethod === 'atm' ? 'ATM' : 
-                                'Thẻ tín dụng'}</p>
+                                'Thẻ tín dụng'}</p> 
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Trạng thái thanh toán:</p>
@@ -244,10 +260,18 @@ const OrderDetails = (props: Props) => {
                 </div>
 
                 {/* Thông tin giao hàng */}
-                <div className="rounded bg-blue-100 p-4 shadow-md bg-lime-400">
+                <div className="rounded p-4 shadow-md border border-black ">
                     <h3 className="font-bold text-lg mb-2">Giao hàng</h3>
                     <hr />
-                    <div className="pt-3">
+                    <div className="mt-3">
+                    <div className="grid grid-cols-2">
+                            <p>Hình thức giao hàng:</p>
+                            <p>
+                                {ship.nameBrand}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="">
                         <div className="grid grid-cols-2">
                             <p>Trạng thái giao hàng:</p>
                             <p>

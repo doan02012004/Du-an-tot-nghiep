@@ -60,6 +60,11 @@ export interface IshipSubmit{
     value: WeightRange | VolumeRange;
 }
 
-
+export interface Vouchers {
+    code: string | null; // Mã voucher
+    discountValue: number; // Giá trị giảm giá
+    category: "discount" | "shipping" | null; // Loại voucher
+    type: "percentage" | "fixed" | "freeship" | null; // Loại voucher: cố định hoặc phần trăm hay ship 
+}
 
 

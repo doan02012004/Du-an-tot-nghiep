@@ -134,7 +134,27 @@ const orderSchema = new Schema(
             value: {
                 
             }
-        }
+        },
+        voucher: {
+            code: {
+                type: String,
+                required: false,
+            },
+            discountValue: {
+                type: Number,
+                required: false,
+            },
+            category: {
+                type: String,
+                enum: ["discount", "shipping"],
+                required: false,
+            },
+            type: {
+                type: String,
+                enum: ["percentage","fixed","freeship"],
+                required: false,
+            },
+        },
     },
     { timestamps: true, versionKey: false }
 );

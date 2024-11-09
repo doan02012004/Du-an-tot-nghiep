@@ -6,7 +6,8 @@ import { IcartItem } from "../../../../common/interfaces/cart"
 import { Iattribute, Igallery } from "../../../../common/interfaces/product"
 import { message } from "antd"
 import { useNavigate } from "react-router-dom"
-import { IshipSubmit } from "../../../../common/interfaces/orderInterfaces"
+import { IshipSubmit, Vouchers } from "../../../../common/interfaces/orderInterfaces"
+import { useSelector } from "react-redux"
 
 type Props = {
     payment: "cash" | "atm" | "momo" | "credit",
@@ -19,8 +20,10 @@ type Props = {
 }
 
 const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, ship }: Props) => {
+    const voucher = useSelector((state: any) => state.cart.voucher) as Vouchers;
     const orderMutation = useOrderMutation()
     const navigate = useNavigate()
+    console.log(voucher)
     useEffect(() => {
         if (orderMutation?.data?.response?.status === 500) {
             return message.error("Lỗi thanh toán")
@@ -51,16 +54,24 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
         const newOrder = {
             userId: user?._id,
             customerInfor: {
-                ...address
+                ...address,
             },
             items: [...newProductsOrder],
             paymentMethod: payment,
             status: "pending",
             totalOrder: totalProduct,
             totalPrice: ship?.value?.price ? totalCart + ship?.value?.price : totalCart,
-            ship: ship
-        }
-        orderMutation.mutate({ action: "create", newOrder: newOrder })
+            ship: ship,
+            // Thêm thông tin voucher vào đơn hàng
+            voucher: {
+                code: voucher?.code || null,
+                discountValue: (voucher?.type === "percentage" ? (totalCart * voucher?.value /100 ) : voucher?.value) || 0,
+                category: voucher?.category || null,
+                type: voucher?.type || null
+            },
+        };
+
+        orderMutation.mutate({ action: "create", newOrder: newOrder });
 
     }
     return (
