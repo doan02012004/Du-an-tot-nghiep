@@ -10,8 +10,8 @@ const Header = () => {
  
 
     return (
-        <header className=" h-16 lg:h-20">
-            <div className="fixed top-0 left-0 w-full py-5 z-50 bg-white h-16 lg:h-20 lg:py-0">
+        <header className="h-16  lg:h-20">
+            <div className="fixed top-0 left-0 z-50 w-full h-16 py-5 bg-white lg:h-20 lg:py-0">
                 <div className="container relative h-full">
                     <nav className="flex items-center justify-between w-full h-full lg:border-b lg:border-gray-200">
                       <MenuHeader />

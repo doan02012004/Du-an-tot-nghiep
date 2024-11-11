@@ -1,6 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import orderModel from "../models/orderModel.js";
 import CartModel from "../models/cartModel.js";
+
+
 export const createOrder = async (req, res) => {
     try {
         const order = await orderModel.create(req.body);
@@ -53,10 +55,7 @@ export const getOrderById = async (req, res) => {
 export const getOrderByUserId = async (req, res) => {
     try {
         const { userId } = req.params;
-        console.log(userId);
-        const order = await orderModel.find({userId})
-
-        console.log(order)    
+        const order = await orderModel.find({userId})  
         if (!order) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
         }

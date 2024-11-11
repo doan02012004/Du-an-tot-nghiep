@@ -35,24 +35,32 @@ const Product = ({ product }: Props) => {
     }
   }, [productId])
 
-  useEffect(() => {
-    setColor( product?.gallerys[0].name);
-  
-    const firstMatchingVariant = product?.attributes.find(
-      (item) => 
-        item.price_new > Number(dataFilter.minPrice) && 
-        item.price_new < Number(dataFilter.maxPrice)
-    );
 
-    setVariant(firstMatchingVariant);
-  }, [product, dataFilter]);
+  
+  useEffect(() => {
+    setGallery(product?.gallerys[0])
+    setColor(product.gallerys[0].name)
+    const newVariant = product?.attributes.reduce((current, item) =>item.price_new < current.price_new ? item: current, product?.attributes[0] )
+    setVariant(newVariant)
+  }, [product])
+  // useEffect(() => {
+  //   setColor( product?.gallerys[0].name);
+  
+  //   const firstMatchingVariant = product?.attributes.find(
+  //     (item) => 
+  //       item.price_new > Number(dataFilter.minPrice) && 
+  //       item.price_new < Number(dataFilter.maxPrice)
+  //   );
+
+  //   setVariant(firstMatchingVariant);
+  // }, [product, dataFilter]);
   
 
-  useEffect(() => {
-    const newAttributes = product?.attributes?.filter((item: Iattribute) => (item.color == color && item.instock > 0))
-    const newCheckSizes = newAttributes?.map((item: Iattribute) => item.size)
-    setCheckSizes(newCheckSizes)
-  }, [color])
+  // useEffect(() => {
+  //   const newAttributes = product?.attributes?.filter((item: Iattribute) => (item.color == color && item.instock > 0))
+  //   const newCheckSizes = newAttributes?.map((item: Iattribute) => item.size)
+  //   setCheckSizes(newCheckSizes)
+  // }, [color])
 
   const onSetProductId = async (product: Iproduct) => {
     if (productId !== product?._id) {
@@ -70,12 +78,9 @@ const Product = ({ product }: Props) => {
   }
 
   const onPickColor = (item: IColor) => {
-    console.log(item)
-    setColor(item.name)
     const newGallery: Igallery | any = product?.gallerys.find((gallery: Igallery) => gallery.name == item.name)
     setGallery(newGallery)
-    console.log(newGallery)
-    console.log(gallery)
+    
   }
 
   const onAddToCart = (size: string) => {
