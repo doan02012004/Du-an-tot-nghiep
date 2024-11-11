@@ -8,7 +8,8 @@ import cartRouter from "./cartRouter.js";
 import chatRouter from "./chatRouter.js";
 import bannerRouter from "./bannerRouter.js";
 import galleryRouter from "./galleryRouter.js";
-import brandRouter from "./brandRouter.js"
+import brandRouter from "./brandRouter.js";
+import dashboardRouter from "./dashboardRouter.js";
 const routes = (app) => {
   app.use("/api/products", productRouter);
   app.use("/api/orders", orderRouter);
@@ -21,6 +22,7 @@ const routes = (app) => {
   app.use("/api/banners", bannerRouter);
   app.use("/api/brands", brandRouter);
   app.use("/api/gallerys", galleryRouter);
+  app.use("/api/dashboard", dashboardRouter);
 };
 
 export default routes;

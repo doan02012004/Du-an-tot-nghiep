@@ -57,7 +57,7 @@ const ListProduct = () => {
             dataIndex: "brandId",
             key: "brandId",
             render: (brandId: any) => (
-                <p>{brandId.name}</p>
+                <p>{brandId?.name}</p>
             )
         },
         {
