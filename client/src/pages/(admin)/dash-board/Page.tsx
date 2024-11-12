@@ -5,9 +5,10 @@ import BarChartCard from "./_components/BarChartCard"
 import PieChartCard from "./_components/PieChartCard"
 import TableTopUser from "./_components/TableTopUser"
 import TableTopProduct from "./_components/TableTopProduct"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import moment from "moment"
 import { useSearchParams } from "react-router-dom"
+import DashboardCard02 from "./_components/DashboardCard02"
 
 
 
@@ -17,15 +18,23 @@ const DashBoardPage = () => {
   const [searchParams,setSearchParams] = useSearchParams()
    const [finishDate, setFinishDate] = useState<Date|any>(moment()); 
    const [startDate, setStartDate] = useState<Date|any>(moment().subtract(1, 'month')); 
+   const inputStartRef = useRef<any>(null)
+   const startDateUrl = searchParams.get('startDate')
+   const finishDateUrl = searchParams.get('startDate')
    const onSubmit = ()=>{
-    const start = startDate.toISOString()
-    const finish = finishDate.toISOString()
+    const start = startDate.format("YYYY-MM-DD")
+    const finish = finishDate.format("YYYY-MM-DD")
     searchParams.set('startDate',start)
     searchParams.set('finishDate',finish)
     setSearchParams(searchParams)
-    // Thực hiện truy vấn MongoDB hoặc logic lọc tại đây
-    console.log("Lọc từ ngày:", start, "đến ngày:", finish);
    }
+   useEffect(()=>{
+      if(inputStartRef.current){
+       if(startDateUrl){
+        setStartDate(moment(startDateUrl, "YYYY-MM-DD"))
+       }
+      }
+   },[inputStartRef,startDateUrl,finishDateUrl])
   return (
     <>
       {/* Dashboard actions */}
@@ -42,14 +51,15 @@ const DashBoardPage = () => {
           <div className="flex items-center gap-x-2">
             <h1>Từ:</h1>
             <DatePicker
-             defaultValue={startDate} 
+            ref={inputStartRef}
+             value={startDate} 
              onChange={(date) => setStartDate(date)} 
             />
           </div>
           <div className="flex items-center gap-x-2">
             <h1>Đến:</h1>
             <DatePicker 
-             defaultValue={finishDate} 
+             value={finishDate} 
              onChange={(date) => setFinishDate(date)} 
             />
           </div>
@@ -59,8 +69,10 @@ const DashBoardPage = () => {
 
       </div>
       <div className="grid grid-cols-12 gap-6 overflow-y-auto h-[500px] py-4" >
+        {/* doanh thu  */}
         <DashboardCard01 />
-        <DashboardCard01 />
+        {/* đơn hàng mới  */}
+        <DashboardCard02 />
         <DashboardCard01 />
         <DashboardCard01 />
         <BarChartCard />
