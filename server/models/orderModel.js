@@ -127,17 +127,12 @@ const orderSchema = new Schema(
             default: Date.now,
         },
         ship: {
-            minWeight: {
-                type: Number,
+            nameBrand: {
+                type: String,
                 required: true
             },
-            maxWeight: {
-                type: Number,
-                required: true
-            },
-            price: {
-                type: Number,
-                required: true
+            value: {
+                
             }
         }
     },

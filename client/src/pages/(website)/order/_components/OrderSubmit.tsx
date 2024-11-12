@@ -2,11 +2,11 @@ import { useEffect } from "react"
 import useOrderMutation from "../../../../common/hooks/orders/useOrderMutation"
 import { Iaddress } from "../../../../common/interfaces/address"
 import { Iuser } from "../../../../common/interfaces/auth"
-import {  IcartItem } from "../../../../common/interfaces/cart"
+import { IcartItem } from "../../../../common/interfaces/cart"
 import { Iattribute, Igallery } from "../../../../common/interfaces/product"
 import { message } from "antd"
 import { useNavigate } from "react-router-dom"
-import { IshipItem } from "../../../../common/interfaces/orderInterfaces"
+import { IshipSubmit } from "../../../../common/interfaces/orderInterfaces"
 
 type Props = {
     payment: "cash" | "atm" | "momo" | "credit",
@@ -15,7 +15,7 @@ type Props = {
     carts: IcartItem[],
     totalCart: number,
     totalProduct: number,
-    ship: IshipItem | null
+    ship: IshipSubmit | null
 }
 
 const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, ship }: Props) => {
@@ -46,6 +46,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
                 total: item.total,
                 quantity: item.quantity
             }
+            
         })
         const newOrder = {
             userId: user?._id,
@@ -56,7 +57,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
             paymentMethod: payment,
             status: "pending",
             totalOrder: totalProduct,
-            totalPrice: totalCart,
+            totalPrice: ship?.value?.price ? totalCart + ship?.value?.price : totalCart,
             ship: ship
         }
         orderMutation.mutate({ action: "create", newOrder: newOrder })

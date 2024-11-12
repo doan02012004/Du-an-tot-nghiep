@@ -1,52 +1,45 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react"
-
-import OrderAddressItem from "./_components/OrderAddressItem"
+import { useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import { AppContext } from "../../../common/contexts/AppContextProvider"
 import useAddressQuery from "../../../common/hooks/address/useAddressQuery"
 import { Iaddress } from "../../../common/interfaces/address"
+import OrderAddressItem from "./_components/OrderAddressItem"
 import OrderFormAddress from "./_components/OrderFormAddress"
-import { AppContext } from "../../../common/contexts/AppContextProvider"
-import OrderTotal from "./_components/OrderTotal"
 import OrderPaymentMethod from "./_components/OrderPaymentMethod"
 import OrderSubmit from "./_components/OrderSubmit"
 import OrderStep from "./_components/OrderStep"
-import { useNavigate } from "react-router-dom"
-import { useDispatch, useSelector } from "react-redux"
-import { IcartItem } from "../../../common/interfaces/cart"
-import { IshipItem } from "../../../common/interfaces/orderInterfaces"
-import { setTotalCart } from "../../../common/redux/features/cartSlice"
-
-const shipOption = [
-    {
-        minWeight: 0,
-        maxWeight: 500,
-        price: 3000
-    },
-    {
-        minWeight: 501,
-        maxWeight: 2000,
-        price: 8000
-    },
-    {
-        minWeight: 2001,
-        maxWeight: 5000,
-        price: 15000
-    }
-]
-
+import useVoucherQuery from "../../../common/hooks/voucher/useVoucherQuery"
+import { IVoucher } from "../../../common/interfaces/voucher"
+import OrderTotal from "./_components/OrderTotal"
+import OrderOptionShip from "./_components/OrderOptionShip"
+import { IshipItem, IshipSubmit } from "../../../common/interfaces/orderInterfaces"
+import FormAddress from "../my-information/address/_components/FormAddress"
+import { PlusCircleFilled } from "@ant-design/icons"
 
 const OrderPage = () => {
-    const [ship, setShip] = useState<IshipItem | null>(null)
+    // const [ship, setShip] = useState<IshipItem | null>(null)
+    const [shippingCost, setShippingCost] = useState<IshipSubmit | null>(null);
     const [payment, setPayment] = useState<"cash" | "atm" | "momo" | "credit">('cash')
     const { currentUser } = useContext(AppContext)
     const [addressDefault, setAddressDefault] = useState<Iaddress | null>(null)
+    const [vouchers,setVouchers] = useState<IVoucher[]>([])
     const addressQuery = useAddressQuery()
+    const voucherQuery = useVoucherQuery({})
     const navigate = useNavigate()
     const carts = useSelector((state: any) => state.cart.carts)
     const totalCart = useSelector((state: any) => state.cart.totalCart)
     const totalProduct = useSelector((state: any) => state.cart.totalProduct)
-    const dispath = useDispatch()
-    
+
+    useEffect(()=>{
+        if (voucherQuery.data && voucherQuery.data.length >0) {
+            setVouchers(voucherQuery.data)
+        }
+    },[voucherQuery.data])
+
+
+    const [isOpenForm, setIsOpenForm] = useState(false)
 
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
@@ -54,6 +47,7 @@ const OrderPage = () => {
             setAddressDefault(findAddressDefault)
         }
     }, [addressQuery?.data])
+
     useEffect(() => {
         if (carts.lenght == 0) {
             return navigate("/cart")
@@ -63,17 +57,10 @@ const OrderPage = () => {
         }
     }, [carts, currentUser])
 
-    useEffect(() => {
-        if (carts.length > 0) {
-            const sumWeight = carts.reduce((sum: number, cart: IcartItem) => sum + cart.weight, 0)
-            const findShip = shipOption.find((shipLV: IshipItem) => shipLV.minWeight <= sumWeight && shipLV.maxWeight >= sumWeight) as IshipItem
-            if(findShip){
-                dispath(setTotalCart(totalCart + findShip.price))
-            }
-            setShip(findShip)
-        }
-    }, [carts])
 
+    const handleShippingCostChange = (ship: IshipSubmit) => {
+        setShippingCost(ship);
+    };
 
     return (
         <section>
@@ -102,24 +89,22 @@ const OrderPage = () => {
 
                                     {
                                         addressDefault && (
-                                            <OrderAddressItem address={addressDefault} />
+                                            <OrderAddressItem address={addressDefault} listAddress={addressQuery.data} />
                                         )
                                     }
+
+                                    <button onClick={() => { setIsOpenForm(true) }} className="rounded-tl-[20px] rounded-br-[20px] px-6 py-4  border text-white bg-dark hover:text-black hover:bg-white font-medium"><PlusCircleFilled /> Thêm địa chỉ </button>
+                                    {isOpenForm && (
+                                        <FormAddress setIsOpenForm={setIsOpenForm} />
+                                    )}
                                 </div>
                                 {!currentUser && (
                                     <OrderFormAddress />
                                 )}
+
                             </div>
-                            {/*  */}
-                            <div className="py-6">
-                                <span className="text-lg lg:text-xl text-black font-semibold">Phương thức giao hàng</span>
-                                <div className="my-4 border rounded-tl-[30px] rounded-br-[30px]">
-                                    <div className="px-5 py-6 flex items-center gap-2 lg:py-8 lg:px-10">
-                                        <span className="size-3 text-[10px] bg-black rounded-full text-white lg:size-4 flex justify-center items-center lg:text-[12px]"><i className="fa-solid fa-check " /></span>
-                                        <p className="text-sm text-black font-semibold">Chuyển phát nhanh</p>
-                                    </div>
-                                </div>
-                            </div>
+                            {/* phương thức giao hàng  */}
+                            <OrderOptionShip onShippingCostChange={handleShippingCostChange} />
                             <OrderPaymentMethod setPayment={setPayment} payment={payment} />
                             <div className="py-7">
                                 <div className="w-[60%] flex group items-center border border-black lg:w-[35%] py-3 justify-center gap-2 rounded-tl-[20px] rounded-br-[20px] hover:bg-white bg-black">
@@ -129,9 +114,8 @@ const OrderPage = () => {
                         </div>
                     </div>
                     <div className="lg:w-[32%]">
-                        <OrderTotal totalCart={totalCart} ship={ship} />
-
-                        <OrderSubmit user={currentUser} payment={payment} address={addressDefault} carts={carts} totalCart={totalCart} totalProduct={totalProduct} ship={ship} />
+                        <OrderTotal totalCart={totalCart} vouchers={vouchers} shippingCost={shippingCost} />
+                        <OrderSubmit user={currentUser} payment={payment} address={addressDefault} carts={carts} totalCart={totalCart} totalProduct={totalProduct} ship={shippingCost} />
                     </div>
                 </div>
             </div>
