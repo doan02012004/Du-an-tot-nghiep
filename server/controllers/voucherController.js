@@ -56,7 +56,10 @@ export const getAllVouchers = async (req, res) => {
 // Lấy voucher theo ID
 export const getVoucherById = async (req, res) => {
     try {
-        const voucher = await VoucherModel.findById(req.params.voucherId);
+        const voucher = await VoucherModel.findById(req.params.voucherId).populate({
+            path: 'applicableProducts', // tên trường cần populate
+            select: 'name', // các trường cần lấy từ sản phẩm
+        });
 
         if (!voucher) {
             return res.status(404).json({ success: false, message: 'Voucher không tồn tại' });
@@ -181,6 +184,25 @@ export const checkVoucher = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// khi hoàn thành đơn
+export const completeOrderVoucher = async (req,res) =>{
+    try {
+        const {code,userId} = req.body;
+        const voucher = await VoucherModel.findOne({ code });
+        if (!voucher) {
+            return res.status(404).json({ message: 'Voucher không tồn tại' });
+        }
+        // Nếu tất cả điều kiện của voucher đã được kiểm tra và đơn hàng đã thành công
+        voucher.usedBy.push(userId); // Lưu userId vào danh sách usedBy
+        voucher.usedQuantity += 1; // Tăng số lượng sử dụng voucher
+        await voucher.save(); // Lưu voucher
+        res.status(200).json({ message: 'Đơn hàng hoàn thành và voucher đã được sử dụng' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Có lỗi xảy ra' });
+    }
+}
 
 // Xóa voucher
 export const deleteVoucher = async (req, res) => {

@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import routes from './routes/routes.js'
 import connectDB from './configs/db.js'
 import cookieParser from 'cookie-parser'
+import './crons/voucherCorn.js'
 const app = express()
 dotenv.config()
 app.use(express.json())
