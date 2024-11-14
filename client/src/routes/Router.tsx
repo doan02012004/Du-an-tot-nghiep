@@ -19,12 +19,12 @@ import AddProductAdmin from "../pages/(admin)/product/add/Page";
 import LayoutColor from "../pages/(admin)/color/Page";
 import CategoriesPage from "../pages/(admin)/categories/Page";
 
-import CategoriesForm from '../pages/(admin)/categories/_components/CategoryForm'
-import PageAuthAdmin from '../pages/(admin)/users/Page'
-import ListUser from '../pages/(admin)/users/_components/ListUser'
-import ViewProductAdmin from '../pages/(admin)/product/view/Page'
-import ChatWidget from '../pages/(admin)/chatwiget/Page'
-import AddressList from '../pages/(website)/my-information/address/Page'
+import CategoriesForm from "../pages/(admin)/categories/_components/CategoryForm";
+import PageAuthAdmin from "../pages/(admin)/users/Page";
+import ListUser from "../pages/(admin)/users/_components/ListUser";
+import ViewProductAdmin from "../pages/(admin)/product/view/Page";
+import ChatWidget from "../pages/(admin)/chatwiget/Page";
+import AddressList from "../pages/(website)/my-information/address/Page";
 import BannerPage from "../pages/(admin)/banner/Page";
 import ListBanner from "../pages/(admin)/banner/_components/ListBanner";
 import GalleryPage from "../pages/(admin)/gallery/Page";
@@ -36,7 +36,6 @@ import OrderManager from "../pages/(website)/my-information/order-manager/Page";
 import BrandsPage from "../pages/(admin)/brands/Page";
 import BrandsForm from "../pages/(admin)/brands/_components/BrandForm";
 import HistoryUpdateUser from "../pages/(admin)/users/_components/HistoryUpdateUser";
-
 
 const Router = () => {
   return (
@@ -59,26 +58,26 @@ const Router = () => {
         </Route>
       </Route>
       <Route path="admin" element={<LayoutAdmin />}>
-        <Route path="orders" element={<OrdersPage/>}>
-          <Route index element={<OrderList />}/>
-          <Route path="details/:id" element={<OrderDetails />}/>
+        <Route path="orders" element={<OrdersPage />}>
+          <Route index element={<OrderList />} />
+          <Route path="details/:id" element={<OrderDetails />} />
         </Route>
         <Route path="products" element={<AdminProduct />}>
           <Route index element={<ListProduct />} />
           <Route path="add" element={<AddProductAdmin />} />
           <Route path="view/:slug" element={<ViewProductAdmin />} />
         </Route>
-        <Route path='colors' element={<LayoutColor />} />
-        <Route path='categories' element={<CategoriesPage />} />
-        <Route path='categories/add' element={<CategoriesForm />} />
-        <Route path='categories/edit/:id' element={<CategoriesForm />} />
-        <Route path='brands' element={<BrandsPage />} />
-        <Route path='brands/add' element={<BrandsForm />} />
-        <Route path='brands/edit/:id' element={<BrandsForm />} />
-        <Route path='chat' element={<ChatWidget />} />
-        <Route path='auth' element={<PageAuthAdmin />} >
+        <Route path="colors" element={<LayoutColor />} />
+        <Route path="categories" element={<CategoriesPage />} />
+        <Route path="categories/add" element={<CategoriesForm />} />
+        <Route path="categories/edit/:id" element={<CategoriesForm />} />
+        <Route path="brands" element={<BrandsPage />} />
+        <Route path="brands/add" element={<BrandsForm />} />
+        <Route path="brands/edit/:id" element={<BrandsForm />} />
+        <Route path="chat" element={<ChatWidget />} />
+        <Route path="auth" element={<PageAuthAdmin />}>
           <Route index element={<ListUser />} />
-          <Route path='historyupdate' element={<HistoryUpdateUser />} />
+          <Route path="historyupdate" element={<HistoryUpdateUser />} />
         </Route>
         <Route path="banners" element={<BannerPage />}>
           <Route index element={<ListBanner />} />

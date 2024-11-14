@@ -14,6 +14,7 @@ import Similar_product from "./_components/Similar_product";
 import Viewed_products from "./_components/Viewed_products";
 import { useContext, useEffect } from "react";
 import { AppContext } from "../../../common/contexts/AppContextProvider";
+import Product_description from './_components/Product_description';
 
 type Props = {}
 
@@ -39,7 +40,6 @@ const ProductDetailsPage = (props: Props) => {
             <Slider_product_details product={query.data} />
             {/* ---------------------------------end product_details------------------------------------------------------- */}
             <Product_information product={query.data} />
-
           </section>
           {/* ------------------------------------------------------ */}
         </section>
