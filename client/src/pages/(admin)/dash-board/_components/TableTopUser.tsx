@@ -1,48 +1,36 @@
+import { useEffect, useState } from "react";
+import useUserDashBoard from "../../../../common/hooks/dashboard/useUserDashBoard";
+import { useSearchParams } from "react-router-dom";
+import { formatPrice } from "../../../../common/utils/product";
 
+interface Itopuser {
+  totalOrders:number,
+  totalSpent:number,
+  userInfo:{
+    firstname:string,
+    lastname:string,
+    email:string,
+    city:string
+  },
+  userId:string
+}
 
 const TableTopUser = () => {
-    const customers = [
-        {
-          id: '0',
-          image: 'https://picsum.photos/id/35/300/300',
-          name: 'Alex Shatov',
-          email: 'alexshatov@gmail.com',
-          location: 'Hà Nội',
-          spent: '$2,890.66',
-        },
-        {
-          id: '1',
-          image: 'https://picsum.photos/id/36/300/300',
-          name: 'Philip Harbach',
-          email: 'philip.h@gmail.com',
-          location: 'Hà Nội',
-          spent: '$2,767.04',
-        },
-        {
-          id: '2',
-          image: 'https://picsum.photos/id/37/300/300',
-          name: 'Mirko Fisuk',
-          email: 'mirkofisuk@gmail.com',
-          location: 'Hà Nội',
-          spent: '$2,996.00',
-        },
-        {
-          id: '3',
-          image: 'https://picsum.photos/id/38/300/300',
-          name: 'Olga Semklo',
-          email: 'olga.s@cool.design',
-          location: 'Hà Nội',
-          spent: '$1,220.66',
-        },
-        {
-          id: '4',
-          image: 'https://picsum.photos/id/39/300/300',
-          name: 'Burak Long',
-          email: 'longburak@gmail.com',
-          location: 'Hà Nội',
-          spent: '$1,890.66',
-        },
-      ];
+  const [topUser,setTopUser] = useState<Itopuser[]>([])
+  const [searchParams,] = useSearchParams()
+  const startDate = searchParams.get('startDate') 
+  const finishDate = searchParams.get('finishDate')
+  const topUserQuery = useUserDashBoard({startDate:startDate,endDate:finishDate,type:'top'})
+  useEffect(()=>{
+    if(topUserQuery.data){
+      if(topUserQuery.data?.users?.length > 0){
+        setTopUser(topUserQuery.data?.users)
+      }else{
+        setTopUser([])
+      }
+    }
+  },[finishDate,startDate,topUserQuery])
+
     
       return (
         <div className="col-span-full xl:col-span-6 bg-white dark:bg-gray-800 p-3 shadow-lg shadow-gray-300 rounded-lg">
@@ -74,25 +62,25 @@ const TableTopUser = () => {
                 {/* Table body */}
                 <tbody className="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                   {
-                    customers.map(customer => {
+                    topUser.map((customer:Itopuser,index:number) => {
                       return (
-                        <tr key={customer.id}>
+                        <tr key={customer.userId}>
                           <td className="p-2 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="w-10 h-10 shrink-0 mr-2 sm:mr-3">
-                                <img className="rounded-full" src={customer.image} width="40" height="40" alt={customer.name} />
+                                <img className="rounded-full" src={`https://picsum.photos/id/${30 + index}/300/300`} width="40" height="40" alt={customer.userInfo.lastname} />
                               </div>
-                              <div className="font-medium text-gray-800 dark:text-gray-100">{customer.name}</div>
+                              <div className="font-medium text-gray-800 dark:text-gray-100">{`${customer.userInfo.firstname} ${customer.userInfo.lastname}`}</div>
                             </div>
                           </td>
                           <td className="p-2 whitespace-nowrap">
-                            <div className="text-left">{customer.email}</div>
+                            <div className="text-left">{customer.userInfo.email}</div>
                           </td>
                           <td className="p-2 whitespace-nowrap">
-                            <div className="text-left font-medium text-green-500">{customer.spent}</div>
+                            <div className="text-left font-medium text-green-500">{formatPrice(customer.totalSpent)}đ</div>
                           </td>
                           <td className="p-2 whitespace-nowrap">
-                            <div className="text-sm text-center">{customer.location}</div>
+                            <div className="text-sm text-center">{customer.userInfo.city}</div>
                           </td>
                         </tr>
                       )

@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import { getRevenue } from '../../../services/dashboard'
+import { getMonthlyRevenue, getRevenue } from '../../../services/dashboard'
 
-const useRevenueQuery = (option:{startDate?:string|null,endDate?:string|null}) => {
+const useRevenueQuery = (option:{startDate?:string|null,endDate?:string|null,type:"revenue"|"month"}) => {
     
     const query = useQuery({
         queryKey:['REVENUE',option],
         queryFn: async() =>{
             try {
-                const res = await getRevenue(option)
+                const res = option?.type=='revenue'? await getRevenue(option): await getMonthlyRevenue()
                 return res
             } catch (error) {
                 console.log(error)

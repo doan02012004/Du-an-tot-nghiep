@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken'
 import { StatusCodes } from "http-status-codes";
 import BlackListModel from '../models/blackListModel.js'
 import { HistoryUpdateUser } from '../models/historyUpdateUserModel.js'
+import AddressModel from '../models/addressModel.js'
 dotenv.config()
 let refreshTokens = [];
 // lấy toàn bộ user
@@ -222,12 +223,21 @@ export const register = async (req, res) => {
 
         //sau khi pass qua các bước trên thì ta sẽ tạo đc 1 tài khoản mới
         const userData = await UserModel.create({
-            ...req.body,
+            ...User,
             password: hashPassword,
             role
         })
+        const address = await AddressModel.create(
+            {
+                ...req.body,
+                fullname: `${User.firstname} ${User.lastname}`,
+                isDefault:true
+
+            }
+        )
         return res.status(StatusCodes.CREATED).json({
             message: "Đăng ký thành công",
+            status:200,
             data: userData
         })
     } catch (error) {
@@ -276,7 +286,7 @@ export const login = async (req, res) => {
 
         //kiểm tra tài khoản đã tồn tại chưa thông qua email
         if (!user) {
-            res.status(StatusCodes.NOT_FOUND).json({ message: "Không có tài khoản" })
+           return res.status(StatusCodes.NOT_FOUND).json({ message: "Không có tài khoản" })
         }
 
         //kiểm tra mật khẩu có đúng không giữa req người dùng nhập với pass có sẵn trong db

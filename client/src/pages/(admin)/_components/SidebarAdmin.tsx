@@ -29,7 +29,7 @@ const SidebarAdmin = () => {
           {
             key: "1",
             icon: <BarChartOutlined />,
-            label: "Thống kê",
+            label: ( <NavLink to={`/admin`}>Thống kê</NavLink>),
           },
           {
             key: "2",

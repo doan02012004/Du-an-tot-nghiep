@@ -9,6 +9,8 @@ import { useEffect, useRef, useState } from "react"
 import moment from "moment"
 import { useSearchParams } from "react-router-dom"
 import DashboardCard02 from "./_components/DashboardCard02"
+import DashboardCard03 from "./_components/DashboardCard03"
+import DashboardCard04 from "./_components/DashboardCard04"
 
 
 
@@ -73,12 +75,15 @@ const DashBoardPage = () => {
         <DashboardCard01 />
         {/* đơn hàng mới  */}
         <DashboardCard02 />
-        <DashboardCard01 />
-        <DashboardCard01 />
+        {/* đơn hàng hoàn thành  */}
+        <DashboardCard03 />
+        {/* khách hàng mới  */}
+        <DashboardCard04 />
         <BarChartCard />
-        <PieChartCard />
-        <TableTopUser />
         <TableTopProduct />
+        <TableTopUser />
+        <PieChartCard />
+        
       </div>
 
     </>

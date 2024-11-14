@@ -2,7 +2,7 @@
 import { message } from "antd";
 import instance from "../common/config/axios";
 import { Isignin, Isignup, Iuser } from "../common/interfaces/auth";
-import { loginFailed, loginStart, loginSuccess, registerFailed, registerStart, registerSuccess } from "../common/redux/features/authSlice";
+import { loginFailed, loginStart, loginSuccess} from "../common/redux/features/authSlice";
 
 
 
@@ -19,15 +19,12 @@ export const loginUser = async (user: Isignin, dispatch: any, navigate: any, set
     }
 }
 
-export const registerUser = async (user: Isignup, dispatch: any) => {
-    dispatch(registerStart());
+export const registerUser = async (user: Isignup) => {
     try {
-        console.log("User data being sent:", user);
         const res = await instance.post("/users/register", user)
-        dispatch(registerSuccess())
         return res.data
     } catch (error) {
-        dispatch(registerFailed())
+        return error
     }
 }
 
