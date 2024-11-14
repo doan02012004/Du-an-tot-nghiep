@@ -1,7 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import orderModel from "../models/orderModel.js";
 import CartModel from "../models/cartModel.js";
-
+import sendEmail from "../utils/sendEmail.js";
+import UserModel from "../models/userModel.js";
 
 export const createOrder = async (req, res) => {
     try {
@@ -12,7 +13,21 @@ export const createOrder = async (req, res) => {
             cart.totalPrice = 0;
             cart.totalCart = 0;
             await cart.save()
+            // Sử dụng userModel để tìm người dùng từ userId
+            const user = await UserModel.findById(order.userId);  
+            const userEmail = user?.email;
+            if (userEmail) {
+                // Gửi email xác nhận đơn hàng nếu có email
+                const subject = "Xác nhận đơn hàng";
+                const message = `Xin chào ${order.customerInfor.fullname || "Khách hàng"},\n\nCảm ơn bạn đã đặt hàng tại cửa hàng chúng tôi. Đơn hàng của bạn đang được xử lý. Chúng tôi sẽ sớm cập nhật trạng thái cho bạn.\n\nChi tiết đơn hàng:\nMã đơn hàng: ${order._id}\nTổng tiền: ${order.totalPrice}\n\nCảm ơn bạn đã tin tưởng!`;
+
+                // Gửi email
+                await sendEmail(userEmail, subject, message);
+            } else {
+                console.log("Không tìm thấy email người dùng");
+            }
         }
+        
         return res.status(StatusCodes.CREATED).json(order);
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -85,7 +100,7 @@ export const deleteOrder = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
-import sendEmail from "../utils/sendEmail.js";
+
 
 export const updateOrderStatus = async (req, res) => {
   const { orderId, status } = req.body;
@@ -114,9 +129,21 @@ export const updateOrderStatus = async (req, res) => {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Email not found for the user" });
     }
 
+    const statusTranslations = {
+        pending: "Chờ xử lý",
+        unpaid: "Chưa thanh toán",
+        confirmed: "Đã xác nhận",
+        shipped: "Đang giao",
+        delivered: "Đã giao hàng",
+        cancelled: "Đã hủy",
+        received: "Đã nhận hàng"
+      };
+
+    const vietnameseStatus = statusTranslations[status];
+
     // Gửi email cho khách hàng
     const subject = "Cập nhật trạng thái đơn hàng";
-    const message = `Xin chào ${updatedOrder.customerInfor.fullname},\n\nĐơn hàng của bạn đã được cập nhật trạng thái: ${status}. Cảm ơn bạn đã tin tưởng mua sắm tại cửa hàng chúng tôi!`;
+    const message = `Xin chào ${updatedOrder.customerInfor.fullname},\n\nĐơn hàng của bạn đã được cập nhật trạng thái: ${vietnameseStatus}. Cảm ơn bạn đã tin tưởng mua sắm tại cửa hàng chúng tôi!`;
 
     await sendEmail(userEmail, subject, message);
 
