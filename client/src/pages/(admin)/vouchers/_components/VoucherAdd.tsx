@@ -164,7 +164,7 @@ const VoucherAdd = (props: Props) => {
                             label="Giá trị giảm tối đa (cho phần trăm)"
                             name="maxDiscountValue"
                         >
-                            <InputNumber min={0} style={{ width: '100%' }} disabled={voucherType !== 'percentage'} />
+                            <InputNumber min={0} style={{ width: '100%' }} disabled={voucherType !== 'percentage' && voucherType !== 'freeship' } />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -187,7 +187,7 @@ const VoucherAdd = (props: Props) => {
                             name="value"
                             // rules={[{ required: true, message: 'Giá trị giảm là bắt buộc' }]}
                         >
-                            <InputNumber min={0} style={{ width: '100%' }} />
+                            <InputNumber min={0} style={{ width: '100%' }}  disabled={voucherType === "freeship"}/>
                         </Form.Item>
                     </Col>
                 </Row>

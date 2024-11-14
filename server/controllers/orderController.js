@@ -85,31 +85,45 @@ export const deleteOrder = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
+import sendEmail from "../utils/sendEmail.js";
 
 export const updateOrderStatus = async (req, res) => {
-    const { orderId, status } = req.body;
-    
-    try {
-        // Kiểm tra xem trạng thái có hợp lệ không
-        const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received"];
-        if (!validStatuses.includes(status)) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
-        }
+  const { orderId, status } = req.body;
 
-        // Tìm và cập nhật trạng thái của đơn hàng
-        const updatedOrder = await orderModel.findByIdAndUpdate(
-            orderId,
-            { status },
-            { new: true } // Để trả về đơn hàng đã được cập nhật
-        );
-
-        if (!updatedOrder) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
-        }
-
-        return res.status(StatusCodes.OK).json(updatedOrder);
-    } catch (error) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  try {
+    // Kiểm tra trạng thái hợp lệ
+    const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received"];
+    if (!validStatuses.includes(status)) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
     }
+
+    // Cập nhật trạng thái đơn hàng
+    const updatedOrder = await orderModel.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    ).populate('userId', 'email fullname');  // Lấy email và fullname từ userId
+
+    if (!updatedOrder) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
+    }
+
+    // Kiểm tra email người dùng
+    const userEmail = updatedOrder.userId.email;
+    if (!userEmail) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Email not found for the user" });
+    }
+
+    // Gửi email cho khách hàng
+    const subject = "Cập nhật trạng thái đơn hàng";
+    const message = `Xin chào ${updatedOrder.customerInfor.fullname},\n\nĐơn hàng của bạn đã được cập nhật trạng thái: ${status}. Cảm ơn bạn đã tin tưởng mua sắm tại cửa hàng chúng tôi!`;
+
+    await sendEmail(userEmail, subject, message);
+
+    // Trả về đơn hàng đã được cập nhật
+    return res.status(StatusCodes.OK).json(updatedOrder);
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
 };
 

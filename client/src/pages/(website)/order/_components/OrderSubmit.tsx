@@ -65,7 +65,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
             // Thêm thông tin voucher vào đơn hàng
             voucher: {
                 code: voucher?.code || null,
-                discountValue: (voucher?.type === "percentage" ? (totalCart * voucher?.value /100 ) : voucher?.value) || 0,
+                discountValue: (voucher?.type === "percentage" && (Math.min(totalCart * voucher.value / 100, Number(voucher.maxDiscountValue) ))) || (voucher?.type === "fixed" && (voucher?.value )) || (voucher?.type === "freeship" && (Math.min(Number(ship?.value?.price), Number(voucher?.maxDiscountValue) )))  || 0,
                 category: voucher?.category || null,
                 type: voucher?.type || null
             },
