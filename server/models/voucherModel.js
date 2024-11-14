@@ -12,6 +12,7 @@ const voucherSchema = new mongoose.Schema({
     category: { type: String, enum: ['discount', 'shipping'], required: true }, // Loại voucher: giảm giá sản phẩm hoặc phí ship
     scope: { type: String, enum: ['all', 'specific'], required: true }, // Phạm vi voucher: tất cả sản phẩm hoặc chỉ một số sản phẩm
     applicableProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'products' }], // Danh sách các sản phẩm áp dụng (nếu scope là specific)
+    usedBy:[{type:mongoose.Schema.Types.ObjectId,ref:'users'}],
     startDate: { type: Date, required: true }, // Ngày bắt đầu hiệu lực
     endDate: { type: Date, required: true }, // Ngày hết hạn
     status: { type: Boolean, default: true } // Trạng thái hoạt động của voucher
