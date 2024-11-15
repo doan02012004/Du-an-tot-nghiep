@@ -16,10 +16,13 @@ export const createOrder = async (req, res) => {
             // Sử dụng userModel để tìm người dùng từ userId
             const user = await UserModel.findById(order.userId);  
             const userEmail = user?.email;
+            console.log(order)
+            const voucher = order.voucher?.discountValue || 0; // Lấy giá trị voucher, nếu có
+            const price = order.totalPrice - voucher; // Tính tổng không bao gồm phí ship
             if (userEmail) {
                 // Gửi email xác nhận đơn hàng nếu có email
                 const subject = "Xác nhận đơn hàng";
-                const message = `Xin chào ${order.customerInfor.fullname || "Khách hàng"},\n\nCảm ơn bạn đã đặt hàng tại cửa hàng chúng tôi. Đơn hàng của bạn đang được xử lý. Chúng tôi sẽ sớm cập nhật trạng thái cho bạn.\n\nChi tiết đơn hàng:\nMã đơn hàng: ${order._id}\nTổng tiền: ${order.totalPrice}\n\nCảm ơn bạn đã tin tưởng!`;
+                const message = `Xin chào ${order.customerInfor.fullname || "Khách hàng"},\n\nCảm ơn bạn đã đặt hàng tại cửa hàng chúng tôi. Đơn hàng của bạn đang được xử lý. Chúng tôi sẽ sớm cập nhật trạng thái cho bạn.\n\nChi tiết đơn hàng:\nMã đơn hàng: ${order.orderNumber}\nTổng tiền: ${price.toLocaleString()}₫\n\nCảm ơn bạn đã tin tưởng!`;
 
                 // Gửi email
                 await sendEmail(userEmail, subject, message);
