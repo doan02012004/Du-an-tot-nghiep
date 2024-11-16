@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Iproduct } from "../../../../common/interfaces/product";
-import Content from "./Content";
+
+import CommentList from "./CommentList";
 
 type Props = { product: Iproduct };
 
 const Product_description = ({ product }: Props) => {
   const [activeTab, setActiveTab] = useState<"des" | "comment">("des");
+  const [isOpen,setIsOpen] = useState<boolean>(false)
   const desRef = useRef<HTMLDivElement>(null);
   const comRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false); // State để điều khiển mở/đóng
+ 
 
   useEffect(() => {
     if (product) {
@@ -61,7 +63,7 @@ const Product_description = ({ product }: Props) => {
             maxHeight: isOpen ? "30%" : "100px", // Điều chỉnh chiều cao theo trạng thái mở/đóng
           }}
         >
-          {activeTab === "des" ? <div ref={desRef}></div> : <Content />}
+          {activeTab === "des" ? <div ref={desRef}></div> : <CommentList />}
         </div>
       </div>
       <div className="flex items-center justify-center mt-4">
