@@ -117,6 +117,7 @@ export const updateOrderStatus = async (req, res) => {
 //hàm thanh toán với VNPay
 export const paymentVNPay = async (req, res) => {
     try {
+
         const ipAddr = req.headers['x-forwarded-for'] ||
             req.connection.remoteAddress ||
             req.socket.remoteAddress ||
@@ -126,11 +127,10 @@ export const paymentVNPay = async (req, res) => {
         const tmnCode = "ML8JRUOJ";
         const secretKey = "TXA23XAHD604Z31OCUA3EKVP2PI5QOHA";
         const vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        const returnUrl = "http://localhost:5000/orders/payment/vnpay/return";
-
+        const returnUrl = "http://localhost:5000/api/orders/payment/vnpay/return";
         const date = new Date();
         const createDate = dateFormat(date, 'yyyymmddHHmmss');
-        const orderId = `ORDER_${dateFormat(date, 'HHmmss')}_${Math.floor(Math.random() * 10000)}`;
+        const orderId = req.body.orderId;
         const amount = req.body.amount;
         const bankCode = 'NCB';
         const orderInfo = 'Nội dung thanh toán - ...';
@@ -171,7 +171,7 @@ export const paymentVNPay = async (req, res) => {
         const paymentUrl = `${vnpUrl}?${querystring.stringify(vnp_Params, { encode: false })}`;
 
         // Chuyển hướng đến URL thanh toán
-        res.json({ paymentUrl });
+        return res.json({ paymentUrl });
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
@@ -181,7 +181,6 @@ export const paymentVNPay = async (req, res) => {
 //huyển hướng lại trang của bạn với thông tin thanh toán
 export const vnpayReturn = async (req, res) => {
     const vnp_Params = req.query;
-
     const secureHash = vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
@@ -191,11 +190,11 @@ export const vnpayReturn = async (req, res) => {
 
     const queryString = querystring.stringify(sortedParams, { encode: false });
     const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
-
     if (hash === secureHash) {
         if (vnp_Params['vnp_ResponseCode'] === '00') {
-            return res.status(400).json({ message: 'Thanh toán  thành công' });
-            // return res.redirect('/api/users/login');
+            const orderNumber = vnp_Params['vnp_TxnRef']
+            const newOrder = await orderModel.findOneAndUpdate({ orderNumber }, { status: "paid" })
+            return res.redirect('http://localhost:5173/thanks');
         } else {
             return res.status(400).json({ message: 'Thanh toán không thành công' });
         }

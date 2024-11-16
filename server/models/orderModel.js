@@ -106,12 +106,12 @@ const orderSchema = new Schema(
         },
         paymentMethod: {
             type: String,
-            enum: ["cash", "momo", "atm", "credit"],
+            enum: ["cash", "vnPay", "atm", "credit"],
             default: "cash"
         },
         status: {
             type: String,
-            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received"],
+            enum: ["pending", "unpaid", "paid", "confirmed", "shipped", "delivered", "cancelled", "received"],
             default: "pending",
         },
         totalPrice: {
@@ -132,7 +132,7 @@ const orderSchema = new Schema(
                 required: true
             },
             value: {
-                
+
             }
         }
     },
