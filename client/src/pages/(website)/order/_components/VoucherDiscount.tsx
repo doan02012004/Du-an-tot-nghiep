@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { message } from "antd"
 import { formatPrice } from "../../../../common/utils/product"
 import { setTotalSubmit, setVoucher } from "../../../../common/redux/features/cartSlice"
-import { now } from "moment"
 
 
 type Props = {
@@ -41,11 +40,11 @@ const VoucherDiscount = ({ voucher, setSelectedVoucherCode }: Props) => {
                                 if (hasIneligibleProduct) {
                                     dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
                                     message.error("Giỏ hàng có chứa sản phẩm không đủ điều kiện áp dụng mã giảm giá");
-    
+
                                     setTimeout(() => {
                                         dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                                     }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
-    
+
                                 } else {
                                     const discountVoucher = totalCart * voucher?.value / 100
                                     if (voucher?.maxDiscountValue && voucher?.maxDiscountValue > discountVoucher) {
@@ -56,14 +55,14 @@ const VoucherDiscount = ({ voucher, setSelectedVoucherCode }: Props) => {
                                         dispatch(setTotalSubmit(totalSubmit))
                                     }
                                 }
-    
-    
+
+
                             }
-    
+
                         } else {
                             dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
                             message.error("Tổng giá không đủ điều kiện");
-    
+
                             setTimeout(() => {
                                 dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                             }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
@@ -74,13 +73,13 @@ const VoucherDiscount = ({ voucher, setSelectedVoucherCode }: Props) => {
                             dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                         }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
                     }
-                }else{
+                } else {
                     message.error("Voucher đã hết hạn");
                     setTimeout(() => {
                         dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                     }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
                 }
-                
+
 
             } else {
                 if (voucher?.status == true || new Date(voucher?.endDate) >= new Date()) {
@@ -96,7 +95,7 @@ const VoucherDiscount = ({ voucher, setSelectedVoucherCode }: Props) => {
                                 if (hasIneligibleProduct) {
                                     dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
                                     message.error("Giỏ hàng có chứa sản phẩm không đủ điều kiện áp dụng mã giảm giá");
-        
+
                                     setTimeout(() => {
                                         dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                                     }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
@@ -112,19 +111,19 @@ const VoucherDiscount = ({ voucher, setSelectedVoucherCode }: Props) => {
                                 dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                             }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
                         }
-                    }else{
+                    } else {
                         message.error("Số lượng voucher đã hết");
                         setTimeout(() => {
                             dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                         }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
                     }
-                }else{
+                } else {
                     message.error("Voucher đã hết hạn");
                     setTimeout(() => {
                         dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                     }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
                 }
-                
+
             }
         } else {
             dispatch(setTotalSubmit(0))

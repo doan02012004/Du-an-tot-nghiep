@@ -14,17 +14,17 @@ import useVoucherQuery from "../../../common/hooks/voucher/useVoucherQuery"
 import { IVoucher } from "../../../common/interfaces/voucher"
 import OrderTotal from "./_components/OrderTotal"
 import OrderOptionShip from "./_components/OrderOptionShip"
-import { IshipItem, IshipSubmit } from "../../../common/interfaces/orderInterfaces"
+import { IshipSubmit } from "../../../common/interfaces/orderInterfaces"
 import FormAddress from "../my-information/address/_components/FormAddress"
 import { PlusCircleFilled } from "@ant-design/icons"
 
 const OrderPage = () => {
     // const [ship, setShip] = useState<IshipItem | null>(null)
     const [shippingCost, setShippingCost] = useState<IshipSubmit | null>(null);
-    const [payment, setPayment] = useState<"cash" | "atm" | "momo" | "credit">('cash')
+    const [payment, setPayment] = useState<"cash" | "atm" | "vnPay" | "credit">('cash')
     const { currentUser } = useContext(AppContext)
     const [addressDefault, setAddressDefault] = useState<Iaddress | null>(null)
-    const [vouchers,setVouchers] = useState<IVoucher[]>([])
+    const [vouchers, setVouchers] = useState<IVoucher[]>([])
     const addressQuery = useAddressQuery()
     const voucherQuery = useVoucherQuery({})
     const navigate = useNavigate()
@@ -32,11 +32,11 @@ const OrderPage = () => {
     const totalCart = useSelector((state: any) => state.cart.totalCart)
     const totalProduct = useSelector((state: any) => state.cart.totalProduct)
 
-    useEffect(()=>{
-        if (voucherQuery.data && voucherQuery.data.length >0) {
+    useEffect(() => {
+        if (voucherQuery.data && voucherQuery.data.length > 0) {
             setVouchers(voucherQuery.data)
         }
-    },[voucherQuery.data])
+    }, [voucherQuery.data])
 
 
     const [isOpenForm, setIsOpenForm] = useState(false)
