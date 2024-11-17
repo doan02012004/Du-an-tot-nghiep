@@ -7,10 +7,10 @@ type Props = { product: Iproduct };
 
 const Product_description = ({ product }: Props) => {
   const [activeTab, setActiveTab] = useState<"des" | "comment">("des");
-  const [isOpen,setIsOpen] = useState<boolean>(false)
+  const [isOpen, setIsOpen] = useState<boolean>(false)
   const desRef = useRef<HTMLDivElement>(null);
   const comRef = useRef<HTMLDivElement>(null);
- 
+
 
   useEffect(() => {
     if (product) {
@@ -29,9 +29,8 @@ const Product_description = ({ product }: Props) => {
       <div className="product-description">
         <ul className="flex justify-between">
           <li
-            className={`tab-item ${
-              activeTab === "des" ? "text-black" : ""
-            } cursor-pointer`}
+            className={`tab-item ${activeTab === "des" ? "text-black" : ""
+              } cursor-pointer`}
             onClick={() => setActiveTab("des")}
           >
             <span className="block text-[12px] lg:text-[16px] lg:pb-5 pb-4 font-semibold">
@@ -39,9 +38,8 @@ const Product_description = ({ product }: Props) => {
             </span>
           </li>
           <li
-            className={`tab-item ${
-              activeTab === "comment" ? "text-black" : ""
-            } cursor-pointer`}
+            className={`tab-item ${activeTab === "comment" ? "text-black" : ""
+              } cursor-pointer`}
             onClick={() => setActiveTab("comment")}
           >
             <span className="block text-[12px] lg:text-[16px] lg:pb-5 pb-4 font-semibold">
@@ -63,7 +61,7 @@ const Product_description = ({ product }: Props) => {
             maxHeight: isOpen ? "30%" : "100px", // Điều chỉnh chiều cao theo trạng thái mở/đóng
           }}
         >
-          {activeTab === "des" ? <div ref={desRef}></div> : <CommentList />}
+          {activeTab === "des" ? <div ref={desRef}></div> : <CommentList productId={product._id? product._id: ''} />}
         </div>
       </div>
       <div className="flex items-center justify-center mt-4">
@@ -86,9 +84,8 @@ const Product_description = ({ product }: Props) => {
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className={`feather feather-chevron-down ${
-              isOpen ? "transform rotate-180" : ""
-            }`}
+            className={`feather feather-chevron-down ${isOpen ? "transform rotate-180" : ""
+              }`}
           >
             <polyline points="6 9 12 15 18 9" />
           </svg>

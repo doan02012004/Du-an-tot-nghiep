@@ -1,78 +1,58 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {  SendOutlined } from '@ant-design/icons'
+import { useContext, useEffect, useState } from 'react';
+import { IComment } from '../../../../common/interfaces/comment';
+import CommentMain from './CommentMain';
+import CommentInput from './CommentInput';
+import { AppContext } from '../../../../common/contexts/AppContextProvider';
+import useCommentQuery from '../../../../common/hooks/comments/useCommentQuery';
 
-import CommentMain from './CommentMain'
-import CommentInput from './CommentInput'
-
-const data = [
-  {
-    _id:"shdakdhhfreuhjcndjc37464",
-    name:"Bùi Văn Đoàn",
-    like:['sdhsd','sdshdh','jdfhdfhj'],
-    comment:"Sản phẩm này chất lượng",
-    rating:4.5,
-    recomment:[
-      {
-        name:"Tuấn Anh",
-        like:['sdhsd','sdshdh','jdfhdfhj'],
-        comment:"Tôi cũng thấy vậy",
-      },
-      {
-        name:"Trọng Lào",
-        like:['sdhsd','sdshdh','jdfhdfhj'],
-        comment:"Tôi cũng thấy vậy",
-      },
-      {
-        name:"Hiếu Hâm",
-        like:['sdhsd','sdshdh','jdfhdfhj'],
-        comment:"Bọn này nói phét",
-      },
-    ]
-    // recomment:[]
-  },
-  {
-    _id:"shdakdhdfdf3434euhjcndjc37464",
-    name:"Tuấn Anh",
-    like:['sdhsd','sdshdh','jdfhdfhj'],
-    comment:"Sản phẩm này chất lượng",
-    rating:4.5,
-    recomment:[
-      {
-        name:"Văn Đoàn",
-        like:['sdhsd','sdshdh','jdfhdfhj'],
-        comment:"Tôi cũng thấy vậy",
-      },
-      {
-        name:"Trọng Lào",
-        like:['sdhsd','sdshdh','jdfhdfhj'],
-        comment:"Tôi cũng thấy vậy",
-      },
-      {
-        name:"Hiếu Hâm",
-        like:['sdhsd','sdshdh','jdfhdfhj'],
-        comment:"Bọn này nói phét",
-      },
-    ]
-    // recomment:[]
-  }
-]
-const CommentList = () => {
-  return (
-    <div className='relative w-full h-96 pb-16'>
-      {/* message box  */}
-      <div className=' h-[calc(380px-70px)] flex flex-col gap-4  w-full overflow-y-auto'>
-        {data?.map((comment:any) =>(
-
-        <CommentMain key={comment._id} comment={comment} />
-        ))}
-        {/* <CommentMain />
-        <CommentMain />
-        <CommentMain /> */}
-      </div>
-      {/* comment input  */}
-     <CommentInput />
-    </div>
-  )
+interface CommentListProps {
+  productId: string | number;
 }
 
-export default CommentList
+const CommentList = ({ productId }: CommentListProps) => {
+  const [comments, setComments] = useState<IComment[]>([]); // Khai báo rõ ràng kiểu dữ liệu là IComment[]
+  const {currentUser} = useContext(AppContext)
+  const commentQuery = useCommentQuery(productId)
+  // Lấy danh sách bình luận từ API
+  useEffect(() => {
+  
+    if(commentQuery.data){
+      setComments(commentQuery.data);
+    }
+  }, [productId,commentQuery.data]);
+
+  // Hàm thêm bình luận mới
+  // const handleAddComment = async (comment: IComment) => {
+  //   console.log("Product ID:", productId);
+  //   console.log("User ID:", userId);
+  //   console.log("Comment Data:", comment);
+  
+  //   try {
+  //     const addedComment = await commentService.addComment(productId, comment); // Gửi yêu cầu API
+  //     console.log("Added Comment Response:", addedComment); // Log phản hồi từ API
+  //     setComments((prev) => [addedComment, ...prev]); // Thêm vào danh sách
+  //   } catch (error) {
+  //     console.error("Failed to add comment:", error);
+  //   }
+  // };
+  
+  
+
+  return (
+    <div className="relative w-full h-[500px] pb-16">
+      {/* Hiển thị danh sách bình luận */}
+      <div className="h-[calc(500px-75px)] flex flex-col gap-4 w-full overflow-y-auto">
+        {comments.length> 0 ?
+        comments.map((comment) => (
+          <CommentMain key={comment._id} comment={comment} user={currentUser} />
+        )):
+        (<p>Chưa có đánh đánh giá nào.</p>)}
+      </div>
+      {/* Input để thêm bình luận mới */}
+      <CommentInput productId={productId} userId={currentUser._id} />
+    </div>
+  );
+};
+
+export default CommentList;
+

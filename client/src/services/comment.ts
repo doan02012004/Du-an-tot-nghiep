@@ -1,0 +1,77 @@
+import instance from "../common/config/axios";
+import { IComment } from '../common/interfaces/comment';
+
+export const commentService = {
+//  Lấy danh sách bình luận theo sản phẩm
+  getCommentsByProductId: async (productId: string | number) => {
+    try {
+      const response = await instance.get(`/comments/product/${productId}`);   
+      const data: IComment[] = response.data;
+       // Dữ liệu trả về là danh sách bình luận
+      return data; 
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      throw error;
+    }
+  },
+
+  getCommentsByUserId: async (userId: string | number) => {
+    try {
+      const response = await instance.get(`/comments/user/${userId}`);
+      console.log(`${userId}`);
+      const data: IComment[] = response.data; // Dữ liệu trả về là danh sách bình luận
+      return data; 
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      throw error;
+    }
+    
+  },
+
+  // Thêm một bình luận mới
+  addComment: async (comment: IComment) => {
+    try {
+      const response = await instance.post(`/comments/product`, comment);
+      const data: IComment = response.data; // Dữ liệu trả về là bình luận vừa thêm
+      return data;
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      throw error;
+    }
+  },
+
+  // Xóa bình luận theo ID
+  deleteComment: async (commentId: string | number) => {
+    try {
+      const res = await instance.delete(`/comments/${commentId}`);
+      return res.data;
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      throw error;
+    }
+  },
+
+  // Thêm phản hồi cho một bình luận
+  addReComment: async (commentId: string | number, recomment: IComment) => {
+    try {
+      const response = await instance.post(`/comments/${commentId}/recomment`, recomment);
+      const data: IComment = response.data; // Dữ liệu trả về là bình luận đã được cập nhật
+      return data;
+    } catch (error) {
+      console.error('Error adding recomment:', error);
+      throw error;
+    }
+  },
+
+  // Thích hoặc bỏ thích bình luận
+  toggleLikeComment: async (commentId: string | number, userId: string | number) => {
+    try {
+      const response = await instance.patch(`/comments/${commentId}/like`, { userId });
+      const data: IComment = response.data; // Trả về bình luận đã cập nhật lượt thích
+      return data;
+    } catch (error) {
+      console.error('Error liking comment:', error);
+      throw error;
+    }
+  },
+};

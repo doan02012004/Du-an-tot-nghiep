@@ -1,6 +1,7 @@
 import {
   BarChartOutlined,
   BgColorsOutlined,
+  CommentOutlined,
   FileImageOutlined,
   MessageOutlined,
   OrderedListOutlined,
@@ -81,6 +82,17 @@ const SidebarAdmin = () => {
             ],
           },
           {
+            key: "11",
+            icon: <CommentOutlined />,
+            label: "Đánh giá",
+            children: [
+              {
+                key: "11.1",
+                label: <NavLink to={"/admin/comments"}>Danh sách</NavLink>,
+              },
+            ],
+          },
+          {
             key: "3",
             icon: <ProductOutlined />,
             label: "Sản phẩm",
@@ -102,8 +114,8 @@ const SidebarAdmin = () => {
             label: "Người dùng",
             children: [
               {
-                key:"4.1",
-                label:<Link to={'/admin/auth'}>Danh sách</Link>
+                key: "4.1",
+                label: <Link to={'/admin/auth'}>Danh sách</Link>
               }
             ],
           },

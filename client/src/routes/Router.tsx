@@ -36,6 +36,7 @@ import OrderManager from "../pages/(website)/my-information/order-manager/Page";
 import BrandsPage from "../pages/(admin)/brands/Page";
 import BrandsForm from "../pages/(admin)/brands/_components/BrandForm";
 import HistoryUpdateUser from "../pages/(admin)/users/_components/HistoryUpdateUser";
+import CommentPage from "../pages/(admin)/comment/Page";
 
 const Router = () => {
   return (
@@ -85,6 +86,7 @@ const Router = () => {
         <Route path="gallerys" element={<GalleryPage />}>
           <Route index element={<ListGallery />} />
         </Route>
+        <Route path="comments" element={<CommentPage />} />
       </Route>
     </Routes>
   );
