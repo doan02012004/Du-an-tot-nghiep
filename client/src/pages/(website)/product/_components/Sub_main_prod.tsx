@@ -10,8 +10,6 @@ type Props = {
 
 const Sub_main_prod = ({ data }: Props) => {
 
-
-
   return (
     <>
       <div className="sub-main-prod mt-3 lg:mt-[26px]">
@@ -28,7 +26,7 @@ const Sub_main_prod = ({ data }: Props) => {
             {/* -----------------end products ---------------------------------------------*/}
           </div>
           {/* ------------------------------------------------------------------------------- */}
-          <Pagination />
+          <Pagination dataPage = {data}/>
         </div>
       </div>
     </>

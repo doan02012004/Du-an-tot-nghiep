@@ -15,6 +15,8 @@ import { IVoucher } from "../../../common/interfaces/voucher"
 import OrderTotal from "./_components/OrderTotal"
 import OrderOptionShip from "./_components/OrderOptionShip"
 import { IshipItem, IshipSubmit } from "../../../common/interfaces/orderInterfaces"
+import FormAddress from "../my-information/address/_components/FormAddress"
+import { PlusCircleFilled } from "@ant-design/icons"
 import ProductDisplay from "./_components/ProductDisplay"
 
 
@@ -22,27 +24,30 @@ const OrderPage = () => {
     // const [ship, setShip] = useState<IshipItem | null>(null)
     const [shippingCost, setShippingCost] = useState<IshipSubmit | null>(null);
     const [payment, setPayment] = useState<"cash" | "atm" | "momo" | "credit">('cash')
-    const [productDisplay,setProductDisplay]= useState(false)
+    const [productDisplay, setProductDisplay] = useState(false)
     const { currentUser } = useContext(AppContext)
     const [addressDefault, setAddressDefault] = useState<Iaddress | null>(null)
-    const [vouchers,setVouchers] = useState<IVoucher[]>([])
+    const [isOpenForm, setIsOpenForm] = useState(false)
+    const [vouchers, setVouchers] = useState<IVoucher[]>([])
     const addressQuery = useAddressQuery()
     const voucherQuery = useVoucherQuery({})
     const navigate = useNavigate()
     const carts = useSelector((state: any) => state.cart.carts)
     const totalCart = useSelector((state: any) => state.cart.totalCart)
     const totalProduct = useSelector((state: any) => state.cart.totalProduct)
-    useEffect(()=>{
+    useEffect(() => {
         if (carts.length == 0) {
             navigate('/cart')
         }
-    },[carts])
-    useEffect(()=>{
-        if (voucherQuery.data && voucherQuery.data.length >0) {
+    }, [carts])
+    useEffect(() => {
+        if (voucherQuery.data && voucherQuery.data.length > 0) {
             setVouchers(voucherQuery.data)
         }
-    },[voucherQuery.data])
-    
+    }, [voucherQuery.data])
+
+
+
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
             const findAddressDefault = addressQuery?.data?.find((item: Iaddress) => item.isDefault == true)
@@ -63,7 +68,7 @@ const OrderPage = () => {
     const handleShippingCostChange = (ship: IshipSubmit) => {
         setShippingCost(ship);
     };
-    
+
 
     return (
         <section>
@@ -92,20 +97,26 @@ const OrderPage = () => {
 
                                     {
                                         addressDefault && (
-                                            <OrderAddressItem address={addressDefault} />
+                                            <OrderAddressItem address={addressDefault} listAddress={addressQuery.data} />
                                         )
                                     }
+
+                                    <button onClick={() => { setIsOpenForm(true) }} className="rounded-tl-[20px] rounded-br-[20px] px-6 py-4  border text-white bg-dark hover:text-black hover:bg-white font-medium"><PlusCircleFilled /> Thêm địa chỉ </button>
+                                    {isOpenForm && (
+                                        <FormAddress setIsOpenForm={setIsOpenForm} />
+                                    )}
                                 </div>
                                 {!currentUser && (
                                     <OrderFormAddress />
                                 )}
+
                             </div>
                             {/* phương thức giao hàng  */}
                             <OrderOptionShip onShippingCostChange={handleShippingCostChange} />
                             <OrderPaymentMethod setPayment={setPayment} payment={payment} />
                             <div className="py-7">
                                 <div className="w-[60%] flex group items-center border border-black lg:w-[35%] py-3 justify-center gap-2 rounded-tl-[20px] rounded-br-[20px] hover:bg-white bg-black">
-                                    <button className="text-sm lg:text-lg text-white group-hover:text-black" onClick={()=>setProductDisplay(!productDisplay)}>{productDisplay ? "ẨN SẢN PHẨM" : "HIỂN THỊ SẢN PHẨM"}</button>
+                                    <button className="text-sm lg:text-lg text-white group-hover:text-black" onClick={() => setProductDisplay(!productDisplay)}>{productDisplay ? "ẨN SẢN PHẨM" : "HIỂN THỊ SẢN PHẨM"}</button>
                                 </div>
                             </div>
                             {productDisplay && <ProductDisplay cart={carts} />}

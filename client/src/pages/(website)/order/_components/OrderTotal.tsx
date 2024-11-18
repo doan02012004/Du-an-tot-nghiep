@@ -102,7 +102,7 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
                     )}
                     <div className="flex justify-between items-center">
                         <span className="text-sm">Phí vận chuyển</span>
-                        <span className="text-sm">{shippingCost ? formatPrice(shippingCost?.value?.price) : "0"}đ</span>
+                        <span className="text-sm">{shippingCost ? formatPrice(shippingCost?.value?.price ? shippingCost?.value?.price : 0) : "0"}đ</span>
                     </div>
                     <div className="flex justify-between items-center border-b pb-5">
                         <span className="text-sm">Tiền thanh toán</span>
