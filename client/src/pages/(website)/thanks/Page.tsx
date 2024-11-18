@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const ThanksPage = () => {
   return (
@@ -17,7 +18,7 @@ const ThanksPage = () => {
       </div>
       <div className="flex items-center justify-between gap-4">
         <a href="/product" className=""><button className="text-sm px-3 py-2 lg:text-base lg:w-[240px] border border-black bg-black text-white  lg:px-5 lg:py-3 rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black">TIẾP TỤC MUA SẮM</button></a>
-        <a href="" className=""><button className="text-sm px-3 py-2 lg:text-base lg:w-[240px] border border-black bg-black text-white  lg:px-5 lg:py-3 rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black">THEO DÕI ĐƠN HÀNG</button></a>
+        <Link to={''}><a href="" className=""><button className="text-sm px-3 py-2 lg:text-base lg:w-[240px] border border-black bg-black text-white  lg:px-5 lg:py-3 rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black">THEO DÕI ĐƠN HÀNG</button></a></Link>
       </div>
     </div>
   </div>

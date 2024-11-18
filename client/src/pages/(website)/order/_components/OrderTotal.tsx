@@ -1,28 +1,50 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatPrice } from '../../../../common/utils/product';
 import { IVoucher } from '../../../../common/interfaces/voucher';
 import ListVoucher from './ListVoucher';
 import { getVoucherByCode } from '../../../../services/voucher';
 import { message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { setVoucher } from '../../../../common/redux/features/cartSlice';
+import { setTotalSubmit, setVoucher } from '../../../../common/redux/features/cartSlice';
 import VoucherDiscount from './VoucherDiscount';
 import { IshipSubmit } from '../../../../common/interfaces/orderInterfaces'
 import VoucherShipping from './VoucherShipping';
+import { IcartItem } from '../../../../common/interfaces/cart';
 
 type Props = {
+    carts:IcartItem
     totalCart: number;
     vouchers: IVoucher[];
     shippingCost: IshipSubmit | null // Thêm shippingCost vào props
 };
 
-const OrderTotal = ({ totalCart, vouchers, shippingCost }: Props) => {
+const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
     const [displayVoucher, setDisplayVoucher] = useState(false);
     const [selectedVoucherCode, setSelectedVoucherCode] = useState(''); // State để lưu mã voucher
     const voucher = useSelector((state: any) => state.cart.voucher) as IVoucher
     const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
     const dispatch = useDispatch()
-    // Hàm xử lý khi chọn voucher
+    useEffect(() => {
+        // Tính lại tổng giá trị đơn hàng (totalCart)
+        dispatch(setTotalSubmit(totalCart));
+    
+        // Nếu có voucher, tính lại giá trị giảm giá
+        if (voucher) {
+            let newTotalSubmit = totalCart;
+    
+            if (voucher.category === 'discount') {
+                if (voucher.type === 'percentage') {
+                    const discount = totalCart * voucher.value / 100;
+                    const maxDiscount = voucher.maxDiscountValue;
+                    newTotalSubmit -= Math.min(discount, maxDiscount || discount);
+                } else if (voucher.type === 'fixed') {
+                    newTotalSubmit -= voucher.value;
+                }
+            }
+    
+            dispatch(setTotalSubmit(newTotalSubmit));
+        }
+    }, [carts, voucher, totalCart, dispatch]);
     const handleVoucherSelect = (voucherCode: string) => {
         setSelectedVoucherCode(voucherCode); // Cập nhật mã voucher vào state
     };
@@ -42,7 +64,23 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost }: Props) => {
             message.error("Chưa tồn tại mã")
         }
     }
-
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSelectedVoucherCode(value); // Cập nhật mã trong state
+        if (value.trim() === '') {
+            // Nếu người dùng xóa hết, reset voucher
+            dispatch(setTotalSubmit(totalCart))
+            dispatch(setVoucher(null));
+        }else if (value !== voucher?.code){
+            dispatch(setTotalSubmit(totalCart))
+            dispatch(setVoucher(null));
+        }
+    };
+    useEffect(() => {
+        // Reset Redux state khi component mount vào trang Order
+        dispatch(setVoucher(null));
+        dispatch(setTotalSubmit(totalCart));
+    }, []); // Chỉ chạy 1 lần khi mount
     return (
         <>
             <div className="bg-[#FBFBFC]">
@@ -88,7 +126,7 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost }: Props) => {
                             className="placeholder:text-sm border rounded-md py-3 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:placeholder:text-base"
                             placeholder="Mã giảm giá"
                             value={selectedVoucherCode} // Hiển thị mã đã chọn
-                            readOnly // Chỉ đọc, người dùng không thể sửa trực tiếp
+                            onChange={(e) => handleInputChange(e)} // Gọi hàm xử lý khi nhập liệu
                         />
                         <button className="text-sm lg:text-base bg-white px-3 lg:px-1 py-1 lg:py-3 rounded-tl-[20px] rounded-br-[20px] font-semibold text-black border-black border hover:bg-black hover:text-white"
                             onClick={onAplly}
