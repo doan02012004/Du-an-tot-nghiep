@@ -14,7 +14,7 @@ import useVoucherQuery from "../../../common/hooks/voucher/useVoucherQuery"
 import { IVoucher } from "../../../common/interfaces/voucher"
 import OrderTotal from "./_components/OrderTotal"
 import OrderOptionShip from "./_components/OrderOptionShip"
-import { IshipItem, IshipSubmit } from "../../../common/interfaces/orderInterfaces"
+import { IshipSubmit } from "../../../common/interfaces/orderInterfaces"
 import FormAddress from "../my-information/address/_components/FormAddress"
 import { PlusCircleFilled } from "@ant-design/icons"
 import ProductDisplay from "./_components/ProductDisplay"
@@ -45,8 +45,6 @@ const OrderPage = () => {
             setVouchers(voucherQuery.data)
         }
     }, [voucherQuery.data])
-
-
 
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
