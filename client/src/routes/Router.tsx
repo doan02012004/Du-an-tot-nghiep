@@ -36,7 +36,12 @@ import OrderManager from "../pages/(website)/my-information/order-manager/Page";
 import BrandsPage from "../pages/(admin)/brands/Page";
 import BrandsForm from "../pages/(admin)/brands/_components/BrandForm";
 import HistoryUpdateUser from "../pages/(admin)/users/_components/HistoryUpdateUser";
-import CommentPage from "../pages/(admin)/comment/Page";
+import VouchersPage from "../pages/(admin)/vouchers/Page";
+import VoucherList from "../pages/(admin)/vouchers/_components/VoucherList";
+import VoucherAdd from "../pages/(admin)/vouchers/_components/VoucherAdd";
+import VoucherEdit from "../pages/(admin)/vouchers/_components/VoucherEdit";
+import DashBoardPage from "../pages/(admin)/dash-board/Page";
+
 
 const Router = () => {
   return (
@@ -59,9 +64,14 @@ const Router = () => {
         </Route>
       </Route>
       <Route path="admin" element={<LayoutAdmin />}>
-        <Route path="orders" element={<OrdersPage />}>
-          <Route index element={<OrderList />} />
-          <Route path="details/:id" element={<OrderDetails />} />
+        <Route path="vouchers" element={<VouchersPage />}>
+          <Route index element={<VoucherList />}/>
+          <Route path="add" element={<VoucherAdd />}/>
+          <Route path="/admin/vouchers/:id" element={<VoucherEdit />} />
+        </Route>
+        <Route path="orders" element={<OrdersPage/>}>
+          <Route index element={<OrderList />}/>
+          <Route path="details/:id" element={<OrderDetails />}/>
         </Route>
         <Route path="products" element={<AdminProduct />}>
           <Route index element={<ListProduct />} />
@@ -86,7 +96,7 @@ const Router = () => {
         <Route path="gallerys" element={<GalleryPage />}>
           <Route index element={<ListGallery />} />
         </Route>
-        <Route path="comments" element={<CommentPage />} />
+        <Route index element={<DashBoardPage />} />
       </Route>
     </Routes>
   );

@@ -47,7 +47,11 @@ export interface Iattribute {
     price_old:number,
     discount:number,
     instock: number,
-    isCheck:boolean
+    isCheck:boolean,
+    volume:number,
+    length:number,
+    width:number,
+    height:number
 }
 
 export interface InewSize {

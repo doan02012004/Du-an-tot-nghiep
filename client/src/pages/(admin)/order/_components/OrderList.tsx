@@ -6,6 +6,7 @@ import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
 import { IOrder } from '../../../../common/interfaces/orderInterfaces';
 import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -15,7 +16,8 @@ const OrderList = (props: Props) => {
     const [Orders, SetOrders] = useState<IOrder[]>([]);
     const query = useOrderQuery({isAdmin:true});
     const mutation = useOrderMutation();
-
+    const totalSubmit = useSelector((state:any)=> state.cart.totalSubmit)
+    console.log(totalSubmit)
     // Trạng thái tìm kiếm
     const [searchParams, setSearchParams] = useState({
         orderId: '',
@@ -151,7 +153,7 @@ const OrderList = (props: Props) => {
         {
             title: 'Tổng tiền',
             dataIndex: 'totalPrice',
-            render: (total: number) => `${total.toLocaleString()}₫`,
+            render: (totalSubmit: number) => `${totalSubmit.toLocaleString()}₫`,
         },
         {
             title: 'Thao tác',

@@ -106,12 +106,12 @@ const orderSchema = new Schema(
         },
         paymentMethod: {
             type: String,
-            enum: ["cash", "momo", "atm", "credit"],
+            enum: ["cash", "vnPay", "atm", "credit"],
             default: "cash"
         },
         status: {
             type: String,
-            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received"],
+            enum: ["pending", "cancelpayment", "unpaid", "paid", "confirmed", "shipped", "delivered", "cancelled", "received"],
             default: "pending",
         },
         totalPrice: {
@@ -127,17 +127,12 @@ const orderSchema = new Schema(
             default: Date.now,
         },
         ship: {
-            minWeight: {
-                type: Number,
+            nameBrand: {
+                type: String,
                 required: true
             },
-            maxWeight: {
-                type: Number,
-                required: true
-            },
-            price: {
-                type: Number,
-                required: true
+            value: {
+
             }
         }
     },

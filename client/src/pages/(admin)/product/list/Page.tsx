@@ -49,7 +49,7 @@ const ListProduct = () => {
             dataIndex: "categoryId",
             key: "categoryId",
             render: (categoryId: any) => (
-                <p>{categoryId.name}</p>
+                <p>{categoryId?.name}</p>
             )
         },
         {
@@ -57,7 +57,7 @@ const ListProduct = () => {
             dataIndex: "brandId",
             key: "brandId",
             render: (brandId: any) => (
-                <p>{brandId.name}</p>
+                <p>{brandId?.name}</p>
             )
         },
         {

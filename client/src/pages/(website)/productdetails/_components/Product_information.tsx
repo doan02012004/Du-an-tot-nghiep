@@ -126,6 +126,7 @@ const Product_information = ({ product }: Props) => {
         cartMutation.mutate({action:'addtocart', cart: newCart})
     }
 
+
     return (
         <>
             {product && (
