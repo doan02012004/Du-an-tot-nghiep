@@ -32,11 +32,11 @@ export const commentService = {
   addComment: async (comment: IComment) => {
     try {
       const response = await instance.post(`/comments/product`, comment);
-      const data: IComment = response.data; // Dữ liệu trả về là bình luận vừa thêm
+      const data = response.data; // Dữ liệu trả về là bình luận vừa thêm
       return data;
     } catch (error) {
       console.error('Error adding comment:', error);
-      throw error;
+      return error.response.data
     }
   },
 
@@ -51,10 +51,21 @@ export const commentService = {
     }
   },
 
-  // Thêm phản hồi cho một bình luận
-  addReComment: async (commentId: string | number, recomment: IComment) => {
+  // Xóa phản hồi theo ID
+  deleteCommentExtra: async (option:{commentId:string|number,recommentId:string|number}) => {
     try {
-      const response = await instance.post(`/comments/${commentId}/recomment`, recomment);
+      const res = await instance.delete(`/comments/recomments/${option.commentId}/${option.recommentId}`);
+      return res.data;
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      throw error;
+    }
+  },
+
+  // Thêm phản hồi cho một bình luận
+  addReComment: async (option:{commentId:string|number,recomment:{userId:string|number,text:string,tag?:string|number,}}) => {
+    try {
+      const response = await instance.post(`/comments/recomment`, option);
       const data: IComment = response.data; // Dữ liệu trả về là bình luận đã được cập nhật
       return data;
     } catch (error) {

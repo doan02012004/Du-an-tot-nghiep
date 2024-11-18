@@ -26,6 +26,7 @@
 import { useState } from 'react';
 import { LoadingOutlined, SendOutlined } from '@ant-design/icons';
 import useCommentMutation from '../../../../common/hooks/comments/useCommentMutation';
+import { message, Rate } from 'antd';
 
 type CommentInputProps = {
   productId: string | number; // Sử dụng productId để gửi lên backend
@@ -34,15 +35,27 @@ type CommentInputProps = {
 
 const CommentInput = ({ productId, userId }: CommentInputProps) => {
   const [content, setContent] = useState('');
-  const commentMutation = useCommentMutation()
+  const [rate,setRate] = useState<number>(5)
+  const commentMutation = useCommentMutation();
+
   const handleSubmit = () => {
     if (!content.trim()) return; // Kiểm tra nội dung rỗng
-    commentMutation.mutate({ action: 'add', newComment: {  productId, userId, comment: content } })
+    if(!userId){
+      setContent('')
+      return message.error('Bạn cần đăng nhập để đánh giá')
+    }
+    commentMutation.mutate({ action: 'add', newComment: {  productId, userId, comment: content,rate } })
     setContent('');
+    setRate(1)
   };
 
   return (
-    <div className="absolute bottom-1 left-0 right-0 h-16 p-2 border border-gray-300 rounded-md flex gap-x-2">
+   <div className='absolute bottom-1 left-0 right-0'>
+    <div className='flex items-center pb-3'>
+          <h5 className='m-0'>Đánh giá:</h5>
+          <Rate className='ml-2' defaultValue={rate} onChange={(value) => setRate(value)}/>
+    </div>
+     <div className=" h-16 p-2 border border-gray-300 rounded-md flex gap-x-2">
       <textarea
         disabled={commentMutation.isPending}
         name="comment"
@@ -55,6 +68,7 @@ const CommentInput = ({ productId, userId }: CommentInputProps) => {
         {commentMutation.isPending ? <LoadingOutlined /> : <SendOutlined />}
       </button>
     </div>
+   </div>
   );
 };
 

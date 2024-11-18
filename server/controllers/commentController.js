@@ -2,22 +2,50 @@ import commentModel from "../models/commentModel.js";
 
 export const createComment = async (req, res) => {
   try {
-    const { userId, comment,productId } = req.body;
+    const { userId, comment,productId,rate } = req.body;
   
 
     if (!userId || !productId || !comment) {
       return res.status(400).json({ message: "Thiếu thông tin bắt buộc!" });
     }
-
+    const existComment = await commentModel.findOne({userId})
+    if(existComment){
+      return res.status(400).json({ message: "Bạn đã đánh giá rồi!", exist:true });
+    }
     const newComment = await commentModel.create({
       userId,
       productId,
       comment,
       like: [],
-      recomments: []
+      recomments: [],
+      rating: rate
     });
 
     return res.status(201).json({ message: "Tạo đánh giá thành công!", comment: newComment });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const createCommentExtra = async (req, res) => {
+  try {
+    const { commentId, recomment } = req.body;
+  const text = recomment.text;
+  const tag = recomment.tag;
+  const userId = recomment.userId;
+
+    if (!userId || !commentId || !text) {
+      return res.status(400).json({ message: "Thiếu thông tin bắt buộc!" });
+    }
+    const comment = await commentModel.findById(commentId)
+    comment.recomments.push({
+      userId,
+      comment:text,
+      tag:tag??null
+    })
+    await comment.save()
+    const newComment = await commentModel.findById(commentId)
+    return res.status(201).json({ message: "Phản hồi đánh giá thành công!", comment: newComment });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -85,7 +113,20 @@ export const deleteCommentById = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
+export const deleteCommentExtraById = async (req, res) => {
+  try {
+    const { commentId,recommentId } = req.params;
+    const comment = await commentModel.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Không tìm thấy đánh giá để xóa!" });
+    }
+    comment.recomments = comment.recomments.filter((recomment) => recomment._id.toString() !== recommentId)
+    await comment.save()
+    return res.status(200).json({ message: "Xóa đánh giá thành công!", comment: comment });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
 export const updateCommentById = async (req, res) => {
   try {
     const { commentId } = req.params;

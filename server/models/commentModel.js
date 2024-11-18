@@ -22,7 +22,9 @@ const recommentItemSchema = new Schema({
         ref: "users",
         default: null
     },
-})
+},
+{ timestamps: true, versionKey: false }
+)
 const commentSchema = new Schema(
     {
         userId: {
@@ -54,6 +56,10 @@ const commentSchema = new Schema(
             ref: "users",
             default: null
         },
+        rating:{
+            type:Number,
+            default:1
+        }
     },
     { timestamps: true, versionKey: false }
 );

@@ -38,7 +38,7 @@ const ActionsSupportUser = () => {
                     const data = await logoutUser();
     
                     if (data.SC == 1) {
-                        setCurrentUser({});
+                        setCurrentUser(null);
                         setIsLogin(false);
                         setAccesToken(null);
                         window.location.reload();
