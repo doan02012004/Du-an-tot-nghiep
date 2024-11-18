@@ -16,7 +16,7 @@ export const createComplaint = async (req, res) => {
         }
 
         // Kiểm tra trạng thái đơn hàng, chỉ khi đơn hàng đã "received" mới cho phép khiếu nại
-        if (order.status !== 'received') {
+        if (order.status !== 'received' && order.status !== 'delivered' ) {
             return res.status(StatusCodes.BAD_REQUEST).json({ message: "Bạn chỉ có thể nộp đơn khiếu nại khi nhận được đơn đặt hàng" });
         }
 
@@ -36,7 +36,7 @@ export const createComplaint = async (req, res) => {
         if (userEmail) {
             // Gửi email thông báo đã nhận được khiếu nại
             const subject = "Thông báo khiếu nại đơn hàng";
-            const message = `Xin chào ${user.firstname} ${user.lastname},\n\nChúng tôi đã nhận được khiếu nại của bạn liên quan đến đơn hàng ${orderId}. Chúng tôi sẽ xem xét và xử lý trong thời gian sớm nhất.\n\nCảm ơn bạn đã thông báo cho chúng tôi!`;
+            const message = `Xin chào ${user.firstname} ${user.lastname},\n\nChúng tôi đã nhận được khiếu nại của bạn liên quan đến đơn hàng ${order.orderNumber}. Chúng tôi sẽ xem xét và xử lý trong thời gian sớm nhất.\n\nCảm ơn bạn đã thông báo cho chúng tôi!`;
 
             // Gửi email cho khách hàng
             await sendEmail(userEmail, subject, message);

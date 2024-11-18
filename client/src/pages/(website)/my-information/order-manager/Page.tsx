@@ -51,6 +51,14 @@ const OrderManager = () => {
         status: values.status,
       },
     });
+  
+    // Cập nhật trạng thái đơn hàng thành 'Returngoods'
+    mutation.mutate({
+      action: "updateStatus",
+      orderId: values.orderId,
+      status: "Returngoods",
+    });
+  
     const newMessage = "Đang chờ xử lý trả hàng";
     setmessage(newMessage);
     localStorage.setItem('complaintMessage', newMessage);  // Lưu dữ liệu vào localStorage
@@ -58,6 +66,7 @@ const OrderManager = () => {
     setopen(!open);
     console.log('Form Values:', values);
   };
+  
   // Đọc dữ liệu từ localStorage khi component load lại
   useEffect(() => {
     const savedMessage = localStorage.getItem('complaintMessage');
@@ -83,10 +92,13 @@ const OrderManager = () => {
         return 'Đã hủy';
       case 'received':
         return 'Đã nhận hàng';
+        case 'Returngoods':
+          return 'Trả hàng';
       default:
         return 'Không xác định';
     }
   };
+  console.log(items[0])
 
   return (
     <div className="w-full">
@@ -139,14 +151,14 @@ const OrderManager = () => {
                   <td className="order-4 pt-5 py-3 lg:border-t-[1px] border-b-[1px] lg:border-['#f7f8f9']">
                     <div className="flex items-center gap-2">
                       {/* <img className="w-4 h-4" src="public/icons/loading.svg" alt="" srcSet="" /> */}
-                      {message ==="" ?(<span>{renderOrderStatus(order.status)}</span>):(<span>{message}</span>)}
+                      <span>{renderOrderStatus(order.status)}</span>
                     </div>
                     {order.status === "pending" && (
                       <div onClick={() => mutation.mutate({ action: "updateStatus", orderId: order._id, status: "cancelled" })} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
                         Hủy đơn
                       </div>
                     )}
-                    {order.status === "delivered" || order.status === "received" && (
+                    {(order.status === "delivered" || order.status === "received") && (
                       <Button onClick={()=>{setopen(!open);setitems(order.items);setid(order._id);settotalOrder(order.totalOrder);settotalPrice(order.totalPrice);settvoucher(order.voucher.discountValue),setship(order.ship.value.price)}}>Trả hàng</Button>
                     ) }
                   </td>
@@ -244,7 +256,6 @@ const OrderManager = () => {
                     >
                       <TextArea rows={4} placeholder="Nhập lý do khiếu nại của bạn..." />
                     </Form.Item>
-                    {message !== "" && (<div className='text-red mb-4'>Bạn đã gửi đơn khiếu nại vui lòng chú ý gmail</div>)}
 
                     {/* Nút Submit */}
                     <Form.Item className="text-center">
