@@ -111,7 +111,7 @@ const orderSchema = new Schema(
         },
         status: {
             type: String,
-            enum: ["pending", "unpaid", "paid", "confirmed", "shipped", "delivered", "cancelled", "received"],
+            enum: ["pending", "cancelpayment", "unpaid", "paid", "confirmed", "shipped", "delivered", "cancelled", "received"],
             default: "pending",
         },
         totalPrice: {
