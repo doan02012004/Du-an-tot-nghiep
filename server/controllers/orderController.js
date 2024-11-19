@@ -4,8 +4,8 @@ import CartModel from "../models/cartModel.js";
 import crypto from 'crypto';
 import querystring from 'qs';
 import dateFormat from 'dateformat';
-import { sortObject } from '../ultil/payment.js';
-import productModel from "../models/productModel.js";
+import { formatDateToCustomString, sortObject } from '../ultil/payment.js';
+import ProductModel from "../models/productModel.js";
 
 
 export const createOrder = async (req, res) => {
@@ -13,6 +13,15 @@ export const createOrder = async (req, res) => {
         const order = await orderModel.create(req.body);
         if (order) {
             const cart = await CartModel.findOne({ userId: order.userId })
+            cart.carts.map(async (item) => {
+                const product = await ProductModel.findById(item.productId)
+                product.attributes.map(async (attribute) => {
+                    if (attribute._id == item.attributeId) {
+                        attribute.instock = attribute.instock - item.quantity
+                        await product.save()
+                    }
+                })
+            })
             cart.carts = [];
             cart.totalPrice = 0;
             cart.totalCart = 0;
@@ -57,6 +66,7 @@ export const getOrderById = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
+
 export const getOrderByUserId = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -133,13 +143,16 @@ export const paymentVNPay = async (req, res) => {
         const createDate = dateFormat(date, 'yyyymmddHHmmss');
         const orderId = req.body.orderId;
         const amount = req.body.amount;
-        const bankCode = 'NCB';
-        const orderInfo = 'Nội dung thanh toán - ...';
-        const orderType = 'billpayment';
+        const bankCode = "";
+        const orderInfo = 'Thanh toan cho ma GD:' + orderId;
+        const orderType = 'other';
+        date.setMinutes(date.getMinutes() + 15);
+        const expireDateFormat = formatDateToCustomString(date); // Định dạng thành yyyyMMddHHmmss
         let locale = "vn";
         if (!locale) locale = 'vn';
 
         const currCode = 'VND';
+        console.log('ip', ipAddr)
 
         let vnp_Params = {};
         vnp_Params['vnp_Version'] = '2.1.0';
@@ -154,6 +167,7 @@ export const paymentVNPay = async (req, res) => {
         vnp_Params['vnp_ReturnUrl'] = returnUrl;
         vnp_Params['vnp_IpAddr'] = ipAddr;
         vnp_Params['vnp_CreateDate'] = createDate;
+        vnp_Params['vnp_ExpireDate'] = expireDateFormat;
 
         if (bankCode) {
             vnp_Params['vnp_BankCode'] = bankCode;
@@ -191,16 +205,11 @@ export const vnpayReturn = async (req, res) => {
 
     const queryString = querystring.stringify(sortedParams, { encode: false });
     const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
-
-
     if (hash === secureHash) {
         const orderNumber = vnp_Params['vnp_TxnRef']
-
         if (vnp_Params['vnp_ResponseCode'] === '00') {
-            const newOrder = await orderModel.findOneAndUpdate(
-                { orderNumber },
-                { status: "paid" },
-            );
+
+            await orderModel.findOneAndUpdate({ orderNumber }, { status: "paid" })
             return res.redirect('http://localhost:5173/thanks');
         } else {
             await orderModel.findOneAndUpdate({ orderNumber }, { status: "cancelpayment" })
@@ -211,5 +220,58 @@ export const vnpayReturn = async (req, res) => {
     }
 };
 
+// IPn việc xác thực trạng thái của bill thanh toán khi thành công hay thất bại
+export const vnpayIPN = async (req, res) => {
+    try {
+        const vnp_Params = req.query;
 
+        // Lấy SecureHash từ request của VNPay và xóa các tham số không liên quan
+        const secureHash = vnp_Params['vnp_SecureHash'];
+        delete vnp_Params['vnp_SecureHash'];
+        delete vnp_Params['vnp_SecureHashType'];
 
+        // Sắp xếp các tham số còn lại
+        const sortedParams = sortObject(vnp_Params);
+
+        // Tạo hash từ tham số đã sắp xếp và so sánh với SecureHash của VNPay
+        const secretKey = 'TXA23XAHD604Z31OCUA3EKVP2PI5QOHA';
+        const queryString = querystring.stringify(sortedParams, { encode: false });
+        const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
+
+        if (hash !== secureHash) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Chữ ký không hợp lệ' });
+        }
+
+        // Lấy thông tin từ request
+        const { vnp_TxnRef, vnp_ResponseCode, vnp_Amount } = vnp_Params;
+
+        // Kiểm tra trạng thái giao dịch từ VNPay
+        if (vnp_ResponseCode === '00') {
+            // Giao dịch thành công, cập nhật trạng thái đơn hàng
+            const updatedOrder = await orderModel.findOneAndUpdate(
+                { orderNumber: vnp_TxnRef },
+                { status: 'paid', paymentDate: new Date() },
+                { new: true }
+            );
+
+            if (!updatedOrder) {
+                return res.status(StatusCodes.NOT_FOUND).json({ message: 'Không tìm thấy đơn hàng' });
+            }
+
+            // Gửi phản hồi thành công cho VNPay
+            return res.status(StatusCodes.OK).json({ RspCode: '00', Message: 'Success' });
+        } else {
+            // Giao dịch thất bại, cập nhật trạng thái đơn hàng
+            await orderModel.findOneAndUpdate(
+                { orderNumber: vnp_TxnRef },
+                { status: 'cancelpayment' }
+            );
+
+            // Gửi phản hồi thất bại cho VNPay
+            return res.status(StatusCodes.OK).json({ RspCode: '00', Message: 'Success' });
+        }
+    } catch (error) {
+        console.error('VNPay IPN Error:', error.message);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ RspCode: '99', Message: 'lỗi không xác định' });
+    }
+};
