@@ -31,6 +31,16 @@ export const registerUser = async (user: Isignup, dispatch: any) => {
     }
 }
 
+export const forgotUser = async (email : string) => {
+    try {
+        const res = await instance.post("/users/forgot", email)
+        return res.data
+    } catch (error) {
+        message.error("Không tìm thấy")
+        return error
+    }
+}
+
 export const logoutUser = async () => {
     // dispatch(logoutStart());
     try {

@@ -40,6 +40,8 @@ import VouchersPage from "../pages/(admin)/vouchers/Page";
 import VoucherList from "../pages/(admin)/vouchers/_components/VoucherList";
 import VoucherAdd from "../pages/(admin)/vouchers/_components/VoucherAdd";
 import VoucherEdit from "../pages/(admin)/vouchers/_components/VoucherEdit";
+import PageForgot from "../pages/(website)/Auth/Forgot/Page";
+import WaitPage from "../pages/(website)/wait/Page";
 
 
 const Router = () => {
@@ -51,11 +53,13 @@ const Router = () => {
         <Route path="productdetails/:slug" element={<ProductDetailsPage />} />
         <Route path="signin" element={<PageSignin />} />
         <Route path="signup" element={<PageSignup />} />
+        <Route path="forgot" element={<PageForgot />} />
         <Route path="blog" element={<PageBlog />} />
         <Route path="blogdetail" element={<PageDetail />} />
         <Route path="cart" element={<CartPage />} />
         <Route path="order" element={<OrderPage />} />
         <Route path="thanks" element={<ThanksPage />} />
+        <Route path="wait" element={<WaitPage />} />
         <Route path="customer" element={<MyInformation />}>
           <Route path="infor" element={<Account />} />
           <Route path="order-manager" element={<OrderManager />} />

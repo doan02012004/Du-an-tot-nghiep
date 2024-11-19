@@ -92,32 +92,32 @@ export const updateUser = async (req, res) => {
             }
         });
 
-         // Lưu người dùng với thông tin mới
-         await user.save();
+        // Lưu người dùng với thông tin mới
+        await user.save();
 
-         // Chỉ lưu vào collection `HistoryUpdateUser` nếu có thay đổi
-         if (Object.keys(changes).length > 0) {
-             const updatedUserData = {
-                 originalUser: user._id, // Lưu ID của user gốc
-                 changes: changes, // Chỉ lưu những trường đã thay đổi
-                 updateTime: new Date(), // Lưu thời gian cập nhật
-             };
- 
-             // Tạo mới và lưu vào collection `HistoryUpdateUser`
-             const updatedUserRecord = new HistoryUpdateUser(updatedUserData);
-             await updatedUserRecord.save();
-         }
- 
-         // Trả về thông tin người dùng (trừ mật khẩu)
-         const { password: hashedPass, ...updatedUser } = user._doc; // Loại bỏ mật khẩu
-         return res.status(StatusCodes.OK).json(updatedUser);
-         
-     } catch (error) {
-         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-             message: error.message,
-         });
-     }
- };
+        // Chỉ lưu vào collection `HistoryUpdateUser` nếu có thay đổi
+        if (Object.keys(changes).length > 0) {
+            const updatedUserData = {
+                originalUser: user._id, // Lưu ID của user gốc
+                changes: changes, // Chỉ lưu những trường đã thay đổi
+                updateTime: new Date(), // Lưu thời gian cập nhật
+            };
+
+            // Tạo mới và lưu vào collection `HistoryUpdateUser`
+            const updatedUserRecord = new HistoryUpdateUser(updatedUserData);
+            await updatedUserRecord.save();
+        }
+
+        // Trả về thông tin người dùng (trừ mật khẩu)
+        const { password: hashedPass, ...updatedUser } = user._doc; // Loại bỏ mật khẩu
+        return res.status(StatusCodes.OK).json(updatedUser);
+
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
+        });
+    }
+};
 
 export const updateUserStatus = async (req, res) => {
     try {
@@ -258,6 +258,31 @@ const generateRefreshToken = (user) => {
         process.env.JWT_TOKEN_REF,
         { expiresIn: process.env.TIME_TOKEN_REF }
     )
+}
+
+// quên mật khẩu
+export const forgot = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        const user = await UserModel.findOne({ email })
+
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không có tài khoản" })
+        }
+
+        const token = jwt.sign({userId : user._id}, process.env.KEY_SECRET, {
+            expiresIn : "15m"
+        })
+
+        
+
+        return res.status(200).json(user)
+
+    } catch (error) {
+        console.log("lỗi đăng nhập", error.message)
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
+    }
 }
 
 // đăng nhập tài khoản
@@ -424,7 +449,7 @@ export const getHistoryUpdateUser = async (req, res) => {
         const history = await HistoryUpdateUser.find()
             .populate('originalUser', 'firstname lastname') // Lấy tên người dùng từ thông tin gốc (nếu cần)
             .exec();
-        
+
         // Format lại dữ liệu để chỉ trả về các trường đã thay đổi
         const formattedHistory = history.map((record) => {
             return {
