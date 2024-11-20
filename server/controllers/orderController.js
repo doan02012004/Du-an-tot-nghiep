@@ -212,8 +212,8 @@ export const vnpayReturn = async (req, res) => {
             await orderModel.findOneAndUpdate({ orderNumber }, { status: "paid" })
             return res.redirect('http://localhost:5173/thanks');
         } else {
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "cancelpayment" })
-            return res.redirect('http://localhost:5173/order');
+            await orderModel.findOneAndUpdate({ orderNumber }, { status: "unpaid" })
+            return res.redirect('http://localhost:5173/canpay');
         }
     } else {
         return res.status(400).json({ message: 'Chữ ký không hợp lệ' });

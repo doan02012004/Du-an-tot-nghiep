@@ -40,6 +40,7 @@ import VouchersPage from "../pages/(admin)/vouchers/Page";
 import VoucherList from "../pages/(admin)/vouchers/_components/VoucherList";
 import VoucherAdd from "../pages/(admin)/vouchers/_components/VoucherAdd";
 import VoucherEdit from "../pages/(admin)/vouchers/_components/VoucherEdit";
+import CanPayment from "../pages/(website)/thanks/CanPayment";
 
 
 const Router = () => {
@@ -56,6 +57,7 @@ const Router = () => {
         <Route path="cart" element={<CartPage />} />
         <Route path="order" element={<OrderPage />} />
         <Route path="thanks" element={<ThanksPage />} />
+        <Route path="canpay" element={<CanPayment />} />
         <Route path="customer" element={<MyInformation />}>
           <Route path="infor" element={<Account />} />
           <Route path="order-manager" element={<OrderManager />} />
@@ -64,13 +66,13 @@ const Router = () => {
       </Route>
       <Route path="admin" element={<LayoutAdmin />}>
         <Route path="vouchers" element={<VouchersPage />}>
-          <Route index element={<VoucherList />}/>
-          <Route path="add" element={<VoucherAdd />}/>
+          <Route index element={<VoucherList />} />
+          <Route path="add" element={<VoucherAdd />} />
           <Route path="/admin/vouchers/:id" element={<VoucherEdit />} />
         </Route>
-        <Route path="orders" element={<OrdersPage/>}>
-          <Route index element={<OrderList />}/>
-          <Route path="details/:id" element={<OrderDetails />}/>
+        <Route path="orders" element={<OrdersPage />}>
+          <Route index element={<OrderList />} />
+          <Route path="details/:id" element={<OrderDetails />} />
         </Route>
         <Route path="products" element={<AdminProduct />}>
           <Route index element={<ListProduct />} />
