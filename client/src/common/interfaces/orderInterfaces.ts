@@ -31,7 +31,7 @@ export interface IOrder {
     items: IOrderItem[];
     orderNumber: string;
     paymentMethod: 'cash' | 'momo' | 'atm' | 'credit';
-    status: 'pending' | 'unpaid' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'received' | 'Returngoods';
+    status: 'pending' | 'unpaid' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'received' | 'Returngoods' | 'Complaints';
     totalPrice: number;
     totalOrder: number;
     createdAt: Date;

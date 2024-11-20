@@ -52,9 +52,12 @@ const OrderDetails = (props: Props) => {
     // Hàm kiểm tra tính hợp lệ của việc chuyển đổi trạng thái
     const validateStatusChange = (currentStatus: string, newStatus: string) => {
         const invalidTransitions: Record<string, string[]> = {
-            cancelled: ['delivered', 'shipped', 'received'],
-            delivered: ['pending', 'unpaid', 'confirmed', 'cancelled'],
-            received: ['pending', 'unpaid', 'confirmed', 'shipped', 'cancelled'],
+            pending: ['pending','shipped','delivered','received','Returngoods','Complaints'],
+            confirmed: ['pending','confirmed','delivered','received','Returngoods','Complaints'],
+            shipped: ['pending','confirmed','shipped','received','Returngoods','Complaints'],
+            cancelled: ['confirmed','cancelled','delivered', 'shipped', 'received','Returngoods','Complaints'],
+            delivered: ['pending','confirmed','shipped','delivered','Returngoods'],
+            received: ['pending','delivered','received', 'unpaid', 'confirmed', 'shipped','Returngoods', 'cancelled'],
         };
 
         return !(invalidTransitions[currentStatus]?.includes(newStatus));

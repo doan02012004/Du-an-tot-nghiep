@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import useComplaintQuery from '../../../../common/hooks/complaint/useComplaintQuery';
 import useComplaintMutation from '../../../../common/hooks/complaint/useComplaintMutation';
 import { useState, useEffect } from 'react';
+import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 
 type Props = {};
 
@@ -14,6 +15,8 @@ const ComplaintEdit = (props: Props) => {
   // State để lưu thông tin chỉnh sửa
   const [status, setStatus] = useState<'new' | 'in_progress' | 'resolved' | ''>('');
   const [response, setResponse] = useState<string>('');
+  const mutations = useOrderMutation();
+  // console.log(query)
 
   // Cập nhật giá trị status và response khi query thay đổi
   useEffect(() => {
@@ -28,7 +31,6 @@ const ComplaintEdit = (props: Props) => {
       message.info('Không có thay đổi để cập nhật.');
       return;
     }
-
     mutation.mutate({
       action: 'update',
       complaintData: {
@@ -37,6 +39,14 @@ const ComplaintEdit = (props: Props) => {
         response,
       },
     });
+    if(status === "resolved"){
+       // Cập nhật trạng thái đơn hàng thành 'Returngoods'
+    mutations.mutate({
+      action: "updateStatus",
+      orderId: query.orderId._id,
+      status: "Returngoods",
+    });
+    }
   };
 
   return (
