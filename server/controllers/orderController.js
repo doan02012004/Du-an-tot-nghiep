@@ -7,6 +7,8 @@ import dateFormat from 'dateformat';
 import { formatDateToCustomString, sortObject } from '../ultil/payment.js';
 import ProductModel from "../models/productModel.js";
 
+import sendEmail from "../utils/sendEmail.js";
+import UserModel from "../models/userModel.js";
 
 export const createOrder = async (req, res) => {
     try {
@@ -26,7 +28,24 @@ export const createOrder = async (req, res) => {
             cart.totalPrice = 0;
             cart.totalCart = 0;
             await cart.save()
+            // Sử dụng userModel để tìm người dùng từ userId
+            const user = await UserModel.findById(order.userId);
+            const userEmail = user?.email;
+            console.log(order)
+            const voucher = order.voucher?.discountValue || 0; // Lấy giá trị voucher, nếu có
+            const price = order.totalPrice - voucher; // Tính tổng không bao gồm phí ship
+            if (userEmail) {
+                // Gửi email xác nhận đơn hàng nếu có email
+                const subject = "Xác nhận đơn hàng";
+                const message = `Xin chào ${order.customerInfor.fullname || "Khách hàng"},\n\nCảm ơn bạn đã đặt hàng tại cửa hàng chúng tôi. Đơn hàng của bạn đang được xử lý. Chúng tôi sẽ sớm cập nhật trạng thái cho bạn.\n\nChi tiết đơn hàng:\nMã đơn hàng: ${order.orderNumber}\nTổng tiền: ${price.toLocaleString()}₫\n\nCảm ơn bạn đã tin tưởng!`;
+
+                // Gửi email
+                await sendEmail(userEmail, subject, message);
+            } else {
+                console.log("Không tìm thấy email người dùng");
+            }
         }
+
         return res.status(StatusCodes.CREATED).json(order);
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -98,6 +117,7 @@ export const deleteOrder = async (req, res) => {
     }
 };
 
+
 export const updateOrderStatus = async (req, res) => {
     const { orderId, status } = req.body;
 
@@ -108,170 +128,205 @@ export const updateOrderStatus = async (req, res) => {
             return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
         }
 
-        // Tìm và cập nhật trạng thái của đơn hàng
-        const updatedOrder = await orderModel.findByIdAndUpdate(
-            orderId,
-            { status },
-            { new: true } // Để trả về đơn hàng đã được cập nhật
-        );
 
-        if (!updatedOrder) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
+        try {
+            // Kiểm tra trạng thái hợp lệ
+            const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints"];
+            if (!validStatuses.includes(status)) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
+            }
+
+            // Cập nhật trạng thái đơn hàng
+            const updatedOrder = await orderModel.findByIdAndUpdate(
+                orderId,
+                { status },
+                { new: true }
+            ).populate('userId', 'email fullname');  // Lấy email và fullname từ userId
+
+            if (!updatedOrder) {
+                return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
+            }
+
+            // Kiểm tra email người dùng
+            const userEmail = updatedOrder.userId.email;
+            if (!userEmail) {
+                return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Email not found for the user" });
+            }
+
+            const statusTranslations = {
+                pending: "Chờ xử lý",
+                unpaid: "Chưa thanh toán",
+                confirmed: "Đã xác nhận",
+                shipped: "Đang giao",
+                delivered: "Đã giao hàng",
+                cancelled: "Đã hủy",
+                received: "Đã nhận hàng",
+                Returngoods: "Trả hàng",
+                Complaints: "Đang xử lý khiếu nại",
+            };
+
+            const vietnameseStatus = statusTranslations[status];
+
+            // Gửi email cho khách hàng
+            const subject = "Cập nhật trạng thái đơn hàng";
+            const message = `Xin chào ${updatedOrder.customerInfor.fullname},\n\nĐơn hàng của bạn đã được cập nhật trạng thái: ${vietnameseStatus}. Cảm ơn bạn đã tin tưởng mua sắm tại cửa hàng chúng tôi!`;
+
+            await sendEmail(userEmail, subject, message);
+
+            // Trả về đơn hàng đã được cập nhật
+            return res.status(StatusCodes.OK).json(updatedOrder);
+        } catch (error) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
+    };
 
-        return res.status(StatusCodes.OK).json(updatedOrder);
-    } catch (error) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
-    }
-};
+    //hàm thanh toán với VNPay
+    export const paymentVNPay = async (req, res) => {
+        try {
 
-//hàm thanh toán với VNPay
-export const paymentVNPay = async (req, res) => {
-    try {
+            const ipAddr = req.headers['x-forwarded-for'] ||
+                req.connection.remoteAddress ||
+                req.socket.remoteAddress ||
+                req.connection.socket.remoteAddress;
 
-        const ipAddr = req.headers['x-forwarded-for'] ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            req.connection.socket.remoteAddress;
+            // Thông tin cấu hình VNPay
+            const tmnCode = "ML8JRUOJ";
+            const secretKey = "TXA23XAHD604Z31OCUA3EKVP2PI5QOHA";
+            const vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+            const returnUrl = "http://localhost:5000/api/orders/payment/vnpay/return";
+            const date = new Date();
+            const createDate = dateFormat(date, 'yyyymmddHHmmss');
+            const orderId = req.body.orderId;
+            const amount = req.body.amount;
+            const bankCode = "";
+            const orderInfo = 'Thanh toan cho ma GD:' + orderId;
+            const orderType = 'other';
+            date.setMinutes(date.getMinutes() + 15);
+            const expireDateFormat = formatDateToCustomString(date); // Định dạng thành yyyyMMddHHmmss
+            let locale = "vn";
+            if (!locale) locale = 'vn';
 
-        // Thông tin cấu hình VNPay
-        const tmnCode = "ML8JRUOJ";
-        const secretKey = "TXA23XAHD604Z31OCUA3EKVP2PI5QOHA";
-        const vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        const returnUrl = "http://localhost:5000/api/orders/payment/vnpay/return";
-        const date = new Date();
-        const createDate = dateFormat(date, 'yyyymmddHHmmss');
-        const orderId = req.body.orderId;
-        const amount = req.body.amount;
-        const bankCode = "";
-        const orderInfo = 'Thanh toan cho ma GD:' + orderId;
-        const orderType = 'other';
-        date.setMinutes(date.getMinutes() + 15);
-        const expireDateFormat = formatDateToCustomString(date); // Định dạng thành yyyyMMddHHmmss
-        let locale = "vn";
-        if (!locale) locale = 'vn';
+            const currCode = 'VND';
+            console.log('ip', ipAddr)
 
-        const currCode = 'VND';
-        console.log('ip', ipAddr)
+            let vnp_Params = {};
+            vnp_Params['vnp_Version'] = '2.1.0';
+            vnp_Params['vnp_Command'] = 'pay';
+            vnp_Params['vnp_TmnCode'] = tmnCode;
+            vnp_Params['vnp_Locale'] = locale;
+            vnp_Params['vnp_CurrCode'] = currCode;
+            vnp_Params['vnp_TxnRef'] = orderId;
+            vnp_Params['vnp_OrderInfo'] = orderInfo;
+            vnp_Params['vnp_OrderType'] = orderType;
+            vnp_Params['vnp_Amount'] = amount * 100;
+            vnp_Params['vnp_ReturnUrl'] = returnUrl;
+            vnp_Params['vnp_IpAddr'] = ipAddr;
+            vnp_Params['vnp_CreateDate'] = createDate;
+            vnp_Params['vnp_ExpireDate'] = expireDateFormat;
 
-        let vnp_Params = {};
-        vnp_Params['vnp_Version'] = '2.1.0';
-        vnp_Params['vnp_Command'] = 'pay';
-        vnp_Params['vnp_TmnCode'] = tmnCode;
-        vnp_Params['vnp_Locale'] = locale;
-        vnp_Params['vnp_CurrCode'] = currCode;
-        vnp_Params['vnp_TxnRef'] = orderId;
-        vnp_Params['vnp_OrderInfo'] = orderInfo;
-        vnp_Params['vnp_OrderType'] = orderType;
-        vnp_Params['vnp_Amount'] = amount * 100;
-        vnp_Params['vnp_ReturnUrl'] = returnUrl;
-        vnp_Params['vnp_IpAddr'] = ipAddr;
-        vnp_Params['vnp_CreateDate'] = createDate;
-        vnp_Params['vnp_ExpireDate'] = expireDateFormat;
+            if (bankCode) {
+                vnp_Params['vnp_BankCode'] = bankCode;
+            }
 
-        if (bankCode) {
-            vnp_Params['vnp_BankCode'] = bankCode;
+            // Sắp xếp các tham số
+            vnp_Params = sortObject(vnp_Params);
+
+            // Tạo chữ ký
+            const signData = querystring.stringify(vnp_Params, { encode: false });
+            const hmac = crypto.createHmac("sha512", secretKey);
+            const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+            vnp_Params['vnp_SecureHash'] = signed;
+
+            // Tạo URL thanh toán
+            const paymentUrl = `${vnpUrl}?${querystring.stringify(vnp_Params, { encode: false })}`;
+
+            // Chuyển hướng đến URL thanh toán
+            return res.json({ paymentUrl });
+        } catch (error) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
-
-        // Sắp xếp các tham số
-        vnp_Params = sortObject(vnp_Params);
-
-        // Tạo chữ ký
-        const signData = querystring.stringify(vnp_Params, { encode: false });
-        const hmac = crypto.createHmac("sha512", secretKey);
-        const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
-        vnp_Params['vnp_SecureHash'] = signed;
-
-        // Tạo URL thanh toán
-        const paymentUrl = `${vnpUrl}?${querystring.stringify(vnp_Params, { encode: false })}`;
-
-        // Chuyển hướng đến URL thanh toán
-        return res.json({ paymentUrl });
-    } catch (error) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
-    }
-};
+    };
 
 
-//huyển hướng lại trang của bạn với thông tin thanh toán
-export const vnpayReturn = async (req, res) => {
-    const vnp_Params = req.query;
-    const secureHash = vnp_Params['vnp_SecureHash'];
-    delete vnp_Params['vnp_SecureHash'];
-    delete vnp_Params['vnp_SecureHashType'];
-
-    const secretKey = 'TXA23XAHD604Z31OCUA3EKVP2PI5QOHA';
-    const sortedParams = sortObject(vnp_Params);
-
-    const queryString = querystring.stringify(sortedParams, { encode: false });
-    const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
-    if (hash === secureHash) {
-        const orderNumber = vnp_Params['vnp_TxnRef']
-        if (vnp_Params['vnp_ResponseCode'] === '00') {
-
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "paid" })
-            return res.redirect('http://localhost:5173/thanks');
-        } else {
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "unpaid" })
-            return res.redirect('http://localhost:5173/canpay');
-        }
-    } else {
-        return res.status(400).json({ message: 'Chữ ký không hợp lệ' });
-    }
-};
-
-// IPn việc xác thực trạng thái của bill thanh toán khi thành công hay thất bại
-export const vnpayIPN = async (req, res) => {
-    try {
+    //huyển hướng lại trang của bạn với thông tin thanh toán
+    export const vnpayReturn = async (req, res) => {
         const vnp_Params = req.query;
-
-        // Lấy SecureHash từ request của VNPay và xóa các tham số không liên quan
         const secureHash = vnp_Params['vnp_SecureHash'];
         delete vnp_Params['vnp_SecureHash'];
         delete vnp_Params['vnp_SecureHashType'];
 
-        // Sắp xếp các tham số còn lại
+        const secretKey = 'TXA23XAHD604Z31OCUA3EKVP2PI5QOHA';
         const sortedParams = sortObject(vnp_Params);
 
-        // Tạo hash từ tham số đã sắp xếp và so sánh với SecureHash của VNPay
-        const secretKey = 'TXA23XAHD604Z31OCUA3EKVP2PI5QOHA';
         const queryString = querystring.stringify(sortedParams, { encode: false });
         const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
+        if (hash === secureHash) {
+            const orderNumber = vnp_Params['vnp_TxnRef']
+            if (vnp_Params['vnp_ResponseCode'] === '00') {
 
-        if (hash !== secureHash) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Chữ ký không hợp lệ' });
+                await orderModel.findOneAndUpdate({ orderNumber }, { status: "paid" })
+                return res.redirect('http://localhost:5173/thanks');
+            } else {
+                await orderModel.findOneAndUpdate({ orderNumber }, { status: "unpaid" })
+                return res.redirect('http://localhost:5173/canpay');
+            }
+        } else {
+            return res.status(400).json({ message: 'Chữ ký không hợp lệ' });
         }
+    };
 
-        // Lấy thông tin từ request
-        const { vnp_TxnRef, vnp_ResponseCode, vnp_Amount } = vnp_Params;
+    // IPn việc xác thực trạng thái của bill thanh toán khi thành công hay thất bại
+    export const vnpayIPN = async (req, res) => {
+        try {
+            const vnp_Params = req.query;
 
-        // Kiểm tra trạng thái giao dịch từ VNPay
-        if (vnp_ResponseCode === '00') {
-            // Giao dịch thành công, cập nhật trạng thái đơn hàng
-            const updatedOrder = await orderModel.findOneAndUpdate(
-                { orderNumber: vnp_TxnRef },
-                { status: 'paid', paymentDate: new Date() },
-                { new: true }
-            );
+            // Lấy SecureHash từ request của VNPay và xóa các tham số không liên quan
+            const secureHash = vnp_Params['vnp_SecureHash'];
+            delete vnp_Params['vnp_SecureHash'];
+            delete vnp_Params['vnp_SecureHashType'];
 
-            if (!updatedOrder) {
-                return res.status(StatusCodes.NOT_FOUND).json({ message: 'Không tìm thấy đơn hàng' });
+            // Sắp xếp các tham số còn lại
+            const sortedParams = sortObject(vnp_Params);
+
+            // Tạo hash từ tham số đã sắp xếp và so sánh với SecureHash của VNPay
+            const secretKey = 'TXA23XAHD604Z31OCUA3EKVP2PI5QOHA';
+            const queryString = querystring.stringify(sortedParams, { encode: false });
+            const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
+
+            if (hash !== secureHash) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Chữ ký không hợp lệ' });
             }
 
-            // Gửi phản hồi thành công cho VNPay
-            return res.status(StatusCodes.OK).json({ RspCode: '00', Message: 'Success' });
-        } else {
-            // Giao dịch thất bại, cập nhật trạng thái đơn hàng
-            await orderModel.findOneAndUpdate(
-                { orderNumber: vnp_TxnRef },
-                { status: 'cancelpayment' }
-            );
+            // Lấy thông tin từ request
+            const { vnp_TxnRef, vnp_ResponseCode, vnp_Amount } = vnp_Params;
 
-            // Gửi phản hồi thất bại cho VNPay
-            return res.status(StatusCodes.OK).json({ RspCode: '00', Message: 'Success' });
+            // Kiểm tra trạng thái giao dịch từ VNPay
+            if (vnp_ResponseCode === '00') {
+                // Giao dịch thành công, cập nhật trạng thái đơn hàng
+                const updatedOrder = await orderModel.findOneAndUpdate(
+                    { orderNumber: vnp_TxnRef },
+                    { status: 'paid', paymentDate: new Date() },
+                    { new: true }
+                );
+
+                if (!updatedOrder) {
+                    return res.status(StatusCodes.NOT_FOUND).json({ message: 'Không tìm thấy đơn hàng' });
+                }
+
+                // Gửi phản hồi thành công cho VNPay
+                return res.status(StatusCodes.OK).json({ RspCode: '00', Message: 'Success' });
+            } else {
+                // Giao dịch thất bại, cập nhật trạng thái đơn hàng
+                await orderModel.findOneAndUpdate(
+                    { orderNumber: vnp_TxnRef },
+                    { status: 'cancelpayment' }
+                );
+
+                // Gửi phản hồi thất bại cho VNPay
+                return res.status(StatusCodes.OK).json({ RspCode: '00', Message: 'Success' });
+            }
+        } catch (error) {
+            console.error('VNPay IPN Error:', error.message);
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ RspCode: '99', Message: 'lỗi không xác định' });
         }
-    } catch (error) {
-        console.error('VNPay IPN Error:', error.message);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ RspCode: '99', Message: 'lỗi không xác định' });
-    }
-};
+    };
