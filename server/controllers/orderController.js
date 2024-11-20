@@ -209,10 +209,10 @@ export const vnpayReturn = async (req, res) => {
         const orderNumber = vnp_Params['vnp_TxnRef']
         if (vnp_Params['vnp_ResponseCode'] === '00') {
 
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "paid" })
+            await orderModel.findOneAndUpdate({ orderNumber }, { status: "pending" })
             return res.redirect('http://localhost:5173/thanks');
         } else {
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "cancelpayment" })
+            await orderModel.findOneAndUpdate({ orderNumber }, { status: "unpaid" })
             return res.redirect('http://localhost:5173/order');
         }
     } else {
