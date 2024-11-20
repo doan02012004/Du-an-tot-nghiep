@@ -110,7 +110,7 @@ export const updateOrderStatus = async (req, res) => {
 
   try {
     // Kiểm tra trạng thái hợp lệ
-    const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods"];
+    const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints"];
     if (!validStatuses.includes(status)) {
       return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
     }
@@ -140,7 +140,8 @@ export const updateOrderStatus = async (req, res) => {
         delivered: "Đã giao hàng",
         cancelled: "Đã hủy",
         received: "Đã nhận hàng",
-        Returngoods:"Trả hàng"
+        Returngoods:"Trả hàng",
+        Complaints:"Đang xử lý khiếu nại",
       };
 
     const vietnameseStatus = statusTranslations[status];

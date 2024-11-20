@@ -62,6 +62,7 @@ const OrderList = (props: Props) => {
             case 'received': return { label: 'Đã nhận', color: 'green' };
             case 'cancelled': return { label: 'Đã hủy', color: 'red' };
             case 'Returngoods': return { label: 'Trả hàng', color: 'black' };
+            case 'Complaints': return { label: 'Khiếu nại', color: 'black' };
             default: return { label: 'Không xác định', color: 'gray' };
         }
     };
@@ -213,6 +214,7 @@ const OrderList = (props: Props) => {
                     <Option value="received">Đã nhận</Option>
                     <Option value="cancelled">Đã hủy</Option>
                     <Option value="Returngoods">Trả hàng</Option>
+                    <Option value="Complaints">Khiếu nại</Option>
                 </Select>
                 <RangePicker 
                     onChange={(dates) => setSearchParams({ ...searchParams, dateRange: dates })} 

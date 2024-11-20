@@ -41,7 +41,9 @@ const OrderDetails = (props: Props) => {
             case 'received':
                 return 'Đã nhận hàng';
             case 'Returngoods':
-                    return 'Trả hàng';
+                return 'Trả hàng';
+            case 'Complaints':
+                return 'Khiếu nại';
             default:
                 return 'Không xác định';
         }
@@ -125,6 +127,12 @@ const OrderDetails = (props: Props) => {
                 disabled={!validateStatusChange(order.status, 'Returngoods')}
             >
                 Trả hàng
+            </Menu.Item>
+            <Menu.Item 
+                onClick={() => handleStatusChange('Complaints')} 
+                disabled={!validateStatusChange(order.status, 'Complaints')}
+            >
+                Khiếu nại
             </Menu.Item>
         </Menu>
     );

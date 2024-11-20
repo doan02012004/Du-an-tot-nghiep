@@ -56,7 +56,7 @@ const OrderManager = () => {
     mutation.mutate({
       action: "updateStatus",
       orderId: values.orderId,
-      status: "Returngoods",
+      status: "Complaints",
     });
   
     const newMessage = "Đang chờ xử lý trả hàng";
@@ -92,8 +92,10 @@ const OrderManager = () => {
         return 'Đã hủy';
       case 'received':
         return 'Đã nhận hàng';
-        case 'Returngoods':
-          return 'Trả hàng';
+      case 'Returngoods':
+        return 'Trả hàng';
+      case 'Complaints':
+        return 'Khiếu nại';
       default:
         return 'Không xác định';
     }
@@ -117,6 +119,7 @@ const OrderManager = () => {
             <option value="">Đã nhận hàng</option>
             <option value="">Đã hủy</option>
             <option value="">Trả hàng</option>
+            <option value="">Khiếu nại</option>
           </select>
           <span className="select-icon absolute right-5 bottom-0 -translate-y-1/2"><i className="fa-solid fa-chevron-right rotate-90" /></span>
         </div>
