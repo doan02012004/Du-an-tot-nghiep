@@ -1,4 +1,4 @@
-import { CloseOutlined } from '@ant-design/icons';
+import { CloseOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../../../common/contexts/AppContextProvider';
@@ -7,37 +7,52 @@ import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
 import { formatPrice } from '../../../../common/utils/product';
 import TextArea from 'antd/es/input/TextArea';
 import useComplaintMutation from '../../../../common/hooks/complaint/useComplaintMutation';
+import instance from '../../../../common/config/axios';
+// import { useSelector } from 'react-redux';
+// import { IcartItem } from '../../../../common/interfaces/cart';
+// import { Iattribute, Igallery } from '../../../../common/interfaces/product';
+// import { createOrder, paymentVNPay } from '../../../../services/order';
 
 
 const OrderManager = () => {
 
-  const {currentUser} = useContext(AppContext)
+  const { currentUser } = useContext(AppContext)
   // const storedUser = localStorage.getItem('tt_user');
   // const infoUser = storedUser ? JSON.parse(storedUser) : null;
-  const [open,setopen] = useState(false)
-  const [items,setitems] = useState('')
-  const [id,setid] = useState('')
-  const [totalOrder,settotalOrder] = useState('')
-  const [totalPrice,settotalPrice] = useState('')
-  const [voucher,settvoucher] = useState('')
-  const [ship,setship] = useState('')
-  const [message,setmessage] = useState('')
-  console.log(open)
+  const [open, setopen] = useState(false)
+  const [items, setitems] = useState('')
+  const [id, setid] = useState('')
+  const [totalOrder, settotalOrder] = useState('')
+  const [totalPrice, settotalPrice] = useState('')
+  const [voucher, settvoucher] = useState('')
+  const [ship, setship] = useState('')
+  const [message, setmessage] = useState('')
+  // console.log(open)
   const mutation = useOrderMutation();
-  const orders = useOrderQuery({userId:currentUser?._id})
+  const orders = useOrderQuery({ userId: currentUser?._id })
   const mutations = useComplaintMutation();
-  const itemsOder = orders.data
-  console.log(itemsOder)
-  console.log(items)
-  console.log(id)
-  console.log(totalOrder)
-  console.log(totalPrice)
-  console.log(voucher)
-  console.log(ship)
-  console.log(message)
+  // const itemsOder = orders.data
+  // console.log(itemsOder)
+  // console.log(items)
+  // console.log(id)
+  // console.log(totalOrder)
+  // console.log(totalPrice)
+  // console.log(voucher)
+  // console.log(ship)
+  // console.log(message)
   // const img = itemsOder[0].items[0].gallery.avatar
   // console.log(img)
-  
+
+
+  // const [loading, setLoading] = useState(false)
+  // const [payment,] = useState<"cash" | "atm" | "vnPay" | "credit">('cash')
+  // const carts = useSelector((state: any) => state.cart.carts)
+  // const totalCart = useSelector((state: any) => state.cart.totalCart)
+  // const totalProduct = useSelector((state: any) => state.cart.totalProduct)
+
+
+
+
 
   const [form] = Form.useForm();
 
@@ -51,14 +66,14 @@ const OrderManager = () => {
         status: values.status,
       },
     });
-  
+
     // Cập nhật trạng thái đơn hàng thành 'Returngoods'
     mutation.mutate({
       action: "updateStatus",
       orderId: values.orderId,
       status: "Complaints",
     });
-  
+
     const newMessage = "Đang chờ xử lý trả hàng";
     setmessage(newMessage);
     localStorage.setItem('complaintMessage', newMessage);  // Lưu dữ liệu vào localStorage
@@ -66,7 +81,7 @@ const OrderManager = () => {
     setopen(!open);
     console.log('Form Values:', values);
   };
-  
+
   // Đọc dữ liệu từ localStorage khi component load lại
   useEffect(() => {
     const savedMessage = localStorage.getItem('complaintMessage');
@@ -74,18 +89,18 @@ const OrderManager = () => {
       setmessage(savedMessage);  // Đọc dữ liệu từ localStorage khi trang reload
     }
   }, []);
-  
 
-  const renderOrderStatus = (status : string) => {
+
+  const renderOrderStatus = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'Đơn chờ xử lý'
+        return 'Đơn chờ xử lý';
       case 'unpaid':
         return 'Chưa thanh toán';
       case 'confirmed':
         return 'Đã xác nhận';
       case 'shipped':
-        return 'Đã giao';
+        return 'Đang giao';
       case 'delivered':
         return 'Đã giao thành công';
       case 'cancelled':
@@ -96,11 +111,33 @@ const OrderManager = () => {
         return 'Trả hàng';
       case 'Complaints':
         return 'Khiếu nại';
+      // case 'paid':
+      //   return 'Đã thanh toán, Chờ xác nhận';
       default:
         return 'Không xác định';
     }
   };
-  console.log(items[0])
+  // console.log(items[0])
+
+  // Xử lý logic thanh toán lại đơn hàng
+  const handlePayAgain = async (orderId) => {
+    try {
+      // Gửi yêu cầu tới API backend để tạo liên kết thanh toán
+      const response = await instance.post(`/orders/pay-again/${orderId}`);
+
+      if (response.status === 200) {
+        const { paymentLink } = response.data;
+        window.location.href = paymentLink; // Điều hướng tới cổng thanh toán VNPay
+      } else {
+        // message.error('Không thể tạo yêu cầu thanh toán lại.');
+        console.log("Không thể tạo yêu cầu thanh toán lại.");
+      }
+    } catch (error) {
+      // message.error('Lỗi khi tạo yêu cầu thanh toán lại.');
+      console.log("Lỗi khi tạo yêu cầu thanh toán lại.");
+    }
+  };
+
 
   return (
     <div className="w-full">
@@ -151,26 +188,39 @@ const OrderManager = () => {
                 <tr className="flex flex-wrap lg:table-row">
                   <td className="flex-[50%] lg:table-cell pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']  underline lg:no-underline">{order.orderNumber}</td>
                   <td className="lg:table-cell  pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']">{formattedDate}</td>
+
+
                   <td className="order-4 pt-5 py-3 lg:border-t-[1px] border-b-[1px] lg:border-['#f7f8f9']">
                     <div className="flex items-center gap-2">
                       {/* <img className="w-4 h-4" src="public/icons/loading.svg" alt="" srcSet="" /> */}
                       <span>{renderOrderStatus(order.status)}</span>
                     </div>
+
+
                     {order.status === "pending" && (
                       <div onClick={() => mutation.mutate({ action: "updateStatus", orderId: order._id, status: "cancelled" })} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
                         Hủy đơn
                       </div>
                     )}
+
+
                     {(order.status === "delivered" || order.status === "received") && (
-                      <Button onClick={()=>{setopen(!open);setitems(order.items);setid(order._id);settotalOrder(order.totalOrder);settotalPrice(order.totalPrice);settvoucher(order.voucher.discountValue),setship(order.ship.value.price)}}>Trả hàng</Button>
-                    ) }
+                      <Button onClick={() => { setopen(!open); setitems(order.items); setid(order._id); settotalOrder(order.totalOrder); settotalPrice(order.totalPrice); settvoucher(order.voucher.discountValue), setship(order.ship.value.price) }}>Trả hàng</Button>
+                    )}
+
+                    {order.status === "unpaid" && (
+                      <Button onClick={() => handlePayAgain(order._id)} ><span>Tiếp tục thanh toán</span>
+                      </Button>
+                    )}
                   </td>
+
+
                   <td className="order-2 flex-[100%] lg:table-cell pt-5 py-3 lg:border-t-[1px] lg:border-b-[1px] lg:border-['#f7f8f9']">{
                     order.items.map((item: any) => (
                       <div className="">{item.quantity}x {item.name}</div>
                     ))
                   }</td>
-                  <td className="order-3 flex-[50%] pt-5 py-3 lg:border-t-[1px] border-b-[1px] font-bold border-['#f7f8f9']"> {formatPrice(order.totalPrice-order.voucher.discountValue)}₫</td>
+                  {/* <td className="order-3 flex-[50%] pt-5 py-3 lg:border-t-[1px] border-b-[1px] font-bold border-['#f7f8f9']"> {formatPrice(order.totalPrice - order.voucher.discountValue)}₫</td> */}
                 </tr>
               )
             })}
@@ -187,85 +237,85 @@ const OrderManager = () => {
         <div className="w-[50%] h-[80%] border border-black rounded-xl fixed top-20 p-5 shadow-2xl bg-white overflow-y-auto">
           <div className="">
             <h1 className='text-center text-red font-semibold'>KHIẾU NẠI ĐƠN HÀNG</h1>
-            <CloseOutlined style={{ fontSize: 20, color: 'black' }} onClick={()=>setopen(!open)} className='absolute top-5 right-5' />
-              <div className="mt-10">
-                <div className="grid grid-cols-2 gap-4 mb-3 ">
-                    <div className="">
-                    {items.map((pro:any,index:number)=>(
-                      <div key={index+1} className="mt-2 flex">
-                        <img src={pro.gallery.avatar} alt="" width={100} height={20} className='object-cover' />
-                        <div className="ml-[6%] w-[178.715px]">
-                          <h3>{pro.name}</h3>
-                          <p>Size: {pro.attribute.size}</p>
-                          <p>Màu: {pro.attribute.color}</p>
-                          <div className="flex justify-between">
-                            <span>Giá : {pro.price}đ</span>
-                            <span>X{pro.quantity}</span>
-                          </div>
+            <CloseOutlined style={{ fontSize: 20, color: 'black' }} onClick={() => setopen(!open)} className='absolute top-5 right-5' />
+            <div className="mt-10">
+              <div className="grid grid-cols-2 gap-4 mb-3 ">
+                <div className="">
+                  {items.map((pro: any, index: number) => (
+                    <div key={index + 1} className="mt-2 flex">
+                      <img src={pro.gallery.avatar} alt="" width={100} height={20} className='object-cover' />
+                      <div className="ml-[6%] w-[178.715px]">
+                        <h3>{pro.name}</h3>
+                        <p>Size: {pro.attribute.size}</p>
+                        <p>Màu: {pro.attribute.color}</p>
+                        <div className="flex justify-between">
+                          <span>Giá : {pro.price}đ</span>
+                          <span>X{pro.quantity}</span>
                         </div>
                       </div>
-                    ) )}
                     </div>
-                    <div className="mt-4 border-dashed border-l-4 p-5">
-                      <div className="flex">
-                      <h4 className='w-[160px]'>Tống số tiền hàng :</h4>
-                      <span>{totalPrice}đ</span> <span className='ml-4'>X{totalOrder}</span>
-                      </div>
-                      <div className="flex">
-                      <h4 className='w-[160px]'>Phí vận chuyển:</h4>
-                      <span>{ship}đ</span>
-                      </div>
-                      <div className="flex">
-                      <h4 className='w-[160px]'>Mã giảm giá:</h4>
-                      <span>{voucher}đ</span>
-                      </div>
-                      <div className="flex">
-                      <h4 className='w-[160px]'>Tổng giá tri:</h4>
-                      <span>{totalPrice-voucher}đ</span>
-                      </div>
-                    </div>
+                  ))}
                 </div>
-                {/* from */}
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handleSubmit}
-                    initialValues={{
-                      orderId: id, // Giá trị orderId tạm thời
-                      userId: currentUser?._id, // Giá trị userId tạm thời
-                      status: 'new', // Giá trị mặc định của status
-                    }}
-                  >
-                    {/* Trường orderId (ẩn đi) */}
-                    <Form.Item name="orderId" style={{ display: 'none' }}>
-                      <Input type="hidden" />
-                    </Form.Item>
-
-                    {/* Trường userId (ẩn đi) */}
-                    <Form.Item name="userId" style={{ display: 'none' }}>
-                      <Input type="hidden" />
-                    </Form.Item>
-
-                    {/* Trường status (ẩn đi) */}
-                    <Form.Item name="status" style={{ display: 'none' }}>
-                      <Input type="hidden" />
-                    </Form.Item>
-
-                    {/* Trường complaintReason */}
-                    <Form.Item
-                      name="complaintReason"
-                      label="Lý Do Khiếu Nại"
-                      rules={[{ required: true, message: 'Vui lòng nhập lý do khiếu nại!' }]}
-                    >
-                      <TextArea rows={4} placeholder="Nhập lý do khiếu nại của bạn..." />
-                    </Form.Item>
-
-                    {/* Nút Submit */}
-                    <Form.Item className="text-center">
-                      <Button type="primary" htmlType="submit">Gửi Khiếu Nại</Button>
-                    </Form.Item>
-                  </Form>
+                <div className="mt-4 border-dashed border-l-4 p-5">
+                  <div className="flex">
+                    <h4 className='w-[160px]'>Tống số tiền hàng :</h4>
+                    <span>{totalPrice}đ</span> <span className='ml-4'>X{totalOrder}</span>
+                  </div>
+                  <div className="flex">
+                    <h4 className='w-[160px]'>Phí vận chuyển:</h4>
+                    <span>{ship}đ</span>
+                  </div>
+                  <div className="flex">
+                    <h4 className='w-[160px]'>Mã giảm giá:</h4>
+                    <span>{voucher}đ</span>
+                  </div>
+                  <div className="flex">
+                    <h4 className='w-[160px]'>Tổng giá tri:</h4>
+                    <span>{totalPrice - voucher}đ</span>
+                  </div>
+                </div>
               </div>
+              {/* from */}
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleSubmit}
+                initialValues={{
+                  orderId: id, // Giá trị orderId tạm thời
+                  userId: currentUser?._id, // Giá trị userId tạm thời
+                  status: 'new', // Giá trị mặc định của status
+                }}
+              >
+                {/* Trường orderId (ẩn đi) */}
+                <Form.Item name="orderId" style={{ display: 'none' }}>
+                  <Input type="hidden" />
+                </Form.Item>
+
+                {/* Trường userId (ẩn đi) */}
+                <Form.Item name="userId" style={{ display: 'none' }}>
+                  <Input type="hidden" />
+                </Form.Item>
+
+                {/* Trường status (ẩn đi) */}
+                <Form.Item name="status" style={{ display: 'none' }}>
+                  <Input type="hidden" />
+                </Form.Item>
+
+                {/* Trường complaintReason */}
+                <Form.Item
+                  name="complaintReason"
+                  label="Lý Do Khiếu Nại"
+                  rules={[{ required: true, message: 'Vui lòng nhập lý do khiếu nại!' }]}
+                >
+                  <TextArea rows={4} placeholder="Nhập lý do khiếu nại của bạn..." />
+                </Form.Item>
+
+                {/* Nút Submit */}
+                <Form.Item className="text-center">
+                  <Button type="primary" htmlType="submit">Gửi Khiếu Nại</Button>
+                </Form.Item>
+              </Form>
+            </div>
           </div>
         </div>
       )}

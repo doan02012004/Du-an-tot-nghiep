@@ -6,10 +6,10 @@ import { IcartItem } from "../../../../common/interfaces/cart"
 import { Iattribute, Igallery } from "../../../../common/interfaces/product"
 import { message } from "antd"
 import { useNavigate } from "react-router-dom"
+import { IshipSubmit } from "../../../../common/interfaces/orderInterfaces"
 import { createOrder, paymentVNPay } from "../../../../services/order"
 import { useSelector } from "react-redux"
 import { LoadingOutlined } from "@ant-design/icons"
-import { IshipSubmit, Vouchers } from "../../../../common/interfaces/orderInterfaces"
 
 type Props = {
     payment: "cash" | "atm" | "vnPay" | "credit",
@@ -26,8 +26,6 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
     const orderMutation = useOrderMutation()
     const navigate = useNavigate()
     const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
-    const voucher = useSelector((state: any) => state.cart.voucher) as Vouchers;
-    console.log(voucher)
     useEffect(() => {
         if (orderMutation?.data?.response?.status === 500) {
             return message.error("Lỗi thanh toán")
@@ -60,24 +58,16 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
         const newOrder = {
             userId: user?._id,
             customerInfor: {
-                ...address,
+                ...address
             },
             items: [...newProductsOrder],
             paymentMethod: payment,
             status: "pending",
             totalOrder: totalProduct,
             totalPrice: ship?.value?.price ? totalCart + ship?.value?.price : totalCart,
-            ship: ship,
-            // Thêm thông tin voucher vào đơn hàng
-            voucher: {
-                code: voucher?.code || null,
-                discountValue: (voucher?.type === "percentage" && (Math.min(totalCart * voucher.value / 100, Number(voucher.maxDiscountValue)))) || (voucher?.type === "fixed" && (voucher?.value)) || (voucher?.type === "freeship" && (Math.min(Number(ship?.value?.price), Number(voucher?.maxDiscountValue)))) || 0,
-                category: voucher?.category || null,
-                type: voucher?.type || null
-            },
-        };
-
-        orderMutation.mutate({ action: "create", newOrder: newOrder });
+            ship: ship
+        }
+        orderMutation.mutate({ action: "create", newOrder: newOrder })
 
     }
 
