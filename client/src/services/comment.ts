@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import instance from "../common/config/axios";
 import { IComment } from '../common/interfaces/comment';
 
@@ -34,7 +35,7 @@ export const commentService = {
       const response = await instance.post(`/comments/product`, comment);
       const data = response.data; // Dữ liệu trả về là bình luận vừa thêm
       return data;
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error adding comment:', error);
       return error.response.data
     }
@@ -75,14 +76,25 @@ export const commentService = {
   },
 
   // Thích hoặc bỏ thích bình luận
-  toggleLikeComment: async (commentId: string | number, userId: string | number) => {
+  toggleLikeComment: async (option:{commentId:string|number,userId:string|number}) => {
     try {
-      const response = await instance.patch(`/comments/${commentId}/like`, { userId });
-      const data: IComment = response.data; // Trả về bình luận đã cập nhật lượt thích
+      const response = await instance.post(`/comments/like/comment`, option);
+      const data = response.data;
       return data;
     } catch (error) {
       console.error('Error liking comment:', error);
       throw error;
     }
   },
+    // Thích hoặc bỏ thích bình luận con
+    toggleLikeCommentExtra: async (option:{commentId:string|number,recommentId:string|number,userId:string|number}) => {
+      try {
+        const response = await instance.post(`/comments/like/recomment`, option);
+        const data = response.data;
+        return data;
+      } catch (error) {
+        console.error('Error liking comment:', error);
+        throw error;
+      }
+    },
 };

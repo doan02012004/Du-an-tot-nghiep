@@ -2,7 +2,6 @@
 import {  message } from 'antd'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { Iattribute, Igallery, Iproduct } from '../../../../common/interfaces/product'
-import Product_description from './Product_description'
 import { AppContext } from '../../../../common/contexts/AppContextProvider'
 import { formatPrice } from '../../../../common/utils/product'
 import { InewCart } from '../../../../common/interfaces/cart'
@@ -260,7 +259,7 @@ const Product_information = ({ product }: Props) => {
                             <hr />
                         </div>
                         {/*  */}
-                        <Product_description product={product} />
+                        
                         {/*  */}
                     </div>
                 </div>

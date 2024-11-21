@@ -1,4 +1,4 @@
-import { Iuser } from "./auth";
+
 import { Iproduct } from "./product";
 
 
@@ -9,6 +9,7 @@ export interface IComment {
       firstname: string,
       lastname: string,
       email: string,
+      role:string
     }; // Tên người dùng để lại bình luận
     productId: string|Iproduct;
     likes: string[]; // Danh sách ID người dùng đã thích bình luận
@@ -20,6 +21,7 @@ export interface IComment {
       firstname: string,
       lastname: string,
       email: string,
+      role:string
     };
     createdAt:string
   }
@@ -31,14 +33,17 @@ export interface IComment {
       firstname: string,
       lastname: string,
       email: string,
+      role:string
     }; // Tên người dùng để lại bình luận
-    like: string[]; // Danh sách ID người dùng đã thích bình luận phản hồi
+    likes: string[]; // Danh sách ID người dùng đã thích bình luận phản hồi
     comment: string; // Nội dung phản hồi
     tag?:{
       _id:string,
       firstname: string,
       lastname: string,
       email: string,
+      role:string
     };
+    createdAt:string
   }
   

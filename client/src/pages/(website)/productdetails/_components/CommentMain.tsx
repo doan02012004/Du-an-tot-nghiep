@@ -44,6 +44,11 @@ const CommentMain = ({ comment, user,commentRef,commentId,setCommentId }: Commen
   const handleDelete = async (commentId: string) => {
     commentMutation.mutate({ action: 'deleteMain', newComment: { commentId: commentId } })
   };
+
+  // toggleLike 
+  const onHandleLike = () =>{
+    commentMutation.mutate({action:'like',newComment:{commentId:comment._id,userId:user?._id}})
+  }
   return (
     <div>
       {/* Nội dung bình luận */}
@@ -59,7 +64,7 @@ const CommentMain = ({ comment, user,commentRef,commentId,setCommentId }: Commen
            {/* Like button */}
            {user && (
             <div className="flex items-center">
-              <LikeOutlined className="cursor-pointer" /> <span className="ml-2">{comment.likes ? comment.likes.length : 0}</span>
+              <LikeOutlined onClick={onHandleLike} className={` ${comment.likes.includes(user?._id) && 'text-blue'} cursor-pointer `} /> <span className="ml-2">{comment.likes ? comment.likes.length : 0}</span>
             </div>
           )}
           {/* Comment button */}

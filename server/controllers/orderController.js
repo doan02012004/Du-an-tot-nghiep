@@ -138,7 +138,6 @@ export const paymentVNPay = async (req, res) => {
         const orderType = 'billpayment';
         let locale = "vn";
         if (!locale) locale = 'vn';
-
         const currCode = 'VND';
 
         let vnp_Params = {};

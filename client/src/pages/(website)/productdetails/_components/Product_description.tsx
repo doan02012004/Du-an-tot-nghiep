@@ -26,8 +26,8 @@ const Product_description = ({ product }: Props) => {
 
   return (
     <>
-      <div className="product-description">
-        <ul className="flex justify-between">
+      <div className="product-description container ">
+        <ul className="flex justify-between items-center lg:justify-normal">
           <li
             className={`tab-item ${activeTab === "des" ? "text-black" : ""
               } cursor-pointer`}
@@ -39,7 +39,7 @@ const Product_description = ({ product }: Props) => {
           </li>
           <li
             className={`tab-item ${activeTab === "comment" ? "text-black" : ""
-              } cursor-pointer`}
+              } cursor-pointer lg:ml-16`}
             onClick={() => setActiveTab("comment")}
           >
             <span className="block text-[12px] lg:text-[16px] lg:pb-5 pb-4 font-semibold">
@@ -58,7 +58,7 @@ const Product_description = ({ product }: Props) => {
         <div
           className="content-section text-[14px] overflow-hidden"
           style={{
-            maxHeight: isOpen ? "100%" : "120px", // Điều chỉnh chiều cao theo trạng thái mở/đóng
+            height: isOpen ? "100%" : "120px", // Điều chỉnh chiều cao theo trạng thái mở/đóng
           }}
         >
           {activeTab === "des" ? <div ref={desRef}></div> : <CommentList productId={product._id? product._id: ''} />}

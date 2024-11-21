@@ -6,7 +6,7 @@ const recommentItemSchema = new Schema({
         required: true,
         ref: "users"
     },
-    like: [
+    likes: [
         {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
@@ -37,7 +37,7 @@ const commentSchema = new Schema(
             required: true,
             ref: "products"
         },
-        like: [
+        likes: [
             {
                 type: mongoose.Schema.Types.ObjectId,
                 required: true,

@@ -8,7 +8,7 @@ const useCommentMutation = () => {
   const queryClient = useQueryClient()
   const mutation = useMutation({
     mutationKey: ['comments'],
-    mutationFn: async (option: { action: 'add' | 'addExtra' | 'deleteMain' | 'deleteExtra', newComment: any }) => {
+    mutationFn: async (option: { action: 'add' | 'addExtra' | 'deleteMain' | 'deleteExtra'|'like'|'likeExtra', newComment: any }) => {
       switch (option.action) {
         case 'add':
           try {
@@ -63,6 +63,20 @@ const useCommentMutation = () => {
             console.log(error)
           }
           break;
+          case 'like':
+            try {
+              await commentService.toggleLikeComment(option.newComment)
+            } catch (error) {
+              console.log(error)
+            }
+            break;
+            case 'likeExtra':
+              try {
+                await commentService.toggleLikeCommentExtra(option.newComment)
+              } catch (error) {
+                console.log(error)
+              }
+              break;
       }
     },
     onSuccess: () => {

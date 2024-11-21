@@ -117,8 +117,6 @@ const SidebarAdmin = () => {
               {
                 key:"7.1",
                 label:<Link to={'/admin/auth'}>Danh sách</Link>
-                key: "4.1",
-                label: <Link to={'/admin/auth'}>Danh sách</Link>
               }
             ],
           },

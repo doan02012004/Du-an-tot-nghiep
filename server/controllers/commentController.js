@@ -8,7 +8,7 @@ export const createComment = async (req, res) => {
     if (!userId || !productId || !comment) {
       return res.status(400).json({ message: "Thiếu thông tin bắt buộc!" });
     }
-    const existComment = await commentModel.findOne({userId})
+    const existComment = await commentModel.findOne({userId,productId})
     if(existComment){
       return res.status(400).json({ message: "Bạn đã đánh giá rồi!", exist:true });
     }
@@ -55,12 +55,10 @@ export const getCommentsByProductId = async (req, res) => {
   try {
     const { productId } = req.params;
     const Prdcomments = await commentModel.find({ productId })
-      .populate("userId", "firstname lastname email")
-      .populate("like", "firstname lastname email")
+      .populate("userId", "firstname lastname email role")
       .populate("tag", "firstname lastname email")
-      .populate("recomments.userId","firstname lastname email")
-      .populate("recomments.like", "firstname lastname email")
-      .populate("recomments.tag","firstname lastname email")
+      .populate("recomments.userId","firstname lastname email role")
+      .populate("recomments.tag","firstname lastname email role")
       .sort({createdAt:-1})
     return res.status(200).json(Prdcomments);
   } catch (error) {
@@ -73,9 +71,8 @@ export const getCommentsByUserId = async (req, res) => {
     const { userId } = req.params;
     const comments = await commentModel.find({ userId })
       .populate("productId", "name")
-      .populate("like", "name email")
+      .populate("tag", "firstname lastname email")
       .populate("recomments.userId", "name email")
-      .populate("recomments.like", "name email");
       return res.status(200).json(comments);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -87,8 +84,7 @@ export const getCommentById = async (req, res) => {
     const { commentId } = req.params;
     const comment = await commentModel.findById(commentId)
       .populate("userId", "name email")
-      .populate("like", "name email");
-
+      .populate("tag", "firstname lastname email")
     if (!comment) {
       return res.status(404).json({ message: "Không tìm thấy đánh giá!" });
     }
@@ -123,6 +119,45 @@ export const deleteCommentExtraById = async (req, res) => {
     comment.recomments = comment.recomments.filter((recomment) => recomment._id.toString() !== recommentId)
     await comment.save()
     return res.status(200).json({ message: "Xóa đánh giá thành công!", comment: comment });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+export const likeCommentById = async (req, res) => {
+  try {
+    const { commentId,userId } = req.body;
+    const comment = await commentModel.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Không tìm thấy đánh giá để like!" });
+    }
+    const checkLike = comment.likes.findIndex((id) => id.toString() == userId )
+    if(checkLike >=0){
+      comment.likes = comment.likes.filter((id) => id.toString() !== userId)
+    }else{
+      comment.likes.push(userId)
+    }
+    await comment.save()
+    return res.status(200).json({ message: "Like đánh giá thành công!", comment: comment });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+export const likeCommentExtraById = async (req, res) => {
+  try {
+    const { commentId,recommentId,userId } = req.body;
+    const comment = await commentModel.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Không tìm thấy đánh giá để like!" });
+    }
+    const recomment = comment.recomments.find((recomment) => recomment._id.toString() == recommentId )
+    const checkLike = recomment.likes.findIndex((id) => id.toString() == userId )
+    if(checkLike >=0){
+      recomment.likes = recomment.likes.filter((id) => id.toString() !== userId)
+    }else{
+       recomment.likes.push(userId)
+    }
+    await comment.save()
+    return res.status(200).json({ message: "Like đánh giá thành công!", comment: comment });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
