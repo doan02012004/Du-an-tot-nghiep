@@ -31,9 +31,29 @@ export const registerUser = async (user: Isignup, dispatch: any) => {
     }
 }
 
-export const forgotUser = async (email : string) => {
+export const forgotUser = async (data: { email: string }) => {
     try {
-        const res = await instance.post("/users/forgot", email)
+        const res = await instance.post("/users/forgot", data)
+        return res.data
+    } catch (error) {
+        message.error("Không tìm thấy")
+        return error
+    }
+}
+
+export const verifyResetToken = async (token: string) => {
+    try {
+        const res = await instance.post("/users/verify-reset-token", {token})
+        return res.data.isValid
+    } catch (error) {
+        message.error("Không tìm thấy")
+        return error
+    }
+}
+
+export const resetPassword = async (data: { token: string; password: string }) => {
+    try {
+        const res = await instance.post("/users/reset-password", data)
         return res.data
     } catch (error) {
         message.error("Không tìm thấy")
