@@ -79,7 +79,7 @@ export const logoutUser = async () => {
         return error
         // dispatch(logoutFailed());
     }
-};
+}
 
 export const getAllUser = async () => {
     try {

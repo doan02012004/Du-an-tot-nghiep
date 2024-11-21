@@ -262,30 +262,6 @@ const generateRefreshToken = (user) => {
 }
 
 // quên mật khẩu
-// export const forgot = async (req, res) => {
-//     try {
-//         const { email } = req.body;
-
-//         const user = await UserModel.findOne({ email })
-
-//         if (!user) {
-//             return res.status(StatusCodes.NOT_FOUND).json({ message: "Không có tài khoản" })
-//         }
-
-//         const token = jwt.sign({userId : user._id}, process.env.KEY_SECRET, {
-//             expiresIn : "15m"
-//         })
-
-        
-
-//         return res.status(200).json(user)
-
-//     } catch (error) {
-//         console.log("lỗi đăng nhập", error.message)
-//         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
-//     }
-// }
-
 export const forgot = async (req, res) => {
     try {
         const { email } = req.body;
@@ -458,6 +434,87 @@ export const resetPassword = async (req, res) => {
     user.resetPasswordExpires = null; // Xóa thời gian hết hạn
     await user.save();
 
+    // Đường link dến Fendi Shop
+    const Link = `${process.env.CLIENT_URL}`;
+
+     // **Gửi email thông báo đổi mật khẩu thành công**
+     const subject = "Thông báo khôi phục mật khẩu đăng nhập Fendi Shop thành công";
+     const html = `
+     <html>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f2f2f2;
+                margin: 0;
+                padding: 0;
+              }
+                .email-container {
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              }
+              .email-header {
+                text-align: center;
+                margin-bottom: 30px;
+              }
+              .email-body {
+                font-size: 16px;
+                line-height: 1.5;
+                color: #333;
+                margin-bottom: 30px;
+              }
+              .email-body p {
+                margin-bottom: 10px;
+              }
+                .reset-link {
+                display: block     ;
+                padding: 0.75rem 1rem;
+                width: 100%;
+                background-color: #221f20;
+                color: #f7f8f9;
+                font-weight: 600;
+                border-radius: 0.375rem;
+                text-align: center;
+                text-decoration: none;
+                transition: background-color 0.3s, color 0.3s;
+                }
+
+                .reset-link:hover {
+                background-color: #f7f8f9;
+                color: #221f20;
+                }
+                .footer {
+                font-size: 14px;
+                text-align: center;
+                color: #666;
+              }
+                </style>
+         <body>
+            <div class="email-container">
+              <div class="email-header">
+                <h1>Khôi phục mật khẩu</h1>
+              </div>
+  
+              <div class="email-body">
+                <p>Chào ${user.firstname || "bạn"},</p>
+         <p>Mật khẩu của bạn đã được thay đổi thành công. Nếu bạn không thực hiện thay đổi này, vui lòng liên hệ với chúng tôi ngay lập tức.</p>
+         <a href="${Link}" class="reset-link">FENDI SHOP</a>
+         <div class="footer">
+                <p>Trân trọng,</p>
+                <p>Đội ngũ hỗ trợ của chúng tôi</p>
+              </div>
+              </div>
+              </div>
+              </body>
+        </html>
+     `;
+     await sendEmail(user.email, subject, html);
+
+     // Trả về phản hồi thành công
     return res.status(StatusCodes.OK).json({ message: 'Mật khẩu đã được thay đổi thành công!' });
   } catch (error) {
     console.error(error);
@@ -648,3 +705,122 @@ export const getHistoryUpdateUser = async (req, res) => {
         });
     }
 };
+
+// Kiểm tra mật khẩu hiện tại và cập nhật mật khẩu mới
+export const changePassword = async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+  
+    try {
+      const user = await UserModel.findById({_id: req.user._id});
+  
+      if (!user) {
+        console.error('Không tìm thấy người dùng!');
+        throw new Error('Không tìm thấy người dùng!');
+      }
+  
+      // Kiểm tra mật khẩu hiện tại
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        console.error('Mật khẩu hiện tại không đúng!');
+        throw new Error('Mật khẩu hiện tại không đúng!');
+      }
+  
+      // Kiểm tra mật khẩu mới có khác mật khẩu cũ không
+      if (currentPassword === newPassword) {
+        console.error('Mật khẩu mới không được giống với mật khẩu hiện tại!');
+        throw new Error('Mật khẩu mới không được giống với mật khẩu hiện tại!');
+      }
+  
+      // Mã hóa mật khẩu mới và lưu lại
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+
+      // Đường link dến Fendi Shop
+    const Link = `${process.env.CLIENT_URL}`;
+
+    // **Gửi email thông báo đổi mật khẩu thành công**
+    const subject = "Thông báo đổi mật khẩu đăng nhập Fendi Shop thành công";
+    const html = `
+    <html>
+         <head>
+           <style>
+             body {
+               font-family: Arial, sans-serif;
+               background-color: #f2f2f2;
+               margin: 0;
+               padding: 0;
+             }
+               .email-container {
+               max-width: 600px;
+               margin: 0 auto;
+               background-color: #fff;
+               padding: 20px;
+               border-radius: 10px;
+               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+             }
+             .email-header {
+               text-align: center;
+               margin-bottom: 30px;
+             }
+             .email-body {
+               font-size: 16px;
+               line-height: 1.5;
+               color: #333;
+               margin-bottom: 30px;
+             }
+             .email-body p {
+               margin-bottom: 10px;
+             }
+               .reset-link {
+               display: block     ;
+               padding: 0.75rem 1rem;
+               width: 100%;
+               background-color: #221f20;
+               color: #f7f8f9;
+               font-weight: 600;
+               border-radius: 0.375rem;
+               text-align: center;
+               text-decoration: none;
+               transition: background-color 0.3s, color 0.3s;
+               }
+
+               .reset-link:hover {
+               background-color: #f7f8f9;
+               color: #221f20;
+               }
+               .footer {
+               font-size: 14px;
+               text-align: center;
+               color: #666;
+             }
+               </style>
+        <body>
+           <div class="email-container">
+             <div class="email-header">
+               <h1>Đổi mật khẩu</h1>
+             </div>
+ 
+             <div class="email-body">
+               <p>Chào ${user.firstname || "bạn"},</p>
+        <p>Mật khẩu của bạn đã được thay đổi thành công. Nếu bạn không thực hiện thay đổi này, vui lòng liên hệ với chúng tôi ngay lập tức.</p>
+        <a href="${Link}" class="reset-link">FENDI SHOP</a>
+        <div class="footer">
+               <p>Trân trọng,</p>
+               <p>Đội ngũ hỗ trợ của chúng tôi</p>
+             </div>
+             </div>
+             </div>
+             </body>
+       </html>
+    `;
+    await sendEmail(user.email, subject, html);
+  
+      console.log('Mật khẩu đã được cập nhật thành công!');
+      return res.status(StatusCodes.OK).json({ message: 'Mật khẩu đã được cập nhật thành công!' });
+  
+    } catch (error) {
+      console.error('Error in changePassword:', error);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Có lỗi xảy ra!', error: error.message });
+    }
+  };
