@@ -41,6 +41,9 @@ import VoucherList from "../pages/(admin)/vouchers/_components/VoucherList";
 import VoucherAdd from "../pages/(admin)/vouchers/_components/VoucherAdd";
 import VoucherEdit from "../pages/(admin)/vouchers/_components/VoucherEdit";
 import DashBoardPage from "../pages/(admin)/dash-board/Page";
+import PageComplaint from "../pages/(admin)/complaint/Page";
+import ComplaintList from "../pages/(admin)/complaint/_components/ComplaintList";
+import ComplaintEdit from "../pages/(admin)/complaint/_components/ComplaintEdit";
 
 
 const Router = () => {
@@ -64,6 +67,10 @@ const Router = () => {
         </Route>
       </Route>
       <Route path="admin" element={<LayoutAdmin />}>
+      <Route path="complaint" element={<PageComplaint />}>
+          <Route index element={<ComplaintList />}/>
+          <Route path="admin/complaint/:id" element={<ComplaintEdit />}/>
+        </Route>
         <Route path="vouchers" element={<VouchersPage />}>
           <Route index element={<VoucherList />}/>
           <Route path="add" element={<VoucherAdd />}/>
