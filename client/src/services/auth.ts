@@ -142,7 +142,7 @@ export const getHistoryUpdateUser = async () => {
 
 export const deleteHistoryUpdateUser = async (id: string) => {
     try {
-        const { data } = await instance.delete(`/users/history/${id}`);
+        const { data } = await instance.delete(`/users/delehistory/${id}`);
         return data;
     } catch (error) {
         message.error('Xóa lịch sử cập nhật thất bại');
@@ -155,8 +155,7 @@ export const getHistoryUpdateUserById = async (id: string) => {
         const { data } = await instance.get(`/users/history/${id}`);
         return data;
     } catch (error) {
-        message.error('Không tải được chi tiết lịch sử cập nhật.');
+        message.error('Không tải được lịch sử cập nhật');
         return error;
     }
 };
-

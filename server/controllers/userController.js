@@ -61,7 +61,7 @@ export const deleteUser = async (req, res) => {
     }
 }
 
-//update usser theo id
+
 // Cập nhật thông tin user theo ID
 export const updateUser = async (req, res) => {
     try {
@@ -75,13 +75,17 @@ export const updateUser = async (req, res) => {
             });
         }
 
+        // Sao lưu thông tin gốc để lưu lịch sử
+        const originalUser = { ...user._doc };
+
+        // Tạo đối tượng để lưu những thay đổi
         const changes = {};
 
         // Nếu người dùng gửi mật khẩu mới, hash lại trước khi lưu
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
             if (hashedPassword !== user.password) {
-                changes.password = "Mật khẩu đã thay đổi"; // Lưu thông báo thay đổi mật khẩu
+                changes.password = 'Mật khẩu đã thay đổi'; // Không lưu mật khẩu dưới dạng plaintext
                 user.password = hashedPassword; // Cập nhật mật khẩu đã hash vào user
             }
         }
@@ -94,26 +98,21 @@ export const updateUser = async (req, res) => {
             }
         });
 
-        // Nếu không có sự thay đổi nào, không cần lưu và trả về lỗi
-        if (Object.keys(changes).length === 0) {
-            return res.status(StatusCodes.NO_CONTENT).json({
-                message: 'Không có sự thay đổi nào để cập nhật',
-            });
-        }
-
         // Lưu người dùng với thông tin mới
         await user.save();
 
-        // Lưu vào collection HistoryUpdateUser nếu có thay đổi
-        const updatedUserData = {
-            originalUser: user._id, // Lưu ID của user gốc
-            changes: changes, // Chỉ lưu những trường đã thay đổi
-            updateTime: new Date(), // Lưu thời gian cập nhật
-        };
+        // Chỉ lưu vào collection HistoryUpdateUser nếu có thay đổi
+        if (Object.keys(changes).length > 0) {
+            const updatedUserData = {
+                originalUser, // Lưu toàn bộ thông tin trước khi thay đổi
+                changes, // Lưu những trường đã thay đổi
+                updateTime: new Date(), // Lưu thời gian cập nhật
+            };
 
-        // Tạo mới và lưu vào collection HistoryUpdateUser
-        const updatedUserRecord = new HistoryUpdateUser(updatedUserData);
-        await updatedUserRecord.save();
+            // Tạo mới và lưu vào collection HistoryUpdateUser
+            const updatedUserRecord = new HistoryUpdateUser(updatedUserData);
+            await updatedUserRecord.save();
+        }
 
         // Trả về thông tin người dùng (trừ mật khẩu)
         const { password: hashedPass, ...updatedUser } = user._doc; // Loại bỏ mật khẩu
@@ -431,18 +430,8 @@ export const getHistoryUpdateUser = async (req, res) => {
         // Lấy toàn bộ lịch sử cập nhật từ database
         const history = await HistoryUpdateUser.find()
             .populate('originalUser', 'email firstname lastname') // Lấy email và tên người dùng từ thông tin gốc
-            .sort({ updateTime: -1 })
-            .exec(); // được timz
-
-        // Format lại dữ liệu để chỉ trả về các trường đã thay đổi
-        // const formattedHistory = history.map((record) => {
-        //     return {
-        //         _id: record._id,
-        //         originalUser: record.originalUser,
-        //         changes: record.changes, // Đây là các trường đã thay đổi
-        //         updateTime: record.updateTime
-        //     };
-        // });
+            .sort({ updateTime: -1 }) // Sắp xếp theo thời gian cập nhật mới nhất
+            .exec();
 
         // Trả về lịch sử đã được format
         res.status(200).json(history);
@@ -452,6 +441,7 @@ export const getHistoryUpdateUser = async (req, res) => {
         });
     }
 };
+
 
 // Xóa lịch sử cập nhật user theo id
 export const deleteHistoryUpdateUser = async (req, res) => {

@@ -17,12 +17,12 @@ const FormHistoryUpdate: React.FC<FormHistoryUpdateProps> = ({ onClose, record }
 
     return (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-            <div className=" bg-white p-6 rounded-lg w-full max-w-7xl overflow-y-auto">
+            <div className="bg-white p-6 rounded-lg w-11/12 max-w-4xl overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold">Thông tin tài khoản</h2>
                     <button onClick={onClose} className="text-red-500 hover:text-red-700">Đóng</button>
                 </div>
-                <div className="grid  grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                     <div>
                         <h3 className="text-lg font-semibold mb-2">Trước khi thay đổi</h3>
                         <table className="min-w-full bg-white">
@@ -32,7 +32,7 @@ const FormHistoryUpdate: React.FC<FormHistoryUpdateProps> = ({ onClose, record }
                                         <td className="px-4 py-2 font-medium text-gray-700">{key}</td>
                                         <td className="px-4 py-2">
                                             {key === 'date'
-                                                ? moment(record.originalUser[key]).format('DD-MM-YYYY')
+                                                ? moment(record.originalUser[key]).format('DD-MM-YYYY') // Format date
                                                 : record.originalUser[key]}
                                         </td>
                                     </tr>
@@ -49,7 +49,7 @@ const FormHistoryUpdate: React.FC<FormHistoryUpdateProps> = ({ onClose, record }
                                         <td className="px-4 py-2 font-medium text-gray-700">{key}</td>
                                         <td className="px-4 py-2">
                                             {key === 'date'
-                                                ? moment(record.changes[key]).format('DD-MM-YYYY')
+                                                ? moment(record.changes[key]).format('DD-MM-YYYY') // Format date
                                                 : record.changes[key]}
                                         </td>
                                     </tr>

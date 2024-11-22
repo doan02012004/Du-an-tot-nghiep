@@ -8,9 +8,9 @@ router.get('/', getAllUser)
 router.get('/:id', getByIdUser)
 router.get('/getaccount/user', checkAuth, getAccount)
 router.get('/getupdate/userhistory', getHistoryUpdateUser)
-router.get('/history/:id', getHistoryUpdateUserById) // New route for fetching history update user details
+router.get('/history/:id', getHistoryUpdateUserById)
 router.delete('/delete/:id', deleteUser)
-router.delete('/history/:id', deleteHistoryUpdateUser) // New route for deleting history update user records
+router.delete('/delehistory/:id', deleteHistoryUpdateUser)
 router.put('/update/status/:id', updateUserStatus)
 router.post('/add', add)
 router.put('/update/:id', updateUser)
