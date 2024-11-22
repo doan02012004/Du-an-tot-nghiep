@@ -4,8 +4,6 @@ import instance from "../common/config/axios";
 import { Isignin, Isignup, Iuser } from "../common/interfaces/auth";
 import { loginFailed, loginStart, loginSuccess, registerFailed, registerStart, registerSuccess } from "../common/redux/features/authSlice";
 
-
-
 export const loginUser = async (user: Isignin, dispatch: any, navigate: any, setAccesToken: any, setIsLogin: any) => {
     dispatch(loginStart())
     try {
@@ -34,7 +32,6 @@ export const registerUser = async (user: Isignup, dispatch: any) => {
 export const logoutUser = async () => {
     // dispatch(logoutStart());
     try {
-
         const data = await instance.post("/users/logout", {});
         // if (data.data.SC == 1) {
         //     setCurrentUser({});
@@ -130,15 +127,36 @@ export const getAccountUser = async () => {
 export const getHistoryUpdateUser = async () => {
     try {
         const history = await instance.get(`/users/getupdate/userhistory`)
-         // Kiểm tra xem có dữ liệu không
-         if (history.status === 200 && history.data) {
-            return history.data; 
+        // Kiểm tra xem có dữ liệu không
+        if (history.status === 200 && history.data) {
+            return history.data;
         } else {
             message.error('Không có lịch sử cập nhật nào được tìm thấy.');
             return [];
         }
     } catch (error) {
-        console.log(message.error)
+        message.error('Không tải được lịch sử cập nhật.');
+        return [];
     }
 }
+
+export const deleteHistoryUpdateUser = async (id: string) => {
+    try {
+        const { data } = await instance.delete(`/users/history/${id}`);
+        return data;
+    } catch (error) {
+        message.error('Xóa lịch sử cập nhật thất bại');
+        return error;
+    }
+};
+
+export const getHistoryUpdateUserById = async (id: string) => {
+    try {
+        const { data } = await instance.get(`/users/history/${id}`);
+        return data;
+    } catch (error) {
+        message.error('Không tải được chi tiết lịch sử cập nhật.');
+        return error;
+    }
+};
 

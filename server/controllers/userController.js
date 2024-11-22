@@ -62,6 +62,7 @@ export const deleteUser = async (req, res) => {
 }
 
 //update usser theo id
+// Cập nhật thông tin user theo ID
 export const updateUser = async (req, res) => {
     try {
         const { password, ...others } = req.body; // Lấy password riêng ra
@@ -73,17 +74,18 @@ export const updateUser = async (req, res) => {
                 message: 'Không tìm thấy người dùng với ID này',
             });
         }
-        // Tạo đối tượng để lưu những thay đổi
+
         const changes = {};
 
         // Nếu người dùng gửi mật khẩu mới, hash lại trước khi lưu
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
             if (hashedPassword !== user.password) {
-                changes.password = hashedPassword; // Ghi nhận thay đổi mật khẩu
+                changes.password = "Mật khẩu đã thay đổi"; // Lưu thông báo thay đổi mật khẩu
                 user.password = hashedPassword; // Cập nhật mật khẩu đã hash vào user
             }
         }
+
         // So sánh và ghi nhận các thay đổi khác
         Object.keys(others).forEach((key) => {
             if (others[key] !== user[key]) {
@@ -92,32 +94,38 @@ export const updateUser = async (req, res) => {
             }
         });
 
-         // Lưu người dùng với thông tin mới
-         await user.save();
+        // Nếu không có sự thay đổi nào, không cần lưu và trả về lỗi
+        if (Object.keys(changes).length === 0) {
+            return res.status(StatusCodes.NO_CONTENT).json({
+                message: 'Không có sự thay đổi nào để cập nhật',
+            });
+        }
 
-         // Chỉ lưu vào collection `HistoryUpdateUser` nếu có thay đổi
-         if (Object.keys(changes).length > 0) {
-             const updatedUserData = {
-                 originalUser: user._id, // Lưu ID của user gốc
-                 changes: changes, // Chỉ lưu những trường đã thay đổi
-                 updateTime: new Date(), // Lưu thời gian cập nhật
-             };
- 
-             // Tạo mới và lưu vào collection `HistoryUpdateUser`
-             const updatedUserRecord = new HistoryUpdateUser(updatedUserData);
-             await updatedUserRecord.save();
-         }
- 
-         // Trả về thông tin người dùng (trừ mật khẩu)
-         const { password: hashedPass, ...updatedUser } = user._doc; // Loại bỏ mật khẩu
-         return res.status(StatusCodes.OK).json(updatedUser);
-         
-     } catch (error) {
-         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-             message: error.message,
-         });
-     }
- };
+        // Lưu người dùng với thông tin mới
+        await user.save();
+
+        // Lưu vào collection HistoryUpdateUser nếu có thay đổi
+        const updatedUserData = {
+            originalUser: user._id, // Lưu ID của user gốc
+            changes: changes, // Chỉ lưu những trường đã thay đổi
+            updateTime: new Date(), // Lưu thời gian cập nhật
+        };
+
+        // Tạo mới và lưu vào collection HistoryUpdateUser
+        const updatedUserRecord = new HistoryUpdateUser(updatedUserData);
+        await updatedUserRecord.save();
+
+        // Trả về thông tin người dùng (trừ mật khẩu)
+        const { password: hashedPass, ...updatedUser } = user._doc; // Loại bỏ mật khẩu
+        return res.status(StatusCodes.OK).json(updatedUser);
+
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
+        });
+    }
+};
+
 
 export const updateUserStatus = async (req, res) => {
     try {
@@ -184,8 +192,8 @@ export const add = async (req, res) => {
 }
 
 //đăng kí tài khoản
+
 export const register = async (req, res) => {
-    //nhận request từ user 
     const User = {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
@@ -422,24 +430,66 @@ export const getHistoryUpdateUser = async (req, res) => {
     try {
         // Lấy toàn bộ lịch sử cập nhật từ database
         const history = await HistoryUpdateUser.find()
-            .populate('originalUser', 'firstname lastname') // Lấy tên người dùng từ thông tin gốc (nếu cần)
-            .exec();
-        
+            .populate('originalUser', 'email firstname lastname') // Lấy email và tên người dùng từ thông tin gốc
+            .sort({ updateTime: -1 })
+            .exec(); // được timz
+
         // Format lại dữ liệu để chỉ trả về các trường đã thay đổi
-        const formattedHistory = history.map((record) => {
-            return {
-                _id: record._id,
-                originalUser: record.originalUser,
-                changes: record.changes, // Đây là các trường đã thay đổi
-                updateTime: record.updateTime
-            };
-        });
+        // const formattedHistory = history.map((record) => {
+        //     return {
+        //         _id: record._id,
+        //         originalUser: record.originalUser,
+        //         changes: record.changes, // Đây là các trường đã thay đổi
+        //         updateTime: record.updateTime
+        //     };
+        // });
 
         // Trả về lịch sử đã được format
-        res.status(200).json(formattedHistory);
+        res.status(200).json(history);
     } catch (error) {
         res.status(500).json({
             message: 'Lỗi máy chủ: không thể lấy được lịch sử cập nhật',
+        });
+    }
+};
+
+// Xóa lịch sử cập nhật user theo id
+export const deleteHistoryUpdateUser = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const historyRecord = await HistoryUpdateUser.findByIdAndDelete(id);
+        if (!historyRecord) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Không tìm thấy lịch sử cập nhật với ID này',
+            });
+        }
+        return res.status(StatusCodes.OK).json({
+            message: 'Xóa lịch sử cập nhật thành công',
+        });
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
+        });
+    }
+};
+
+// Lấy chi tiết lịch sử cập nhật user theo id
+export const getHistoryUpdateUserById = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const historyRecord = await HistoryUpdateUser.findById(id)
+            .populate('originalUser', 'email firstname lastname'); // Lấy thông tin người dùng liên quan
+        if (!historyRecord) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Không tìm thấy lịch sử cập nhật với ID này',
+            });
+        }
+
+        return res.status(StatusCodes.OK).json(historyRecord);
+    } catch (error) {
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
         });
     }
 };

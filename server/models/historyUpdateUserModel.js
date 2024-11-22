@@ -1,21 +1,11 @@
-    import mongoose from "mongoose";
+import mongoose from "mongoose";
 
 
-    const historyUpdateUserSchema = new mongoose.Schema({
-        originalUser: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'users',
-            required: true
-        },
-        changes: {
-            type: Map,
-            of: String,
-            required: true
-        },
-        updateTime: {
-            type: Date,
-            default: Date.now
-        }
-    });
+const historyUpdateUserSchema = new mongoose.Schema({
+    // userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    originalUser: { type: Object, required: true }, // Lưu toàn bộ dữ liệu trước khi thay đổi
+    changes: { type: Object, required: true }, // Lưu các trường đã thay đổi
+    updateTime: { type: Date, default: Date.now }, // Thời gian thay đổi
+});
 
-    export const HistoryUpdateUser = mongoose.model("historyUpdateUser", historyUpdateUserSchema);
+export const HistoryUpdateUser = mongoose.model("historyUpdateUser", historyUpdateUserSchema);
