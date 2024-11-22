@@ -2,6 +2,7 @@ import {
   BarChartOutlined,
   BgColorsOutlined,
   CreditCardOutlined,
+  ExclamationCircleOutlined,
   CommentOutlined,
   FileImageOutlined,
   MessageOutlined,
@@ -143,15 +144,20 @@ const SidebarAdmin = () => {
           },
           {
             key: "11",
+            icon: <ExclamationCircleOutlined />,
+            label: <Link to={"/admin/complaint"}>Khiếu nại</Link>,
+          },
+          {
+            key: "12",
             icon: <OrderedListOutlined />,
             label: "Thương Hiệu",
             children: [
               {
-                key: "11.1",
+                key: "12.1",
                 label: <NavLink to={`/admin/brands`}>Thương Hiệu</NavLink>,
               },
               {
-                key: "11.2",
+                key: "12.2",
                 label: (
                   <NavLink to={`/admin/brands/add`}>Thêm thương hiệu</NavLink>
                 ),

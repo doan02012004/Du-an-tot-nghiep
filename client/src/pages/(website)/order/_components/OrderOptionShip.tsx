@@ -16,16 +16,16 @@ const shipOption = [
         weight: [
             {
                 minWeight: 0,
-                maxWeight: 1000,
+                maxWeight: 500,
+                price: 10000
+            },
+            {
+                minWeight: 501,
+                maxWeight: 2000,
                 price: 20000
             },
             {
-                minWeight: 1001,
-                maxWeight: 5000,
-                price: 30000
-            },
-            {
-                minWeight: 5001,
+                minWeight: 2001,
                 maxWeight: 1000000000000,
                 price: 40000
             }
@@ -34,17 +34,17 @@ const shipOption = [
             {
                 minVolume: 0,
                 maxVolume: 2000,
-                price: 20000
+                price: 15000
             },
             {
                 minVolume: 2001,
                 maxVolume: 5000,
-                price: 30000
+                price: 2500
             },
             {
                 minVolume: 5001,
                 maxVolume: 1000000000000,
-                price: 40000
+                price: 45000
             },
         ]
     },
@@ -150,26 +150,26 @@ const OrderOptionShip = ({ onShippingCostChange }: Props) => {
         setShip(selectedShip);
     };
 
-    useEffect(() =>  {
+    useEffect(() => {
         if (carts.length > 0 && ship) {
             const sumWeight = carts.reduce((sum: number, cart: IcartItem) => sum + cart.weight, 0);
             const sumVolume = carts.reduce((sum: number, cart: IcartItem) => sum + cart.volume, 0);
             const weightCost = ship.weight.find(range => sumWeight >= range.minWeight && sumWeight <= range.maxWeight) as WeightRange;
             const volumeCost = ship.volume.find(range => sumVolume >= range.minVolume && sumVolume <= range.maxVolume) as VolumeRange;
             // console.log("khối lương",weightCost)
-        
+
             console.log("thể tích", volumeCost)
             console.log("khối lượng", volumeCost)
             if (weightCost?.price > volumeCost?.price) {
                 const shipWeight = {
-                    nameBrand:ship.nameBrand,
-                    value:weightCost,
+                    nameBrand: ship.nameBrand,
+                    value: weightCost,
                 } as IshipSubmit
                 onShippingCostChange(shipWeight);
             } else {
                 const shipVolume = {
-                    nameBrand:ship.nameBrand,
-                    value:volumeCost,
+                    nameBrand: ship.nameBrand,
+                    value: volumeCost,
                 } as IshipSubmit
                 onShippingCostChange(shipVolume);
             }
