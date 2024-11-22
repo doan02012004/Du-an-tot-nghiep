@@ -47,10 +47,11 @@ export const getRevenue = async (req, res) => {
 export const getStatusOrdersCountByDate  = async (req, res) => {
     try {
         const {start,end,status} = req.query;
+        const arrayStatus = status.split(',')
         const startDate = start ? new Date(`${start}T00:00:00.000Z`) : moment().subtract(1, 'month').toDate(); // Ngày 1 tháng trước
         const endDate = end ? new Date(`${end}T23:59:59.999Z`) : moment().toDate(); // Ngày giờ hiện tại
         const pendingOrdersCount = await orderModel.countDocuments({
-            status: status,
+            status: {$in:arrayStatus},
             createdAt: { 
                 $gte: new Date(startDate),  // Ngày bắt đầu
                 $lte: new Date(endDate)     // Ngày kết thúc
