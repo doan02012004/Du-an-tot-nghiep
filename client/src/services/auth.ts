@@ -31,7 +31,6 @@ export const registerUser = async (user: Isignup, dispatch: any) => {
     }
 }
 
-
 export const logoutUser = async () => {
     // dispatch(logoutStart());
     try {
@@ -69,7 +68,6 @@ export const getByIdUser = async (user: Iuser) => {
         return error
     }
 }
-
 
 export const creatUser = async (user: Iuser) => {
     try {
@@ -128,3 +126,19 @@ export const getAccountUser = async () => {
         console.log(error)
     }
 }
+
+export const getHistoryUpdateUser = async () => {
+    try {
+        const history = await instance.get(`/users/getupdate/userhistory`)
+         // Kiểm tra xem có dữ liệu không
+         if (history.status === 200 && history.data) {
+            return history.data; 
+        } else {
+            message.error('Không có lịch sử cập nhật nào được tìm thấy.');
+            return [];
+        }
+    } catch (error) {
+        console.log(message.error)
+    }
+}
+

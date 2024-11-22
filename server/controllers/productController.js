@@ -1,9 +1,14 @@
 import { query } from "express";
 import ProductModel from "../models/productModel.js";
+import slugify from "slugify";
 
 export const createProduct = async (req, res) => {
   try {
-    const product = await ProductModel.create(req.body);
+    const newProduct = {
+      ...req.body,
+      slug: slugify(req.body.name, "-")
+    }
+    const product = await ProductModel.create(newProduct);
     return res.status(200).json(product);
   } catch (error) {
     return res.status(500).json({
@@ -14,34 +19,37 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { min_price,_limit,_page, max_price, size, color, sell_order } = req.query;
-    const limit = _limit|| 8 ;
-        const page = parseInt(_page)|| 1;
-        const skip = limit * (page-1)
+    const { min_price, limit, page, max_price, size, color, sell_order } = req.query;
+    const _limit = parseInt(limit) || 12;
+    const _page = parseInt(page) || 1;
+    const skip = _limit * (_page - 1);
+
     let sort = {};
     let query = {
-      // $and: [
-      //   { price_new: { $gte: parseInt(min_price) || 0 } },
-      //   { price_new: { $lte: parseInt(max_price) || 10000000 } },
-      // ],
+      $and: [
+        { "attributes.price_new": { $gte: parseInt(min_price) || 0 } },
+        { "attributes.price_new": { $lte: parseInt(max_price) || 10000000 } },
+      ],
     };
 
     if (sell_order) {
-      if (sell_order == "new") {
-        sort["createdAt"] = -1;
+      if (sell_order === "new") {
+        sort["createdAt"] = -1; 
       }
-      if (sell_order == "asc") {
-        sort["price_new"] = 1;
+      if (sell_order === "asc") {
+        sort["attributes.price_new"] = 1; // Giá tăng dần
       }
-      if (sell_order == "desc") {
-        sort["price_new"] = -1;
+      if (sell_order === "desc") {
+        sort["attributes.price_new"] = -1; // Giá giảm dần
       }
     }
 
+    // Lọc theo size nếu có
     if (size) {
       query["sizes"] = { $in: size.split(",") };
     }
 
+    // Lọc theo color nếu có
     if (color) {
       query["colors"] = {
         $elemMatch: {
@@ -49,19 +57,22 @@ export const getAllProduct = async (req, res) => {
         },
       };
     }
-    console.log(query)
+
     const products = await ProductModel.find(query)
       .sort(sort)
-      .limit(limit)
+      .limit(_limit)
       .skip(skip)
-      .populate("categoryId");
-      const total = await ProductModel.countDocuments(query)
-      const totalPage = Math.ceil(total/limit)
+      .populate("categoryId brandId");
+
+    const total = await ProductModel.countDocuments(query);
+    console.log(total);
+    const totalPage = Math.ceil(total / _limit);
+
     return res.status(200).json({
       products,
       total,
       totalPage,
-      currentPage:page
+      currentPage: _page,
     });
   } catch (error) {
     return res.status(500).json({
@@ -69,6 +80,7 @@ export const getAllProduct = async (req, res) => {
     });
   }
 };
+
 
 export const getProductSlider = async (req, res) => {
   try {
@@ -105,7 +117,8 @@ export const updateAttributeProduct = async (req, res) => {
     product.attributes = newAttributes;
     await product.save();
     return res.status(200).json({
-      message: "Cập nhật số lượng thành công",
+      data: product,
+      message: "Cập nhật thuộc tính thành công",
     });
   } catch (error) {
     return res.status(500).json({
@@ -147,9 +160,9 @@ export const addColors = async (req, res) => {
     });
   }
 };
-export const getByIdProduct = async (req, res) => {
+export const getBySlugProduct = async (req, res) => {
   try {
-    const product = await ProductModel.findById(req.params.productId).populate(
+    const product = await ProductModel.findOne({ slug: req.params.slug }).populate(
       "categoryId colors"
     );
     if (!product) {
@@ -170,7 +183,9 @@ export const updateInforProduct = async (req, res) => {
       { _id: req.params.productId },
       {
         name: req.body.name,
+        slug: slugify(req.body.name, "-"),
         categoryId: req.body.categoryId,
+        brandId: req.body.brandId,
         discount: req.body.discount,
         price_new: req.body.price_new,
         price_old: req.body.price_old,

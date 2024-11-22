@@ -18,36 +18,39 @@ import { AppContext } from "../../../common/contexts/AppContextProvider";
 type Props = {}
 
 const ProductDetailsPage = (props: Props) => {
-  const {id} = useParams()
-  const query = useProductQuery(id)
-  const { choiceColor,setChoiceColor } = useContext(AppContext);
-  useEffect(()=>{
-    if(query.data){
+  const { slug } = useParams()
+  const query = useProductQuery(slug)
+  const { choiceColor, setChoiceColor } = useContext(AppContext);
+  useEffect(() => {
+    if (query.data) {
       setChoiceColor(query.data.colors[0].name)
     }
-  },[query.data,id])
+  }, [query.data, slug])
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [slug])
   return (
     <div>
-        <div>
-            <Breadcrumb_products product={query.data} />
-            {/* --------------------------------------------- --end breadcrumb-products-------------------------------------*/}
-            <section className='lg:mb-8'>
-                <section className='container lg:grid lg:grid-cols-2'>
-                    <Slider_product_details product={query.data} />
-                    {/* ---------------------------------end product_details------------------------------------------------------- */}
-                    <Product_information product={query.data} />
+      <div>
+        <Breadcrumb_products product={query.data} />
+        {/* --------------------------------------------- --end breadcrumb-products-------------------------------------*/}
+        <section className='lg:mb-8'>
+          <section className='container lg:grid lg:grid-cols-2'>
+            <Slider_product_details product={query.data} />
+            {/* ---------------------------------end product_details------------------------------------------------------- */}
+            <Product_information product={query.data} />
 
-                </section>
-                {/* ------------------------------------------------------ */}
-            </section>
-            {/*  */}
-            {/* -----------------------------------------------end productdetails------------------------- */}
-            <Similar_product />
-            {/* ---------------- */}
-            <Viewed_products />
-            <Banner />
+          </section>
+          {/* ------------------------------------------------------ */}
+        </section>
+        {/*  */}
+        {/* -----------------------------------------------end productdetails------------------------- */}
+        <Similar_product />
+        {/* ---------------- */}
+        <Viewed_products />
+        <Banner />
 
-        </div>
+      </div>
 
     </div>
   )

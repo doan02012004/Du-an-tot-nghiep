@@ -11,62 +11,62 @@ const generateOrderNumber = () => {
 
 
 const OrderItemSchema = new mongoose.Schema({
-    productId:{
+    productId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"products",
+        ref: "products",
         required: true,
     },
     name: {
         type: String,
         required: true,
     },
-    categoryId:{
-            type:String,
-            required:true
+    categoryId: {
+        type: String,
+        required: true
     },
     gallery: {
-      avatar:{
-        type:String,
-        required:true
-      },
-      name:{
-        type:String,
-        required:true
-      },
-      items:[]
+        avatar: {
+            type: String,
+            required: true
+        },
+        name: {
+            type: String,
+            required: true
+        },
+        items: []
     },
     price: {
         type: Number,
         required: true,
     },
-    attribute:{
-        size:{
-            type:String,
-            required:true
+    attribute: {
+        size: {
+            type: String,
+            required: true
         },
-        color:{
-            type:String,
-            required:true
+        color: {
+            type: String,
+            required: true
         }
     },
     quantity: {
         type: Number,
         required: true,
     },
-    total:{
+    total: {
         type: Number,
         required: true,
-    },
+    }
 },
-{ timestamps: true, versionKey: false }
+    { timestamps: true, versionKey: false }
 );
 
 
 const orderSchema = new Schema(
     {
-        userId:{
+        userId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref:"users",
+            ref: "users",
             required: true,
         },
         customerInfor: {
@@ -99,19 +99,20 @@ const orderSchema = new Schema(
                 enum: ["house", "company"]
             }
         },
-        items:[OrderItemSchema],
+        items: [OrderItemSchema],
         orderNumber: {
             type: String,
             unique: true,
         },
         paymentMethod: {
             type: String,
-            enum: ["cash", "momo","atm","credit"],
+            enum: ["cash", "vnPay", "atm", "credit"],
             default: "cash"
         },
         status: {
             type: String,
-            enum: ["pending","unpaid","confirmed", "shipped", "delivered", "cancelled", "received"],
+
+            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints"],
             default: "pending",
         },
         totalPrice: {
@@ -125,7 +126,36 @@ const orderSchema = new Schema(
         createdAt: {
             type: Date,
             default: Date.now,
-        }
+        },
+        ship: {
+            nameBrand: {
+                type: String,
+                required: true
+            },
+            value: {
+
+            }
+        },
+        voucher: {
+            code: {
+                type: String,
+                required: false,
+            },
+            discountValue: {
+                type: Number,
+                required: false,
+            },
+            category: {
+                type: String,
+                enum: ["discount", "shipping"],
+                required: false,
+            },
+            type: {
+                type: String,
+                enum: ["percentage", "fixed", "freeship"],
+                required: false,
+            },
+        },
     },
     { timestamps: true, versionKey: false }
 );

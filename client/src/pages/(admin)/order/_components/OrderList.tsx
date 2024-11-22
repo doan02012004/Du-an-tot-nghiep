@@ -6,6 +6,7 @@ import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
 import { IOrder } from '../../../../common/interfaces/orderInterfaces';
 import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -15,7 +16,8 @@ const OrderList = (props: Props) => {
     const [Orders, SetOrders] = useState<IOrder[]>([]);
     const query = useOrderQuery({isAdmin:true});
     const mutation = useOrderMutation();
-
+    const totalSubmit = useSelector((state:any)=> state.cart.totalSubmit)
+    console.log(Orders)
     // Trạng thái tìm kiếm
     const [searchParams, setSearchParams] = useState({
         orderId: '',
@@ -59,6 +61,8 @@ const OrderList = (props: Props) => {
             case 'delivered': return { label: 'Đã giao hàng', color: 'green' };
             case 'received': return { label: 'Đã nhận', color: 'green' };
             case 'cancelled': return { label: 'Đã hủy', color: 'red' };
+            case 'Returngoods': return { label: 'Trả hàng', color: 'black' };
+            case 'Complaints': return { label: 'Khiếu nại', color: 'black' };
             default: return { label: 'Không xác định', color: 'gray' };
         }
     };
@@ -151,7 +155,11 @@ const OrderList = (props: Props) => {
         {
             title: 'Tổng tiền',
             dataIndex: 'totalPrice',
-            render: (total: number) => `${total.toLocaleString()}₫`,
+            render: (totalSubmit: number, record: any) => {
+                const voucher = record.voucher?.discountValue || 0; // Lấy giá trị voucher, nếu có
+                const totalWithoutShipping = totalSubmit - voucher; // Tính tổng không bao gồm phí ship
+                return `${totalWithoutShipping.toLocaleString()}₫`;
+            },
         },
         {
             title: 'Thao tác',
@@ -205,6 +213,8 @@ const OrderList = (props: Props) => {
                     <Option value="delivered">Đã giao hàng</Option>
                     <Option value="received">Đã nhận</Option>
                     <Option value="cancelled">Đã hủy</Option>
+                    <Option value="Returngoods">Trả hàng</Option>
+                    <Option value="Complaints">Khiếu nại</Option>
                 </Select>
                 <RangePicker 
                     onChange={(dates) => setSearchParams({ ...searchParams, dateRange: dates })} 

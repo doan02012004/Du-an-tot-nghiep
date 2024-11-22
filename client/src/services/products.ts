@@ -10,6 +10,19 @@ import {
 } from "../common/interfaces/product";
 import { IColor } from "../common/interfaces/Color";
 
+// -----------------------------------------------///
+// Hàm lấy tất cả sản phẩm
+export const getAllProducts = async () => {
+  try {
+    const res = await instance.get("/products"); // Thay URL nếu cần thiết
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách sản phẩm:", error);
+    throw error;
+  }
+};
+
+//----------------------------------------------------///
 export const getProductSlider = async (options: any) => {
     try {
       const res = await instance.get("/products/slider", {
@@ -46,9 +59,9 @@ export const getProducts = async (dataFilter: {} | undefined) => {
 //     }
 // }
 
-export const getProductById = async (id: string | number) => {
+export const getProductBySlug = async (slug: string) => {
   try {
-    const res = await instance.get(`/products/${id}`);
+    const res = await instance.get(`/products/${slug}`);
     return res.data;
   } catch (error) {
     console.log(error);
@@ -110,8 +123,8 @@ export const updateProductAttribute = async (
       `/products/updateAtb/${productId}`,
       attribute
     );
-    message.success("Cập nhật số lượng thành công");
-    return res.data;
+    message.success("Cập nhật thuộc tính thành công");
+    return res;
   } catch (error) {
     console.log(error);
     message.error("Cập nhật số lượng thất bại");

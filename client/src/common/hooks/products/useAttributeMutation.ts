@@ -4,7 +4,10 @@ import { Iattribute, Igallery, InewColor, InewSize } from '../../interfaces/prod
 import { message } from 'antd'
 import { addColorProduct, addSizeProduct, deleteColorProduct, deleteSizeProduct, updateProductAttribute, updateProductGallery } from '../../../services/products'
 import { IColor } from '../../interfaces/Color'
+import { useContext } from 'react'
+import { AppContext } from '../../contexts/AppContextProvider'
 const useAttributeMutation = () => {
+    const {socket} = useContext(AppContext)
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey: ['PRODUCT'],
@@ -21,7 +24,10 @@ const useAttributeMutation = () => {
                     break;
                 case 'updateAtb':
                     try {
-                        await updateProductAttribute(option.productId, option.attribute)
+                       const res = await updateProductAttribute(option.productId, option.attribute)
+                       if(res?.status === 200){
+                         socket.current.emit('adminUpdatePrice',{newProduct:res?.data?.data,attributeId:option.attribute._id})
+                       }
                     } catch (error) {
                         console.log(error)
                     }
