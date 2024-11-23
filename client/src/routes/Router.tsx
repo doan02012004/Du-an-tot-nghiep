@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LayoutAdmin from "../pages/(admin)/LayoutAdmin";
 import PageSignin from "../pages/(website)/Auth/Signin/Page";
 import PageSignup from "../pages/(website)/Auth/Signup/Page";
@@ -46,9 +46,14 @@ import ComplaintList from "../pages/(admin)/complaint/_components/ComplaintList"
 import ComplaintEdit from "../pages/(admin)/complaint/_components/ComplaintEdit";
 import PageForgot from "../pages/(website)/Auth/Forgot/Page";
 import WaitPage from "../pages/(website)/wait/Page";
+import PrivateAdmin from "./privateAdmin";
+import { useContext } from "react";
+import { AppContext } from "../common/contexts/AppContextProvider";
 
 
 const Router = () => {
+
+  const {currentUser} = useContext(AppContext)
   return (
     <Routes>
       <Route path="/" element={<LayoutWebsite />}>
@@ -64,13 +69,13 @@ const Router = () => {
         <Route path="order" element={<OrderPage />} />
         <Route path="thanks" element={<ThanksPage />} />
         <Route path="wait" element={<WaitPage />} />
-        <Route path="customer" element={<MyInformation />}>
+        <Route path="customer" element={currentUser?<MyInformation />:<Navigate to={'/signin'} />}>
           <Route path="infor" element={<Account />} />
           <Route path="order-manager" element={<OrderManager />} />
           <Route path="address_list" element={<AddressList />} />
         </Route>
       </Route>
-      <Route path="admin" element={<LayoutAdmin />}>
+      <Route path="admin" element={<PrivateAdmin><LayoutAdmin /></PrivateAdmin>}>
       <Route path="complaint" element={<PageComplaint />}>
           <Route index element={<ComplaintList />}/>
           <Route path="admin/complaint/:id" element={<ComplaintEdit />}/>

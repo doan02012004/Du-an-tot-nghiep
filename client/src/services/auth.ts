@@ -169,3 +169,12 @@ export const getHistoryUpdateUser = async () => {
     }
 }
 
+export const changePassword =  async (option:{newPassword:string|number,currentPassword:string|number}) =>{
+    try {
+        const res = await instance.post('/users/change-password',option)
+        return res
+    } catch (error) {
+        return error
+    }
+}
+
