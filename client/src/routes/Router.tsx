@@ -46,7 +46,7 @@ import ComplaintList from "../pages/(admin)/complaint/_components/ComplaintList"
 import ComplaintEdit from "../pages/(admin)/complaint/_components/ComplaintEdit";
 import PageForgot from "../pages/(website)/Auth/Forgot/Page";
 import WaitPage from "../pages/(website)/wait/Page";
-import PrivateAdmin from "./privateAdmin";
+import PrivateAdmin from "./PrivateAdmin";
 import { useContext } from "react";
 import { AppContext } from "../common/contexts/AppContextProvider";
 
