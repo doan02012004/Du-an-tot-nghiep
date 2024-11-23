@@ -106,12 +106,12 @@ const orderSchema = new Schema(
         },
         paymentMethod: {
             type: String,
-            enum: ["cash", "momo", "atm", "credit"],
+            enum: ["cash", "vnPay", "atm", "credit"],
             default: "cash"
         },
         status: {
             type: String,
-            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received"],
+            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints"],
             default: "pending",
         },
         totalPrice: {
@@ -126,6 +126,10 @@ const orderSchema = new Schema(
             type: Date,
             default: Date.now,
         },
+        paymentStatus: {
+            type: String,
+            require: false
+        },
         ship: {
             nameBrand: {
                 type: String,
@@ -134,7 +138,27 @@ const orderSchema = new Schema(
             value: {
                 
             }
-        }
+        },
+        voucher: {
+            code: {
+                type: String,
+                required: false,
+            },
+            discountValue: {
+                type: Number,
+                required: false,
+            },
+            category: {
+                type: String,
+                enum: ["discount", "shipping"],
+                required: false,
+            },
+            type: {
+                type: String,
+                enum: ["percentage","fixed","freeship"],
+                required: false,
+            },
+        },
     },
     { timestamps: true, versionKey: false }
 );

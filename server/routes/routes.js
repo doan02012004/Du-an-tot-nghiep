@@ -10,6 +10,9 @@ import bannerRouter from "./bannerRouter.js";
 import galleryRouter from "./galleryRouter.js";
 import brandRouter from "./brandRouter.js"
 import voucherRouter from "./voucherRouter.js"
+import dashboardRouter from "./dashboardRouter.js";
+import complaint from "./complaintRoutes.js"
+import commentRouter from "./commentRouter.js"
 const routes = (app) => {
   app.use("/api/products", productRouter);
   app.use("/api/orders", orderRouter);
@@ -23,6 +26,9 @@ const routes = (app) => {
   app.use("/api/brands", brandRouter);
   app.use("/api/gallerys", galleryRouter);
   app.use("/api/vouchers",voucherRouter);
+  app.use("/api/dashboard", dashboardRouter);
+  app.use("/api/complaint",complaint);
+  app.use("/api/comments", commentRouter);
 };
 
 export default routes;

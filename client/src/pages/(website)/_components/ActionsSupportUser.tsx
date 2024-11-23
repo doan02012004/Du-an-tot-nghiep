@@ -1,19 +1,27 @@
-import { useContext, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../../common/contexts/AppContextProvider'
 import { Modal, message } from 'antd'
 import { logoutUser } from '../../../services/auth'
 import { useDispatch } from 'react-redux'
 import { logoutFailed, logoutStart, logoutSuccess } from '../../../common/redux/features/authSlice'
-import { Link } from 'react-router-dom'
-// import { useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 const ActionsSupportUser = () => {
     const [actionSupport, setActionSupport] = useState(false)
     const [actionUser, setActionUser] = useState(false)
     const { accessToken, setAccesToken, setCurrentUser, setIsLogin } = useContext(AppContext)
     const { confirm } = Modal;
+    const location = useLocation()
     const dispatch = useDispatch()
-
+    useEffect(()=>{
+    if(actionSupport){
+        setActionSupport(false)
+    }
+    if(actionUser){
+        setActionUser(false)
+    }
+    },[location])
     const onHandeActionSupport = () => {
         setActionSupport(!actionSupport)
         setActionUser(false)
@@ -38,7 +46,7 @@ const ActionsSupportUser = () => {
                     const data = await logoutUser();
     
                     if (data.SC == 1) {
-                        setCurrentUser({});
+                        setCurrentUser(null);
                         setIsLogin(false);
                         setAccesToken(null);
                         window.location.reload();

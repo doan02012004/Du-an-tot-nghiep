@@ -19,12 +19,12 @@ import AddProductAdmin from "../pages/(admin)/product/add/Page";
 import LayoutColor from "../pages/(admin)/color/Page";
 import CategoriesPage from "../pages/(admin)/categories/Page";
 
-import CategoriesForm from '../pages/(admin)/categories/_components/CategoryForm'
-import PageAuthAdmin from '../pages/(admin)/users/Page'
-import ListUser from '../pages/(admin)/users/_components/ListUser'
-import ViewProductAdmin from '../pages/(admin)/product/view/Page'
-import ChatWidget from '../pages/(admin)/chatwiget/Page'
-import AddressList from '../pages/(website)/my-information/address/Page'
+import CategoriesForm from "../pages/(admin)/categories/_components/CategoryForm";
+import PageAuthAdmin from "../pages/(admin)/users/Page";
+import ListUser from "../pages/(admin)/users/_components/ListUser";
+import ViewProductAdmin from "../pages/(admin)/product/view/Page";
+import ChatWidget from "../pages/(admin)/chatwiget/Page";
+import AddressList from "../pages/(website)/my-information/address/Page";
 import BannerPage from "../pages/(admin)/banner/Page";
 import ListBanner from "../pages/(admin)/banner/_components/ListBanner";
 import GalleryPage from "../pages/(admin)/gallery/Page";
@@ -40,6 +40,10 @@ import VouchersPage from "../pages/(admin)/vouchers/Page";
 import VoucherList from "../pages/(admin)/vouchers/_components/VoucherList";
 import VoucherAdd from "../pages/(admin)/vouchers/_components/VoucherAdd";
 import VoucherEdit from "../pages/(admin)/vouchers/_components/VoucherEdit";
+import DashBoardPage from "../pages/(admin)/dash-board/Page";
+import PageComplaint from "../pages/(admin)/complaint/Page";
+import ComplaintList from "../pages/(admin)/complaint/_components/ComplaintList";
+import ComplaintEdit from "../pages/(admin)/complaint/_components/ComplaintEdit";
 import PageForgot from "../pages/(website)/Auth/Forgot/Page";
 import WaitPage from "../pages/(website)/wait/Page";
 
@@ -67,6 +71,10 @@ const Router = () => {
         </Route>
       </Route>
       <Route path="admin" element={<LayoutAdmin />}>
+      <Route path="complaint" element={<PageComplaint />}>
+          <Route index element={<ComplaintList />}/>
+          <Route path="admin/complaint/:id" element={<ComplaintEdit />}/>
+        </Route>
         <Route path="vouchers" element={<VouchersPage />}>
           <Route index element={<VoucherList />}/>
           <Route path="add" element={<VoucherAdd />}/>
@@ -81,17 +89,17 @@ const Router = () => {
           <Route path="add" element={<AddProductAdmin />} />
           <Route path="view/:slug" element={<ViewProductAdmin />} />
         </Route>
-        <Route path='colors' element={<LayoutColor />} />
-        <Route path='categories' element={<CategoriesPage />} />
-        <Route path='categories/add' element={<CategoriesForm />} />
-        <Route path='categories/edit/:id' element={<CategoriesForm />} />
-        <Route path='brands' element={<BrandsPage />} />
-        <Route path='brands/add' element={<BrandsForm />} />
-        <Route path='brands/edit/:id' element={<BrandsForm />} />
-        <Route path='chat' element={<ChatWidget />} />
-        <Route path='auth' element={<PageAuthAdmin />} >
+        <Route path="colors" element={<LayoutColor />} />
+        <Route path="categories" element={<CategoriesPage />} />
+        <Route path="categories/add" element={<CategoriesForm />} />
+        <Route path="categories/edit/:id" element={<CategoriesForm />} />
+        <Route path="brands" element={<BrandsPage />} />
+        <Route path="brands/add" element={<BrandsForm />} />
+        <Route path="brands/edit/:id" element={<BrandsForm />} />
+        <Route path="chat" element={<ChatWidget />} />
+        <Route path="auth" element={<PageAuthAdmin />}>
           <Route index element={<ListUser />} />
-          <Route path='historyupdate' element={<HistoryUpdateUser />} />
+          <Route path="historyupdate" element={<HistoryUpdateUser />} />
         </Route>
         <Route path="banners" element={<BannerPage />}>
           <Route index element={<ListBanner />} />
@@ -99,6 +107,7 @@ const Router = () => {
         <Route path="gallerys" element={<GalleryPage />}>
           <Route index element={<ListGallery />} />
         </Route>
+        <Route index element={<DashBoardPage />} />
       </Route>
     </Routes>
   );

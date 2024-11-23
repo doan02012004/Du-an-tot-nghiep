@@ -1,19 +1,19 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
-const sendEmail = async (to, subject, html) => {
+const sendEmail = async (to, subject, text) => {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail", // Hoặc cấu hình SMTP khác của bạn
     auth: {
-      user: process.env.EMAIL_USER,  // Đảm bảo EMAIL_USER là đúng (ví dụ: "your-email@gmail.com")
-      pass: process.env.EMAIL_PASS,  // Nếu sử dụng App Password, thay đổi EMAIL_PASS thành App Password
+      user: process.env.EMAIL_USER, // Địa chỉ email của bạn
+      pass: process.env.EMAIL_PASS, // Mật khẩu email của bạn
     },
   });
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,  // Đảm bảo EMAIL_USER là đúng
+    from: process.env.EMAIL_USER,
     to,
     subject,
-    html
+    text,
   };
 
   try {

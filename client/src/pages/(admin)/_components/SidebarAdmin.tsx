@@ -2,6 +2,8 @@ import {
   BarChartOutlined,
   BgColorsOutlined,
   CreditCardOutlined,
+  ExclamationCircleOutlined,
+  CommentOutlined,
   FileImageOutlined,
   MessageOutlined,
   OrderedListOutlined,
@@ -29,7 +31,7 @@ const SidebarAdmin = () => {
           {
             key: "1",
             icon: <BarChartOutlined />,
-            label: "Thống kê",
+            label: ( <NavLink to={`/admin`}>Thống kê</NavLink>),
           },
           {
             key: "2",
@@ -78,6 +80,17 @@ const SidebarAdmin = () => {
               {
                 key: "5.1",
                 label: <NavLink to={"/admin/gallerys"}>Danh sách</NavLink>,
+              },
+            ],
+          },
+          {
+            key: "11",
+            icon: <CommentOutlined />,
+            label: "Đánh giá",
+            children: [
+              {
+                key: "11.1",
+                label: <NavLink to={"/admin/comments"}>Danh sách</NavLink>,
               },
             ],
           },
@@ -131,15 +144,20 @@ const SidebarAdmin = () => {
           },
           {
             key: "11",
+            icon: <ExclamationCircleOutlined />,
+            label: <Link to={"/admin/complaint"}>Khiếu nại</Link>,
+          },
+          {
+            key: "12",
             icon: <OrderedListOutlined />,
             label: "Thương Hiệu",
             children: [
               {
-                key: "11.1",
+                key: "12.1",
                 label: <NavLink to={`/admin/brands`}>Thương Hiệu</NavLink>,
               },
               {
-                key: "11.2",
+                key: "12.2",
                 label: (
                   <NavLink to={`/admin/brands/add`}>Thêm thương hiệu</NavLink>
                 ),
