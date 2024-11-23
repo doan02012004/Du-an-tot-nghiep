@@ -10,7 +10,6 @@ dotenv.config()
 app.use(express.json())
 app.use(cors({
     origin: 'http://localhost:5173', // Allow requests from your frontend domain
-    methods: ['GET', 'POST'], // Allow these HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true // cho phép gửi cookie
 }))

@@ -130,19 +130,7 @@ const OrderOptionShip = ({ onShippingCostChange }: Props) => {
     const [ship, setShip] = useState<IshipItem | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any 
     const carts = useSelector((state: any) => state.cart.carts);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // const totalCart = useSelector((state: any) => state.cart.totalCart);
-    // const dispatch = useDispatch();
 
-    // const calculateShippingCost = (selectedShip: IshipItem, sumWeight: number, sumVolume: number) => {
-    //     if (!selectedShip || !selectedShip.weight || !selectedShip.volume) {
-    //         return 0;
-    //     }
-    //     const weightCost = selectedShip.weight.find(range => sumWeight >= range.minWeight && sumWeight <= range.maxWeight) || 0;
-    //     const volumeCost = selectedShip.volume.find(range => sumVolume >= range.minVolume && sumVolume <= range.maxVolume) || 0;
-
-    //     return Math.max(weightCost, volumeCost);
-    // };
 
     // chọn phương thức giao hàng
     const handleShipChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

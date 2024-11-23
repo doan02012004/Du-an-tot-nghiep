@@ -11,6 +11,7 @@ import galleryRouter from "./galleryRouter.js";
 import brandRouter from "./brandRouter.js"
 import voucherRouter from "./voucherRouter.js"
 import complaint from "./complaintRoutes.js"
+import shipRouter from "./shipRouter.js"
 const routes = (app) => {
   app.use("/api/products", productRouter);
   app.use("/api/orders", orderRouter);
@@ -25,6 +26,7 @@ const routes = (app) => {
   app.use("/api/gallerys", galleryRouter);
   app.use("/api/vouchers", voucherRouter);
   app.use("/api/complaint", complaint);
+  app.use("/api/ships", shipRouter);
 };
 
 export default routes;

@@ -44,6 +44,8 @@ import CanPayment from "../pages/(website)/thanks/CanPayment";
 import PageComplaint from "../pages/(admin)/complaint/Page";
 import ComplaintList from "../pages/(admin)/complaint/_components/ComplaintList";
 import ComplaintEdit from "../pages/(admin)/complaint/_components/ComplaintEdit";
+import ShipPage from "../pages/(admin)/feeShip/Page";
+import ListFeeShip from "../pages/(admin)/feeShip/_components/ListFeeShip";
 
 
 const Router = () => {
@@ -104,6 +106,10 @@ const Router = () => {
         <Route path="gallerys" element={<GalleryPage />}>
           <Route index element={<ListGallery />} />
         </Route>
+        <Route path="ships" element={<ShipPage />} >
+          <Route index element={<ListFeeShip />} />
+        </Route>
+
       </Route>
     </Routes>
   );

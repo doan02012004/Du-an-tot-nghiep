@@ -104,8 +104,8 @@ const SidebarAdmin = () => {
             label: "Người dùng",
             children: [
               {
-                key:"7.1",
-                label:<Link to={'/admin/auth'}>Danh sách</Link>
+                key: "7.1",
+                label: <Link to={'/admin/auth'}>Danh sách</Link>
               }
             ],
           },
@@ -123,8 +123,19 @@ const SidebarAdmin = () => {
           {
             key: "9",
             icon: <CreditCardOutlined />,
-            label: <Link to={"/admin/vouchers"}>Mã Voucher</Link>,
+            label: 'Vucher & Ship',
+            children: [
+              {
+                key: "9.1",
+                label: <Link to={"/admin/vouchers"}>Mã Voucher</Link>,
+              },
+              {
+                key: "9.2",
+                label: <Link to={"/admin/ships"}>Phí Ship</Link>,
+              }
+            ],
           },
+
           {
             key: "10",
             icon: <MessageOutlined />,
