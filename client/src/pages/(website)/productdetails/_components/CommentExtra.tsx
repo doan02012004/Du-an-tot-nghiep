@@ -59,7 +59,7 @@ const CommentExtra = ({ comment, userTag, setUserTag }: CommentExtralProps) => {
             (
               <h5 className="text-black text-sm font-semibold">{recomment.userId.lastname} {recomment.userId.firstname}</h5>
             )}
-          <p className="text-xs" style={{ overflowWrap: 'break-word', wordWrap: 'break-word' }}> <span className=' text-xs font-semibold text-blue mr-2'>{recomment?.tag?.role == 'admin'?'Fendi Shop': `${recomment.tag?.lastname} ${recomment.tag?.firstname}`}</span> {recomment?.comment.toString()}</p>
+          <p className="text-xs" style={{ overflowWrap: 'break-word', wordWrap: 'break-word' }}> {recomment.tag && (<span className=' text-xs font-semibold text-blue mr-2'>{recomment?.tag?.role == 'admin'?'Fendi Shop': `${recomment.tag?.lastname} ${recomment.tag?.firstname}`}</span>)} {recomment?.comment.toString()}</p>
           <div className="flex justify-between items-center">
           <div className='text-xs text-black font-medium'>
             {formatDateComment(recomment?.createdAt)}
@@ -102,7 +102,7 @@ const CommentExtra = ({ comment, userTag, setUserTag }: CommentExtralProps) => {
             name="comment"
             value={contentExtra}
             onChange={(e) => setContentExtra(e.target.value)}
-            placeholder={userTag ? `Phản hồi ${userTag?.lastname}  ${userTag?.firstname}...` : (currentUser ? (currentUser.role == 'admin' ? `Bình luận với vai trò Fendi Shop...` : `Bình luận với vai trò ${currentUser?.lastname}  ${currentUser?.firstname}...`) : 'Đăng nhập để đánh giá...')}
+            placeholder={userTag ? (userTag.role!=='admin'? `Phản hồi ${userTag?.lastname}  ${userTag?.firstname}...`: `Phản hồi Fendi Shop...`) : (currentUser ? (currentUser.role == 'admin' ? `Bình luận với vai trò Fendi Shop...` : `Bình luận với vai trò ${currentUser?.lastname}  ${currentUser?.firstname}...`) : 'Đăng nhập để đánh giá...')}
             className="w-full h-full p-2 text-sm resize-none outline-0"
           ></textarea>
           <button className="text-blue-500">

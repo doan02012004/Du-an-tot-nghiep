@@ -30,7 +30,7 @@ const CommentList = ({ productId }: CommentListProps) => {
   return (
     <div className={`relative w-full ${comments.length == 0 ? 'h-[210px]':'h-[450px]'} `}>
       {/* Hiển thị danh sách bình luận */}
-    <div ref={commentRef} className={`${comments.length == 0 ? 'h-[210px]':'h-[450px]'} flex flex-col gap-6 w-full pb-5 overflow-y-auto`}>
+    <div ref={commentRef} className={`${comments.length == 0 ? 'h-[150px]':'h-[350px]'} flex flex-col gap-6 w-full pb-5 overflow-y-auto`}>
         {comments.length > 0 ?
           comments.map((comment) => (
             <CommentMain

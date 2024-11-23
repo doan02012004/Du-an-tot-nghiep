@@ -51,7 +51,7 @@ const CommentInput = ({ productId, userId }: CommentInputProps) => {
 
   return (
    <div className='absolute bottom-1 left-0 right-0'>
-    <div className='flex items-center pb-3'>
+    <div className='flex items-center pb-3 bg-white'>
           <h5 className='m-0'>Đánh giá:</h5>
           <Rate className='ml-2' defaultValue={rate} onChange={(value) => setRate(value)}/>
     </div>

@@ -1,6 +1,7 @@
-import { CheckCircleOutlined, CloseCircleOutlined, CloseOutlined, DeleteOutlined, RollbackOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select } from 'antd';
-import { useContext, useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { CheckCircleOutlined, CloseOutlined, DeleteOutlined, RollbackOutlined } from '@ant-design/icons';
+import { Button, Form, Input, } from 'antd';
+import { useContext, useState } from 'react';
 import { AppContext } from '../../../../common/contexts/AppContextProvider';
 import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
@@ -11,10 +12,7 @@ import instance from '../../../../common/config/axios';
 
 
 const OrderManager = () => {
-
   const {currentUser} = useContext(AppContext)
-  // const storedUser = localStorage.getItem('tt_user');
-  // const infoUser = storedUser ? JSON.parse(storedUser) : null;
   const [open,setopen] = useState(false)
   const [items,setitems] = useState('')
   const [id,setid] = useState('')
@@ -22,27 +20,12 @@ const OrderManager = () => {
   const [totalPrice,settotalPrice] = useState('')
   const [voucher,settvoucher] = useState('')
   const [ship,setship] = useState('')
-  const [message,setmessage] = useState('')
-  console.log(open)
   const mutation = useOrderMutation();
   const orders = useOrderQuery({userId:currentUser?._id})
   const mutations = useComplaintMutation();
-  const itemsOder = orders.data
-  console.log(itemsOder)
-  console.log(items)
-  console.log(id)
-  console.log(totalOrder)
-  console.log(totalPrice)
-  console.log(voucher)
-  console.log(ship)
-  console.log(message)
-  // const img = itemsOder[0].items[0].gallery.avatar
-  // console.log(img)
-  
-
   const [form] = Form.useForm();
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values:any) => {
     mutations.mutate({
       action: 'add',
       complaintData: {
@@ -59,23 +42,9 @@ const OrderManager = () => {
       orderId: values.orderId,
       status: "Complaints",
     });
-  
-    const newMessage = "Đang chờ xử lý trả hàng";
-    setmessage(newMessage);
-    localStorage.setItem('complaintMessage', newMessage);  // Lưu dữ liệu vào localStorage
     form.resetFields(); // Reset lại form sau khi submit
     setopen(!open);
-    console.log('Form Values:', values);
   };
-  
-  // Đọc dữ liệu từ localStorage khi component load lại
-  useEffect(() => {
-    const savedMessage = localStorage.getItem('complaintMessage');
-    if (savedMessage) {
-      setmessage(savedMessage);  // Đọc dữ liệu từ localStorage khi trang reload
-    }
-  }, []);
-  
 
   const renderOrderStatus = (status : string) => {
     switch (status) {
@@ -101,10 +70,8 @@ const OrderManager = () => {
         return 'Không xác định';
     }
   };
-  console.log(items[0])
-
   // Xử lý logic thanh toán lại đơn hàng
-  const handlePayAgain = async (orderId) => {
+  const handlePayAgain = async (orderId:string) => {
     try {
       // Gửi yêu cầu tới API backend để tạo liên kết thanh toán
       const response = await instance.post(`/orders/pay-again/${orderId}`);
@@ -122,7 +89,14 @@ const OrderManager = () => {
     }
   };
 
+  // Hàm xử lý nhận hàng
+  const onHandleReceived = (orderId:string) =>{
+    mutation.mutate({ action: "updateStatus", orderId: orderId, status: "received" })
+  }
+
+  
   return (
+   <>
     <div className="w-full">
       <div className="w-full flex justify-between items-center gap-8">
         <h1 className="uppercase font-semibold text-lg mb-4 lg:text-2xl text-dark lg:mb-8">QUẢN LÝ ĐƠN HÀNG</h1>
@@ -158,7 +132,7 @@ const OrderManager = () => {
             </tr>
           </thead>
           <tbody>
-            {orders && orders?.data?.map((order: any, index: number) => {
+            {orders && orders?.data?.map((order: any) => {
               const date = new Date(order.createdAt);
               const formattedDate = date.toLocaleString('vi-VN', {
                 year: 'numeric',
@@ -169,7 +143,7 @@ const OrderManager = () => {
                 second: '2-digit'
               });
               return (
-                <tr className="flex flex-wrap lg:table-row">
+                <tr className="flex flex-wrap lg:table-row" key={order?._id}> 
                   <td className="flex-[50%] lg:table-cell pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']  underline lg:no-underline">{order.orderNumber}</td>
                   <td className="lg:table-cell  pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']">{formattedDate}</td>
                   <td className="order-4 pt-5 py-3 lg:border-t-[1px] border-b-[1px] lg:border-['#f7f8f9']">
@@ -190,7 +164,7 @@ const OrderManager = () => {
                       </Button>
                     ) }
                     {(order.status === "delivered") && (
-                     <Button type='primary' onClick={() => mutation.mutate({ action: "updateStatus", orderId: order._id, status: "received" })} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
+                     <Button type='primary' onClick={() => onHandleReceived(order?._id) } className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
                       <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} />
                       Đã nhận hàng
                      </Button>
@@ -205,9 +179,10 @@ const OrderManager = () => {
                       </div>
                     )}
                   </td>
-                  <td className="order-2 flex-[100%] lg:table-cell pt-5 py-3 lg:border-t-[1px] lg:border-b-[1px] lg:border-['#f7f8f9']">{
+                  <td className="order-2 flex-[100%] lg:table-cell pt-5 py-3 lg:border-t-[1px] lg:border-b-[1px] lg:border-['#f7f8f9']">
+                    {
                     order.items.map((item: any) => (
-                      <div className="">{item.quantity}x {item.name}</div>
+                      <div className="" key={item?._id}>{item.quantity}x {item.name}</div>
                     ))
                   }</td>
                   <td className="order-3 flex-[50%] pt-5 py-3 lg:border-t-[1px] border-b-[1px] font-bold border-['#f7f8f9']"> {formatPrice(order.totalPrice-order.voucher.discountValue)}₫</td>
@@ -310,6 +285,7 @@ const OrderManager = () => {
         </div>
       )}
     </div>
+   </>
 
   )
 }
