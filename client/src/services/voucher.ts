@@ -1,3 +1,4 @@
+import { message } from "antd";
 import instance from "../common/config/axios";
 import { IVoucher } from "../common/interfaces/voucher";
 
@@ -29,8 +30,7 @@ export const getVoucherByCode = async (code: string) => {
     const { data } = await instance.get(`/vouchers/code/${code}`);
     return data;
   } catch (error) {
-    console.log(error);
-    throw error;
+    throw message.error('Mã code không tồn tại!');
   }
 };
 

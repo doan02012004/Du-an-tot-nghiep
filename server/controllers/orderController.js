@@ -6,6 +6,8 @@ import querystring from 'qs';
 import dateFormat from 'dateformat';
 import { formatDateToCustomString, sortObject } from '../ultil/payment.js';
 import ProductModel from "../models/productModel.js";
+import sendEmail from "../utils/sendEmail.js";
+import UserModel from "../models/userModel.js";
 
 import sendEmail from "../utils/sendEmail.js";
 import UserModel from "../models/userModel.js";
@@ -29,23 +31,23 @@ export const createOrder = async (req, res) => {
             cart.totalCart = 0;
             await cart.save()
             // Sử dụng userModel để tìm người dùng từ userId
-            const user = await UserModel.findById(order.userId);
+            const user = await UserModel.findById(order.userId);  
             const userEmail = user?.email;
-            console.log(order)
             const voucher = order.voucher?.discountValue || 0; // Lấy giá trị voucher, nếu có
             const price = order.totalPrice - voucher; // Tính tổng không bao gồm phí ship
             if (userEmail) {
-                // Gửi email xác nhận đơn hàng nếu có email
+                if(order.paymentMethod === "cash"){
+                    // Gửi email xác nhận đơn hàng nếu có email
                 const subject = "Xác nhận đơn hàng";
                 const message = `Xin chào ${order.customerInfor.fullname || "Khách hàng"},\n\nCảm ơn bạn đã đặt hàng tại cửa hàng chúng tôi. Đơn hàng của bạn đang được xử lý. Chúng tôi sẽ sớm cập nhật trạng thái cho bạn.\n\nChi tiết đơn hàng:\nMã đơn hàng: ${order.orderNumber}\nTổng tiền: ${price.toLocaleString()}₫\n\nCảm ơn bạn đã tin tưởng!`;
 
                 // Gửi email
                 await sendEmail(userEmail, subject, message);
+                }
             } else {
                 console.log("Không tìm thấy email người dùng");
             }
         }
-
         return res.status(StatusCodes.CREATED).json(order);
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -120,55 +122,55 @@ export const deleteOrder = async (req, res) => {
 
 export const updateOrderStatus = async (req, res) => {
     const { orderId, status } = req.body;
-
+  
     try {
-        // Kiểm tra trạng thái hợp lệ
-        const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints"];
-        if (!validStatuses.includes(status)) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
-        }
-
-        // Cập nhật trạng thái đơn hàng
-        const updatedOrder = await orderModel.findByIdAndUpdate(
-            orderId,
-            { status },
-            { new: true }
-        ).populate('userId', 'email fullname');  // Lấy email và fullname từ userId
-
-        if (!updatedOrder) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
-        }
-
-        // Kiểm tra email người dùng
-        const userEmail = updatedOrder.userId.email;
-        if (!userEmail) {
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Email not found for the user" });
-        }
-
-        const statusTranslations = {
-            pending: "Chờ xử lý",
-            unpaid: "Chưa thanh toán",
-            confirmed: "Đã xác nhận",
-            shipped: "Đang giao",
-            delivered: "Đã giao hàng",
-            cancelled: "Đã hủy",
-            received: "Đã nhận hàng",
-            Returngoods: "Trả hàng",
-            Complaints: "Đang xử lý khiếu nại",
+      // Kiểm tra trạng thái hợp lệ
+      const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints"];
+      if (!validStatuses.includes(status)) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
+      }
+  
+      // Cập nhật trạng thái đơn hàng
+      const updatedOrder = await orderModel.findByIdAndUpdate(
+        orderId,
+        { status },
+        { new: true }
+      ).populate('userId', 'email fullname');  // Lấy email và fullname từ userId
+  
+      if (!updatedOrder) {
+        return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
+      }
+  
+      // Kiểm tra email người dùng
+      const userEmail = updatedOrder.userId.email;
+      if (!userEmail) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Email not found for the user" });
+      }
+  
+      const statusTranslations = {
+          pending: "Chờ xử lý",
+          unpaid: "Chưa thanh toán",
+          confirmed: "Đã xác nhận",
+          shipped: "Đang giao",
+          delivered: "Đã giao hàng",
+          cancelled: "Đã hủy",
+          received: "Đã nhận hàng",
+          Returngoods:"Trả hàng",
+          Complaints:"Đang xử lý khiếu nại",
         };
-
-        const vietnameseStatus = statusTranslations[status];
-
-        // Gửi email cho khách hàng
-        const subject = "Cập nhật trạng thái đơn hàng";
-        const message = `Xin chào ${updatedOrder.customerInfor.fullname},\n\nĐơn hàng của bạn đã được cập nhật trạng thái: ${vietnameseStatus}. Cảm ơn bạn đã tin tưởng mua sắm tại cửa hàng chúng tôi!`;
-
-        await sendEmail(userEmail, subject, message);
-
-        // Trả về đơn hàng đã được cập nhật
-        return res.status(StatusCodes.OK).json(updatedOrder);
+  
+      const vietnameseStatus = statusTranslations[status];
+  
+      // Gửi email cho khách hàng
+      const subject = "Cập nhật trạng thái đơn hàng";
+      const message = `Xin chào ${updatedOrder.customerInfor.fullname},\n\nĐơn hàng của bạn đã được cập nhật trạng thái: ${vietnameseStatus}. Cảm ơn bạn đã tin tưởng mua sắm tại cửa hàng chúng tôi!`;
+  
+      await sendEmail(userEmail, subject, message);
+  
+      // Trả về đơn hàng đã được cập nhật
+      return res.status(StatusCodes.OK).json(updatedOrder);
     } catch (error) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
 
@@ -197,7 +199,6 @@ export const paymentVNPay = async (req, res) => {
         const expireDateFormat = formatDateToCustomString(date); // Định dạng thành yyyyMMddHHmmss
         let locale = "vn";
         if (!locale) locale = 'vn';
-
         const currCode = 'VND';
         console.log('ip', ipAddr)
 
@@ -252,13 +253,39 @@ export const vnpayReturn = async (req, res) => {
     const queryString = querystring.stringify(sortedParams, { encode: false });
     const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
     if (hash === secureHash) {
-        const orderNumber = vnp_Params['vnp_TxnRef'];
+        const orderNumber = vnp_Params['vnp_TxnRef']
+        const order = await orderModel.findOne({ orderNumber });
+        if (!order) {
+            console.error("Order not found for orderNumber:", orderNumber);
+            return res.status(404).json({ message: 'Order not found' });
+        }
+        // Lấy email từ UserModel dựa trên userId của đơn hàng
+        const user = await UserModel.findById(order.userId);
+        const userEmail = user?.email || ""; // Email của người dùng
+        console.log(userEmail)
         if (vnp_Params['vnp_ResponseCode'] === '00') {
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "pending" });
+
+            await orderModel.findOneAndUpdate({ orderNumber }, { status: "pending",paymentStatus: "Đã thanh toán" })
+             // Gửi email xác nhận thanh toán thành công
+             if(userEmail){
+                await sendEmail(
+                    userEmail,
+                    "Thanh toán thành công",
+                    `Đơn hàng ${orderNumber} đã được thanh toán thành công. Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!`
+                );
+             }
             return res.redirect('http://localhost:5173/thanks');
         } else {
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "unpaid" });
-            return res.redirect('http://localhost:5173/canpay');
+            await orderModel.findOneAndUpdate({ orderNumber }, { status: "unpaid",paymentStatus: "Chưa thanh toán" })
+            if(userEmail){
+                // Gửi email thông báo thanh toán thất bại
+                await sendEmail(
+                    userEmail,
+                    "Thanh toán thất bại",
+                    `Đơn hàng ${orderNumber} chưa được thanh toán. Vui lòng thử lại hoặc liên hệ với chúng tôi để được hỗ trợ.`
+                );
+             }
+            return res.redirect('http://localhost:5173/order');
         }
     } else {
         return res.status(400).json({ message: 'Chữ ký không hợp lệ' });
@@ -320,6 +347,8 @@ export const vnpayIPN = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ RspCode: '99', Message: 'lỗi không xác định' });
     }
 };
+
+
 
 // Hàm tạo liên kết thanh toán bằng VNPay cho đơn thanh toán lại
 export const generateVNPayLink = async (order) => {
@@ -385,5 +414,3 @@ export const initiatePayment = async (req, res) => {
         res.status(500).json({ message: 'Lỗi server khi xử lý thanh toán lại.' });
     }
 };
-
-

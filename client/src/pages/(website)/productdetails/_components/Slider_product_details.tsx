@@ -114,33 +114,33 @@ const Slider_product_details = ({product}: Props) => {
                                                 {gallery?.map((item,index)=>(
                                                     <SwiperSlide key={index}>
                                                         <div className='lg:w-[95px] lg:h-[142px]'>
-                                                            <img src={item} onClick={()=> onChangeImage(index)} className='w-full h-full object-cover' />
+                                                            <img src={item} onClick={()=> onChangeImage(index)} className='object-cover w-full h-full' />
                                                         </div>
                                                     </SwiperSlide>
                                                 ))}
                                                 {/* <SwiperSlide>
                                                     <div className='lg:w-[95px] lg:h-[142px]'>
-                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='w-full h-full object-cover' />
+                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='object-cover w-full h-full' />
                                                       </div>
                                                 </SwiperSlide>
                                                 <SwiperSlide>
                                                     <div className='lg:w-[95px] lg:h-[142px]'>
-                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='w-full h-full object-cover' />
+                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='object-cover w-full h-full' />
                                                     </div>
                                                 </SwiperSlide>
                                                 <SwiperSlide>
                                                     <div className='lg:w-[95px] lg:h-[142px]'>
-                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='w-full h-full object-cover' />
+                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='object-cover w-full h-full' />
                                                     </div>
                                                 </SwiperSlide>
                                                 <SwiperSlide>
                                                     <div className='lg:w-[95px] lg:h-[142px]'>
-                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='w-full h-full object-cover' />
+                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='object-cover w-full h-full' />
                                                     </div>
                                                 </SwiperSlide>
                                                 <SwiperSlide>
                                                     <div className='lg:w-[95px] lg:h-[142px]'>
-                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='w-full h-full object-cover' />
+                                                        <img src="https://pubcdn.ivymoda.com/files/product/thumab/400/2024/04/04/dc06923d4097dc13f365dcf7c21180a4.webp" className='object-cover w-full h-full' />
                                                     </div>
                                                 </SwiperSlide> */}
                             </Swiper>

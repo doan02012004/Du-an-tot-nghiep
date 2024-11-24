@@ -21,10 +21,9 @@ const useOrderMutation = () => {
                     break;
                     case 'updateStatus':
                         try {
-                            console.log(1)
                             const response = await updateOrderStatus(option.orderId, option.status);
                             message.success('Cập nhật trạng thái thành công');
-                            return response.data;
+                            return response;
                         } catch (error) {
                             message.error('Cập nhật trạng thái thất bại');
                         }

@@ -111,8 +111,7 @@ const orderSchema = new Schema(
         },
         status: {
             type: String,
-
-            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints"],
+            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints"],
             default: "pending",
         },
         totalPrice: {
@@ -127,13 +126,17 @@ const orderSchema = new Schema(
             type: Date,
             default: Date.now,
         },
+        paymentStatus: {
+            type: String,
+            require: false
+        },
         ship: {
             nameBrand: {
                 type: String,
                 required: true
             },
             value: {
-
+                
             }
         },
         voucher: {
@@ -152,7 +155,7 @@ const orderSchema = new Schema(
             },
             type: {
                 type: String,
-                enum: ["percentage", "fixed", "freeship"],
+                enum: ["percentage","fixed","freeship"],
                 required: false,
             },
         },

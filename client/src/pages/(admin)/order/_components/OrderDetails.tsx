@@ -52,16 +52,19 @@ const OrderDetails = (props: Props) => {
     // Hàm kiểm tra tính hợp lệ của việc chuyển đổi trạng thái
     const validateStatusChange = (currentStatus: string, newStatus: string) => {
         const invalidTransitions: Record<string, string[]> = {
-            pending: ['pending','shipped','delivered','received','Returngoods','Complaints'],
-            confirmed: ['pending','confirmed','delivered','received','Returngoods','Complaints'],
-            shipped: ['pending','confirmed','shipped','received','Returngoods','Complaints'],
-            cancelled: ['confirmed','cancelled','delivered', 'shipped', 'received','Returngoods','Complaints'],
-            delivered: ['pending','confirmed','shipped','delivered','Returngoods'],
-            received: ['pending','delivered','received', 'unpaid', 'confirmed', 'shipped','Returngoods', 'cancelled'],
+            pending: ["pending", "unpaid", "shipped", "delivered", "received","Returngoods","Complaints"],
+            unpaid: ["pending", "unpaid", "confirmed", "shipped", "delivered", "received","Returngoods","Complaints"],
+            confirmed: ["pending", "unpaid", "confirmed",  "delivered", "cancelled", "received","Returngoods","Complaints"],
+            shipped: ["pending", "unpaid", "confirmed", "shipped", "cancelled", "received","Returngoods","Complaints"],
+            delivered: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "Returngoods"],
+            cancelled: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints"],
+            received: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods"],
+            Complaints: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints"]
         };
-
-        return !(invalidTransitions[currentStatus]?.includes(newStatus));
+        return !(invalidTransitions[currentStatus]?.includes(newStatus));        
     };
+
+ 
 
     const handleStatusChange = (newStatus: string) => {
         const currentStatus = order.status;
@@ -257,22 +260,15 @@ const OrderDetails = (props: Props) => {
                     <div className="pt-3">
                         <div className="grid grid-cols-2">
                             <p>Phương thức thanh toán:</p>
-                            <p>{order.paymentMethod === 'cash' ? 'Tiền mặt' : 
-                                order.paymentMethod === 'momo' ? 'Momo' : 
-                                order.paymentMethod === 'atm' ? 'ATM' : 
-                                'Thẻ tín dụng'}</p> 
+                            <p>{order.paymentMethod === 'credit' ? 'Thẻ tín dụng' : 
+                                order.paymentMethod === 'atm' ? 'Thẻ ATM' : 
+                                order.paymentMethod === 'vnPay' ? 'VN Pay' : 
+                                'Tiền mặt'}</p> 
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Trạng thái thanh toán:</p>
                             <p>
-                            {order.paymentMethod === 'cash' && 
-                            (order.status === 'pending' || 
-                                order.status === 'unpaid' || 
-                                order.status === 'confirmed' || 
-                                order.status === 'shipped' || 
-                                order.status === 'cancelled') 
-                                ? 'Chưa thanh toán' 
-                                : 'Đã thanh toán'}
+                            {order.paymentMethod === "vnPay" ? (order.paymentStatus === "Đã thanh toán" ? "Đã thanh toán" : "Chưa thanh toán") :(order.status === "pending" || order.status === "unpaid" || order.status === "confirmed" || order.status === "shipped" || order.status === "cancelled" ? "Chưa thanh toán" : "Đã thanh toán" )}
                             </p>
                         </div>
                     </div>
@@ -294,9 +290,9 @@ const OrderDetails = (props: Props) => {
                         <div className="grid grid-cols-2">
                             <p>Trạng thái giao hàng:</p>
                             <p>
-                            {(order.status === 'shipped' || 
-                                order.status === 'delivered' || 
-                                order.status === 'received') 
+                            {(order.status === 'Complaints' || 
+                                order.status === 'received' || 
+                                order.status === 'delivered') 
                                 ? 'Đã giao' 
                                 : 'Chưa giao'}
                             </p>

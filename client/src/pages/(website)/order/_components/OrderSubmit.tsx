@@ -6,7 +6,7 @@ import { IcartItem } from "../../../../common/interfaces/cart"
 import { Iattribute, Igallery } from "../../../../common/interfaces/product"
 import { message } from "antd"
 import { useNavigate } from "react-router-dom"
-import { IshipSubmit } from "../../../../common/interfaces/orderInterfaces"
+import { IshipSubmit, Vouchers } from "../../../../common/interfaces/orderInterfaces"
 import { createOrder, paymentVNPay } from "../../../../services/order"
 import { useSelector } from "react-redux"
 import { LoadingOutlined } from "@ant-design/icons"
@@ -22,10 +22,11 @@ type Props = {
 }
 
 const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, ship }: Props) => {
+    const voucher = useSelector((state: any) => state.cart.voucher) as Vouchers;
     const [loading, setLoading] = useState(false)
     const orderMutation = useOrderMutation()
     const navigate = useNavigate()
-    const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
+    // const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
     useEffect(() => {
         if (orderMutation?.data?.response?.status === 500) {
             return message.error("Lỗi thanh toán")
@@ -65,7 +66,14 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
             status: "pending",
             totalOrder: totalProduct,
             totalPrice: ship?.value?.price ? totalCart + ship?.value?.price : totalCart,
-            ship: ship
+            ship: ship,
+            // Thêm thông tin voucher vào đơn hàng
+            voucher: {
+                code: voucher?.code || null,
+                discountValue: (voucher?.type === "percentage" && (Math.min(totalCart * voucher.value / 100, Number(voucher.maxDiscountValue) ))) || (voucher?.type === "fixed" && (voucher?.value )) || (voucher?.type === "freeship" && (Math.min(Number(ship?.value?.price), Number(voucher?.maxDiscountValue) )))  || 0,
+                category: voucher?.category || null,
+                type: voucher?.type || null
+            },
         }
         orderMutation.mutate({ action: "create", newOrder: newOrder })
 
@@ -100,7 +108,14 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
                 status: "unpaid",
                 totalOrder: totalProduct,
                 totalPrice: ship?.value?.price ? totalCart + ship?.value?.price : totalCart,
-                ship: ship
+                ship: ship,
+                    // Thêm thông tin voucher vào đơn hàng
+                voucher: {
+                    code: voucher?.code || null,
+                    discountValue: (voucher?.type === "percentage" && (Math.min(totalCart * voucher.value / 100, Number(voucher.maxDiscountValue) ))) || (voucher?.type === "fixed" && (voucher?.value )) || (voucher?.type === "freeship" && (Math.min(Number(ship?.value?.price), Number(voucher?.maxDiscountValue) )))  || 0,
+                    category: voucher?.category || null,
+                    type: voucher?.type || null
+                },
             }
             try {
                 const amount = totalCart + (ship?.value?.price || 0);

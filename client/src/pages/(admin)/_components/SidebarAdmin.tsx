@@ -3,6 +3,7 @@ import {
   BgColorsOutlined,
   CreditCardOutlined,
   ExclamationCircleOutlined,
+  CommentOutlined,
   FileImageOutlined,
   MessageOutlined,
   OrderedListOutlined,
@@ -30,7 +31,7 @@ const SidebarAdmin = () => {
           {
             key: "1",
             icon: <BarChartOutlined />,
-            label: "Thống kê",
+            label: ( <NavLink to={`/admin`}>Thống kê</NavLink>),
           },
           {
             key: "2",
@@ -79,6 +80,17 @@ const SidebarAdmin = () => {
               {
                 key: "5.1",
                 label: <NavLink to={"/admin/gallerys"}>Danh sách</NavLink>,
+              },
+            ],
+          },
+          {
+            key: "11",
+            icon: <CommentOutlined />,
+            label: "Đánh giá",
+            children: [
+              {
+                key: "11.1",
+                label: <NavLink to={"/admin/comments"}>Danh sách</NavLink>,
               },
             ],
           },
