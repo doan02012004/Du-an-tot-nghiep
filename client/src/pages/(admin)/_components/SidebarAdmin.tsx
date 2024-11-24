@@ -123,7 +123,7 @@ const SidebarAdmin = () => {
           {
             key: "9",
             icon: <CreditCardOutlined />,
-            label: 'Vucher & Ship',
+            label: 'Voucher & Ship',
             children: [
               {
                 key: "9.1",

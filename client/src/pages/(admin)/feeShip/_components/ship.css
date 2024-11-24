@@ -1,0 +1,36 @@
+/* ship.css */
+.scroll-container {
+    display: flex;
+    justify-content: start;
+    /* Điều chỉnh justify-content để đảm bảo phần tử đầu tiên không bị lệch */
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px;
+    /* Thêm padding để tạo khoảng cách hai bên */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+}
+
+.scroll-container::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, and Opera */
+}
+
+.button {
+    min-width: 300px;
+    text-align: center;
+}
+
+.add-button {
+    position: absolute;
+    right: 10px;
+}
+
+.selected-method {
+    margin-top: 20px;
+    font-size: 18px;
+}

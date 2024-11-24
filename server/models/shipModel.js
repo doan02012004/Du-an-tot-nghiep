@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const rateWeightSchema = new mongoose.Schema({
     minWeightValue: {
         type: Number,
@@ -46,5 +48,5 @@ const shipModel = new mongoose.Schema({
 
 
 
-const ship = mongoose.model('ship', shipModel)
-export default ship
+const ShipModel = mongoose.model('ship', shipModel)
+export default ShipModel

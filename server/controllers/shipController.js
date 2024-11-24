@@ -1,6 +1,8 @@
+import ShipModel from "../models/shipModel.js";
+
 export const getAllShipOptions = async (req, res) => {
     try {
-        const ship = await shipModel.find();
+        const ship = await ShipModel.find();
         res.status(200).json(ship);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -10,7 +12,7 @@ export const getAllShipOptions = async (req, res) => {
 export const getShipById = async (req, res) => {
     try {
         const { id } = req.params;
-        const shipById = await shipModel.findById(id);
+        const shipById = await ShipModel.findById(id);
         if (!shipById) {
             return res.status(404).json({ message: 'Phương thức vận chuyển không tồn tại' });
         }
@@ -23,7 +25,7 @@ export const getShipById = async (req, res) => {
 export const createShip = async (req, res) => {
     try {
         const { nameBrand, weightRates, volumeRates } = req.body;
-        const newShip = new shipModel({
+        const newShip = new ShipModel({
             nameBrand,
             weightRates,
             volumeRates
@@ -40,7 +42,7 @@ export const updateShip = async (req, res) => {
         const { id } = req.params;
         const { nameBrand, weightRates, volumeRates } = req.body;
 
-        const updateShip = await shipModel.findByIdAndUpdate(id, { nameBrand, weightRates, volumeRates }, { new: true })
+        const updateShip = await ShipModel.findByIdAndUpdate(id, { nameBrand, weightRates, volumeRates }, { new: true })
         if (!updatedShipOption) {
             return res.status(404).json({ message: 'Phương thức vận chuyển không tồn tại' });
         }
