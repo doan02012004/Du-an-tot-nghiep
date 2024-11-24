@@ -28,6 +28,36 @@ export const registerUser = async (user: Isignup) => {
     }
 }
 
+export const forgotUser = async (data: { email: string }) => {
+    try {
+        const res = await instance.post("/users/forgot", data)
+        return res.data
+    } catch (error) {
+        message.error("Không tìm thấy")
+        return error
+    }
+}
+
+export const verifyResetToken = async (token: string) => {
+    try {
+        const res = await instance.post("/users/verify-reset-token", {token})
+        return res.data.isValid
+    } catch (error) {
+        message.error("Không tìm thấy")
+        return error
+    }
+}
+
+export const resetPassword = async (data: { token: string; password: string }) => {
+    try {
+        const res = await instance.post("/users/reset-password", data)
+        return res.data
+    } catch (error) {
+        message.error("Không tìm thấy")
+        return error
+    }
+}
+
 export const logoutUser = async () => {
     // dispatch(logoutStart());
     try {
@@ -46,7 +76,7 @@ export const logoutUser = async () => {
         return error
         // dispatch(logoutFailed());
     }
-};
+}
 
 export const getAllUser = async () => {
     try {
@@ -136,6 +166,15 @@ export const getHistoryUpdateUser = async () => {
         }
     } catch (error) {
         console.log(message.error)
+    }
+}
+
+export const changePassword =  async (option:{newPassword:string|number,currentPassword:string|number}) =>{
+    try {
+        const res = await instance.post('/users/change-password',option)
+        return res
+    } catch (error) {
+        return error
     }
 }
 

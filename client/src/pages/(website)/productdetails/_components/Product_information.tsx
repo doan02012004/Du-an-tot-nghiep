@@ -2,7 +2,6 @@
 import {  message } from 'antd'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { Iattribute, Igallery, Iproduct } from '../../../../common/interfaces/product'
-import Product_description from './Product_description'
 import { AppContext } from '../../../../common/contexts/AppContextProvider'
 import { formatPrice } from '../../../../common/utils/product'
 import { InewCart } from '../../../../common/interfaces/cart'
@@ -153,7 +152,7 @@ const Product_information = ({ product }: Props) => {
                                 <div className="flex lg:mb-[24px] mt-4 lg:mt-0 mb-4">
                                     <div className='flex items-center gap-x-2'>
                                         <p className="lg:text-2xl text-[18px] font-semibold m-0">{minPrice ? formatPrice(minPrice) : 0}đ</p>
-                                        <p className='font-bold m-0'>-</p>
+                                        <p className='m-0 font-bold'>-</p>
                                         <p className="lg:text-2xl text-[18px] font-semibold m-0">{maxPrice ? formatPrice(maxPrice) : 0}đ</p>
                                     </div>
                                 </div>
@@ -175,17 +174,17 @@ const Product_information = ({ product }: Props) => {
                     {/*  */}
                     <div className="">
                         <div className="text-[16px]">
-                            <h3 className="lg:text-2xl font-semibold">Màu sắc: <span id="selected-color">{choiceColor === '' ? product.colors[0].name : choiceColor}</span></h3>
+                            <h3 className="font-semibold lg:text-2xl">Màu sắc: <span id="selected-color">{choiceColor === '' ? product.colors[0].name : choiceColor}</span></h3>
                             <div className="color-options flex lg:mt-4 lg:text-[16px] mt-2">
                                 {product.colors.map((color, index) => (
-                                    <div onClick={() => { setChoiceColor(color.name); setChoiceSize(''); setCurentAttribute(null) }} key={index} className="color-option lg:w-6 lg:h-6 w-5 h-5 bg-black border rounded-full mr-4 relative" style={{ background: color.background }}>
+                                    <div onClick={() => { setChoiceColor(color.name); setChoiceSize(''); setCurentAttribute(null) }} key={index} className="relative w-5 h-5 mr-4 bg-black border rounded-full color-option lg:w-6 lg:h-6" style={{ background: color.background }}>
                                         {color.name === choiceColor && (
                                             <span className={`${color.name.includes('TRẮNG') ? 'text-black' : 'text-white'} check-icon  absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 `}><i className="fas fa-check" /></span>
                                         )}
                                     </div>
                                 ))}
-                                {/* <div className="color-option lg:w-6 lg:h-6 w-5 h-5 bg-white border rounded-full mr-4 relative" data-color="Trắng">
-                    <span className="check-icon hidden absolute top-1/2 left-1/3 transform -translate-x-1/2 -translate-y-1/2 text-black"><i className="fas fa-check" /></span>
+                                {/* <div className="relative w-5 h-5 mr-4 bg-white border rounded-full color-option lg:w-6 lg:h-6" data-color="Trắng">
+                    <span className="absolute hidden text-black transform -translate-x-1/2 -translate-y-1/2 check-icon top-1/2 left-1/3"><i className="fas fa-check" /></span>
                     </div> */}
                             </div>
                         </div>
@@ -217,7 +216,7 @@ const Product_information = ({ product }: Props) => {
                                             >
                                                 {color?.size}
                                                 {color.instock === 0 && (
-                                                    <div className='absolute top-0 left-0 w-full h-full flex justify-center items-center'>
+                                                    <div className='absolute top-0 left-0 flex items-center justify-center w-full h-full'>
                                                         <div className='block rotate-[62deg] w-px h-10 lg:h-11 bg-slate-600'></div>
                                                     </div>
                                                 )}
@@ -237,7 +236,7 @@ const Product_information = ({ product }: Props) => {
                             </div>
                         </div>
                         {/*  */}
-                        <div className="product-detail__quantity flex items-center">
+                        <div className="flex items-center product-detail__quantity">
                             <h3 className="lg:text-[19px] text-[19px] font-semibold mr-4">Số lượng:</h3>
                             <div className="quantity-control flex border lg:rounded-tl-2xl lg:rounded-br-2xl rounded-tl-md rounded-br-md mt-[-12px] lg:mt-0  ">
                                 <button onClick={() => giamSl()} className="quantity-decrease lg:w-[55px] lg:h-[54px] w-8 h-8 border flex items-center justify-center mr-[5px] lg:rounded-tl-2xl lg:rounded-br-2xl rounded-tl-md rounded-br-md">-</button>
@@ -260,7 +259,7 @@ const Product_information = ({ product }: Props) => {
                             <hr />
                         </div>
                         {/*  */}
-                        <Product_description />
+                        
                         {/*  */}
                     </div>
                 </div>

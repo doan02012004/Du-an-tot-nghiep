@@ -8,6 +8,7 @@ import { StatusCodes } from "http-status-codes";
 import BlackListModel from '../models/blackListModel.js'
 import { HistoryUpdateUser } from '../models/historyUpdateUserModel.js'
 import AddressModel from '../models/addressModel.js'
+import sendEmail from '../utils/sendEmail.js'
 dotenv.config()
 let refreshTokens = [];
 // lấy toàn bộ user
@@ -93,32 +94,32 @@ export const updateUser = async (req, res) => {
             }
         });
 
-         // Lưu người dùng với thông tin mới
-         await user.save();
+        // Lưu người dùng với thông tin mới
+        await user.save();
 
-         // Chỉ lưu vào collection `HistoryUpdateUser` nếu có thay đổi
-         if (Object.keys(changes).length > 0) {
-             const updatedUserData = {
-                 originalUser: user._id, // Lưu ID của user gốc
-                 changes: changes, // Chỉ lưu những trường đã thay đổi
-                 updateTime: new Date(), // Lưu thời gian cập nhật
-             };
- 
-             // Tạo mới và lưu vào collection `HistoryUpdateUser`
-             const updatedUserRecord = new HistoryUpdateUser(updatedUserData);
-             await updatedUserRecord.save();
-         }
- 
-         // Trả về thông tin người dùng (trừ mật khẩu)
-         const { password: hashedPass, ...updatedUser } = user._doc; // Loại bỏ mật khẩu
-         return res.status(StatusCodes.OK).json(updatedUser);
-         
-     } catch (error) {
-         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-             message: error.message,
-         });
-     }
- };
+        // Chỉ lưu vào collection `HistoryUpdateUser` nếu có thay đổi
+        if (Object.keys(changes).length > 0) {
+            const updatedUserData = {
+                originalUser: user._id, // Lưu ID của user gốc
+                changes: changes, // Chỉ lưu những trường đã thay đổi
+                updateTime: new Date(), // Lưu thời gian cập nhật
+            };
+
+            // Tạo mới và lưu vào collection `HistoryUpdateUser`
+            const updatedUserRecord = new HistoryUpdateUser(updatedUserData);
+            await updatedUserRecord.save();
+        }
+
+        // Trả về thông tin người dùng (trừ mật khẩu)
+        const { password: hashedPass, ...updatedUser } = user._doc; // Loại bỏ mật khẩu
+        return res.status(StatusCodes.OK).json(updatedUser);
+
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
+        });
+    }
+};
 
 export const updateUserStatus = async (req, res) => {
     try {
@@ -231,13 +232,13 @@ export const register = async (req, res) => {
             {
                 ...req.body,
                 fullname: `${User.firstname} ${User.lastname}`,
-                isDefault:true
+                isDefault: true
 
             }
         )
         return res.status(StatusCodes.CREATED).json({
             message: "Đăng ký thành công",
-            status:200,
+            status: 200,
             data: userData
         })
     } catch (error) {
@@ -270,6 +271,267 @@ const generateRefreshToken = (user) => {
     )
 }
 
+// quên mật khẩu
+export const forgot = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        // Kiểm tra xem email có tồn tại trong hệ thống không
+        const user = await UserModel.findOne({ email });
+
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không có tài khoản" });
+        }
+
+        // Tạo token reset mật khẩu với thời gian hết hạn 15 phút
+        const token = jwt.sign({ userId: user._id }, process.env.KEY_SECRET, {
+            expiresIn: "15m",
+        });
+
+        // Lưu token và thời gian hết hạn vào cơ sở dữ liệu
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;  // Hết hạn sau 15 phút
+        await user.save();
+
+        // Tạo đường link chứa token cho việc reset mật khẩu
+        const resetLink = `${process.env.CLIENT_URL}/forgot?token=${token}`;
+
+        // Gửi email cho người dùng
+        const subject = "Khôi phục mật khẩu đăng nhập Fendi Shop";
+        const html = `
+        <html>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f2f2f2;
+                margin: 0;
+                padding: 0;
+              }
+              .email-container {
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              }
+              .email-header {
+                text-align: center;
+                margin-bottom: 30px;
+              }
+              .email-body {
+                font-size: 16px;
+                line-height: 1.5;
+                color: #333;
+                margin-bottom: 30px;
+              }
+              .email-body p {
+                margin-bottom: 10px;
+              }
+              .reset-link {
+                display: block     ;
+                padding: 0.75rem 1rem;
+                width: 100%;
+                background-color: #221f20;
+                color: #f7f8f9;
+                font-weight: 600;
+                border-radius: 0.375rem;
+                text-align: center;
+                text-decoration: none;
+                transition: background-color 0.3s, color 0.3s;
+                }
+
+                .reset-link:hover {
+                background-color: #f7f8f9;
+                color: #221f20;
+                }
+              .footer {
+                font-size: 14px;
+                text-align: center;
+                color: #666;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="email-container">
+              <div class="email-header">
+                <h1>Khôi phục mật khẩu</h1>
+              </div>
+  
+              <div class="email-body">
+                <p>Chào ${user.firstname || "bạn"},</p>
+                <p>Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản của mình. Để tiếp tục, vui lòng nhấn vào liên kết dưới đây để đặt lại mật khẩu:</p>
+                <a href="${resetLink}" class="reset-link">Đặt lại mật khẩu</a>
+                <p>Lưu ý: Liên kết này sẽ hết hạn sau 15 phút.</p>
+                <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
+              </div>
+  
+              <div class="footer">
+                <p>Trân trọng,</p>
+                <p>Đội ngũ hỗ trợ của chúng tôi</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+
+        await sendEmail(email, subject, html);
+
+        // Trả về thông báo đã gửi email
+        // return res.status(StatusCodes.OK).json({
+        //     message: "Đã gửi email khôi phục mật khẩu. Vui lòng kiểm tra hộp thư!",
+        // });
+
+        res.status(200).json(user)
+
+    } catch (error) {
+        console.error("Lỗi khi xử lý quên mật khẩu:", error.message);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            error: "Lỗi máy chủ. Vui lòng thử lại sau!",
+        });
+    }
+};
+
+// Hàm xác minh token reset mật khẩu
+export const verifyResetToken = async (req, res) => {
+    const { token } = req.body;
+    try {
+        // Giải mã token
+        const decoded = jwt.verify(token, process.env.KEY_SECRET);
+
+        // Tìm người dùng dựa trên userId trong token
+        const user = await UserModel.findById(decoded.userId);
+
+        // Kiểm tra xem người dùng có tồn tại và token có hết hạn không
+        if (!user || user.resetPasswordExpires < Date.now()) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ isValid: false });
+        }
+
+        return res.status(StatusCodes.OK).json({ isValid: true });
+    } catch (error) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ isValid: false });
+    }
+};
+
+// Hàm thay đổi mật khẩu
+export const resetPassword = async (req, res) => {
+    const { token, password, confirmPassword } = req.body;
+
+    try {
+        // Kiểm tra xem mật khẩu mới và mật khẩu xác nhận có khớp hay không
+        if (password !== confirmPassword) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Mật khẩu xác nhận không khớp' });
+        }
+
+        // Giải mã token
+        const decoded = jwt.verify(token, process.env.KEY_SECRET);
+
+        // Tìm người dùng dựa trên userId trong token
+        const user = await UserModel.findById(decoded.userId);
+
+        // Kiểm tra xem token có hết hạn không
+        if (!user || user.resetPasswordExpires < Date.now()) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Token không hợp lệ' });
+        }
+
+        // Mã hóa mật khẩu mới
+        const hashPassword = await bcrypt.hash(password, 10);
+
+        // Cập nhật mật khẩu mới cho người dùng
+        user.password = hashPassword;  // Cập nhật mật khẩu đã mã hóa
+        user.resetPasswordToken = null;  // Xóa token reset mật khẩu
+        user.resetPasswordExpires = null; // Xóa thời gian hết hạn
+        await user.save();
+
+        // Đường link dến Fendi Shop
+        const Link = `${process.env.CLIENT_URL}`;
+
+        // **Gửi email thông báo đổi mật khẩu thành công**
+        const subject = "Thông báo khôi phục mật khẩu đăng nhập Fendi Shop thành công";
+        const html = `
+     <html>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f2f2f2;
+                margin: 0;
+                padding: 0;
+              }
+                .email-container {
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              }
+              .email-header {
+                text-align: center;
+                margin-bottom: 30px;
+              }
+              .email-body {
+                font-size: 16px;
+                line-height: 1.5;
+                color: #333;
+                margin-bottom: 30px;
+              }
+              .email-body p {
+                margin-bottom: 10px;
+              }
+                .reset-link {
+                display: block     ;
+                padding: 0.75rem 1rem;
+                width: 100%;
+                background-color: #221f20;
+                color: #f7f8f9;
+                font-weight: 600;
+                border-radius: 0.375rem;
+                text-align: center;
+                text-decoration: none;
+                transition: background-color 0.3s, color 0.3s;
+                }
+
+                .reset-link:hover {
+                background-color: #f7f8f9;
+                color: #221f20;
+                }
+                .footer {
+                font-size: 14px;
+                text-align: center;
+                color: #666;
+              }
+                </style>
+         <body>
+            <div class="email-container">
+              <div class="email-header">
+                <h1>Khôi phục mật khẩu</h1>
+              </div>
+  
+              <div class="email-body">
+                <p>Chào ${user.firstname || "bạn"},</p>
+         <p>Mật khẩu của bạn đã được thay đổi thành công. Nếu bạn không thực hiện thay đổi này, vui lòng liên hệ với chúng tôi ngay lập tức.</p>
+         <a href="${Link}" class="reset-link">FENDI SHOP</a>
+         <div class="footer">
+                <p>Trân trọng,</p>
+                <p>Đội ngũ hỗ trợ của chúng tôi</p>
+              </div>
+              </div>
+              </div>
+              </body>
+        </html>
+     `;
+        await sendEmail(user.email, subject, html);
+
+        // Trả về phản hồi thành công
+        return res.status(StatusCodes.OK).json({ message: 'Mật khẩu đã được thay đổi thành công!' });
+    } catch (error) {
+        console.error(error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Có lỗi xảy ra' });
+    }
+};
+
 // đăng nhập tài khoản
 export const login = async (req, res) => {
     try {
@@ -286,7 +548,7 @@ export const login = async (req, res) => {
 
         //kiểm tra tài khoản đã tồn tại chưa thông qua email
         if (!user) {
-           return res.status(StatusCodes.NOT_FOUND).json({ message: "Không có tài khoản" })
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không có tài khoản" })
         }
 
         //kiểm tra mật khẩu có đúng không giữa req người dùng nhập với pass có sẵn trong db
@@ -434,7 +696,7 @@ export const getHistoryUpdateUser = async (req, res) => {
         const history = await HistoryUpdateUser.find()
             .populate('originalUser', 'firstname lastname') // Lấy tên người dùng từ thông tin gốc (nếu cần)
             .exec();
-        
+
         // Format lại dữ liệu để chỉ trả về các trường đã thay đổi
         const formattedHistory = history.map((record) => {
             return {
@@ -451,5 +713,120 @@ export const getHistoryUpdateUser = async (req, res) => {
         res.status(500).json({
             message: 'Lỗi máy chủ: không thể lấy được lịch sử cập nhật',
         });
+    }
+};
+
+// Kiểm tra mật khẩu hiện tại và cập nhật mật khẩu mới
+export const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const user = await UserModel.findById({ _id: req.user._id });
+
+        if (!user) {
+            console.error('Không tìm thấy người dùng!');
+            throw new Error('Không tìm thấy người dùng!');
+        }
+
+        // Kiểm tra mật khẩu hiện tại
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            console.log('Mật khẩu hiện tại không đúng!');
+            return res.status(500).json({ message: "Mật khẩu hiện tại không đúng!" })
+        }
+        // Kiểm tra mật khẩu mới có khác mật khẩu cũ không
+        if (currentPassword === newPassword) {
+            console.error('Mật khẩu mới không được giống với mật khẩu hiện tại!');
+            throw new Error('Mật khẩu mới không được giống với mật khẩu hiện tại!');
+        }
+
+        // Mã hóa mật khẩu mới và lưu lại
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        //   // Đường link dến Fendi Shop
+        // const Link = `${process.env.CLIENT_URL}`;
+
+        // // **Gửi email thông báo đổi mật khẩu thành công**
+        // const subject = "Thông báo đổi mật khẩu đăng nhập Fendi Shop thành công";
+        // const html = `
+        // <html>
+        //      <head>
+        //        <style>
+        //          body {
+        //            font-family: Arial, sans-serif;
+        //            background-color: #f2f2f2;
+        //            margin: 0;
+        //            padding: 0;
+        //          }
+        //            .email-container {
+        //            max-width: 600px;
+        //            margin: 0 auto;
+        //            background-color: #fff;
+        //            padding: 20px;
+        //            border-radius: 10px;
+        //            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        //          }
+        //          .email-header {
+        //            text-align: center;
+        //            margin-bottom: 30px;
+        //          }
+        //          .email-body {
+        //            font-size: 16px;
+        //            line-height: 1.5;
+        //            color: #333;
+        //            margin-bottom: 30px;
+        //          }
+        //          .email-body p {
+        //            margin-bottom: 10px;
+        //          }
+        //            .reset-link {
+        //            display: block     ;
+        //            padding: 0.75rem 1rem;
+        //            width: 100%;
+        //            background-color: #221f20;
+        //            color: #f7f8f9;
+        //            font-weight: 600;
+        //            border-radius: 0.375rem;
+        //            text-align: center;
+        //            text-decoration: none;
+        //            transition: background-color 0.3s, color 0.3s;
+        //            }
+
+        //            .reset-link:hover {
+        //            background-color: #f7f8f9;
+        //            color: #221f20;
+        //            }
+        //            .footer {
+        //            font-size: 14px;
+        //            text-align: center;
+        //            color: #666;
+        //          }
+        //            </style>
+        //     <body>
+        //        <div class="email-container">
+        //          <div class="email-header">
+        //            <h1>Đổi mật khẩu</h1>
+        //          </div>
+
+        //          <div class="email-body">
+        //            <p>Chào ${user.firstname || "bạn"},</p>
+        //     <p>Mật khẩu của bạn đã được thay đổi thành công. Nếu bạn không thực hiện thay đổi này, vui lòng liên hệ với chúng tôi ngay lập tức.</p>
+        //     <a href="${Link}" class="reset-link">FENDI SHOP</a>
+        //     <div class="footer">
+        //            <p>Trân trọng,</p>
+        //            <p>Đội ngũ hỗ trợ của chúng tôi</p>
+        //          </div>
+        //          </div>
+        //          </div>
+        //          </body>
+        //    </html>
+        // `;
+        // await sendEmail(user.email, subject, html);
+        return res.status(StatusCodes.OK).json({ message: 'Mật khẩu đã được cập nhật thành công!' });
+
+    } catch (error) {
+        console.error('Error in changePassword:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Có lỗi xảy ra!', error: error.message });
     }
 };

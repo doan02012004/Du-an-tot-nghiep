@@ -11,7 +11,7 @@ const DashboardCard02 = () => {
     const navigate = useNavigate()
     const startDate = searchParams.get('startDate') 
     const finishDate = searchParams.get('finishDate')
-    const orderCountQuery = useOrderStatusCountQuery({startDate:startDate,endDate:finishDate,status:"pending"})
+    const orderCountQuery = useOrderStatusCountQuery({startDate:startDate,endDate:finishDate,status:"pending,paid"})
    useEffect(()=>{
     if(orderCountQuery?.data){
       setTotal(orderCountQuery?.data?.total)

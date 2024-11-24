@@ -1,5 +1,5 @@
 import express from 'express'
-import { add, deleteUser, getAccount, getAllUser, getByIdUser, getHistoryUpdateUser, login, logout, register, requestRefreshToken, updateUser, updateUserStatus } from '../controllers/userController.js'
+import { add, changePassword, deleteUser, forgot, getAccount, getAllUser, getByIdUser, getHistoryUpdateUser, login, logout, register, requestRefreshToken, resetPassword, updateUser, updateUserStatus, verifyResetToken } from '../controllers/userController.js'
 import { checkAuth } from '../middleware/checkAuth.js'
 
 const router = express.Router()
@@ -14,7 +14,11 @@ router.post('/add', add)
 router.put('/update/:id', updateUser)
 router.post('/register', register)
 router.post('/login', login)
+router.post('/forgot', forgot)
 router.post('/logout',  logout)
 router.post('/token/refresh', requestRefreshToken)
+router.post('/verify-reset-token', verifyResetToken);
+router.post('/reset-password', resetPassword);
+router.post('/change-password', checkAuth, changePassword);
 
 export default router

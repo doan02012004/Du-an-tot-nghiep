@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { loginUser } from '../../../../../services/auth'
 import { AppContext } from '../../../../../common/contexts/AppContextProvider'
@@ -104,7 +104,7 @@ const FormLogin = ({ state, onChangeForm }: FormLoginProps) => {
                         <div>
                             <input type="checkbox" className="accent-slate-950" /> &nbsp;<span>Ghi nhớ mật khẩu</span>
                         </div>
-                        <div><a href="#">Quên mật khẩu?</a></div>
+                        <div><Link to={"/forgot"}>Quên mật khẩu?</Link></div>
                     </div>
                     <button className="h-12 w-full bg-[#221f20] text-[#f7f8f9] font-semibold rounded-tl-2xl rounded-br-2xl hover:bg-[#f7f8f9] hover:text-[#221f20] hover:border hover:border-[#221f20] transition ease-in-out">
                         ĐĂNG NHẬP

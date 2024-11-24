@@ -10,7 +10,6 @@ import {
 const router = Router();
 router.get("/", getAll);
 router.post("/", create);
-
 router.get("/:colorId", getcolorById);
 router.delete("/:colorId", deletecolorById);
 router.put("/:colorId", updatecolorById);

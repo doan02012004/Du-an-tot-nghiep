@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOrder, deleteOrder, getAllOrder, getOrderById, getOrderByUserId, paymentVNPay, updateOrderStatus, vnpayIPN, vnpayReturn } from "../controllers/orderController.js";
+import { createOrder, deleteOrder, getAllOrder, getOrderById, getOrderByUserId, initiatePayment, paymentVNPay, updateOrderStatus, vnpayIPN, vnpayReturn } from "../controllers/orderController.js";
 
 
 const router = Router();
@@ -23,4 +23,6 @@ router.post('/payment/vnpay', paymentVNPay);
 router.get('/payment/vnpay/return', vnpayReturn);
 
 router.get('/payment/vnpay/ipn', vnpayIPN);
+
+router.post('/pay-again/:orderId', initiatePayment);
 export default router;

@@ -37,3 +37,12 @@ export interface Iuser {
     createdAt?:Date,
     updateAt?:Date
 }
+export interface IForgotPassword {
+    email: string;
+  }
+  
+  export interface IResetPassword {
+    token: string; // Token để xác thực từ email
+    password: string;
+    confirmPassword: string;
+  }

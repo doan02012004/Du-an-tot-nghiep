@@ -1,3 +1,4 @@
+import moment from "moment"
 
 export const formatPrice = (price: number) =>{
     return price.toLocaleString('vi-VN')
@@ -18,3 +19,7 @@ export const slugify = (name:string) => {
       .replace(/^-+/, '')          // Xóa dấu gạch ngang đầu
       .replace(/-+$/, '');         // Xóa dấu gạch ngang cuối
   }
+export const formatDateComment = (dateString:string) =>{
+    const formattedDate = moment(dateString).format("HH:mm - DD/MM/YYYY");
+    return formattedDate
+}
