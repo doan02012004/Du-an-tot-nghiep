@@ -21,6 +21,15 @@ export const getAllProducts = async () => {
     throw error;
   }
 };
+export const getAllProductBySlug = async (categorySlug?: string) => {
+  try {
+    const res = await instance.get(`/products/category/${categorySlug}`);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
 
 //----------------------------------------------------///
 export const getProductSlider = async (options: any) => {

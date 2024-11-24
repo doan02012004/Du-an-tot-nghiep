@@ -7,6 +7,7 @@ import {
   deleteProduct,
   deleteSize,
   getAllProduct,
+  getAllProductBySlug,
   getBySlugProduct,
   getProductSlider,
   updateAttributeProduct,
@@ -18,6 +19,7 @@ const router = express.Router();
 
 router.post("/", createProduct);
 router.get("/", getAllProduct);
+router.get("/category/:slug", getAllProductBySlug);
 router.get("/slider", getProductSlider);
 router.put("/updateAtb/:productId", updateAttributeProduct);
 router.put("/updateInfor/:productId", updateInforProduct);
@@ -27,6 +29,6 @@ router.put("/addColors/:productId", addColors);
 router.put("/deleteColor/:productId", deleteColor);
 router.put("/deleteSize/:productId", deleteSize);
 router.delete("/:productId", deleteProduct),
-  router.get("/:slug", getBySlugProduct);
+router.get("/:slug", getBySlugProduct);
 
 export default router;

@@ -32,5 +32,12 @@ export default {
       }
     },
   },
+  variants:{
+    extend:{
+      display:["group-hover"],
+      margin:["group-hover"],
+      visibility:["group-hover"]
+    }
+  },
   plugins: [],
 }

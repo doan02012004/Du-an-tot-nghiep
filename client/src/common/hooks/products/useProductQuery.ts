@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { getProductBySlug, getProducts } from '../../../services/products'
+import { getAllProductBySlug, getProductBySlug, getProducts } from '../../../services/products'
 
 
-const useProductQuery = (slug ?: string | number, dataFilter ?: any) => {
+const useProductQuery = (slug ?: string | number, dataFilter ?: any, categorySlug ?:string|any) => {
 
     const query = useQuery({
-        queryKey: ['PRODUCT', slug, dataFilter],
+        queryKey: ['PRODUCT', slug, dataFilter,categorySlug],
         queryFn: async () => {
             try {
 
@@ -13,7 +13,11 @@ const useProductQuery = (slug ?: string | number, dataFilter ?: any) => {
                     const data = await getProductBySlug(slug);
                     return data;
                 }
-                if (!slug){
+                if (categorySlug) {
+                    const data = await getAllProductBySlug(categorySlug);
+                    return data;
+                }
+                if (!slug && !categorySlug){
                     const data = await getProducts(dataFilter);
                     return data;
                 }

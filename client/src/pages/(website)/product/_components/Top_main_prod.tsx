@@ -19,7 +19,7 @@ const Top_main_prod = () => {
   return (
     <>
       <div className="top-main-prod lg:flex lg:justify-between lg:items-center lg:mb-4 lg:w-[920px] lg:pl-0">
-        <h1 className="sub-title-main lg:text-2xl text-[20px] mb-[10px] font-semibold text-gray-800 lg:ml-[7px]">ÁO NAM</h1>
+        <h1 className="sub-title-main lg:text-2xl text-[20px] mb-[10px] font-semibold text-gray-800 lg:ml-[7px]">Sản phẩm</h1>
         <div className="flex justify-between w-full lg:w-[274px]">
           <div className="dropdown mr-4 lg:mr-0 lg:w-[274px] w-[82%]">
             <button onClick={toggleDropdown} className="dropbtn flex items-center justify-between px-5 py-2 lg:px-5 lg:py-3 lg:text-[15px] text-[14px] bg-white border border-gray-300 rounded-full w-full lg:w-[274px]">

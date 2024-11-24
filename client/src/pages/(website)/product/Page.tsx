@@ -1,5 +1,5 @@
 import 'antd/dist/reset.css'; // Import CSS của Ant Design
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { useFilterParams } from '../../../common/hooks/products/useFilter';
 import useProductQuery from '../../../common/hooks/products/useProductQuery';
 import Breadcrumb_products from './_components/Breadcrumb_products';
@@ -13,8 +13,10 @@ const ProductPage = () => {
   const { setFilterParams, getFiltersFromUrl } = useFilterParams();
   const data = getFiltersFromUrl();
   const params = setFilterParams(data);
-
-  const response = useProductQuery(undefined, location.search === '' ? undefined : params?.toString());
+  const [searchParams] = useSearchParams();
+  const slugCategory = searchParams.get("category");
+  
+  const response = useProductQuery(undefined, location.search === '' ? undefined : params?.toString(),slugCategory);
 
   return (
     <div>

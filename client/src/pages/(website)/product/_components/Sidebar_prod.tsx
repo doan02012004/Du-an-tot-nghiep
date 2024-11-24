@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { IColor } from '../../../../common/interfaces/Color';
 import { formatPrice } from '../../../../common/utils/product';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useFilterParams } from '../../../../common/hooks/products/useFilter';
 
 const colorsDefault = [
@@ -30,26 +30,32 @@ const colorsDefault = [
 ]
 
 const Sidebar_prod = () => {
-
+  const [searchParams,setSearchParams] = useSearchParams()
   const [colors, setColors] = useState([]);
   const [sizeOptionsVisible, setSizeOptionsVisible] = useState(false);
   const [colorOptionsVisible, setColorOptionsVisible] = useState(false);
   const [priceOptionsVisible, setPriceOptionsVisible] = useState(false);
-  const [highlightedSize, setHighlightedSize] = useState('');
-  const [highlightedColors, setHighlightedColors] = useState([]);
+  const [highlightedSize, setHighlightedSize] = useState<string[]>([]);
+  const [highlightedColors, setHighlightedColors] = useState<string[]>([]);
   const [price, setPrice] = useState([0, 10000000]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const navigate = useNavigate();
   const { setFilterParams, getFiltersFromUrl } = useFilterParams();
   const location = useLocation();
 
+  const categorySlug = searchParams.get("category")
   const toggleSizeOptions = () => setSizeOptionsVisible(!sizeOptionsVisible);
   const toggleColorOptions = () => setColorOptionsVisible(!colorOptionsVisible);
   const togglePriceOptions = () => setPriceOptionsVisible(!priceOptionsVisible);
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
 
   const handleSizeClick = (size: string) => {
-    highlightedSize === size ? setHighlightedSize("") : setHighlightedSize(size);
+    if(!highlightedSize.includes(size)){
+      setHighlightedSize([...highlightedSize,size])
+    }else{
+      const newSize = highlightedSize.filter((sizeItem:string) => sizeItem !== size) 
+      setHighlightedSize(newSize)
+    }
   };
 
   useEffect(() => {
@@ -60,9 +66,7 @@ const Sidebar_prod = () => {
         const dataUrl: any = getFiltersFromUrl();
         const colorArray = dataUrl.color ? dataUrl.color.split(',') : [];
         const resultColor: any = colorsDefault.filter(c => colorArray.includes(c.name))
-        console.log(colorArray);
-        console.log(resultColor);
-        setHighlightedSize(dataUrl.size);
+        setHighlightedSize(dataUrl.size? dataUrl?.size?.split(','):[]);
         setHighlightedColors(resultColor.map(c => c.name));
         setPrice([Number(dataUrl.minPrice), Number(dataUrl.maxPrice)]);
         setSizeOptionsVisible(!sizeOptionsVisible);
@@ -71,6 +75,7 @@ const Sidebar_prod = () => {
       }
     })()
   }, [location.search])
+
 
 
   const handleColorClick = (color:string) => {
@@ -82,7 +87,7 @@ const Sidebar_prod = () => {
   };
 
   const handleReset = () => {
-    setHighlightedSize('');
+    setHighlightedSize([]);
     setHighlightedColors([]);
     setPrice([0, 10000000]);
     navigate("/product")
@@ -91,12 +96,15 @@ const Sidebar_prod = () => {
   const handleApply = () => {
     console.log(highlightedColors)
     const params = setFilterParams({
+      category: categorySlug,
       size: highlightedSize,
       color: highlightedColors,
       minPrice: price[0],
       maxPrice: price[1]
     })
     navigate(`?${params?.toString()}`);
+    
+    
   };
   return (
     <>
@@ -113,7 +121,7 @@ const Sidebar_prod = () => {
                   {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
                     <li key={size}>
                       <button
-                        className={`size-btn text-[12px] px-4 py-2 border rounded ${highlightedSize === size ? 'highlighted' : ''}`}
+                        className={`size-btn text-[12px] px-4 py-2 border rounded ${highlightedSize.includes(size) ? 'highlighted' : ''}`}
                         onClick={() => handleSizeClick(size)}
                         style={{ borderRadius: '10px 0px' }}
                       >
