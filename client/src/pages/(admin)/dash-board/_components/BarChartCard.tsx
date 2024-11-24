@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -59,7 +60,7 @@ const BarChartCard = () => {
     const revenceQuery = useRevenueQuery({type:'month'})
     useEffect(()=>{
      if(revenceQuery?.data){
-        if(revenceQuery?.data?.data.length>0){
+        if(revenceQuery?.data?.data?.length>0){
             const newData = revenceQuery?.data?.data.map((item:dataRes) =>{
                 return {
                     ...item,
@@ -71,10 +72,12 @@ const BarChartCard = () => {
             setDataMonth([])
         }
      }else{
-        setDataMonth([])
+        if(dataMonth?.length>0){
+            setDataMonth([])
+        }
      }
-    },[revenceQuery])
-    console.log(dataMonth)
+    },[revenceQuery?.data])
+    console.log(revenceQuery)
     return (
         <div className={'col-span-6 shadow-lg shadow-gray-300 p-3 rounded-lg'}>
             <header className="flex justify-between items-start pb-3 border-b mb-2">

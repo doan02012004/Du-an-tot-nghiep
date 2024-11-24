@@ -9,9 +9,6 @@ import ProductModel from "../models/productModel.js";
 import sendEmail from "../utils/sendEmail.js";
 import UserModel from "../models/userModel.js";
 
-import sendEmail from "../utils/sendEmail.js";
-import UserModel from "../models/userModel.js";
-
 export const createOrder = async (req, res) => {
     try {
         const order = await orderModel.create(req.body);
