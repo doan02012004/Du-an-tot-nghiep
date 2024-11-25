@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react"
 
@@ -5,6 +6,8 @@ import { useEffect, useState } from "react"
 import { IcartItem } from "../../../../common/interfaces/cart"
 import { IshipItem, IshipSubmit, VolumeRange, WeightRange } from "../../../../common/interfaces/orderInterfaces"
 import { useSelector } from "react-redux";
+import { IShip, IVolumeRate, IWeightRate } from "../../../../common/interfaces/ship";
+import useShipQuery from "../../../../common/hooks/ships/useShipQuery";
 type Props = {
     onShippingCostChange: (ship: IshipSubmit) => void;
 
@@ -128,13 +131,13 @@ const shipOption = [
 
 const OrderOptionShip = ({ onShippingCostChange }: Props) => {
     const [ship, setShip] = useState<IshipItem | null>(null);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any 
+    const [ships, setShips] = useState<IShip[]>([])
     const carts = useSelector((state: any) => state.cart.carts);
-
+    const shipQuery = useShipQuery({})
 
     // chọn phương thức giao hàng
     const handleShipChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedShip = shipOption.find(option => option.nameBrand === e.target.value) as IshipItem;
+        const selectedShip = ships.find(option => option.nameBrand === e.target.value) as IshipItem;
         setShip(selectedShip);
     };
 
@@ -168,11 +171,23 @@ const OrderOptionShip = ({ onShippingCostChange }: Props) => {
     }, [carts, ship]);
 
     useEffect(() => {
-        if (shipOption.length > 0) {
-            setShip(shipOption[0]);
-        }
+        if (shipQuery?.data?.length > 0) {
+            const newShips =  shipQuery.data?.map((item:IShip) =>{
+                const newWeights = item.weight.map((weight:IWeightRate,index:number) => Number(index) == Number( item.weight.length-1) ?{...item.weight[index],maxWeight:Infinity}:weight)
+                const newVolumes = item.volume.map((volume:IVolumeRate,index:number) => Number(index) == Number(item.volume.length-1) ?{...item.volume[index],maxVolume:Infinity}:volume)
+                return ( {
+                    ...item,
+                    weight:newWeights,
+                    volume:newVolumes
+                })
+            })
+            setShips(newShips)
 
-    }, []);
+            if (!ship) {
+                setShip(newShips[0])
+            }
+        }
+    }, [shipQuery?.data])
 
     return (
         <div className="py-6">
@@ -182,7 +197,7 @@ const OrderOptionShip = ({ onShippingCostChange }: Props) => {
                     className="w-full p-3 border rounded-lg text-black text-sm lg:text-base font-semibold"
                     onChange={handleShipChange}
                 >
-                    {shipOption.map((option) => (
+                    {ships?.map((option) => (
                         <option key={option.nameBrand} value={option.nameBrand}>
                             {option.nameBrand}
                         </option>

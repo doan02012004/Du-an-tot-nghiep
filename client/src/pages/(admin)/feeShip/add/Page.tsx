@@ -1,4 +1,4 @@
-import { Button, Form, Input, Tabs, TabsProps } from "antd"
+import { Button, Input, Tabs, TabsProps } from "antd"
 import { useState } from "react";
 import { Link } from "react-router-dom"
 import { IVolumeRate, IWeightRate } from "../../../../common/interfaces/ship";

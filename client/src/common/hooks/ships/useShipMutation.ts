@@ -2,10 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { IShip } from "../../interfaces/ship";
 import { createShip } from "../../../services/ship";
 import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 
 
 const useShipMutation = () => {
-
+    const navigate = useNavigate()
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey: ["SHIPS"],
@@ -13,8 +14,9 @@ const useShipMutation = () => {
           switch (option.action) {
             case "add":
                 try {
-                    const res = await createShip(option?.newShip?option.newShip:{})
+                    const res = await createShip(option?.newShip)
                     message.success("Thêm ship thành công");
+                  navigate('/admin/ships')
                     return res;
                 } catch (error) {
                     message.error("Thêm ship thất bại");
