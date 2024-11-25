@@ -1,76 +1,72 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Slider } from 'antd';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { IColor } from '../../../../common/interfaces/Color';
 import { formatPrice } from '../../../../common/utils/product';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useFilterParams } from '../../../../common/hooks/products/useFilter';
+import {  useSearchParams } from 'react-router-dom';
 
-const colorsDefault = [
-  {
-    name: "Đen",
-    background: "black"
-  },
-  {
-    name: "Trắng",
-    background: "white"
-  },
-  {
-    name: "Vàng",
-    background: "yellow"
-  },
-  {
-    name: "Đỏ",
-    background: "red"
-  },
-  {
-    name: "Xanh",
-    background: "blue"
-  },
-]
+
+
 
 const Sidebar_prod = () => {
-
+  const [searchParams,setSearchParams] = useSearchParams()
   const [colors, setColors] = useState([]);
   const [sizeOptionsVisible, setSizeOptionsVisible] = useState(false);
   const [colorOptionsVisible, setColorOptionsVisible] = useState(false);
   const [priceOptionsVisible, setPriceOptionsVisible] = useState(false);
-  const [highlightedSize, setHighlightedSize] = useState('');
-  const [highlightedColors, setHighlightedColors] = useState([]);
+  const [highlightedSize, setHighlightedSize] = useState<string[]>([]);
+  const [highlightedColors, setHighlightedColors] = useState<string[]>([]);
   const [price, setPrice] = useState([0, 10000000]);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const navigate = useNavigate();
-  const { setFilterParams, getFiltersFromUrl } = useFilterParams();
-  const location = useLocation();
-
+  const sizesUrl = searchParams.get('sizes')
+  const colorsUrl= searchParams.get('colors')
+  const minPriceUrl = searchParams.get('min_price')
+  const maxPriceUrl= searchParams.get('max_price')
   const toggleSizeOptions = () => setSizeOptionsVisible(!sizeOptionsVisible);
   const toggleColorOptions = () => setColorOptionsVisible(!colorOptionsVisible);
   const togglePriceOptions = () => setPriceOptionsVisible(!priceOptionsVisible);
-  const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
 
   const handleSizeClick = (size: string) => {
-    highlightedSize === size ? setHighlightedSize("") : setHighlightedSize(size);
+    if(!highlightedSize.includes(size)){
+      setHighlightedSize([...highlightedSize,size])
+    }else{
+      const newSize = highlightedSize.filter((sizeItem:string) => sizeItem !== size) 
+      setHighlightedSize(newSize)
+    }
   };
 
   useEffect(() => {
     (async () => {
       const { data } = await axios.get('http://localhost:5000/api/colors');
       setColors(data);
-      if (location.search !== "") {
-        const dataUrl: any = getFiltersFromUrl();
-        const colorArray = dataUrl.color ? dataUrl.color.split(',') : [];
-        const resultColor: any = colorsDefault.filter(c => colorArray.includes(c.name))
-        console.log(colorArray);
-        console.log(resultColor);
-        setHighlightedSize(dataUrl.size);
-        setHighlightedColors(resultColor.map(c => c.name));
-        setPrice([Number(dataUrl.minPrice), Number(dataUrl.maxPrice)]);
-        setSizeOptionsVisible(!sizeOptionsVisible);
-        setColorOptionsVisible(!colorOptionsVisible);
-        setPriceOptionsVisible(!priceOptionsVisible);
-      }
+      // if (location.search !== "") {
+      //   const dataUrl: any = getFiltersFromUrl();
+      //   const colorArray = dataUrl.color ? dataUrl.color.split(',') : [];
+      //   const resultColor: any = colorsDefault.filter(c => colorArray.includes(c.name))
+      //   setHighlightedSize(dataUrl.size? dataUrl?.size?.split(','):[]);
+      //   setHighlightedColors(resultColor.map(c => c.name));
+      //   setPrice([Number(dataUrl.minPrice), Number(dataUrl.maxPrice)]);
+      //   setSizeOptionsVisible(!sizeOptionsVisible);
+      //   setColorOptionsVisible(!colorOptionsVisible);
+      //   setPriceOptionsVisible(!priceOptionsVisible);
+      // }
     })()
-  }, [location.search])
+   if(sizesUrl){
+    setHighlightedSize(sizesUrl.split(','))
+   }
+   if(colorsUrl){
+    setHighlightedColors(colorsUrl.split(','))
+   }
+   if(minPriceUrl|| maxPriceUrl){
+    if(minPriceUrl && maxPriceUrl){
+      setPrice([Number(minPriceUrl),Number(maxPriceUrl)])
+    }else if(minPriceUrl){
+      setPrice([Number(minPriceUrl),price[1]])
+    }
+    else if(maxPriceUrl){
+      setPrice([price[0],Number(maxPriceUrl)])
+    }
+   }
+  }, [searchParams,setSearchParams])
 
 
   const handleColorClick = (color:string) => {
@@ -82,21 +78,21 @@ const Sidebar_prod = () => {
   };
 
   const handleReset = () => {
-    setHighlightedSize('');
-    setHighlightedColors([]);
-    setPrice([0, 10000000]);
-    navigate("/product")
+    setHighlightedColors([])
+    setHighlightedSize([])
+    setPrice([0,10000000])
+    searchParams.delete('sizes')
+    searchParams.delete('colors')
+    searchParams.delete('min_price')
+    searchParams.delete('max_price')
+    setSearchParams(searchParams)
   };
-
   const handleApply = () => {
-    console.log(highlightedColors)
-    const params = setFilterParams({
-      size: highlightedSize,
-      color: highlightedColors,
-      minPrice: price[0],
-      maxPrice: price[1]
-    })
-    navigate(`?${params?.toString()}`);
+      searchParams.set('sizes',highlightedSize.join(','))
+      searchParams.set('colors',highlightedColors.join(','))
+      searchParams.set('min_price',price[0].toString())
+      searchParams.set('max_price',price[1].toString())
+      setSearchParams(searchParams)
   };
   return (
     <>
@@ -113,7 +109,7 @@ const Sidebar_prod = () => {
                   {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
                     <li key={size}>
                       <button
-                        className={`size-btn text-[12px] px-4 py-2 border rounded ${highlightedSize === size ? 'highlighted' : ''}`}
+                        className={`size-btn text-[12px] px-4 py-2 border rounded ${highlightedSize.includes(size) ? 'highlighted' : ''}`}
                         onClick={() => handleSizeClick(size)}
                         style={{ borderRadius: '10px 0px' }}
                       >
@@ -132,15 +128,15 @@ const Sidebar_prod = () => {
             {colorOptionsVisible && (
               <li id="colorOptions" className="mt-4">
                 <ul className="flex flex-wrap gap-2">
-                  {colorsDefault.map((color: any, index) => (
+                  {colors?.map((color: any) => (
                     <li key={color.name}>
                     <button
-                      className={`color-btn w-5 h-5 rounded-full relative ${color.background === 'white' ? 'border border-[#000]' : ''} ${highlightedColors.includes(color.name) ? 'highlighted' : ''}`}
+                      className={`color-btn w-5 h-5 rounded-full relative ${color.background === '#FFFFFF' ? 'border border-[#000]' : ''} ${highlightedColors.includes(color.name) ? 'highlighted' : ''}`}
                       onClick={() => handleColorClick(color.name)}
-                      style={{ backgroundColor: color.background, borderColor: color.background === 'white' ? 'black' : 'transparent' }}
+                      style={{ backgroundColor: color.background, borderColor: color.background === '#FFFFFF' ? 'black' : 'transparent' }}
                     >
                       {highlightedColors.includes(color.name) && (
-                        <i className={`fa-solid fa-check absolute inset-0 flex items-center justify-center ${color.background === 'white' ? 'text-black' : 'text-white'}`} />
+                        <i className={`fa-solid fa-check absolute inset-0 flex items-center justify-center ${color.background === '#FFFFFF' ? 'text-black' : 'text-white'}`} />
                       )}
                     </button>
                   </li>
@@ -160,10 +156,11 @@ const Sidebar_prod = () => {
                   min={0}
                   max={10000000}
                   value={price}
+                  step={10000}
                   onChange={(value) => setPrice(value)}
                   className="price-slider"
-                  trackStyle={{ backgroundColor: '#000' }} // Track color
-                  handleStyle={{ borderColor: '#000', backgroundColor: '#000' }} // Handle color
+                  // trackStyle={{ backgroundColor: '#000' }} // Track color
+                  // handleStyle={{ borderColor: '#000', backgroundColor: '#000' }} // Handle color
                 />
                 <div className="flex justify-between mt-2">
                   <span id="minPrice">{formatPrice(price[0])}đ</span>

@@ -18,7 +18,7 @@ import Product_description from './_components/Product_description';
 
 const ProductDetailsPage = () => {
   const { slug } = useParams()
-  const query = useProductQuery(slug)
+  const query = useProductQuery({slug:slug})
   const {  setChoiceColor } = useContext(AppContext);
   useEffect(() => {
     if (query.data) {

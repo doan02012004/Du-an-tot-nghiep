@@ -27,6 +27,6 @@ router.put("/addColors/:productId", addColors);
 router.put("/deleteColor/:productId", deleteColor);
 router.put("/deleteSize/:productId", deleteSize);
 router.delete("/:productId", deleteProduct),
-  router.get("/:slug", getBySlugProduct);
+router.get("/:slug", getBySlugProduct);
 
 export default router;

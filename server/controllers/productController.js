@@ -1,6 +1,7 @@
 import { query } from "express";
 import ProductModel from "../models/productModel.js";
 import slugify from "slugify";
+import categoryModel from "../models/categoryModel.js";
 
 export const createProduct = async (req, res) => {
   try {
@@ -19,7 +20,7 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { min_price, limit, page, max_price, size, color, sell_order } = req.query;
+    const { min_price, limit, page, max_price, sizes, colors,search,categorySlug, sell_order } = req.query;
     const _limit = parseInt(limit) || 12;
     const _page = parseInt(page) || 1;
     const skip = _limit * (_page - 1);
@@ -31,7 +32,12 @@ export const getAllProduct = async (req, res) => {
         { "attributes.price_new": { $lte: parseInt(max_price) || 10000000 } },
       ],
     };
-
+    if(categorySlug){
+      const category = await categoryModel.findOne({slug:categorySlug})
+      if(category){
+        query['categoryId'] = category._id 
+      }
+    }
     if (sell_order) {
       if (sell_order === "new") {
         sort["createdAt"] = -1; 
@@ -45,15 +51,15 @@ export const getAllProduct = async (req, res) => {
     }
 
     // Lọc theo size nếu có
-    if (size) {
-      query["sizes"] = { $in: size.split(",") };
+    if (sizes) {
+      query["sizes"] = { $in: sizes.split(",") };
     }
 
     // Lọc theo color nếu có
-    if (color) {
+    if (colors) {
       query["colors"] = {
         $elemMatch: {
-          name: { $in: color.split(",").map((name) => new RegExp(name, "i")) },
+          name: { $in: colors.split(",").map((name) => new RegExp(name, "i")) },
         },
       };
     }
@@ -62,10 +68,10 @@ export const getAllProduct = async (req, res) => {
       .sort(sort)
       .limit(_limit)
       .skip(skip)
-      .populate("categoryId brandId");
+      .populate("categoryId brandId")
+      .exec();
 
     const total = await ProductModel.countDocuments(query);
-    console.log(total);
     const totalPage = Math.ceil(total / _limit);
 
     return res.status(200).json({
@@ -80,7 +86,6 @@ export const getAllProduct = async (req, res) => {
     });
   }
 };
-
 
 export const getProductSlider = async (req, res) => {
   try {
