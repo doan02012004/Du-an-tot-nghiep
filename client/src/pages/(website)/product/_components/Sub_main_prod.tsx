@@ -6,7 +6,9 @@ import { Spin } from 'antd'
 
 type Props = {
   data: {
-    products: Iproduct[]
+    products: Iproduct[],
+    currentPage:number,
+    totalPage:number
   }
 }
 

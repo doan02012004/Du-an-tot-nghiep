@@ -1,26 +1,25 @@
 import { useQuery } from '@tanstack/react-query'
-import { getAllProductBySlug, getProductBySlug, getProducts } from '../../../services/products'
+import { getProductBySlug, getProducts } from '../../../services/products'
 
-
-const useProductQuery = (slug ?: string | number, dataFilter ?: any, categorySlug ?:string|any) => {
+type DataFilter = {
+    page:number|null,
+    limit:number|null,
+    categorySlug:string|null,
+    sizes:string|null,
+    colors:string|null,
+    min_price:number|null,
+    max_price:number|null,
+    sell_order:string|null,
+    search:string|null
+}
+const useProductQuery = (option:{slug?:string,dataFilter?:DataFilter}) => {
 
     const query = useQuery({
-        queryKey: ['PRODUCT', slug, dataFilter,categorySlug],
+        queryKey: ['PRODUCT',option],
         queryFn: async () => {
             try {
-
-                if (slug) {
-                    const data = await getProductBySlug(slug);
+                    const data = option?.slug? await getProductBySlug(option?.slug): await getProducts(option?.dataFilter);
                     return data;
-                }
-                if (categorySlug) {
-                    const data = await getAllProductBySlug(categorySlug);
-                    return data;
-                }
-                if (!slug && !categorySlug){
-                    const data = await getProducts(dataFilter);
-                    return data;
-                }
             } catch (error) {
                 return error
             }

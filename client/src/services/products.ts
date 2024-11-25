@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { message } from "antd";
 import instance from "../common/config/axios";
 import {
@@ -44,12 +45,9 @@ export const getProductSlider = async (options: any) => {
     }
   };
 
-export const getProducts = async (dataFilter: {} | undefined) => {
+export const getProducts = async (dataFilter:any) => {
   try {
-    const res =
-      dataFilter && Object.keys(dataFilter).length > 0
-        ? await instance.get(`products?${dataFilter}`)
-        : await instance.get("/products");
+    const res = await instance.get(`/products`,{params:dataFilter})
     return res.data;
   } catch (error) {
     console.log(error);

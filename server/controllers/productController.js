@@ -20,7 +20,7 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { min_price, limit, page, max_price, size, color, sell_order } = req.query;
+    const { min_price, limit, page, max_price, sizes, colors,search,categorySlug, sell_order } = req.query;
     const _limit = parseInt(limit) || 12;
     const _page = parseInt(page) || 1;
     const skip = _limit * (_page - 1);
@@ -32,7 +32,12 @@ export const getAllProduct = async (req, res) => {
         { "attributes.price_new": { $lte: parseInt(max_price) || 10000000 } },
       ],
     };
-
+    if(categorySlug){
+      const category = await categoryModel.findOne({slug:categorySlug})
+      if(category){
+        query['categoryId'] = category._id 
+      }
+    }
     if (sell_order) {
       if (sell_order === "new") {
         sort["createdAt"] = -1; 
@@ -46,15 +51,15 @@ export const getAllProduct = async (req, res) => {
     }
 
     // Lọc theo size nếu có
-    if (size) {
-      query["sizes"] = { $in: size.split(",") };
+    if (sizes) {
+      query["sizes"] = { $in: sizes.split(",") };
     }
 
     // Lọc theo color nếu có
-    if (color) {
+    if (colors) {
       query["colors"] = {
         $elemMatch: {
-          name: { $in: color.split(",").map((name) => new RegExp(name, "i")) },
+          name: { $in: colors.split(",").map((name) => new RegExp(name, "i")) },
         },
       };
     }
@@ -63,10 +68,10 @@ export const getAllProduct = async (req, res) => {
       .sort(sort)
       .limit(_limit)
       .skip(skip)
-      .populate("categoryId brandId");
+      .populate("categoryId brandId")
+      .exec();
 
     const total = await ProductModel.countDocuments(query);
-    console.log(total);
     const totalPage = Math.ceil(total / _limit);
 
     return res.status(200).json({
@@ -81,93 +86,6 @@ export const getAllProduct = async (req, res) => {
     });
   }
 };
-export const getAllProductBySlug = async (req, res) => {
-  try {
-    const { slug } = req.params;  // Lấy slug từ URL
-    const { min_price, max_price, limit, page, size, color, sell_order } = req.query;  // Lấy các tham số lọc từ query string
-
-    // Kiểm tra slug có tồn tại không
-    if (!slug) {
-      return res.status(400).json({ message: "Slug is required." });
-    }
-
-    // Tìm danh mục theo slug
-    const category = await categoryModel.findOne({ slug });
-    if (!category) {
-      return res.status(404).json({ message: "Category not found." });
-    }
-
-    // Tính toán phân trang
-    const _limit = parseInt(limit) || 12;  // Giới hạn sản phẩm trên mỗi trang, mặc định là 12
-    const _page = parseInt(page) || 1;  // Trang hiện tại, mặc định là 1
-    const skip = _limit * (_page - 1);  // Tính số lượng sản phẩm bỏ qua
-
-    // Khởi tạo query cơ bản
-    let query = {
-      categoryId: category._id,  // Lọc sản phẩm theo categoryId
-      $and: [
-        { "attributes.price_new": { $gte: parseInt(min_price) || 0 } },  // Lọc theo giá tối thiểu nếu có
-        { "attributes.price_new": { $lte: parseInt(max_price) || 10000000 } },  // Lọc theo giá tối đa nếu có
-      ],
-    };
-
-    // Lọc theo size nếu có
-    if (size) {
-      query["sizes"] = { $in: size.split(",") };  // Lọc theo size
-    }
-
-    // Lọc theo color nếu có
-    if (color) {
-      query["colors"] = {
-        $elemMatch: {
-          name: { $in: color.split(",").map((name) => new RegExp(name, "i")) },  // Lọc theo màu sắc
-        },
-      };
-    }
-
-    // Sắp xếp sản phẩm nếu có yêu cầu
-    let sort = {};
-    if (sell_order) {
-      if (sell_order === "new") {
-        sort["createdAt"] = -1;  // Sắp xếp theo ngày tạo mới nhất
-      }
-      if (sell_order === "asc") {
-        sort["attributes.price_new"] = 1;  // Giá tăng dần
-      }
-      if (sell_order === "desc") {
-        sort["attributes.price_new"] = -1;  // Giá giảm dần
-      }
-    }
-
-    // Lấy sản phẩm với các điều kiện lọc và sắp xếp
-    const products = await ProductModel.find(query)
-      .sort(sort)  // Sắp xếp
-      .skip(skip)  // Bỏ qua số lượng sản phẩm theo phân trang
-      .limit(_limit)  // Giới hạn số lượng sản phẩm mỗi trang
-      .populate("categoryId brandId");
-
-    // Tính tổng số sản phẩm và tổng số trang
-    const total = await ProductModel.countDocuments(query);  // Đếm tổng số sản phẩm thỏa mãn điều kiện
-    const totalPage = Math.ceil(total / _limit);  // Tính tổng số trang
-
-    return res.status(200).json({
-      products,
-      total,
-      totalPage,
-      currentPage: _page,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
-
-
-
-
-
 
 export const getProductSlider = async (req, res) => {
   try {

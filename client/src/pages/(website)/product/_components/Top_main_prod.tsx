@@ -1,19 +1,15 @@
-import React, { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useFilterParams } from '../../../../common/hooks/products/useFilter';
+import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom';
 
-type Props = {}
 
 const Top_main_prod = () => {
+  const [searchParams,setSearchParams] = useSearchParams();
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const {getFiltersFromUrl, setFilterParams} = useFilterParams();
-  const navigate = useNavigate();
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
 
   const applySort = (dataSellOrder: string) => {
-    const dataUrl: any = getFiltersFromUrl();
-    const params = setFilterParams({...dataUrl, sellOrder : dataSellOrder});
-    navigate(`?${params?.toString()}`);
+    searchParams.set("sell_order",dataSellOrder)
+    setSearchParams(searchParams)
   };
 
   return (
