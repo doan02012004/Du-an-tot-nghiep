@@ -29,7 +29,7 @@ const TableTopUser = () => {
         setTopUser([])
       }
     }
-  },[finishDate,startDate,topUserQuery])
+  },[finishDate,startDate,topUserQuery?.data])
 
     
       return (

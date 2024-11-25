@@ -16,7 +16,7 @@ function DashboardCard01() {
   }else{
     setTotal(0)
   }
- },[startDate,finishDate,revenceQuery])
+ },[startDate,finishDate,revenceQuery?.data])
   return (
     <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-3 bg-white dark:bg-gray-800 shadow-sm shadow-blue rounded-xl">
       <div className="p-5">
@@ -25,7 +25,7 @@ function DashboardCard01() {
         </header>
         {/* <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Sales</div> */}
         <div className="flex items-start">
-          <div className="text-xl font-bold text-blue dark:text-gray-100 mr-2">{formatPrice(total)}đ</div>
+          <div className="text-xl font-bold text-blue dark:text-gray-100 mr-2">{total? formatPrice(total): 0}đ</div>
           {/* <div className="text-sm font-medium text-green-700 px-1.5 bg-green-500/20 rounded-full">+49%</div> */}
         </div>
       </div>

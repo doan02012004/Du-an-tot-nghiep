@@ -63,7 +63,7 @@ const PieChartCard = () => {
           setDataCity([])
         }
       }
-   },[startDate,finishDate,userCityCountQuery])
+   },[startDate,finishDate,userCityCountQuery?.data])
     return (
         <div className={'col-span-6 p-3 shadow-lg shadow-gray-300 rounded-lg'}>
             <header className="flex justify-between items-start pb-3 border-b mb-2">

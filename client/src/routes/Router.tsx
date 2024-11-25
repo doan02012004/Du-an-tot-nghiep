@@ -52,6 +52,9 @@ import { AppContext } from "../common/contexts/AppContextProvider";
 import CanPayment from "../pages/(website)/thanks/CanPayment";
 import ShipPage from "../pages/(admin)/feeShip/Page";
 import ListFeeShip from "../pages/(admin)/feeShip/_components/ListFeeShip";
+import AddShipFree from "../pages/(admin)/feeShip/_components/AddShipFree";
+import ListShipPage from "../pages/(admin)/feeShip/list/Page";
+import AddShipPage from "../pages/(admin)/feeShip/add/Page";
 
 
 const Router = () => {
@@ -118,7 +121,8 @@ const Router = () => {
         </Route>
         <Route index element={<DashBoardPage />} />
         <Route path="ships" element={<ShipPage />} >
-          <Route index element={<ListFeeShip />} />
+          <Route index element={<ListShipPage />} />
+          <Route path="add" element={<AddShipPage />} />
         </Route>
 
       </Route>

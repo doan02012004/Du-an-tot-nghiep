@@ -18,7 +18,7 @@ const DashboardCard02 = () => {
     }else{
       setTotal(0)
     }
-   },[startDate,finishDate,orderCountQuery])
+   },[startDate,finishDate,orderCountQuery.data])
     return (
       <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-3 bg-white dark:bg-gray-800 shadow-sm shadow-red rounded-xl">
         <div className="p-5">

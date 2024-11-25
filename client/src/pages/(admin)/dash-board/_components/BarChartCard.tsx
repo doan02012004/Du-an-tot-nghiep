@@ -77,7 +77,6 @@ const BarChartCard = () => {
         }
      }
     },[revenceQuery?.data])
-    console.log(revenceQuery)
     return (
         <div className={'col-span-6 shadow-lg shadow-gray-300 p-3 rounded-lg'}>
             <header className="flex justify-between items-start pb-3 border-b mb-2">

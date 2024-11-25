@@ -32,7 +32,7 @@ const TableTopProduct = () => {
         setTopProducts([])
       }
     }
-  },[finishDate,startDate,topProductQuery])
+  },[finishDate,startDate,topProductQuery.data])
 
     
       return (

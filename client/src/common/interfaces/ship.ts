@@ -1,17 +1,21 @@
 export interface IWeightRate {
-    minWeightValue?: number,
-    maxWeightValue?: number,
-    price?: number
+    _id?:string|number,
+    minWeight?: number,
+    maxWeight?: number,
+    price?: number,
+    check?:boolean
 }
 export interface IVolumeRate {
-    minVolumeValue?: number,
-    maxVolumeValue?: number,
-    price?: number
+    _id?:string|number,
+    minVolume?: number,
+    maxVolume?: number,
+    price?: number,
+    check?:boolean
 }
 
 export interface IShip {
-    id?: string,
-    nameBranch?: string,
-    weightRates?: IWeightRate[],
-    volumeRates?: IVolumeRate[]
+    _id?: string,
+    nameBrand: string,
+    weight: IWeightRate[],
+    volume: IVolumeRate[]
 }

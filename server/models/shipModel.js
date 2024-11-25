@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 
 const rateWeightSchema = new mongoose.Schema({
-    minWeightValue: {
+    minWeight: {
         type: Number,
         required: true, // Bắt buộc phải có
     },
-    maxWeightValue: {
+    maxWeight: {
         type: Number,
-        required: true,
     },
     price: {
         type: Number,
@@ -16,13 +15,12 @@ const rateWeightSchema = new mongoose.Schema({
 });
 
 const rateVolumeSchema = new mongoose.Schema({
-    minVolumeValue: {
+    minVolume: {
         type: Number,
         required: true, // Bắt buộc phải có
     },
-    maxVolumeValue: {
+    maxVolume: {
         type: Number,
-        required: true,
     },
     price: {
         type: Number,
@@ -36,11 +34,11 @@ const shipModel = new mongoose.Schema({
         type: String,
         required: true, // Tên phương thức vận chuyển (vd: "Chuyển phát nhanh")
     },
-    weightRates: {
+    weight: {
         type: [rateWeightSchema], // Danh sách các mức phí theo trọng lượng
         default: [],
     },
-    volumeRates: {
+    volume: {
         type: [rateVolumeSchema], // Danh sách các mức phí theo thể tích
         default: [],
     }
