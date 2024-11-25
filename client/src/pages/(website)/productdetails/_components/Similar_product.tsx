@@ -27,6 +27,7 @@ const SimilarProduct = ({ product, item }: Props) => {
             setRelatedProducts(filteredProducts);
         }
     }, [item, categoryId]);
+    console.log(product)
 
     return (
         <section className="newArrival mb-[18px] lg:mb-10">
@@ -65,9 +66,17 @@ const SimilarProduct = ({ product, item }: Props) => {
                                                     <span className="absolute top-0 left-0 text-[12px]/[150%] font-semibold py-1 px-3 bg-rose-900 text-white rounded-br-full">
                                                         Best seller
                                                     </span>
-                                                    <span className="absolute size-6 lg:size-10 rounded-full top-2 right-2 text-[12px]/[150%] font-semibold bg-black text-white flex justify-center items-center">
-                                                        {pro.discount}%
-                                                    </span>
+                                                    {pro.attributes && pro.attributes.length > 0 && (
+                                                        pro.attributes.map((attribute, index) => (
+                                                            <span 
+                                                            key={index} 
+                                                            className="absolute size-6 lg:size-10 rounded-full top-2 right-2 text-[12px]/[150%] font-semibold bg-black text-white flex justify-center items-center"
+                                                            >
+                                                            {attribute.discount}%
+                                                            </span>
+                                                        ))
+                                                        )}
+
                                                 </div>
                                                 <div className="flex justify-between mb-2 lg:mb-3">
                                                     <span className=" cursor-pointer text-sm font-thin text-black ">
