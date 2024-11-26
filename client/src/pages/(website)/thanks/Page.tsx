@@ -1,7 +1,10 @@
 
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { AppContext } from '../../../common/contexts/AppContextProvider'
 
 const ThanksPage = () => {
+  const {currentUser} = useContext(AppContext)
   return (
     <section>
   <div className="container mx-auto">
@@ -11,14 +14,14 @@ const ThanksPage = () => {
         <span className="text-3xl text-black font-semibold">Cảm ơn đã mua hàng</span>
       </div>
       <div className="flex flex-col items-center">
-        <span className="text-center">Chào Trọng, đơn hàng của bạn với mã <a href="#" className=" text-green-500 underline">Trọng đá</a> đã được đặt thành công.</span>
+        <span className="text-center">Chào {currentUser?.firstname}, đơn hàng của bạn đã được đặt thành công.</span>
         <span className="text-center">Hệ thống sẽ tự động gửi Email và SMS xác nhận đơn hàng đến số điện thoại và hòm thư mà bạn đã cung cấp </span>
         <span>Cảm ơn trọng đã tin dùng sản phẩm của Đớ!</span>
         <span className="text-center">Chú ý: Miễn đổi trả với sản phẩm đồng giá / sale trên 50%</span>
       </div>
       <div className="flex items-center justify-between gap-4">
-        <a href="/product" className=""><button className="text-sm px-3 py-2 lg:text-base lg:w-[240px] border border-black bg-black text-white  lg:px-5 lg:py-3 rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black">TIẾP TỤC MUA SẮM</button></a>
-        <Link to={''}><button className="text-sm px-3 py-2 lg:text-base lg:w-[240px] border border-black bg-black text-white  lg:px-5 lg:py-3 rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black">THEO DÕI ĐƠN HÀNG</button></Link>
+        <Link to="/product" className=""><button className="text-sm px-3 py-2 lg:text-base lg:w-[240px] border border-black bg-black text-white  lg:px-5 lg:py-3 rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black">TIẾP TỤC MUA SẮM</button></Link>
+        <Link to={'/customer/order-manager'}><button className="text-sm px-3 py-2 lg:text-base lg:w-[240px] border border-black bg-black text-white  lg:px-5 lg:py-3 rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black">THEO DÕI ĐƠN HÀNG</button></Link>
       </div>
     </div>
   </div>

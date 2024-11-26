@@ -70,7 +70,7 @@ const TableTopProduct = () => {
                         <tr key={customer?._id}>
                           <td className="p-2 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className="w-10 h-10 shrink-0 mr-2 sm:mr-3">
+                              <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3">
                                 <img className="rounded-full" src={customer?.productInfo?.gallerys[0]?.avatar} width="40" height="40" alt={customer?.productInfo?.name} />
                               </div>
                               <div className="font-medium text-gray-800 dark:text-gray-100">{customer?.productInfo?.name}</div>

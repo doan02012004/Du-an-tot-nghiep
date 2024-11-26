@@ -27,7 +27,7 @@ export const getShipById = async (id: string|number) => {
     }
 }
 
-export const createShip = async ( newShip:IShip ) => {
+export const createShip = async ( newShip?:IShip ) => {
     try {
         const res = await instance.post(`/ships/add`,newShip)
         return res.data

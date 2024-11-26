@@ -1,4 +1,5 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined, TagOutlined } from '@ant-design/icons';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {  DeleteOutlined, EditOutlined, PlusOutlined, TagOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
@@ -79,9 +80,9 @@ const ListShipPage = () => {
                     style={{ userSelect: "none" }}
                 >
                     {ships?.map((item: IShip) => (
-                        <div key={item._id} className="button">
+                        <div key={item._id} className={`button border border-gray-400 rounded-md overflow-hidden ${ship?._id == item._id && 'bg-blue *:text-white'}`}>
                             <Button
-                                className="w-full"
+                                className="w-full bg-transparent border-none rounded-none"
                                 icon={<TagOutlined />}
                                 onClick={() => setShip(item)}
                             >

@@ -11,7 +11,7 @@ import { LeftOutlined } from "@ant-design/icons"
 const ViewProductAdmin = () => {
     const [product,setProduct] = useState<Iproduct>({} as Iproduct)
     const {slug} = useParams()
-    const productQuery = useProductQuery(slug)
+    const productQuery = useProductQuery({slug})
     useEffect(()=>{
         setProduct(productQuery.data)
     },[slug,productQuery.data])

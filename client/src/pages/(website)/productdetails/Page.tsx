@@ -11,14 +11,13 @@ import Slider_product_details from "./_components/Slider_product_details";
 import useProductQuery from "../../../common/hooks/products/useProductQuery";
 import Banner from "./_components/Banner";
 import Similar_product from "./_components/Similar_product";
-import Viewed_products from "./_components/Viewed_products";
 import { useContext, useEffect } from "react";
 import { AppContext } from "../../../common/contexts/AppContextProvider";
 import Product_description from './_components/Product_description';
 
 const ProductDetailsPage = () => {
   const { slug } = useParams()
-  const query = useProductQuery(slug)
+  const query = useProductQuery({slug:slug})
   const {  setChoiceColor } = useContext(AppContext);
   useEffect(() => {
     if (query.data) {
@@ -44,11 +43,10 @@ const ProductDetailsPage = () => {
         {/*  */}
         <Product_description product={query.data} />
         {/* -----------------------------------------------end productdetails------------------------- */}
-        <Similar_product />
+        <Similar_product categoryId={query.data?.categoryId?._id} productId={query.data?._id} />
         {/* ---------------- */}
-        <Viewed_products />
+        {/* <Viewed_products /> */}
         <Banner />
-
       </div>
 
     </div>

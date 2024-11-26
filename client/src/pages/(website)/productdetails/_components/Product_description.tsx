@@ -31,7 +31,7 @@ const Product_description = ({ product }: Props) => {
           <li
             className={`tab-item ${activeTab === "des" ? "text-black" : ""
               } cursor-pointer`}
-            onClick={() => setActiveTab("des")}
+            onClick={() => {setIsOpen(false);setActiveTab("des")}}
           >
             <span className="block text-[12px] lg:text-[16px] lg:pb-5 pb-4 font-semibold">
               CHI TIẾT SẢN PHẨM
@@ -40,7 +40,7 @@ const Product_description = ({ product }: Props) => {
           <li
             className={`tab-item ${activeTab === "comment" ? "text-black" : ""
               } cursor-pointer lg:ml-16`}
-            onClick={() => setActiveTab("comment")}
+            onClick={() => {setIsOpen(false);setActiveTab("comment")}}
           >
             <span className="block text-[12px] lg:text-[16px] lg:pb-5 pb-4 font-semibold">
               ĐÁNH GIÁ
@@ -48,17 +48,10 @@ const Product_description = ({ product }: Props) => {
           </li>
         </ul>
         <hr className="mb-6" />
-        {/* <div className="content-section text-[14px]">
-          {activeTab == "des" ? (
-            <div ref={desRef}></div>
-          ) : (
-            <div ref={comRef}></div>
-          )}
-        </div> */}
         <div
           className="content-section text-[14px] overflow-hidden"
           style={{
-            height: isOpen ? "100%" : "120px", // Điều chỉnh chiều cao theo trạng thái mở/đóng
+            height: isOpen ? "100%" : "50px", // Điều chỉnh chiều cao theo trạng thái mở/đóng
           }}
         >
           {activeTab === "des" ? <div ref={desRef}></div> : <CommentList productId={product._id? product._id: ''} />}

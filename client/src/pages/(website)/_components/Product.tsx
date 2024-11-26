@@ -61,7 +61,6 @@ const Product = ({ product }: Props) => {
   //   const newCheckSizes = newAttributes?.map((item: Iattribute) => item.size)
   //   setCheckSizes(newCheckSizes)
   // }, [color])
-
   const onSetProductId = async (product: Iproduct) => {
     if (productId !== product?._id) {
       dispath(setProductId(product._id))
