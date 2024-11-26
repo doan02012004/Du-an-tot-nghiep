@@ -40,22 +40,17 @@ const ActionsSupportUser = () => {
             okType: 'danger',
             cancelText: 'Hủy',
             onOk: async () => {
-                dispatch(logoutStart());
-    
                 try {
                     const data = await logoutUser();
     
                     if (data.SC == 1) {
-                        setCurrentUser(null);
+                        await setCurrentUser(null);
                         setIsLogin(false);
-                        setAccesToken(null);
+                        await setAccesToken(null);
                         window.location.reload();
                     }
-    
-                    dispatch(logoutSuccess());
                 } catch (error) {
                     message.error('Đăng xuất thất bại');
-                    dispatch(logoutFailed());
                 }
             },
             onCancel() {
