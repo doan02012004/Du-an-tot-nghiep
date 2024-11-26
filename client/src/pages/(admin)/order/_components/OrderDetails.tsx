@@ -4,9 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import useOrderMutation from "../../../../common/hooks/orders/useOrderMutation";
 import { useOrderQuery } from "../../../../common/hooks/orders/useOrderQuery";
 
-type Props = {}
-
-const OrderDetails = (props: Props) => {
+const OrderDetails = () => {
     const { id } = useParams();
     const query = useOrderQuery({ orderId: id });
     const mutation = useOrderMutation();

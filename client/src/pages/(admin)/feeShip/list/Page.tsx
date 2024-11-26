@@ -1,4 +1,4 @@
-import { CarOutlined, DeleteOutlined, EditOutlined, EnvironmentOutlined, PlusOutlined, TagOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined, TagOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
@@ -8,7 +8,7 @@ import { formatPrice } from '../../../../common/utils/product';
 
 const ListShipPage = () => {
     const [ships, setShips] = useState<IShip[]>([])
-    const [ship, setShip] = useState<IShip>({ _id: '', nameBranch: '', weight: [], volume: [] })
+    const [ship, setShip] = useState<IShip>({ _id: '', nameBrand: '', weight: [], volume: [] })
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const shipQuery = useShipQuery({})
 
