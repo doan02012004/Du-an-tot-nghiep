@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { getProductBySlug, getProducts } from '../../../services/products'
+import { getProductBySlug, getProducts, getProductSimilar } from '../../../services/products'
 
 type DataFilter = {
-    page:number|null,
+    page:number|string|null,
     limit:number|null,
     categorySlug:string|null,
     sizes:string|null,
@@ -12,14 +12,19 @@ type DataFilter = {
     sell_order:string|null,
     search:string|null
 }
-const useProductQuery = (option:{slug?:string,dataFilter?:DataFilter}) => {
+const useProductQuery = (option:{slug?:string,dataFilter?:DataFilter, similar?:{categoryId:string|number,productId:string|number}}) => {
 
     const query = useQuery({
         queryKey: ['PRODUCT',option],
         queryFn: async () => {
             try {
+                   if(option.similar){
+                    const data = await getProductSimilar(option.similar)
+                    return data;
+                   }else{
                     const data = option?.slug? await getProductBySlug(option?.slug): await getProducts(option?.dataFilter);
                     return data;
+                   }
             } catch (error) {
                 return error
             }

@@ -112,7 +112,24 @@ export const getProductSlider = async (req, res) => {
     });
   }
 };
+export const getProductSimilar = async (req, res) => {
+  try {
+    const categoryId = req.query.categoryId
+    const productId = req.query.productId
 
+    const products = await ProductModel.find({
+      _id:{$ne:productId},
+      categoryId:categoryId
+    }).populate(
+      "categoryId"
+    );
+    return res.status(200).json(products);
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 export const updateAttributeProduct = async (req, res) => {
   try {
     const product = await ProductModel.findById({ _id: req.params.productId });

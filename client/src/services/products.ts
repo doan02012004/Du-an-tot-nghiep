@@ -44,6 +44,17 @@ export const getProductSlider = async (options: any) => {
       return error;
     }
   };
+  export const getProductSimilar = async (param:any) => {
+    try {
+      const res = await instance.get("/products/similar", {
+        params: param,
+      });
+      return res.data;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  };
 
 export const getProducts = async (dataFilter:any) => {
   try {

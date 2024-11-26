@@ -8,6 +8,7 @@ import {
   deleteSize,
   getAllProduct,
   getBySlugProduct,
+  getProductSimilar,
   getProductSlider,
   updateAttributeProduct,
   updateGallery,
@@ -19,6 +20,7 @@ const router = express.Router();
 router.post("/", createProduct);
 router.get("/", getAllProduct);
 router.get("/slider", getProductSlider);
+router.get("/similar", getProductSimilar);
 router.put("/updateAtb/:productId", updateAttributeProduct);
 router.put("/updateInfor/:productId", updateInforProduct);
 router.put("/updateGallery/:productId", updateGallery);

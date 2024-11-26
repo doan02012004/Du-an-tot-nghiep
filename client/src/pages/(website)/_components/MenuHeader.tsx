@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import useCategoryQuery from '../../../common/hooks/categories/useCategoryQuery'
 import { ICategories } from '../../../common/interfaces/categories';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const MenuHeader = () => {
     const [isOpenMenu, setIsOpenMenu] = useState(false)
     const categoryQuery = useCategoryQuery();
-    const navigate = useNavigate();
     const onMenuMobile = () => {
         const menu = document.querySelector<HTMLElement>('.menu');
         if (isOpenMenu == true) {
@@ -22,9 +21,6 @@ const MenuHeader = () => {
         }
         setIsOpenMenu(!isOpenMenu)
     }
-    const handleCategoryClick = (slug: string) => {
-        navigate(`/product?category=${slug}`);
-    };
     return (
         <>
             <span onClick={onMenuMobile} className="open-menu block cursor-pointer text-xl lg:hidden">
@@ -47,7 +43,7 @@ const MenuHeader = () => {
                                 {
                                     categoryQuery?.data?.map((item: ICategories, index: number) => (
 
-                                        <li className='w-max' key={index}><a href="" className="block text-sm py-1 hover:text-[#AC2F33] hover:underline" onClick={() => handleCategoryClick(item?.slug)}>{item?.name}</a></li>
+                                        <li className='w-max' key={index}><Link to={`/product?category=${item.slug}`} className="block text-sm py-1 hover:text-[#AC2F33] hover:underline" >{item?.name}</Link></li>
 
 
                                     ))
