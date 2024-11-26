@@ -11,12 +11,11 @@ const ComplaintEdit = (props: Props) => {
   const { id } = useParams();
   const query = useComplaintQuery(id);
   const mutation = useComplaintMutation();
+  const mutations = useOrderMutation();
   
   // State để lưu thông tin chỉnh sửa
-  const [status, setStatus] = useState<'new' | 'in_progress' | 'resolved' | ''>('');
+  const [status, setStatus] = useState<'new' | 'in_progress' | 'resolved' | 'cancelled' | ''>(''); 
   const [response, setResponse] = useState<string>('');
-  const mutations = useOrderMutation();
-  // console.log(query)
 
   // Cập nhật giá trị status và response khi query thay đổi
   useEffect(() => {
@@ -31,6 +30,8 @@ const ComplaintEdit = (props: Props) => {
       message.info('Không có thay đổi để cập nhật.');
       return;
     }
+    
+    // Cập nhật trạng thái khiếu nại
     mutation.mutate({
       action: 'update',
       complaintData: {
@@ -39,13 +40,47 @@ const ComplaintEdit = (props: Props) => {
         response,
       },
     });
-    if(status === "resolved"){
-       // Cập nhật trạng thái đơn hàng thành 'Returngoods'
-    mutations.mutate({
-      action: "updateStatus",
-      orderId: query.orderId._id,
-      status: "Returngoods",
-    });
+
+    if (status === 'cancelled') {
+      // Nếu trạng thái khiếu nại là huỷ, cập nhật lại trạng thái đơn hàng về "Đã nhận hàng"
+      mutations.mutate({
+        action: 'updateStatus',
+        orderId: query.orderId._id,
+        status: 'received', // hoặc trạng thái khác mà bạn muốn
+      });
+    }
+
+    if (status === 'resolved') {
+      // Kiểm tra phản hồi từ admin để cập nhật trạng thái đơn hàng
+      if (response.includes('Trả hàng')) {
+        mutations.mutate({
+          action: 'updateStatus',
+          orderId: query.orderId._id,
+          status: 'Returngoods',
+        });
+      } else if (response.includes('Hoàn tiền')) {
+        mutations.mutate({
+          action: 'updateStatus',
+          orderId: query.orderId._id,
+          status: 'Returngoods',
+        });
+      } else if (response.includes('Đổi trả hàng')) {
+        mutations.mutate({
+          action: 'updateStatus',
+          orderId: query.orderId._id,
+          status: 'Exchanged',
+        });
+      }else if (response.includes('Đơn hàng đã hoàn tất')) {
+        mutations.mutate({
+          action: 'updateStatus',
+          orderId: query.orderId._id,
+          status: 'received',
+        });
+      }
+       else {
+        // Nếu không có yêu cầu thay đổi trạng thái đơn hàng
+        message.success('Khiếu nại đã được giải quyết!');
+      }
     }
   };
 
@@ -79,9 +114,10 @@ const ComplaintEdit = (props: Props) => {
                 style={{ width: 200 }}
                 placeholder="Chọn trạng thái"
               >
-                <Select.Option value="new">Mới</Select.Option>
-                <Select.Option value="in_progress">Đang xử lý</Select.Option>
+                <Select.Option value="new" disabled={status !== "new"}>Mới</Select.Option>
+                <Select.Option value="in_progress" disabled={status === "in_progress"}>Đang xử lý</Select.Option>
                 <Select.Option value="resolved">Đã giải quyết</Select.Option>
+                <Select.Option value="cancelled" disabled={status === "resolved"}>Huỷ khiếu nại</Select.Option>
               </Select>
             </Descriptions.Item>
             <Descriptions.Item label="Ngày tạo">

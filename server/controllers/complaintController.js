@@ -85,7 +85,7 @@ export const updateComplaintStatus = async (req, res) => {
 
     try {
         // Kiểm tra trạng thái hợp lệ của khiếu nại
-        const validStatuses = ["new", "in_progress", "resolved"];
+        const validStatuses = ["new", "in_progress", "resolved","cancelled"];
         if (!validStatuses.includes(status)) {
             return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid complaint status" });
         }
@@ -107,7 +107,8 @@ export const updateComplaintStatus = async (req, res) => {
         const statusTranslations = {
             new: "Mới",
             in_progress: "Đang xử lý",
-            resolved: "Đã giải quyết"
+            resolved: "Đã giải quyết",
+            cancelled: "Huỷ khiếu nại"
           };
     
         const vietnameseStatus = statusTranslations[updatedComplaint.status];
@@ -123,6 +124,44 @@ export const updateComplaintStatus = async (req, res) => {
 
         // Trả về khiếu nại đã được cập nhật
         return res.status(StatusCodes.OK).json(updatedComplaint);
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+};
+
+
+export const cancelComplaint = async (req, res) => {
+    const { complaintId } = req.params;
+
+    try {
+        // Tìm khiếu nại
+        const complaint = await complaintModel.findById(complaintId);
+
+        if (!complaint) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không tìm thấy khiếu nại" });
+        }
+
+        // Kiểm tra trạng thái
+        if (complaint.status !== "new") {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Chỉ có thể hủy khiếu nại khi trạng thái là 'Mới'" });
+        }
+
+        // Lấy thông tin người dùng
+        const user = await UserModel.findById(complaint.userId);
+        const userEmail = user?.email;
+
+        // Xóa khiếu nại
+        await complaintModel.findByIdAndDelete(complaintId);
+
+        // Gửi email thông báo (nếu có email của khách hàng)
+        if (userEmail) {
+            const subject = "Xác nhận hủy khiếu nại";
+            const message = `Xin chào ${user.firstname} ${user.lastname},\n\nKhiếu nại của bạn về đơn hàng ${complaint.orderId} đã được hủy thành công.\n\nNếu đây không phải thao tác của bạn, vui lòng liên hệ với chúng tôi ngay lập tức.\n\nTrân trọng,\nĐội ngũ hỗ trợ khách hàng.`;
+
+            await sendEmail(userEmail, subject, message);
+        }
+
+        return res.status(StatusCodes.OK).json({ message: "Khiếu nại đã được hủy thành công" });
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }

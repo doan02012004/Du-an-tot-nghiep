@@ -7,7 +7,7 @@ const complaintSchema = new Schema(
     complaintReason: { type: String, required: true },
     status: {
       type: String,
-      enum: ['new', 'in_progress', 'resolved'],
+      enum: ['new', 'in_progress', 'resolved','cancelled'],
       default: 'new',
     },
     response: { type: String },

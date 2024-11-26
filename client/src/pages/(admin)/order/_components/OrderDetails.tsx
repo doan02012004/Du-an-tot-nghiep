@@ -44,6 +44,10 @@ const OrderDetails = (props: Props) => {
                 return 'Trả hàng';
             case 'Complaints':
                 return 'Khiếu nại';
+            // case 'Refunded':
+            //     return 'Hoàn tiền';
+            case 'Exchanged':
+                return 'Đổi trả hàng';
             default:
                 return 'Không xác định';
         }
@@ -52,14 +56,17 @@ const OrderDetails = (props: Props) => {
     // Hàm kiểm tra tính hợp lệ của việc chuyển đổi trạng thái
     const validateStatusChange = (currentStatus: string, newStatus: string) => {
         const invalidTransitions: Record<string, string[]> = {
-            pending: ["pending", "unpaid", "shipped", "delivered", "received", "Returngoods", "Complaints"],
-            unpaid: ["pending", "unpaid", "confirmed", "shipped", "delivered", "received", "Returngoods", "Complaints"],
-            confirmed: ["pending", "unpaid", "confirmed", "delivered", "cancelled", "received", "Returngoods", "Complaints"],
-            shipped: ["pending", "unpaid", "confirmed", "shipped", "cancelled", "received", "Returngoods", "Complaints"],
-            delivered: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "Returngoods"],
+            pending: ["pending", "unpaid", "shipped", "delivered", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
+            unpaid: ["pending", "unpaid", "confirmed", "shipped", "delivered", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
+            confirmed: ["pending", "unpaid", "confirmed", "delivered", "cancelled", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
+            shipped: ["pending", "unpaid", "confirmed", "shipped", "cancelled", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
+            delivered: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "Returngoods","Complaints","Refunded","Exchanged"],
             cancelled: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints"],
-            received: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods"],
-            Complaints: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints"]
+            received: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
+            Complaints: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
+            Returngoods: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
+            Refunded: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
+            Exchanged: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"]
         };
         return !(invalidTransitions[currentStatus]?.includes(newStatus));
     };
@@ -139,6 +146,18 @@ const OrderDetails = (props: Props) => {
                 disabled={!validateStatusChange(order.status, 'Complaints')}
             >
                 Khiếu nại
+            </Menu.Item>
+            {/* <Menu.Item
+                onClick={() => handleStatusChange('Refunded')}
+                disabled={!validateStatusChange(order.status, 'Refunded')}
+            >
+                Hoàn tiền
+            </Menu.Item> */}
+            <Menu.Item
+                onClick={() => handleStatusChange('Exchanged')}
+                disabled={!validateStatusChange(order.status, 'Exchanged')}
+            >
+                Đổi trả hàng
             </Menu.Item>
         </Menu>
     );
