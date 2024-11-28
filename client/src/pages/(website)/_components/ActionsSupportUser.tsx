@@ -11,7 +11,7 @@ const ActionsSupportUser = () => {
     const [actionSupport, setActionSupport] = useState(false)
     const [actionUser, setActionUser] = useState(false)
     const { accessToken, setAccesToken, setCurrentUser, setIsLogin, currentUser } = useContext(AppContext)
-    console.log(currentUser)
+    // console.log(currentUser)
     const { confirm } = Modal;
     const dispatch = useDispatch()
     const onHandeActionSupport = () => {
