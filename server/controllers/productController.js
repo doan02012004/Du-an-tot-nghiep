@@ -2,6 +2,7 @@ import { query } from "express";
 import ProductModel from "../models/productModel.js";
 import slugify from "slugify";
 import categoryModel from "../models/categoryModel.js";
+import SearchModel from "../models/searchModel.js";
 
 export const createProduct = async (req, res) => {
   try {
@@ -18,7 +19,9 @@ export const createProduct = async (req, res) => {
   }
 };
 
+''
 export const getAllProduct = async (req, res) => {
+  const { userId } = req; // Lấy thông tin userId từ token hoặc session
   try {
     const { min_price, limit, page, max_price, sizes, colors,search,categorySlug, sell_order } = req.query;
     const _limit = parseInt(limit) || 12;
@@ -49,6 +52,9 @@ export const getAllProduct = async (req, res) => {
         sort["attributes.price_new"] = -1; // Giá giảm dần
       }
     }
+    if(search){
+      query['name'] = { $regex: search, $options: 'i'}
+    }
 
     // Lọc theo size nếu có
     if (sizes) {
@@ -64,6 +70,7 @@ export const getAllProduct = async (req, res) => {
       };
     }
 
+  
     const products = await ProductModel.find(query)
       .sort(sort)
       .limit(_limit)
@@ -71,6 +78,10 @@ export const getAllProduct = async (req, res) => {
       .populate("categoryId brandId")
       .exec();
 
+    if (userId && search) {
+        await trackSearchHistory(userId, search);
+    }
+    
     const total = await ProductModel.countDocuments(query);
     const totalPage = Math.ceil(total / _limit);
 
@@ -84,6 +95,22 @@ export const getAllProduct = async (req, res) => {
     return res.status(500).json({
       message: error.message,
     });
+  }
+};
+const trackSearchHistory = async (userId, search) => {
+  try {
+      const existingSearch = await SearchModel.findOne({ userId, search });
+
+      if (existingSearch) {
+          // Tăng số lần tìm kiếm nếu từ khóa đã tồn tại trong lịch sử
+          existingSearch.searchCount += 1;
+          await existingSearch.save();
+      } else {
+          // Tạo mới bản ghi nếu từ khóa chưa từng được tìm kiếm
+          await SearchModel.create({ userId, search });
+      }
+  } catch (error) {
+      console.error('Error tracking search history:', error);
   }
 };
 

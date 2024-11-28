@@ -11,6 +11,7 @@ type DataFilter = {
     max_price:number|null,
     sell_order:string|null,
     search:string|null
+    
 }
 const useProductQuery = (option:{slug?:string,dataFilter?:DataFilter, similar?:{categoryId:string|number,productId:string|number}}) => {
 

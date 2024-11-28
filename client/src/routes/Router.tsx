@@ -62,7 +62,8 @@ const Router = () => {
     <Routes>
       <Route path="/" element={<LayoutWebsite />}>
         <Route index element={<HomePage />} />
-        <Route path="product" element={<ProductPage />} />
+        <Route path="timkiem" element={<ProductPage />} />
+        <Route path="/danh-muc/:slug" element={<ProductPage />} />
         <Route path="productdetails/:slug" element={<ProductDetailsPage />} />
         <Route path="signin" element={<PageSignin />} />
         <Route path="signup" element={<PageSignup />} />
