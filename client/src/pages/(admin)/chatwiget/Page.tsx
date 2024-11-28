@@ -37,8 +37,8 @@ const ChatWidget = () => {
             {/* Chat Box */}
             <div className="w-3/4 flex flex-col">
 
-                <div className="flex-grow p-4 bg-gray-50 ">
-                    <div className="bg-white p-3 rounded-md shadow-md h-full">
+                <div className="flex-grow p-2 bg-gray-50 ">
+                    <div className="bg-white p-3 rounded-md shadow-md">
                         {/* Chat messages go here */}
                         <div className="h-full flex flex-col">
                             {/* hôp thoại chat */}

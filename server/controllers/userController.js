@@ -6,9 +6,9 @@ import { registerSchema, loginSchema, addSchema } from "../validations/userValid
 import jwt from 'jsonwebtoken'
 import { StatusCodes } from "http-status-codes";
 import BlackListModel from '../models/blackListModel.js'
+import { HistoryUpdateUser } from '../models/historyUpdateUserModel.js'
 dotenv.config()
 let refreshTokens = [];
-// lấy toàn bộ user
 // lấy toàn bộ user
 export const getAllUser = async (req, res) => {
     try {
@@ -61,23 +61,70 @@ export const deleteUser = async (req, res) => {
     }
 }
 
-//update usser theo id
+
+// Cập nhật thông tin user theo ID
 export const updateUser = async (req, res) => {
     try {
-        const users = await UserModel.findByIdAndUpdate(req.params.id, req.body)
-        //kiem tra user xem đã tồn tại theo id trên đường dẫn
-        if (!users) {
+        const { password, ...others } = req.body; // Lấy password riêng ra
+
+        // Tìm người dùng theo ID
+        const user = await UserModel.findById(req.params.id);
+        if (!user) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 message: 'Không tìm thấy người dùng với ID này',
             });
         }
-        return res.status(StatusCodes.OK).json(users)
+
+        // Sao lưu thông tin gốc để lưu lịch sử
+        const originalUser = { ...user._doc };
+
+        // Tạo đối tượng để lưu những thay đổi
+        const changes = {};
+
+        // Nếu người dùng gửi mật khẩu mới, hash lại trước khi lưu
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            if (hashedPassword !== user.password) {
+                changes.password = 'Mật khẩu đã thay đổi'; // Không lưu mật khẩu dưới dạng plaintext
+                user.password = hashedPassword; // Cập nhật mật khẩu đã hash vào user
+            }
+        }
+
+        // So sánh và ghi nhận các thay đổi khác
+        Object.keys(others).forEach((key) => {
+            if (others[key] !== user[key]) {
+                changes[key] = others[key];
+                user[key] = others[key]; // Cập nhật giá trị mới vào user
+            }
+        });
+
+        // Lưu người dùng với thông tin mới
+        await user.save();
+
+        // Chỉ lưu vào collection HistoryUpdateUser nếu có thay đổi
+        if (Object.keys(changes).length > 0) {
+            const updatedUserData = {
+                originalUser, // Lưu toàn bộ thông tin trước khi thay đổi
+                changes, // Lưu những trường đã thay đổi
+                updateTime: new Date(), // Lưu thời gian cập nhật
+            };
+
+            // Tạo mới và lưu vào collection HistoryUpdateUser
+            const updatedUserRecord = new HistoryUpdateUser(updatedUserData);
+            await updatedUserRecord.save();
+        }
+
+        // Trả về thông tin người dùng (trừ mật khẩu)
+        const { password: hashedPass, ...updatedUser } = user._doc; // Loại bỏ mật khẩu
+        return res.status(StatusCodes.OK).json(updatedUser);
+
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: error.message
-        })
+            message: error.message,
+        });
     }
-}
+};
+
 
 export const updateUserStatus = async (req, res) => {
     try {
@@ -143,10 +190,9 @@ export const add = async (req, res) => {
     }
 }
 
-
 //đăng kí tài khoản
+
 export const register = async (req, res) => {
-    //nhận request từ user 
     const User = {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
@@ -269,14 +315,14 @@ export const login = async (req, res) => {
                 ...orthers, accessToken
             })
         } else {
-           
+
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message })
         }
 
 
     } catch (error) {
         console.log("lỗi đăng nhập", error.message)
-       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
     }
 }
 
@@ -352,9 +398,6 @@ export const getAccount = async (req, res) => {
     }
 }
 
-
-
-
 // đăng xuất tài khoản
 export const logout = async (req, res) => {
 
@@ -380,3 +423,63 @@ export const logout = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
     }
 }
+
+//lấy lích sử đã update tài khoản user
+export const getHistoryUpdateUser = async (req, res) => {
+    try {
+        // Lấy toàn bộ lịch sử cập nhật từ database
+        const history = await HistoryUpdateUser.find()
+            .populate('originalUser', 'email firstname lastname') // Lấy email và tên người dùng từ thông tin gốc
+            .sort({ updateTime: -1 }) // Sắp xếp theo thời gian cập nhật mới nhất
+            .exec();
+
+        // Trả về lịch sử đã được format
+        res.status(200).json(history);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Lỗi máy chủ: không thể lấy được lịch sử cập nhật',
+        });
+    }
+};
+
+
+// Xóa lịch sử cập nhật user theo id
+export const deleteHistoryUpdateUser = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const historyRecord = await HistoryUpdateUser.findByIdAndDelete(id);
+        if (!historyRecord) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Không tìm thấy lịch sử cập nhật với ID này',
+            });
+        }
+        return res.status(StatusCodes.OK).json({
+            message: 'Xóa lịch sử cập nhật thành công',
+        });
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
+        });
+    }
+};
+
+// Lấy chi tiết lịch sử cập nhật user theo id
+export const getHistoryUpdateUserById = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const historyRecord = await HistoryUpdateUser.findById(id)
+            .populate('originalUser', 'email firstname lastname'); // Lấy thông tin người dùng liên quan
+        if (!historyRecord) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Không tìm thấy lịch sử cập nhật với ID này',
+            });
+        }
+
+        return res.status(StatusCodes.OK).json(historyRecord);
+    } catch (error) {
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
+        });
+    }
+};

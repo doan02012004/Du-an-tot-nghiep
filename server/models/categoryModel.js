@@ -17,3 +17,4 @@ const categoriesSchema = new Schema(
     { timestamps: true, versionKey: false }
 );
 export default mongoose.model("Categories", categoriesSchema);
+                                                                                                                                                                                                    

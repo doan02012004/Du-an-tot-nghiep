@@ -123,7 +123,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     }
   }, [locationQuery.data])
 
-
   // kết nối socket
   useEffect(() => {
     socket.current = io('http://localhost:8000')

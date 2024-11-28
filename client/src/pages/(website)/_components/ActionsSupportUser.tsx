@@ -4,8 +4,7 @@ import { Modal, message } from 'antd'
 import { logoutUser } from '../../../services/auth'
 import { useDispatch } from 'react-redux'
 import { logoutFailed, logoutStart, logoutSuccess } from '../../../common/redux/features/authSlice'
-import { Link } from 'react-router-dom'
-// import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const ActionsSupportUser = () => {
     const [actionSupport, setActionSupport] = useState(false)
@@ -14,6 +13,8 @@ const ActionsSupportUser = () => {
     // console.log(currentUser)
     const { confirm } = Modal;
     const dispatch = useDispatch()
+    const navigate = useNavigate();
+
     const onHandeActionSupport = () => {
         setActionSupport(!actionSupport)
         setActionUser(false)
@@ -39,10 +40,12 @@ const ActionsSupportUser = () => {
                         setCurrentUser({});
                         setIsLogin(false);
                         setAccesToken(null);
-                        window.location.reload();
+                        message.success('Đăng xuất thành công');
+                        navigate('/signin'); // Redirect to login page
                     }
 
                     dispatch(logoutSuccess());
+
                 } catch (error) {
                     message.error('Đăng xuất thất bại');
                     dispatch(logoutFailed());
@@ -133,7 +136,7 @@ const ActionsSupportUser = () => {
                                         Admin
                                     </a>
                                 </li>
-                                ) 
+                            )
                             }
                             <li className="group mb-6">
                                 <Link to={"customer/order-manager"} className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">

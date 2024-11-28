@@ -33,6 +33,17 @@ import OrdersPage from "../pages/(admin)/order/Page";
 import OrderList from "../pages/(admin)/order/_components/OrderList";
 import OrderDetails from "../pages/(admin)/order/_components/OrderDetails";
 import OrderManager from "../pages/(website)/my-information/order-manager/Page";
+import BrandsPage from "../pages/(admin)/brands/Page";
+import BrandsForm from "../pages/(admin)/brands/_components/BrandForm";
+import HistoryUpdateUser from "../pages/(admin)/users/_components/HistoryUpdateUser";
+import VouchersPage from "../pages/(admin)/vouchers/Page";
+import VoucherList from "../pages/(admin)/vouchers/_components/VoucherList";
+import VoucherAdd from "../pages/(admin)/vouchers/_components/VoucherAdd";
+import VoucherEdit from "../pages/(admin)/vouchers/_components/VoucherEdit";
+import CanPayment from "../pages/(website)/thanks/CanPayment";
+import PageComplaint from "../pages/(admin)/complaint/Page";
+import ComplaintList from "../pages/(admin)/complaint/_components/ComplaintList";
+import ComplaintEdit from "../pages/(admin)/complaint/_components/ComplaintEdit";
 
 
 const Router = () => {
@@ -41,7 +52,7 @@ const Router = () => {
       <Route path="/" element={<LayoutWebsite />}>
         <Route index element={<HomePage />} />
         <Route path="product" element={<ProductPage />} />
-        <Route path="productdetails/:id" element={<ProductDetailsPage />} />
+        <Route path="productdetails/:slug" element={<ProductDetailsPage />} />
         <Route path="signin" element={<PageSignin />} />
         <Route path="signup" element={<PageSignup />} />
         <Route path="blog" element={<PageBlog />} />
@@ -49,6 +60,7 @@ const Router = () => {
         <Route path="cart" element={<CartPage />} />
         <Route path="order" element={<OrderPage />} />
         <Route path="thanks" element={<ThanksPage />} />
+        <Route path="canpay" element={<CanPayment />} />
         <Route path="customer" element={<MyInformation />}>
           <Route path="infor" element={<Account />} />
           <Route path="order-manager" element={<OrderManager />} />
@@ -56,22 +68,35 @@ const Router = () => {
         </Route>
       </Route>
       <Route path="admin" element={<LayoutAdmin />}>
-        <Route path="orders" element={<OrdersPage/>}>
-          <Route index element={<OrderList />}/>
-          <Route path="details/:id" element={<OrderDetails />}/>
+        <Route path="complaint" element={<PageComplaint />}>
+          <Route index element={<ComplaintList />} />
+          <Route path="admin/complaint/:id" element={<ComplaintEdit />} />
+        </Route>
+        <Route path="vouchers" element={<VouchersPage />}>
+          <Route index element={<VoucherList />} />
+          <Route path="add" element={<VoucherAdd />} />
+          <Route path="/admin/vouchers/:id" element={<VoucherEdit />} />
+        </Route>
+        <Route path="orders" element={<OrdersPage />}>
+          <Route index element={<OrderList />} />
+          <Route path="details/:id" element={<OrderDetails />} />
         </Route>
         <Route path="products" element={<AdminProduct />}>
           <Route index element={<ListProduct />} />
           <Route path="add" element={<AddProductAdmin />} />
-          <Route path="view/:id" element={<ViewProductAdmin />} />
+          <Route path="view/:slug" element={<ViewProductAdmin />} />
         </Route>
         <Route path='colors' element={<LayoutColor />} />
         <Route path='categories' element={<CategoriesPage />} />
         <Route path='categories/add' element={<CategoriesForm />} />
         <Route path='categories/edit/:id' element={<CategoriesForm />} />
+        <Route path='brands' element={<BrandsPage />} />
+        <Route path='brands/add' element={<BrandsForm />} />
+        <Route path='brands/edit/:id' element={<BrandsForm />} />
         <Route path='chat' element={<ChatWidget />} />
         <Route path='auth' element={<PageAuthAdmin />} >
           <Route index element={<ListUser />} />
+          <Route path='historyupdate' element={<HistoryUpdateUser />} />
         </Route>
         <Route path="banners" element={<BannerPage />}>
           <Route index element={<ListBanner />} />

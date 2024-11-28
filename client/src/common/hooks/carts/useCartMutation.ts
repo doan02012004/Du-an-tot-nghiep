@@ -61,7 +61,7 @@ const useCartMutation = () => {
                     break;
             }
         },
-        onSuccess() {
+        onSuccess:()=> {
             queryClient.invalidateQueries({ queryKey: ['CARTS'] })
         },
     })
