@@ -1,93 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// const color ={
-//   _id:"djfhjdhjdh",
-//   name:"ĐEN",
-//   background:"black"
-// }
-// const product = {
-//   _id: 'dfhjdfhj',
-//   categoryId:{
-//     _id:'kjdfkdkfj',
-//     name:"Áo sơ mi",
-//     slug:"ao-so-mi"
-//   },
-//   name: "Áo sơ mi",
-//   price_old: 150000,
-//   discount: 10,
-//   description: "Mô tả",
-//   active: true,
-//   featured: true,
-//   gender:"unisex",
-//   gallerys: [
-//     {
-//       _id:'hhfdjhdj',
-//       colorId:"djfkd",
-//       avatar: "http:....",
-//       items: [
-//         "http://picsum...",
-//         "http://picsum...",
-//         "http://picsum...",
-//         "http://picsum...",
-//       ]
-//     },
-//     {
-//       _id:'hhfdjhdj',
-//       name: "TRẮNG",
-//       background: "black",
-//       avatar: "http:....",
-//       items: [
-//         "http://picsum...",
-//         "http://picsum...",
-//         "http://picsum...",
-//         "http://picsum...",
-//       ]
-//     },
-//   ],
-//   attributes:[
-//     {
-//       _id:'djhjdfhj',
-//       size:"M",
-//       color:"ĐEN",
-//       instock:10
-//     },
-//     {
-//       _id:'djhjdfhj',
-//       size:"M",
-//       color:"TRẮNG",
-//       instock:10
-//     },
-//     {
-//       _id:'djhjdfhj',
-//       size:"L",
-//       color:"ĐEN",
-//       instock:10
-//     },
-//     {
-//       _id:'djhjdfhj',
-//       size:"L",
-//       color:"TRẮNG",
-//       instock:10
-//     },
-//   ]
-// }
-//  const order = {
-//   productId: 'kdfjkdfjkd',
-//   attributeId:'jdfjhdf'
-//  }
-
-// import styles
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CreateProduct from "./_components/CreateProduct";
 import FormInfor from "./_components/FormInfor";
 import Properties from "./_components/Properties";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { setAttributes, setColors, setGallerys, SetIsSave, setProductInfor, setSizes } from "../../../../common/redux/features/productSlice";
-import { Button } from "antd";
-import { LeftOutlined } from "@ant-design/icons";
+import { Button, Tabs, TabsProps } from "antd";
+import { CheckOutlined, LeftOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import TabImage from "./_components/TabImage";
+import { Iattribute, Igallery } from "../../../../common/interfaces/product";
 
 
 const AddProductAdmin = () => {
+  const [checkGallerys,setCheckGallerys] = useState(false)
+  const [checkAttributes,setCheckAttributes] = useState(false)
+  const attributes = useSelector((state: any) => state.product.attributes)
+  const gallerys = useSelector((state: any) => state.product.gallerys)
+  const isSave = useSelector((state: any) => state.product.isSave)
   const dispath = useDispatch()
   useEffect(() => {
     dispath(setSizes([]))
@@ -97,16 +27,56 @@ const AddProductAdmin = () => {
     dispath(setColors([]))
     dispath(SetIsSave(false))
   }, [])
+  useEffect(() => {
+    if(gallerys.length>0){
+      setCheckGallerys(!gallerys.some((item: Igallery) => item.check === false))
+    }else{
+      setCheckGallerys(false)
+    }
+    if(attributes.length>0){
+      setCheckAttributes(!attributes.some((item: Iattribute) => item.isCheck === false))
+    }else{
+      setCheckAttributes(false)
+    }
+  },[gallerys,attributes])
+  const items: TabsProps['items'] = [
+    {
+      key: '1',
+      label:(
+        <span className={`flex items-center ${isSave &&'text-green-600'}`}>Thông tin sản phẩm {isSave && <CheckOutlined className="ml-2" />}</span>
+      ),
+      children: (<FormInfor />),
+    },
+    {
+      key: '2',
+      label: (
+        <span className={`flex items-center ${checkAttributes &&'text-green-600'}`}>Thuộc tính {checkAttributes && <CheckOutlined className="ml-2" />}</span>
+      ),
+      children: (<Properties />),
+    },
+    {
+      key: '3',
+      label: (
+        <span className={`flex items-center ${checkGallerys &&'text-green-600'}`}>Ảnh sản phẩm {checkGallerys && <CheckOutlined className="ml-2" />}</span>
+      ),
+      children: (<TabImage />),
+    }
+  ];
   return (
-    <div className=" w-full h-[580px] overflow-y-scroll">
-      <div className=" p-3 bg-white rounded-lg  shadow-sm shadow-gray-700">
+    <div className=" w-full">
+      <div className=" p-3 bg-white">
         <div className="flex items-center justify-between pb-3 mb-3 border-b">
-          <h1 className="text-3xl font-bold text-center mb-3 text-blue">Thêm sản phẩm</h1>
-          <Link to={'/admin/product'}><Button type="primary" ><LeftOutlined /> Quay Lại</Button></Link>
+          <h1 className="text-3xl font-bold text-center mb-3 text-indigo">Thêm sản phẩm</h1>
+          <div className="flex items-center gap-x-4">
+          <CreateProduct />
+          <Link to={'/admin/product'} className="block"><Button type="primary" ><LeftOutlined /> Quay Lại</Button></Link>
+          </div>
+          
         </div>
-        <FormInfor />
-        <Properties />
-        <CreateProduct />
+        <Tabs items={items} />
+        {/* <FormInfor />
+        <Properties /> */}
+      
       </div>
     </div>
   )

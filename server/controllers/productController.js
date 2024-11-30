@@ -1,6 +1,7 @@
 import { query } from "express";
 import ProductModel from "../models/productModel.js";
 import slugify from "slugify";
+import categoryModel from "../models/categoryModel.js";
 
 export const createProduct = async (req, res) => {
   try {
@@ -19,7 +20,7 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { min_price, limit, page, max_price, size, color, sell_order } = req.query;
+    const { min_price, limit, page, max_price, sizes, colors,search,categorySlug, sell_order } = req.query;
     const _limit = parseInt(limit) || 12;
     const _page = parseInt(page) || 1;
     const skip = _limit * (_page - 1);
@@ -31,7 +32,12 @@ export const getAllProduct = async (req, res) => {
         { "attributes.price_new": { $lte: parseInt(max_price) || 10000000 } },
       ],
     };
-
+    if(categorySlug){
+      const category = await categoryModel.findOne({slug:categorySlug})
+      if(category){
+        query['categoryId'] = category._id 
+      }
+    }
     if (sell_order) {
       if (sell_order === "new") {
         sort["createdAt"] = -1; 
@@ -45,15 +51,15 @@ export const getAllProduct = async (req, res) => {
     }
 
     // Lọc theo size nếu có
-    if (size) {
-      query["sizes"] = { $in: size.split(",") };
+    if (sizes) {
+      query["sizes"] = { $in: sizes.split(",") };
     }
 
     // Lọc theo color nếu có
-    if (color) {
+    if (colors) {
       query["colors"] = {
         $elemMatch: {
-          name: { $in: color.split(",").map((name) => new RegExp(name, "i")) },
+          name: { $in: colors.split(",").map((name) => new RegExp(name, "i")) },
         },
       };
     }
@@ -62,10 +68,10 @@ export const getAllProduct = async (req, res) => {
       .sort(sort)
       .limit(_limit)
       .skip(skip)
-      .populate("categoryId brandId");
+      .populate("categoryId brandId")
+      .exec();
 
     const total = await ProductModel.countDocuments(query);
-    console.log(total);
     const totalPage = Math.ceil(total / _limit);
 
     return res.status(200).json({
@@ -81,12 +87,11 @@ export const getAllProduct = async (req, res) => {
   }
 };
 
-
 export const getProductSlider = async (req, res) => {
   try {
     const genderQuery = req.query._gender || "";
     const featuredQuery = req.query._isFeatured || "";
-    const discountQuery = req.query._isSale || "";
+    const discountQuery = parseInt(req.query._isSale, 10) || 0;
     const queryProduct = {};
     if (genderQuery) {
       queryProduct["gender"] = { $in: [genderQuery, "unisex"] };
@@ -94,9 +99,13 @@ export const getProductSlider = async (req, res) => {
     if (featuredQuery) {
       queryProduct["featured"] = featuredQuery;
     }
-    if (discountQuery) {
-      queryProduct["discount"] = { $gte: discountQuery };
-    }
+    if (discountQuery >= 50) {
+      queryProduct["attributes"] = {
+        $elemMatch: {
+          discount: { $gte: discountQuery }, // Kiểm tra discount >= 50
+        },
+      };
+    }    
     const products = await ProductModel.find(queryProduct).populate(
       "categoryId"
     );
@@ -107,7 +116,24 @@ export const getProductSlider = async (req, res) => {
     });
   }
 };
+export const getProductSimilar = async (req, res) => {
+  try {
+    const categoryId = req.query.categoryId
+    const productId = req.query.productId
 
+    const products = await ProductModel.find({
+      _id:{$ne:productId},
+      categoryId:categoryId
+    }).populate(
+      "categoryId"
+    );
+    return res.status(200).json(products);
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 export const updateAttributeProduct = async (req, res) => {
   try {
     const product = await ProductModel.findById({ _id: req.params.productId });
@@ -289,3 +315,40 @@ export const deleteColor = async (req, res) => {
     });
   }
 };
+
+export const addImageGallery = async(req,res) =>{
+  try {
+    const {productId,galleryId,imageUrl} = req.body;
+    const product = await ProductModel.findById(productId)
+    const gallery = product.gallerys.find(item => item._id.toString() == galleryId)
+    gallery.items.push(imageUrl)
+    await product.save()
+    return res.status(200).json({
+      message:"Thêm ảnh thành công",
+      data:product
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+}
+export const updateAvatarGallery = async(req,res) =>{
+  try {
+    const {productId,galleryId,imageUrl} = req.body;
+    const product = await ProductModel.findById(productId)
+    const gallery = product.gallerys.find(item => item._id.toString() == galleryId)
+    const old_avatar = gallery.avatar;
+    gallery.avatar = imageUrl;
+    gallery.items = gallery.items.map((item) => item == imageUrl?old_avatar:item)
+    await product.save()
+    return res.status(200).json({
+      message:"Cập nhật ảnh đại diện thành công",
+      data:product
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+}

@@ -21,16 +21,17 @@ const SidebarAdmin = () => {
   const { collapsed } = useContext(AppContext);
   return (
     <Sider trigger={null} collapsible collapsed={collapsed}>
-      <div className="demo-logo-vertical" />
+      <div className="demo-logo-vertical " />
       <Menu
         theme="dark"
         mode="inline"
+        className="sticky left-0 top-0"
         defaultSelectedKeys={["1"]}
         items={[
           {
             key: "1",
             icon: <BarChartOutlined />,
-            label: "Thống kê",
+            label: ( <NavLink to={`/admin`}>Thống kê</NavLink>),
           },
           {
             key: "2",
@@ -127,8 +128,19 @@ const SidebarAdmin = () => {
           {
             key: "9",
             icon: <CreditCardOutlined />,
-            label: <Link to={"/admin/vouchers"}>Mã Voucher</Link>,
+            label: 'Voucher & Ship',
+            children: [
+              {
+                key: "9.1",
+                label: <Link to={"/admin/vouchers"}>Mã Voucher</Link>,
+              },
+              {
+                key: "9.2",
+                label: <Link to={"/admin/ships"}>Phí Ship</Link>,
+              }
+            ],
           },
+
           {
             key: "10",
             icon: <MessageOutlined />,

@@ -1,6 +1,5 @@
 import 'antd/dist/reset.css'; // Import CSS của Ant Design
-import { useLocation } from 'react-router-dom';
-import { useFilterParams } from '../../../common/hooks/products/useFilter';
+import { useSearchParams } from 'react-router-dom';
 import useProductQuery from '../../../common/hooks/products/useProductQuery';
 import Breadcrumb_products from './_components/Breadcrumb_products';
 import Sidebar_prod from './_components/Sidebar_prod';
@@ -9,12 +8,31 @@ import Top_main_prod from './_components/Top_main_prod';
 
 
 const ProductPage = () => {
-  const location = useLocation();
-  const { setFilterParams, getFiltersFromUrl } = useFilterParams();
-  const data = getFiltersFromUrl();
-  const params = setFilterParams(data);
 
-  const response = useProductQuery(undefined, location.search === '' ? undefined : params?.toString());
+  const [searchParams,] = useSearchParams();
+  const page = searchParams.get("page")
+  const limit = searchParams.get("limit")
+  const categorySlug = searchParams.get("category")
+  const sizesUrl = searchParams.get('sizes')
+  const colorsUrl= searchParams.get('colors')
+  const minPriceUrl = searchParams.get('min_price')
+  const maxPriceUrl= searchParams.get('max_price')
+  const search = searchParams.get("search")
+  const sellOrder = searchParams.get("sell_order")
+  const response = useProductQuery(
+    {
+      dataFilter:{
+      search,
+      sizes:sizesUrl,
+      colors:colorsUrl,
+      min_price:minPriceUrl?Number(minPriceUrl):null,
+      max_price:maxPriceUrl?Number(maxPriceUrl):null,
+      sell_order:sellOrder,
+      categorySlug:categorySlug,
+      page:page?Number(page):null,
+      limit:limit?Number(limit):null
+    }}
+  );
 
   return (
     <div>
@@ -27,7 +45,7 @@ const ProductPage = () => {
           <div className="main-prod lg:mb-[54px]">
             <Top_main_prod  />
             {/* <!-------------------------------------------------------end top-main-prod-----------------------------  --> */}
-            <Sub_main_prod data={response?.data} />
+            <Sub_main_prod data={response?.data} colorsUrl={colorsUrl} minPrice={minPriceUrl} maxPrice={maxPriceUrl} />
 
           </div>
         </section>

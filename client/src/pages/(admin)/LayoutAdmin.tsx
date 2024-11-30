@@ -11,14 +11,14 @@ const LayoutAdmin: React.FC = () => {
     const {colorBgContainer,borderRadiusLG} = useContext(AppContext)
 
   return (
-    <Layout className='h-screen'>
+    <Layout className=' min-h-screen'>
         <SidebarAdmin />
       <Layout>
         <HeaderAdmin />
         <Content
           style={{
             margin: '24px 16px',
-            padding: 24,
+            padding: 16,
             minHeight: 280,
             background: colorBgContainer,
             borderRadius: borderRadiusLG,

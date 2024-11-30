@@ -1,14 +1,44 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { message } from 'antd'
+import { useForm } from 'react-hook-form'
+import { changePassword } from '../../../../services/auth'
+import { LoadingOutlined } from '@ant-design/icons'
+import { AppContext } from '../../../../common/contexts/AppContextProvider'
+import moment from 'moment'
 import { useContext, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form';
-import { AppContext } from '../../../../common/contexts/AppContextProvider';
 import useUserMutation from '../../../../common/hooks/users/useUserMutation';
-import moment from 'moment';
+
 
 const Account = () => {
-  const [isForm1Open, setIsForm1Open] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const { currentUser } = useContext(AppContext); // Lấy dữ liệu người dùng từ context
-  const { register, setValue, handleSubmit } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm()
+  const { currentUser } = useContext(AppContext)
+  const [isOpen, setIsOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const onChangePassword = async (data: any) => {
+    setLoading(true)
+    const { currentPassword, newPassword, confirmNewPassword } = data
+    if (newPassword !== confirmNewPassword) {
+      setLoading(false)
+      message.error('Mật khẩu không trùng khớp !')
+      return
+    }
+
+    try {
+      const data = await changePassword({ currentPassword, newPassword }) as any
+      setLoading(false)
+      if (data.status == 200) {
+        message.success(data.data.message)
+        reset()
+        setIsOpen(false)
+      } else {
+        message.error("Cập nhật thất bại")
+      }
+    } catch (error) {
+      setLoading(false)
+      console.log(error)
+    }
+  }
+  const [isForm1Open, setIsForm1Open] = useState(false); // Lấy dữ liệu người dùng từ context
 
   // Lấy hook mutation để xử lý cập nhật thông tin người dùng
   const mutation = useUserMutation();
@@ -16,14 +46,9 @@ const Account = () => {
   // Sử dụng useEffect để tự động điền dữ liệu vào form khi `currentUser` có giá trị
   useEffect(() => {
     if (currentUser) {
-      setValue('lastname', currentUser.lastname);
-      setValue('firstname', currentUser.firstname);
-      setValue('phone', currentUser.phone);
-      setValue('email', currentUser.email);
-      setValue('gender', currentUser.gender);
-      setValue('birthday', moment(currentUser.date).format('YYYY-MM-DD'));
+     reset(currentUser);
     }
-  }, [currentUser, setValue]);
+  }, [currentUser,reset]);
 
   // Hàm submit form để gọi API cập nhật thông tin người dùng
   const onSubmit = (data: any) => {
@@ -40,35 +65,17 @@ const Account = () => {
         <div className="flex flex-col lg:gap-x-4 lg:flex-row">
           {/* Form  */}
           <form className="order-2 mb-5 w-full lg:basis-4/6 lg:flex-shrink-0 lg:order-1 lg:mb-0">
-            <div className="flex flex-col mb-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
-              <label className="w-[170px] font-light text-dark text-sm flex-shrink-0">
-                Họ
-              </label>
-              <input
-                type="text"
-                {...register("lastname", { required: true })}
-                className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200" disabled
-              />
+            <div className="flex flex-col  mb-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
+              <div className="w-[170px] font-light text-dark text-sm flex-shrink-0">Họ</div>
+              <input type="text" value={currentUser?.lastname} className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200" disabled />
             </div>
-            <div className="flex flex-col mb-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
-              <label className="w-[170px] font-light text-dark text-sm flex-shrink-0">
-                Tên
-              </label>
-              <input
-                type="text"
-                {...register("firstname", { required: true })}
-                className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200"
-                disabled />
+            <div className="flex flex-col  mb-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
+              <div className="w-[170px]  font-light text-dark text-sm flex-shrink-0">Tên</div>
+              <input type="text" value={currentUser?.firstname} className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200" disabled />
             </div>
-            <div className="flex flex-col mb-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
-              <label className="w-[170px] font-light text-dark text-sm flex-shrink-0">
-                Số điện thoại
-              </label>
-              <input
-                type="tel"
-                {...register("phone", { required: true })}
-                className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200"
-                disabled />
+            <div className="flex flex-col  mb-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
+              <div className="w-[170px] font-light text-dark text-sm flex-shrink-0">Số điện thoại</div>
+              <input type="text" value={currentUser?.phone} className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200" disabled />
             </div>
             <div className="flex flex-col mb-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
               <label className="w-[170px] font-light text-dark text-sm flex-shrink-0">
@@ -84,6 +91,8 @@ const Account = () => {
               <div className="w-[170px] font-light text-dark text-sm flex-shrink-0">Giới tính</div>
               <div className="flex items-center gap-x-8">
                 <div className="flex items-center gap-x-2">
+                  <input type="radio" id="nam" className="accent-slate-950 size-5" defaultChecked={currentUser?.gender == 'male' ? true : false} name="gender" value={'male'} disabled />
+                  <label htmlFor="nam" className="block cursor-pointer text-dark font-semibold text-sm">Nam</label>
                   <input
                     type="radio"
                     id="male"
@@ -97,6 +106,8 @@ const Account = () => {
                 </div>
 
                 <div className="flex items-center gap-x-2">
+                  <input type="radio" id="nu" className="accent-slate-950 size-5" defaultChecked={currentUser?.gender == 'female' ? true : false} name="gender" value={'female'} disabled />
+                  <label htmlFor="nu" className="block cursor-pointer text-dark font-semibold text-sm">Nữ</label>
                   <input
                     type="radio"
                     id="female"
@@ -110,6 +121,8 @@ const Account = () => {
                 </div>
 
                 <div className="flex items-center gap-x-2">
+                  <input type="radio" id="khac" className="accent-slate-950 size-5" defaultChecked={currentUser?.gender == 'other' ? true : false} name="gender" value={'other'} disabled />
+                  <label htmlFor="khac" className="block cursor-pointer text-dark font-semibold text-sm">Khác</label>
                   <input
                     type="radio"
                     id="other"
@@ -125,8 +138,7 @@ const Account = () => {
             </div>
             <div className="flex flex-col  mb-4 lg:flex-row lg:items-center lg:justify-between lg:mb-6">
               <div className="w-[170px] font-light text-dark text-sm flex-shrink-0">Ngày sinh</div>
-              <input type="date"
-                {...register("birthday", { required: true })} className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200" disabled />
+              <input type="text" defaultValue={moment(currentUser?.date).format('DD/MM/YYYY')} className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200" disabled />
             </div>
             <div className=" flex items-center w-max mx-auto">
               <button onClick={(e) => { setIsForm1Open(true); e.preventDefault() }} className="border mr-4 border-dark rounded-tl-2xl bg-dark rounded-br-2xl text-white px-6 py-3 hover:bg-white hover:text-dark transition duration-300 ease-in-out">Cập nhật</button>
@@ -277,24 +289,30 @@ const Account = () => {
         <div className="formChangePass  fixed w-full h-full top-0 left-0 right-0 bottom-0 z-[51]">
           <div className="relative w-full h-full">
             <div className="bg-black/70 w-full h-full" />
-            <form className="absolute max-w-[800px] w-[320px] p-[30px] bg-white top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 lg:w-full">
+            <form onSubmit={handleSubmit(onChangePassword)} className="absolute max-w-[800px] w-[320px] p-[30px] bg-white top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 lg:w-full">
               <div className="relative w-full h-full mb-4 lg:mb-6 ">
                 <h1 className="font-semibold text-3xl text-dark uppercase text-center">Đổi mật khẩu</h1>
-                <span onClick={() => { setIsOpen(false) }} className="closeFormChangePass cursor-pointer absolute -top-9 -right-7 lg:-right-4 lg:-top-8 text-2xl p-3 hover:text-dark">x</span>
+                <span onClick={() => { setIsOpen(false); reset() }} className="closeFormChangePass cursor-pointer absolute -top-9 -right-7 lg:-right-4 lg:-top-8 text-2xl p-3 hover:text-dark">x</span>
               </div>
               <div className="w-full mb-6">
                 <label className="text-sm">Mật khẩu hiện tại</label>
-                <input type="password" name='' className="w-full p-[15px] text-sm border border-gray-200 rounded" />
+                <input type="password" {...register("currentPassword", { required: true, minLength: 6 })} className="w-full p-[15px] text-sm border border-gray-200 rounded" />
+                {errors.currentPassword && errors.currentPassword?.type == 'required' && (<p className='text-red text-sm'>Vui lòng điền thông tin</p>)}
+                {errors.currentPassword && errors.currentPassword?.type == 'minLength' && (<p className='text-red text-sm'>Ít nhất 6 ký tự</p>)}
               </div>
               <div className="w-full mb-6">
                 <label className="text-sm">Mật khẩu mới</label>
-                <input type="password" name='' className="w-full p-[15px] text-sm border border-gray-200 rounded" />
+                <input type="password"  {...register("newPassword", { required: true, minLength: 6 })} className="w-full p-[15px] text-sm border border-gray-200 rounded" />
+                {errors.newPassword && errors.newPassword?.type == 'required' && (<p className='text-red text-sm'>Vui lòng điền thông tin</p>)}
+                {errors.newPassword && errors.newPassword?.type == 'minLength' && (<p className='text-red text-sm'>Ít nhất 6 ký tự</p>)}
               </div>
               <div className="w-full mb-6">
                 <label className="text-sm">Nhập lại mật khẩu mới</label>
-                <input type="password" name='' className="w-full p-[15px] text-sm border border-gray-200 rounded" />
+                <input type="password" {...register("confirmNewPassword", { required: true, minLength: 6 })} className="w-full p-[15px] text-sm border border-gray-200 rounded" />
+                {errors.confirmNewPassword && errors.confirmNewPassword?.type == 'required' && (<p className='text-red text-sm'>Vui lòng điền thông tin</p>)}
+                {errors.confirmNewPassword && errors.confirmNewPassword?.type == 'minLength' && (<p className='text-red text-sm'>Ít nhất 6 ký tự</p>)}
               </div>
-              <button type="submit" className=" w-full py-4 rounded-tl-2xl rounded-br-2xl bg-dark border-x border-black text-white hover:bg-white hover:text-dark">Cập nhật</button>
+              <button type="submit" className=" w-full py-4 rounded-tl-2xl rounded-br-2xl bg-dark border-x border-black text-white hover:bg-white hover:text-dark">{loading ? <LoadingOutlined /> : 'Cập nhật'}</button>
             </form>
           </div>
         </div>

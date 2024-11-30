@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { AppContext } from "../../../common/contexts/AppContextProvider"
 import useAddressQuery from "../../../common/hooks/address/useAddressQuery"
@@ -17,13 +17,17 @@ import OrderOptionShip from "./_components/OrderOptionShip"
 import { IshipSubmit } from "../../../common/interfaces/orderInterfaces"
 import FormAddress from "../my-information/address/_components/FormAddress"
 import { PlusCircleFilled } from "@ant-design/icons"
+import ProductDisplay from "./_components/ProductDisplay"
+
 
 const OrderPage = () => {
     // const [ship, setShip] = useState<IshipItem | null>(null)
     const [shippingCost, setShippingCost] = useState<IshipSubmit | null>(null);
-    const [payment, setPayment] = useState<"cash" | "atm" | "vnPay" | "credit">('cash')
+    const [payment, setPayment] = useState<"cash" | "atm" | "momo" | "credit">('cash')
+    const [productDisplay, setProductDisplay] = useState(false)
     const { currentUser } = useContext(AppContext)
     const [addressDefault, setAddressDefault] = useState<Iaddress | null>(null)
+    const [isOpenForm, setIsOpenForm] = useState(false)
     const [vouchers, setVouchers] = useState<IVoucher[]>([])
     const addressQuery = useAddressQuery()
     const voucherQuery = useVoucherQuery({})
@@ -31,15 +35,16 @@ const OrderPage = () => {
     const carts = useSelector((state: any) => state.cart.carts)
     const totalCart = useSelector((state: any) => state.cart.totalCart)
     const totalProduct = useSelector((state: any) => state.cart.totalProduct)
-
+    useEffect(() => {
+        if (carts.length == 0) {
+            navigate('/cart')
+        }
+    }, [carts])
     useEffect(() => {
         if (voucherQuery.data && voucherQuery.data.length > 0) {
             setVouchers(voucherQuery.data)
         }
     }, [voucherQuery.data])
-
-
-    const [isOpenForm, setIsOpenForm] = useState(false)
 
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
@@ -61,6 +66,7 @@ const OrderPage = () => {
     const handleShippingCostChange = (ship: IshipSubmit) => {
         setShippingCost(ship);
     };
+
 
     return (
         <section>
@@ -108,13 +114,14 @@ const OrderPage = () => {
                             <OrderPaymentMethod setPayment={setPayment} payment={payment} />
                             <div className="py-7">
                                 <div className="w-[60%] flex group items-center border border-black lg:w-[35%] py-3 justify-center gap-2 rounded-tl-[20px] rounded-br-[20px] hover:bg-white bg-black">
-                                    <button className="text-sm lg:text-lg text-white group-hover:text-black">HIỂN THỊ SẢN PHẨM</button>
+                                    <button className="text-sm lg:text-lg text-white group-hover:text-black" onClick={() => setProductDisplay(!productDisplay)}>{productDisplay ? "ẨN SẢN PHẨM" : "HIỂN THỊ SẢN PHẨM"}</button>
                                 </div>
                             </div>
+                            {productDisplay && <ProductDisplay cart={carts} />}
                         </div>
                     </div>
                     <div className="lg:w-[32%]">
-                        <OrderTotal totalCart={totalCart} vouchers={vouchers} shippingCost={shippingCost} />
+                        <OrderTotal totalCart={totalCart} vouchers={vouchers} shippingCost={shippingCost} carts={carts} />
                         <OrderSubmit user={currentUser} payment={payment} address={addressDefault} carts={carts} totalCart={totalCart} totalProduct={totalProduct} ship={shippingCost} />
                     </div>
                 </div>

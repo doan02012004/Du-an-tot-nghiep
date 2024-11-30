@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Popconfirm, Space, Table } from 'antd'
+import { Button, Pagination, Popconfirm, Space, Table } from 'antd'
 import { Link, useSearchParams } from 'react-router-dom'
 import { formatPrice } from '../../../../common/utils/product'
 import { useEffect, useState } from 'react'
@@ -9,8 +9,20 @@ import useProductQuery from '../../../../common/hooks/products/useProductQuery'
 import useProductMutation from '../../../../common/hooks/products/useProductMutation'
 
 const ListProduct = () => {
+    const [searchParams,setSearchParams] = useSearchParams()
+    const [limit,] = useState(4)
     const [products, setProducts] = useState([] as Iproduct[])
-    const productQuery = useProductQuery(undefined)
+    const productQuery = useProductQuery({dataFilter:{
+        limit: limit,
+        page: searchParams.get('page')?? null,
+        categorySlug: null,
+        sizes: null,
+        colors: null,
+        min_price: null,
+        max_price: null,
+        sell_order: null,
+        search: null
+    }})
     const mutation = useProductMutation()
   
    
@@ -24,6 +36,7 @@ const ListProduct = () => {
             ))
             setProducts(newProducts)
         }
+        console.log(productQuery.data)
     }, [productQuery.data])
     const columns = [
         {
@@ -114,7 +127,8 @@ const ListProduct = () => {
     return (
         <div>
             <Link to={'/admin/products/add'} className='block mb-3' ><Button type='primary'><PlusOutlined /> Sản phẩm</Button></Link>
-            <Table loading={productQuery.isLoading} columns={columns} dataSource={products} />
+            <Table loading={productQuery.isLoading} columns={columns} dataSource={products} pagination={false}/>
+            <Pagination className='w-max mx-auto mt-2' defaultCurrent={productQuery?.data?.currentPage} onChange={(page:any) => {searchParams.set('page',page); setSearchParams(searchParams)}}  total={productQuery?.data?.total} pageSize={limit}/>
         </div>
     )
 }

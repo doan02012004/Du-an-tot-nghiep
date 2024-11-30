@@ -25,7 +25,7 @@ export const checkAuth = async (req, res, next) => {
             }
         } else {
             return res.status(401).json({
-                message: "Token không tồn tại"
+                message: "Token không tồn tại!"
             })
         }
 

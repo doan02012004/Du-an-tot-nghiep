@@ -38,10 +38,11 @@ const productShema = new mongoose.Schema(
     },
     description: { type: String, default: "" },
     featured: { type: Boolean, default: false },
-    status: { type: Boolean, default: true },
+    active: { type: Boolean, default: true },
     attributes: [attributeSchema],
     purchases: { type: Number, default: 0 },
     comment: [],
+   
   },
   {
     timestamps: true,

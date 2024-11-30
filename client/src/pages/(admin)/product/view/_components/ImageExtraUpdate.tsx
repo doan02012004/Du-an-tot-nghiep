@@ -1,22 +1,24 @@
+import { CloseSquareFilled } from "@ant-design/icons"
+
 
 
 type ImageExtraProps = {
-  items: string[]
+  type?:'main'|'extra'|'new'
+  imageUrl: string
 }
-const ImageExtraUpdate = ({ items }: ImageExtraProps) => {
+const ImageExtraUpdate = ({ imageUrl,type }: ImageExtraProps) => {
   return (
-    <div className='w-[700px] min-h-36 border overflow-x-scroll  gap-3 px-5 py-2 mt-3'>
-      <div className="flex items-center w-max">
-        {items?.map((item: string, index: number) => (
-          <div className='w-32 h-36 mx-2 border' key={index}>
-            <img
-              src={item}
-              alt="Ảnh đại diện"
-              className="object-cover w-full h-full"
-            />
-          </div>
-        ))}
-      </div>
+    <div className='w-full h-full relative '>
+            <div className="w-full h-full overflow-hidden rounded-md border" >
+                <img src={imageUrl} className=" cursor-pointer object-cover w-full h-full" alt="" />
+            </div>
+           {type =='main' && (
+             <span className=" absolute -top-3 left-0 text-xs font-semibold text-white bg-indigo rounded-xl px-2 py-1">Ảnh đại diện</span>
+           )}
+            {type =='new' && (
+             <span className=" absolute -top-3 left-0 text-xs font-semibold text-white bg-red rounded-xl px-2 py-1">Mới</span>
+           )}
+          <CloseSquareFilled className=" cursor-pointer absolute top-0 right-0 text-red text-xl hover:text-rose-400" />
     </div>
   )
 }

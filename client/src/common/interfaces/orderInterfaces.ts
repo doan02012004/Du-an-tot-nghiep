@@ -67,4 +67,3 @@ export interface Vouchers {
     type: "percentage" | "fixed" | "freeship" | null; // Loại voucher: cố định hoặc phần trăm hay ship 
 }
 
-

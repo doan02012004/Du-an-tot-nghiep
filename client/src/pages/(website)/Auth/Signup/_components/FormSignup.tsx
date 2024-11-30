@@ -1,20 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
+
 import { Link, useNavigate } from 'react-router-dom'
 import { message } from 'antd'
 import { registerUser } from '../../../../../services/auth'
 import { Isignup } from '../../../../../common/interfaces/auth'
 import { AppContext } from '../../../../../common/contexts/AppContextProvider'
+import { LoadingOutlined } from '@ant-design/icons'
 
 const FormSignup = () => {
-    const {location} = useContext(AppContext)
+    const [loading,setLoading] = useState<boolean>(false)
+    const { location } = useContext(AppContext)
     const [huyen, setHuyen] = useState([])
     const [xa, setXa] = useState<any>([])
     const { register, handleSubmit } = useForm<Isignup>()
     const navigate = useNavigate()
-    const dispatch = useDispatch()
 
     const onChangeTinh = (tinh: string) => {
         if (tinh !== '') {
@@ -30,13 +31,21 @@ const FormSignup = () => {
         }
     }
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (dataForm: any) => {
+        setLoading(true)
         try {
-            await registerUser(data, dispatch);
-            message.success("đăng kí thành công")
-            navigate('/signin')
+            const data = await registerUser(dataForm);
+            if (data?.status == 200) {
+                message.success(data.message)
+                setLoading(false)
+                navigate('/signin')
+            }else{
+                setLoading(false)
+                message.error("Đăng ký thất bại")
+            }
         } catch (error) {
-            console.error('Lỗi đăng ký:', error);
+            setLoading(false)
+            message.error("Đăng ký thất bại")
         }
     };
 
@@ -78,10 +87,12 @@ const FormSignup = () => {
                     <div className="flex flex-col">
                         <span className="input-signup">Tỉnh/TP:</span>
                         <select {...register('city', { required: true, onChange: (e) => onChangeTinh(e.target.value) })} className="appearance-none h-12 w-full  px-3 py-2  text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ">
-                            <option defaultChecked value="">Tỉnh/Thành Phố</option>
-                            {location?.map((item: any, i: number) => (
-                                <option key={i} value={item.name} >{item.name}</option>
-                            ))}
+                            <option defaultChecked value="">Tỉnh/Thành Phố </option>
+                            {
+                                location? (location?.map((item: any, i: number) => (
+                                    <option key={i} value={item.name} >{item.name}</option>
+                                ))):(<option className='flex justify-center items-center' disabled>Loading...</option>)
+                            }
                         </select>
                     </div>
                     <div className="flex flex-col">
@@ -135,8 +146,11 @@ const FormSignup = () => {
                     <Link to={"/signin"} className='hover:text-red' >Đã có tài khoản ?</Link>
                 </div>
                 <div>
-                    <button className="h-12 w-full bg-[#221f20] text-[#f7f8f9] font-semibold rounded-tl-2xl rounded-br-2xl hover:bg-[#f7f8f9] hover:text-[#221f20] hover:border hover:border-[#221f20] transition ease-in-out ">ĐĂNG
-                        KÝ</button>
+                    <button
+                     className="h-12  w-full bg-[#221f20] text-[#f7f8f9] font-semibold rounded-tl-2xl rounded-br-2xl hover:bg-[#f7f8f9] hover:text-[#221f20] hover:border hover:border-[#221f20] transition ease-in-out "
+                     >
+                        {loading?<LoadingOutlined  />: 'ĐĂNG KÝ'}
+                     </button>
                 </div>
             </div>
         </form>

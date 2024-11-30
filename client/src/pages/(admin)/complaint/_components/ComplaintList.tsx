@@ -10,7 +10,7 @@ const ComplaintList = (props: Props) => {
   const [complaint, setcomplaint] = useState<IComplaint[]>([]);
   const [searchOrderId, setSearchOrderId] = useState<string>("");  // Mã đơn hàng
   const [searchEmail, setSearchEmail] = useState<string>("");      // Email khách hàng
-  const [statusFilter, setStatusFilter] = useState<'new' | 'in_progress' | 'resolved' | ''>(''); // Lọc theo trạng thái
+  const [statusFilter, setStatusFilter] = useState<'new' | 'in_progress' | 'resolved' |'cancelled' | ''>(''); // Lọc theo trạng thái
 
   const query = useComplaintQuery();
   useEffect(() => {
@@ -67,11 +67,12 @@ const ComplaintList = (props: Props) => {
     {
       title: "Status",
       dataIndex: "status",
-      render: (status: 'new' | 'in_progress' | 'resolved') => {
+      render: (status: 'new' | 'in_progress' | 'resolved' | 'cancelled') => {
         switch (status) {
           case 'new': return <span style={{ color: 'blue' }}>Mới</span>;
           case 'in_progress': return <span style={{ color: 'orange' }}>Đang xử lý</span>;
           case 'resolved': return <span style={{ color: 'green' }}>Đã giải quyết</span>;
+          case 'cancelled': return <span style={{ color: 'red' }}>Huỷ khiếu nại</span>;
           default: return status;
         }
       },    
@@ -127,6 +128,7 @@ const ComplaintList = (props: Props) => {
           <Select.Option value="new">Mới</Select.Option>
           <Select.Option value="in_progress">Đang xử lý</Select.Option>
           <Select.Option value="resolved">Đã giải quyết</Select.Option>
+          <Select.Option value="cancelled">Huỷ khiếu nại</Select.Option>
         </Select>
 
         {/* Nút tìm kiếm */}

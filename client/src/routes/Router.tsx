@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LayoutAdmin from "../pages/(admin)/LayoutAdmin";
 import PageSignin from "../pages/(website)/Auth/Signin/Page";
 import PageSignup from "../pages/(website)/Auth/Signup/Page";
@@ -19,12 +19,12 @@ import AddProductAdmin from "../pages/(admin)/product/add/Page";
 import LayoutColor from "../pages/(admin)/color/Page";
 import CategoriesPage from "../pages/(admin)/categories/Page";
 
-import CategoriesForm from '../pages/(admin)/categories/_components/CategoryForm'
-import PageAuthAdmin from '../pages/(admin)/users/Page'
-import ListUser from '../pages/(admin)/users/_components/ListUser'
-import ViewProductAdmin from '../pages/(admin)/product/view/Page'
-import ChatWidget from '../pages/(admin)/chatwiget/Page'
-import AddressList from '../pages/(website)/my-information/address/Page'
+import CategoriesForm from "../pages/(admin)/categories/_components/CategoryForm";
+import PageAuthAdmin from "../pages/(admin)/users/Page";
+import ListUser from "../pages/(admin)/users/_components/ListUser";
+import ViewProductAdmin from "../pages/(admin)/product/view/Page";
+import ChatWidget from "../pages/(admin)/chatwiget/Page";
+import AddressList from "../pages/(website)/my-information/address/Page";
 import BannerPage from "../pages/(admin)/banner/Page";
 import ListBanner from "../pages/(admin)/banner/_components/ListBanner";
 import GalleryPage from "../pages/(admin)/gallery/Page";
@@ -40,13 +40,24 @@ import VouchersPage from "../pages/(admin)/vouchers/Page";
 import VoucherList from "../pages/(admin)/vouchers/_components/VoucherList";
 import VoucherAdd from "../pages/(admin)/vouchers/_components/VoucherAdd";
 import VoucherEdit from "../pages/(admin)/vouchers/_components/VoucherEdit";
-import CanPayment from "../pages/(website)/thanks/CanPayment";
+import DashBoardPage from "../pages/(admin)/dash-board/Page";
 import PageComplaint from "../pages/(admin)/complaint/Page";
 import ComplaintList from "../pages/(admin)/complaint/_components/ComplaintList";
 import ComplaintEdit from "../pages/(admin)/complaint/_components/ComplaintEdit";
+import PageForgot from "../pages/(website)/Auth/Forgot/Page";
+import WaitPage from "../pages/(website)/wait/Page";
+import PrivateAdmin from "./PrivateAdmin";
+import { useContext } from "react";
+import { AppContext } from "../common/contexts/AppContextProvider";
+import CanPayment from "../pages/(website)/thanks/CanPayment";
+import ShipPage from "../pages/(admin)/feeShip/Page";
+import ListShipPage from "../pages/(admin)/feeShip/list/Page";
+import AddShipPage from "../pages/(admin)/feeShip/add/Page";
 
 
 const Router = () => {
+
+  const {currentUser} = useContext(AppContext)
   return (
     <Routes>
       <Route path="/" element={<LayoutWebsite />}>
@@ -55,22 +66,24 @@ const Router = () => {
         <Route path="productdetails/:slug" element={<ProductDetailsPage />} />
         <Route path="signin" element={<PageSignin />} />
         <Route path="signup" element={<PageSignup />} />
+        <Route path="forgot" element={<PageForgot />} />
         <Route path="blog" element={<PageBlog />} />
         <Route path="blogdetail" element={<PageDetail />} />
         <Route path="cart" element={<CartPage />} />
         <Route path="order" element={<OrderPage />} />
         <Route path="thanks" element={<ThanksPage />} />
+        <Route path="wait" element={<WaitPage />} />
         <Route path="canpay" element={<CanPayment />} />
-        <Route path="customer" element={<MyInformation />}>
+        <Route path="customer" element={currentUser?<MyInformation />:<Navigate to={'/signin'} />}>
           <Route path="infor" element={<Account />} />
           <Route path="order-manager" element={<OrderManager />} />
           <Route path="address_list" element={<AddressList />} />
         </Route>
       </Route>
-      <Route path="admin" element={<LayoutAdmin />}>
+      <Route path="admin" element={<PrivateAdmin><LayoutAdmin /></PrivateAdmin>}>
         <Route path="complaint" element={<PageComplaint />}>
-          <Route index element={<ComplaintList />} />
-          <Route path="admin/complaint/:id" element={<ComplaintEdit />} />
+          <Route index element={<ComplaintList />}/>
+          <Route path="admin/complaint/:id" element={<ComplaintEdit />}/>
         </Route>
         <Route path="vouchers" element={<VouchersPage />}>
           <Route index element={<VoucherList />} />
@@ -86,17 +99,17 @@ const Router = () => {
           <Route path="add" element={<AddProductAdmin />} />
           <Route path="view/:slug" element={<ViewProductAdmin />} />
         </Route>
-        <Route path='colors' element={<LayoutColor />} />
-        <Route path='categories' element={<CategoriesPage />} />
-        <Route path='categories/add' element={<CategoriesForm />} />
-        <Route path='categories/edit/:id' element={<CategoriesForm />} />
-        <Route path='brands' element={<BrandsPage />} />
-        <Route path='brands/add' element={<BrandsForm />} />
-        <Route path='brands/edit/:id' element={<BrandsForm />} />
-        <Route path='chat' element={<ChatWidget />} />
-        <Route path='auth' element={<PageAuthAdmin />} >
+        <Route path="colors" element={<LayoutColor />} />
+        <Route path="categories" element={<CategoriesPage />} />
+        <Route path="categories/add" element={<CategoriesForm />} />
+        <Route path="categories/edit/:id" element={<CategoriesForm />} />
+        <Route path="brands" element={<BrandsPage />} />
+        <Route path="brands/add" element={<BrandsForm />} />
+        <Route path="brands/edit/:id" element={<BrandsForm />} />
+        <Route path="chat" element={<ChatWidget />} />
+        <Route path="auth" element={<PageAuthAdmin />}>
           <Route index element={<ListUser />} />
-          <Route path='historyupdate' element={<HistoryUpdateUser />} />
+          <Route path="historyupdate" element={<HistoryUpdateUser />} />
         </Route>
         <Route path="banners" element={<BannerPage />}>
           <Route index element={<ListBanner />} />
@@ -104,6 +117,12 @@ const Router = () => {
         <Route path="gallerys" element={<GalleryPage />}>
           <Route index element={<ListGallery />} />
         </Route>
+        <Route index element={<DashBoardPage />} />
+        <Route path="ships" element={<ShipPage />} >
+          <Route index element={<ListShipPage />} />
+          <Route path="add" element={<AddShipPage />} />
+        </Route>
+
       </Route>
     </Routes>
   );

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Form, InputNumber, message } from "antd";
+import { Button, Dropdown, Form, InputNumber, message } from "antd";
 import { Iattribute } from "../../../../common/interfaces/product";
 import { useDispatch, useSelector } from "react-redux";
 import { setAttributes } from "../../../../common/redux/features/productSlice";
-import { CheckOutlined, EditOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import {  DownOutlined, EditOutlined } from "@ant-design/icons";
+import { useEffect } from "react";
 
 type AttributeItemProps = {
   data: Iattribute;
@@ -14,43 +14,11 @@ const AttributeItem = ({ data, index }: AttributeItemProps) => {
   const [form] = Form.useForm();
   const attributes = useSelector((state: any) => state.product.attributes);
   const dispath = useDispatch();
-  const [volume, setVolume] = useState<number>(0);
   useEffect(() => {
     if (data) {
       form.setFieldsValue(data);
     }
   }, [data, form, index]);
-
-  // useEffect(() => {
-  //   // Hàm tính toán thể tích
-  //   const calculateVolume = () => {
-  //     const { height, width, length } = form.getFieldsValue([
-  //       "height",
-  //       "width",
-  //       "length",
-  //     ]);
-
-  //     // Kiểm tra nếu cả ba giá trị đều hợp lệ
-  //     if (height && width && length) {
-  //       const calculatedVolume = height * width * length;
-  //       console.log("volume", calculatedVolume);
-  //       // Cập nhật giá trị thể tích vào form
-  //       // form.setFieldValue("volume", calculateVolume);
-  //     } else {
-  //       // Nếu không có giá trị hợp lệ, đặt thể tích về 0
-  //       form.setFieldsValue({ height: 0, width: 0, length: 0, volume: 0 });
-  //     }
-  //   };
-
-  //   // Lắng nghe sự thay đổi của các trường
-  //   const height = form.getFieldValue("height");
-  //   const width = form.getFieldValue("width");
-  //   const length = form.getFieldValue("length");
-
-  //   calculateVolume(); // Tính thể tích
-
-  //   // return statement chỉ định một cleanup function
-  // }, [form.getFieldValue("height"), form.getFieldValue("width"), form.getFieldValue("length")]); // Thêm 'form' vào dependency array
 
   // Hàm tính thể tích
   const calculateVolume = () => {
@@ -59,31 +27,10 @@ const AttributeItem = ({ data, index }: AttributeItemProps) => {
     const length = form.getFieldValue("length");
     if (height && width && length) {
       form.setFieldValue("volume", height * width * length);
-    } else {
-      setVolume(0);
-    }
-  };
-
-  const onSetInstock = async (event: any) => {
-    if (
-      parseInt(event.target.value) < 0 ||
-      isNaN(event.target.value) ||
-      event.target.value == null ||
-      event.target.value == ""
-    ) {
-      form.setFieldValue("instock", 0);
-      return message.error("Vui lòng nhập số lượng hợp lệ");
-    }
-    if (parseInt(event.target.value) == data.instock) return;
-    const newAttribute = { ...data, instock: parseInt(event.target.value) };
-    const newAttributes = attributes.map((item: Iattribute, i: number) =>
-      index == i ? newAttribute : item
-    );
-    dispath(setAttributes(newAttributes));
+    } 
   };
   const onChangePriceNew: any = (priceNew: number) => {
     const priceOld = form.getFieldValue("price_old");
-    // console.log("Price old >", priceOld);
     if (priceNew > priceOld) {
       form.setFieldValue("price_new", 0);
       return message.error("Vui lòng không nhập cao hơn giá niêm yết");
@@ -113,131 +60,140 @@ const AttributeItem = ({ data, index }: AttributeItemProps) => {
     );
     dispath(setAttributes(newAttributes));
   };
+
+
   return (
     <>
-      {/* new componet */}
-      <div
-        className={`${
-          data?.isCheck && "border-green-500"
-        } p-3 border rounded-lg shadow-sm shadow-gray-600 mb-4 bg-white`}
+      <Dropdown
+        trigger={['click']}
+        dropdownRender={() => (
+          <div className="p-3 border rounded-lg bg-white shadow-sm shadow-gray-600 mb-4">
+            <h3 className='font-bold text-base mb-2 text-red'>{data?.color} , {data?.size}</h3>
+            <Form
+              layout="vertical"
+              form={form}
+              onFinish={onSubmit}
+              disabled={data?.isCheck}
+            >
+              <div className="grid grid-cols-12 gap-x-4">
+                <Form.Item
+                  name="price_old"
+                  label="Giá niêm yết"
+                  className="col-span-3"
+                  rules={[{ required: true }, { type: "number", min: 1 }]}
+                >
+                  <InputNumber className="w-full" />
+                </Form.Item>
+                <Form.Item
+                  name="price_new"
+                  label="Giá khuyến mãi"
+                  className="col-span-3"
+                  rules={[{ required: true }, { type: "number", min: 1 }]}
+                >
+                  <InputNumber className="w-full" onChange={onChangePriceNew} />
+                </Form.Item>
+                <Form.Item
+                  name="discount"
+                  label="Giảm giá (%)"
+                  className="col-span-3"
+                  rules={[{ required: true }, { type: "number", min: 0 }]}
+                >
+                  <InputNumber className="w-full" disabled />
+                </Form.Item>
+                <Form.Item
+                  name="weight"
+                  label="Khối lượng (gram)"
+                  className="col-span-3"
+                  rules={[{ required: true }, { type: "number", min: 0 }]}
+                >
+                  <InputNumber className="w-full" />
+                </Form.Item>
+                <Form.Item
+                  name="height"
+                  label="Chiều cao (cm)"
+                  className="col-span-3"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập chiều cao" },
+                    { type: "number", min: 0 },
+                  ]}
+                >
+                  <InputNumber className="w-full" onBlur={calculateVolume} />
+                </Form.Item>
+                <Form.Item
+                  name="width"
+                  label="Chiều rộng (cm)"
+                  className="col-span-3"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập chiều rộng" },
+                    { type: "number", min: 0 },
+                  ]}
+                >
+                  <InputNumber className="w-full" onBlur={calculateVolume} />
+                </Form.Item>
+                <Form.Item
+                  name="length"
+                  label="Chiều dài (cm)"
+                  className="col-span-3"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập chiều dài" },
+                    { type: "number", min: 0 },
+                  ]}
+                >
+                  <InputNumber className="w-full" onBlur={calculateVolume} />
+                </Form.Item>
+                <Form.Item
+                  name="volume"
+                  label="Thể tích (cm³)"
+                  className="col-span-3"
+                  rules={[{ required: true }, { type: "number", min: 0 }]}
+                >
+                  <InputNumber className="w-full" disabled />
+                </Form.Item>
+                <Form.Item
+                  name="instock"
+                  label="SL kho"
+                  className="col-span-3"
+                  rules={[{ required: true }, { type: "number", min: 0 }]}
+                >
+                  <InputNumber className="w-full" placeholder="số lượng kho" />
+                </Form.Item>
+              </div>
+              {!data?.isCheck && (
+                <Form.Item
+                className="m-0 p-0"
+                >
+                  <Button type="primary" htmlType="submit">
+                    Lưu
+                  </Button>
+                </Form.Item>
+              )}
+            </Form>
+            {data?.isCheck && (
+              <Button onClick={onOpenForm} className="bg-red text-white">
+                Chỉnh sửa <EditOutlined />
+              </Button>
+            )}
+          </div>
+        )}
       >
-        <div className="flex items-center justify-between pb-3 border-b ">
-          <h1>
-            {data?.color}, {data?.size}
-          </h1>
-          {data?.isCheck && (
-            <div className="flex items-center gap-x-2">
-              <Button onClick={onOpenForm} className="bg-yellow">
-                <EditOutlined />
-              </Button>
-              <CheckOutlined className="text-green-600 text-2xl" />
+        <div className={`${data?.isCheck ? 'bg-green-400 border-yellow-700 text-white' : ''} group flex justify-center items-center rounded-md border  p-3  cursor-pointer transition-all duration-300 ease-in-out hover:bg-indigo hover:text-white`}>
+          <div className=" flex items-center w-full justify-between">
+            <div className="flex items-center gap-x-4">
+              <div className=" flex items-center gap-x-1">
+                <span className=" text-gray-600 font-normal text-xs group-hover:text-white">Màu:</span>
+                <span className=" text-sm font-semibold"> {data?.color}</span>
+              </div>
+              <div className=" flex items-center gap-x-2">
+                <span className="  text-gray-600 text-xs group-hover:text-white">Size:</span>
+                <span className=" text-base"> {data?.size}</span>
+              </div>
             </div>
-          )}
+            <DownOutlined />
+          </div>
         </div>
-        <div className="">
-          <Form
-            layout="vertical"
-            form={form}
-            onFinish={onSubmit}
-            disabled={data?.isCheck}
-          >
-            <div className="grid grid-cols-2 gap-4">
-              <Form.Item
-                name="price_old"
-                label="Giá niêm yết"
-                rules={[{ required: true }, { type: "number", min: 1 }]}
-              >
-                <InputNumber className="w-full" />
-              </Form.Item>
-              <Form.Item
-                name="price_new"
-                label="Giá khuyến mãi"
-                rules={[{ required: true }, { type: "number", min: 1 }]}
-              >
-                <InputNumber className="w-full" onChange={onChangePriceNew} />
-              </Form.Item>
-              <Form.Item
-                name="discount"
-                label="Giảm giá (%)"
-                rules={[{ required: true }, { type: "number", min: 0 }]}
-              >
-                <InputNumber className="w-full" disabled />
-              </Form.Item>
-              <Form.Item
-                name="weight"
-                label="Khối lượng (gram)"
-                rules={[{ required: true }, { type: "number", min: 0 }]}
-              >
-                <InputNumber className="w-full" />
-              </Form.Item>
-              <Form.Item
-                name="height"
-                label="Chiều cao (cm)"
-                rules={[
-                  { required: true, message: "Vui lòng nhập chiều cao" },
-                  { type: "number", min: 0 },
-                ]}
-              >
-                <InputNumber className="w-full" onBlur={calculateVolume} />
-              </Form.Item>
-              <Form.Item
-                name="width"
-                label="Chiều rộng (cm)"
-                rules={[
-                  { required: true, message: "Vui lòng nhập chiều rộng" },
-                  { type: "number", min: 0 },
-                ]}
-              >
-                <InputNumber className="w-full" onBlur={calculateVolume} />
-              </Form.Item>
-              <Form.Item
-                name="length"
-                label="Chiều dài (cm)"
-                rules={[
-                  { required: true, message: "Vui lòng nhập chiều dài" },
-                  { type: "number", min: 0 },
-                ]}
-              >
-                <InputNumber className="w-full" onBlur={calculateVolume} />
-              </Form.Item>
-              <Form.Item
-                name="volume"
-                label="Thể tích (cm³)"
-                rules={[{ required: true }, { type: "number", min: 0 }]}
-              >
-                <InputNumber className="w-full" disabled />
-              </Form.Item>
-              <Form.Item
-                name="instock"
-                label="SL kho"
-                rules={[{ required: true }, { type: "number", min: 0 }]}
-              >
-                <InputNumber className="w-full" placeholder="số lượng kho" />
-              </Form.Item>
-            </div>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" className=" float-end">
-                Lưu
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
-      </div>
-      {/* old component 
-        <div className='flex items-center justify-between p-3 border rounded-lg shadow-sm shadow-gray-600 mb-4 bg-white'>
-      <div className='flex items-center gap-x-3'>
-        <h1>{data.color}</h1>
-        <h1>{data.size}</h1>
-      </div>
-      <div>
-        <Form form={form}>
-          <Form.Item className='m-0 p-0' name='instock' rules={[{ type: 'number', min: 0 }]}>
-            <InputNumber placeholder='Số lượng kho hàng' defaultValue={data.instock} onBlur={onSetInstock} />
-          </Form.Item>
-        </Form>
-      </div>
-    </div> */}
+      </Dropdown>
     </>
+
   );
 };
 
