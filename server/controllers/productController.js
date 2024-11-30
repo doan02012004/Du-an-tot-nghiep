@@ -91,7 +91,7 @@ export const getProductSlider = async (req, res) => {
   try {
     const genderQuery = req.query._gender || "";
     const featuredQuery = req.query._isFeatured || "";
-    const discountQuery = req.query._isSale || "";
+    const discountQuery = parseInt(req.query._isSale, 10) || 0;
     const queryProduct = {};
     if (genderQuery) {
       queryProduct["gender"] = { $in: [genderQuery, "unisex"] };
@@ -99,9 +99,13 @@ export const getProductSlider = async (req, res) => {
     if (featuredQuery) {
       queryProduct["featured"] = featuredQuery;
     }
-    if (discountQuery) {
-      queryProduct["discount"] = { $gte: discountQuery };
-    }
+    if (discountQuery >= 50) {
+      queryProduct["attributes"] = {
+        $elemMatch: {
+          discount: { $gte: discountQuery }, // Kiểm tra discount >= 50
+        },
+      };
+    }    
     const products = await ProductModel.find(queryProduct).populate(
       "categoryId"
     );
