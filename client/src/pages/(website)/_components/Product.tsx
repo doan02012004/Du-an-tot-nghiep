@@ -8,6 +8,7 @@ import { setProductId } from '../../../common/redux/features/productSlice'
 import { formatPrice } from '../../../common/utils/product'
 import useCartMutation from '../../../common/hooks/carts/useCartMutation'
 import { InewCart } from '../../../common/interfaces/cart'
+import { useFilterParams } from '../../../common/hooks/products/useFilter'
 
 type Props = {
   product: Iproduct
@@ -15,34 +16,51 @@ type Props = {
 
 const Product = ({ product }: Props) => {
   const [isOpenSize, setIsOpenSize] = useState(false)
-  const [gallery, setGallery] = useState({} as Igallery)
+  const [gallery, setGallery] = useState(product?.gallerys[0] as Igallery)
   const [color, setColor] = useState('' as string)
-  const [variant,setVariant] = useState<Iattribute|null>(null)
+  const [variant,setVariant] = useState<Iattribute | undefined | null>(null)
 
   const [checkSizes, setCheckSizes] = useState([] as string[])
   const productId = useSelector((state: any) => state.product.productId)
   const dispath = useDispatch()
   const cartMutation = useCartMutation()
 
-  useEffect(() => {
+  const {getFiltersFromUrl} = useFilterParams();
+
+  const dataFilter = getFiltersFromUrl()
+
+    useEffect(() => {
     if (productId == null) {
       setIsOpenSize(false)
     }
   }, [productId])
 
+
+  
   useEffect(() => {
     setGallery(product?.gallerys[0])
     setColor(product.gallerys[0].name)
     const newVariant = product?.attributes.reduce((current, item) =>item.price_new < current.price_new ? item: current, product?.attributes[0] )
     setVariant(newVariant)
   }, [product])
+  // useEffect(() => {
+  //   setColor( product?.gallerys[0].name);
+  
+  //   const firstMatchingVariant = product?.attributes.find(
+  //     (item) => 
+  //       item.price_new > Number(dataFilter.minPrice) && 
+  //       item.price_new < Number(dataFilter.maxPrice)
+  //   );
 
-  useEffect(() => {
-    const newAttributes = product?.attributes?.filter((item: Iattribute) => (item.color == color && item.instock > 0))
-    const newCheckSizes = newAttributes?.map((item: Iattribute) => item.size)
-    setCheckSizes(newCheckSizes)
-  }, [color])
+  //   setVariant(firstMatchingVariant);
+  // }, [product, dataFilter]);
+  
 
+  // useEffect(() => {
+  //   const newAttributes = product?.attributes?.filter((item: Iattribute) => (item.color == color && item.instock > 0))
+  //   const newCheckSizes = newAttributes?.map((item: Iattribute) => item.size)
+  //   setCheckSizes(newCheckSizes)
+  // }, [color])
   const onSetProductId = async (product: Iproduct) => {
     if (productId !== product?._id) {
       dispath(setProductId(product._id))
@@ -59,9 +77,9 @@ const Product = ({ product }: Props) => {
   }
 
   const onPickColor = (item: IColor) => {
-    setColor(item.name)
     const newGallery: Igallery | any = product?.gallerys.find((gallery: Igallery) => gallery.name == item.name)
     setGallery(newGallery)
+    
   }
 
   const onAddToCart = (size: string) => {

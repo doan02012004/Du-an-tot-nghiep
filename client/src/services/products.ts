@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { message } from "antd";
 import instance from "../common/config/axios";
 import {
@@ -10,6 +11,28 @@ import {
 } from "../common/interfaces/product";
 import { IColor } from "../common/interfaces/Color";
 
+// -----------------------------------------------///
+// Hàm lấy tất cả sản phẩm
+export const getAllProducts = async () => {
+  try {
+    const res = await instance.get("/products"); // Thay URL nếu cần thiết
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách sản phẩm:", error);
+    throw error;
+  }
+};
+export const getAllProductBySlug = async (categorySlug?: string) => {
+  try {
+    const res = await instance.get(`/products/category/${categorySlug}`);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+//----------------------------------------------------///
 export const getProductSlider = async (options: any) => {
     try {
       const res = await instance.get("/products/slider", {
@@ -21,13 +44,21 @@ export const getProductSlider = async (options: any) => {
       return error;
     }
   };
+  export const getProductSimilar = async (param:any) => {
+    try {
+      const res = await instance.get("/products/similar", {
+        params: param,
+      });
+      return res.data;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  };
 
-export const getProducts = async (dataFilter: {} | undefined) => {
+export const getProducts = async (dataFilter:any) => {
   try {
-    const res =
-      dataFilter && Object.keys(dataFilter).length > 0
-        ? await instance.get(`products?${dataFilter}`)
-        : await instance.get("/products");
+    const res = await instance.get(`/products`,{params:dataFilter})
     return res.data;
   } catch (error) {
     console.log(error);

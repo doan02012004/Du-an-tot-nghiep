@@ -8,16 +8,20 @@ type Props = {}
 
 const OrderDetails = (props: Props) => {
     const { id } = useParams();
-    const query = useOrderQuery({orderId:id});
+    const query = useOrderQuery({ orderId: id });
     const mutation = useOrderMutation();
     console.log(query.data);
-    
+
     if (query.isLoading) return <div>Đang tải...</div>;
     if (query.isError) return <div>Lỗi khi tải chi tiết đơn hàng</div>;
 
     const order = query.data;
     const customer = order.customerInfor;
     const items = order.items;
+    const ship = order.ship;
+    const voucher = order.voucher
+    const Goodsmoney = order.totalPrice - ship.value?.price
+    const Totalamount = voucher ? order.totalPrice - voucher?.discountValue : order.totalPrice
 
     // Map trạng thái đơn hàng sang tiếng Việt
     const getStatusText = (status: string) => {
@@ -36,6 +40,14 @@ const OrderDetails = (props: Props) => {
                 return 'Đã hủy';
             case 'received':
                 return 'Đã nhận hàng';
+            case 'Returngoods':
+                return 'Trả hàng';
+            case 'Complaints':
+                return 'Khiếu nại';
+            // case 'Refunded':
+            //     return 'Hoàn tiền';
+            case 'Exchanged':
+                return 'Đổi trả hàng';
             default:
                 return 'Không xác định';
         }
@@ -44,17 +56,26 @@ const OrderDetails = (props: Props) => {
     // Hàm kiểm tra tính hợp lệ của việc chuyển đổi trạng thái
     const validateStatusChange = (currentStatus: string, newStatus: string) => {
         const invalidTransitions: Record<string, string[]> = {
-            cancelled: ['delivered', 'shipped', 'received'],
-            delivered: ['pending', 'unpaid', 'confirmed', 'cancelled'],
-            received: ['pending', 'unpaid', 'confirmed', 'shipped', 'cancelled'],
+            pending: ["pending", "unpaid", "shipped", "delivered", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
+            unpaid: ["pending", "unpaid", "confirmed", "shipped", "delivered", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
+            confirmed: ["pending", "unpaid", "confirmed", "delivered", "cancelled", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
+            shipped: ["pending", "unpaid", "confirmed", "shipped", "cancelled", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
+            delivered: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "Returngoods","Complaints","Refunded","Exchanged"],
+            cancelled: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints"],
+            received: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
+            Complaints: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
+            Returngoods: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
+            Refunded: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
+            Exchanged: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"]
         };
-
         return !(invalidTransitions[currentStatus]?.includes(newStatus));
     };
 
+
+
     const handleStatusChange = (newStatus: string) => {
         const currentStatus = order.status;
-        
+
         // Kiểm tra tính hợp lệ của việc chuyển trạng thái
         if (!validateStatusChange(currentStatus, newStatus)) {
             // Hiển thị thông báo lỗi (có thể dùng notification hoặc alert)
@@ -72,47 +93,71 @@ const OrderDetails = (props: Props) => {
 
     const statusMenu = (
         <Menu>
-            <Menu.Item 
-                onClick={() => handleStatusChange('pending')} 
+            <Menu.Item
+                onClick={() => handleStatusChange('pending')}
                 disabled={!validateStatusChange(order.status, 'pending')}
             >
                 Đang chờ xác nhận
             </Menu.Item>
-            <Menu.Item 
-                onClick={() => handleStatusChange('unpaid')} 
+            <Menu.Item
+                onClick={() => handleStatusChange('unpaid')}
                 disabled={!validateStatusChange(order.status, 'unpaid')}
             >
                 Chưa thanh toán
             </Menu.Item>
-            <Menu.Item 
-                onClick={() => handleStatusChange('confirmed')} 
+            <Menu.Item
+                onClick={() => handleStatusChange('confirmed')}
                 disabled={!validateStatusChange(order.status, 'confirmed')}
             >
                 Đã xác nhận
             </Menu.Item>
-            <Menu.Item 
-                onClick={() => handleStatusChange('shipped')} 
+            <Menu.Item
+                onClick={() => handleStatusChange('shipped')}
                 disabled={!validateStatusChange(order.status, 'shipped')}
             >
                 Đang giao hàng
             </Menu.Item>
-            <Menu.Item 
-                onClick={() => handleStatusChange('delivered')} 
+            <Menu.Item
+                onClick={() => handleStatusChange('delivered')}
                 disabled={!validateStatusChange(order.status, 'delivered')}
             >
                 Đã giao thành công
             </Menu.Item>
-            <Menu.Item 
-                onClick={() => handleStatusChange('cancelled')} 
+            <Menu.Item
+                onClick={() => handleStatusChange('cancelled')}
                 disabled={!validateStatusChange(order.status, 'cancelled')}
             >
                 Đã hủy
             </Menu.Item>
-            <Menu.Item 
-                onClick={() => handleStatusChange('received')} 
+            <Menu.Item
+                onClick={() => handleStatusChange('received')}
                 disabled={!validateStatusChange(order.status, 'received')}
             >
                 Đã nhận hàng
+            </Menu.Item>
+            <Menu.Item
+                onClick={() => handleStatusChange('Returngoods')}
+                disabled={!validateStatusChange(order.status, 'Returngoods')}
+            >
+                Trả hàng
+            </Menu.Item>
+            <Menu.Item
+                onClick={() => handleStatusChange('Complaints')}
+                disabled={!validateStatusChange(order.status, 'Complaints')}
+            >
+                Khiếu nại
+            </Menu.Item>
+            {/* <Menu.Item
+                onClick={() => handleStatusChange('Refunded')}
+                disabled={!validateStatusChange(order.status, 'Refunded')}
+            >
+                Hoàn tiền
+            </Menu.Item> */}
+            <Menu.Item
+                onClick={() => handleStatusChange('Exchanged')}
+                disabled={!validateStatusChange(order.status, 'Exchanged')}
+            >
+                Đổi trả hàng
             </Menu.Item>
         </Menu>
     );
@@ -161,9 +206,9 @@ const OrderDetails = (props: Props) => {
             </div>
             <hr />
             <div className="grid grid-cols-2 gap-4 mt-4">
-                
+
                 {/* Thông tin đơn hàng */}
-                <div className="rounded bg-yellow-100 p-4 shadow-md bg-sky-400">
+                <div className="rounded bg-yellow-100 p-4 shadow-md border border-black ">
                     <h3 className="font-bold text-lg mb-2">Thông tin đơn hàng</h3>
                     <hr />
                     <div className="pt-3">
@@ -185,14 +230,28 @@ const OrderDetails = (props: Props) => {
                             </div>
                         </div>
                         <div className="grid grid-cols-2">
-                            <p>Tổng giá:</p>
-                            <p>{order.totalPrice.toLocaleString()} VND</p>
+                            <p>Tổng tiền hàng:</p>
+                            <p>{Goodsmoney.toLocaleString()} VND</p>
+                        </div>
+                        <div className="grid grid-cols-2">
+                            <p>Phí vận chuyển:</p>
+                            <p>{ship.value?.price.toLocaleString()} VND</p>
+                        </div>
+                        {voucher && (
+                            <div className="grid grid-cols-2">
+                                <p>Giảm giá:</p>
+                                <p>{voucher?.discountValue.toLocaleString()} VND</p>
+                            </div>
+                        )}
+                        <div className="grid grid-cols-2">
+                            <p>Tổng giá trị đơn hàng:</p>
+                            <p>{Totalamount.toLocaleString()} VND</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Thông tin người mua */}
-                <div className="rounded bg-green-100 p-4 shadow-md bg-amber-400">
+                <div className="rounded  p-4 shadow-md border border-black ">
                     <h3 className="font-bold text-lg mb-2">Thông tin người mua</h3>
                     <hr />
                     <div className="pt-3">
@@ -216,46 +275,47 @@ const OrderDetails = (props: Props) => {
                 </div>
 
                 {/* Thông tin thanh toán */}
-                <div className="rounded bg-red-100 p-4 shadow-md bg-slate-400">
+                <div className="rounded p-4 shadow-md border border-black ">
                     <h3 className="font-bold text-lg mb-2">Thanh toán</h3>
                     <hr />
                     <div className="pt-3">
                         <div className="grid grid-cols-2">
                             <p>Phương thức thanh toán:</p>
-                            <p>{order.paymentMethod === 'cash' ? 'Tiền mặt' : 
-                                order.paymentMethod === 'momo' ? 'Momo' : 
-                                order.paymentMethod === 'atm' ? 'ATM' : 
-                                'Thẻ tín dụng'}</p>
+                            <p>{order.paymentMethod === 'credit' ? 'Thẻ tín dụng' :
+                                order.paymentMethod === 'atm' ? 'Thẻ ATM' :
+                                    order.paymentMethod === 'vnPay' ? 'VN Pay' :
+                                        'Tiền mặt'}</p>
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Trạng thái thanh toán:</p>
                             <p>
-                            {order.paymentMethod === 'cash' && 
-                            (order.status === 'pending' || 
-                                order.status === 'unpaid' || 
-                                order.status === 'confirmed' || 
-                                order.status === 'shipped' || 
-                                order.status === 'cancelled') 
-                                ? 'Chưa thanh toán' 
-                                : 'Đã thanh toán'}
+                                {order.paymentMethod === "vnPay" ? (order.paymentStatus === "Đã thanh toán" ? "Đã thanh toán" : "Chưa thanh toán") : (order.status === "pending" || order.status === "unpaid" || order.status === "confirmed" || order.status === "shipped" || order.status === "cancelled" ? "Chưa thanh toán" : "Đã thanh toán")}
                             </p>
                         </div>
                     </div>
                 </div>
 
                 {/* Thông tin giao hàng */}
-                <div className="rounded bg-blue-100 p-4 shadow-md bg-lime-400">
+                <div className="rounded p-4 shadow-md border border-black ">
                     <h3 className="font-bold text-lg mb-2">Giao hàng</h3>
                     <hr />
-                    <div className="pt-3">
+                    <div className="mt-3">
+                        <div className="grid grid-cols-2">
+                            <p>Hình thức giao hàng:</p>
+                            <p>
+                                {ship.nameBrand}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="">
                         <div className="grid grid-cols-2">
                             <p>Trạng thái giao hàng:</p>
                             <p>
-                            {(order.status === 'shipped' || 
-                                order.status === 'delivered' || 
-                                order.status === 'received') 
-                                ? 'Đã giao' 
-                                : 'Chưa giao'}
+                                {(order.status === 'Complaints' ||
+                                    order.status === 'received' ||
+                                    order.status === 'delivered')
+                                    ? 'Đã giao'
+                                    : 'Chưa giao'}
                             </p>
                         </div>
                     </div>

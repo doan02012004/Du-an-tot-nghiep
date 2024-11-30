@@ -7,10 +7,6 @@ import { message } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 import { useContext, useEffect } from 'react'
 import { AppContext } from '../../../common/contexts/AppContextProvider'
-import { Iattribute, Iproduct } from '../../../common/interfaces/product'
-import { IcartItem } from '../../../common/interfaces/cart'
-import { setCarts, setTotalCart } from '../../../common/redux/features/cartSlice'
-
 const CartPage = () => {
     const {socket} = useContext(AppContext)
     const dispath = useDispatch()
@@ -53,12 +49,12 @@ const CartPage = () => {
     return (
         <section>
             <div>
-                <div className="container mx-auto lg:flex pt-11 pb-4 lg:gap-10">
+                <div className="container pb-4 mx-auto lg:flex pt-11 lg:gap-10">
                     <div className="lg:w-[68%]">
                         <Status />
-                        <div className="py-6 lg:py-11 flex gap-2 items-center">
+                        <div className="flex items-center gap-2 py-6 lg:py-11">
                             <span className="text-sm lg:text-2xl text-[#000000] font-bold">Giỏ hàng của bạn</span>
-                            <span className="text-sm lg:text-2xl text-red font-bold">{totalProduct } Sản Phẩm</span>
+                            <span className="text-sm font-bold lg:text-2xl text-red">{totalProduct } Sản Phẩm</span>
                         </div>
                         <Table carts={carts} />
                         <div className="py-6 lg:pt-7">

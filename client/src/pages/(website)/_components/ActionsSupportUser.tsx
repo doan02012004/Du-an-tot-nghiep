@@ -1,19 +1,27 @@
-import { useContext, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../../common/contexts/AppContextProvider'
 import { Modal, message } from 'antd'
 import { logoutUser } from '../../../services/auth'
 import { useDispatch } from 'react-redux'
 import { logoutFailed, logoutStart, logoutSuccess } from '../../../common/redux/features/authSlice'
-import { Link } from 'react-router-dom'
-// import { useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 const ActionsSupportUser = () => {
     const [actionSupport, setActionSupport] = useState(false)
     const [actionUser, setActionUser] = useState(false)
-    const { accessToken, setAccesToken, setCurrentUser, setIsLogin } = useContext(AppContext)
+    const { accessToken, currentUser, setAccesToken, setCurrentUser, setIsLogin } = useContext(AppContext)
     const { confirm } = Modal;
+    const location = useLocation()
     const dispatch = useDispatch()
-
+    useEffect(()=>{
+    if(actionSupport){
+        setActionSupport(false)
+    }
+    if(actionUser){
+        setActionUser(false)
+    }
+    },[location])
     const onHandeActionSupport = () => {
         setActionSupport(!actionSupport)
         setActionUser(false)
@@ -32,22 +40,17 @@ const ActionsSupportUser = () => {
             okType: 'danger',
             cancelText: 'Hủy',
             onOk: async () => {
-                dispatch(logoutStart());
-    
                 try {
                     const data = await logoutUser();
     
                     if (data.SC == 1) {
-                        setCurrentUser({});
+                        await setCurrentUser(null);
                         setIsLogin(false);
-                        setAccesToken(null);
+                        await setAccesToken(null);
                         window.location.reload();
                     }
-    
-                    dispatch(logoutSuccess());
                 } catch (error) {
                     message.error('Đăng xuất thất bại');
-                    dispatch(logoutFailed());
                 }
             },
             onCancel() {
@@ -126,6 +129,14 @@ const ActionsSupportUser = () => {
                                     Thông tin tài khoản
                                 </a>
                             </li>
+                           {currentUser&& currentUser?.role =='admin'&& (
+                             <li className="group mb-6">
+                             <Link to="/admin" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
+                                 <span className="mr-3 "><i className="fa-solid fa-screwdriver-wrench"></i></span>
+                                 Quản trị Admin
+                             </Link>
+                         </li>
+                           )}
                             <li className="group mb-6">
                                 <Link to={"customer/order-manager"} className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
                                     <span className="mr-3 "><i className="fa-solid fa-arrows-rotate" /></span>
@@ -133,10 +144,10 @@ const ActionsSupportUser = () => {
                                 </Link>
                             </li>
                             <li className="group mb-6">
-                                <a href="/customer/address_list" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
+                                <Link to="/customer/address_list" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
                                     <span className="mr-3 "><i className="fa-solid fa-location-dot" /></span>
                                     Sổ địa chỉ
-                                </a>
+                                </Link>
                             </li>
                             <li className="group mb-6">
                                 <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
@@ -162,6 +173,7 @@ const ActionsSupportUser = () => {
                                     Hỗ trợ - Mail Shop
                                 </a>
                             </li>
+                            
                             <li className="group ">
                                 <button onClick={onHandleLogout} className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
                                     <span className="mr-3 "><i className="fa-solid fa-arrow-right-from-bracket" /></span>

@@ -58,14 +58,14 @@ const MiniCartItem = ({cart}: Props) => {
     }
     return (
         <div className="w-full h-[94px] flex gap-3 pb-4 border-b border-gray-200  mb-4  ">
-            <div className="w-16 h-full flex-shrink-0">
-                <Link to={`/productdetails/${cart?.productId?._id}`}>
-                    <img  src={gallery?.avatar} className="w-full h-full object-cover" />
+            <div className="flex-shrink-0 w-16 h-full">
+                <Link to={`/productdetails/${cart?.productId?.slug}`}>
+                    <img  src={gallery?.avatar} className="object-cover w-full h-full" />
                 </Link> 
             </div>
-            <div className="w-full flex flex-col justify-between ">
+            <div className="flex flex-col justify-between w-full ">
                 <h3 className="text-base"><a href="#" className="text-[#373737]">{cart?.productId?.name}</a></h3>
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                     <span className="text-sm ">Màu sắc:
                         <span className="text-[#373737]">{attribute && attribute?.color}</span>
                     </span>

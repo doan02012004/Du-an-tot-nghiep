@@ -1,26 +1,24 @@
-import Breadcrumb_products from "./_components/Breadcrumb_products";
-import Product_information from "./_components/Product_information";
-import Slider_product_details from "./_components/Slider_product_details";
-
-// Import Swiper styles
 import { useParams } from "react-router-dom";
+// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
+
+import Breadcrumb_products from "./_components/Breadcrumb_products";
+import Product_information from "./_components/Product_information";
+import Slider_product_details from "./_components/Slider_product_details";
 import useProductQuery from "../../../common/hooks/products/useProductQuery";
 import Banner from "./_components/Banner";
 import Similar_product from "./_components/Similar_product";
-import Viewed_products from "./_components/Viewed_products";
 import { useContext, useEffect } from "react";
 import { AppContext } from "../../../common/contexts/AppContextProvider";
+import Product_description from './_components/Product_description';
 
-type Props = {}
-
-const ProductDetailsPage = (props: Props) => {
+const ProductDetailsPage = () => {
   const { slug } = useParams()
-  const query = useProductQuery(slug)
-  const { choiceColor, setChoiceColor } = useContext(AppContext);
+  const query = useProductQuery({slug:slug})
+  const {  setChoiceColor } = useContext(AppContext);
   useEffect(() => {
     if (query.data) {
       setChoiceColor(query.data.colors[0].name)
@@ -39,17 +37,16 @@ const ProductDetailsPage = (props: Props) => {
             <Slider_product_details product={query.data} />
             {/* ---------------------------------end product_details------------------------------------------------------- */}
             <Product_information product={query.data} />
-
           </section>
           {/* ------------------------------------------------------ */}
         </section>
         {/*  */}
+        <Product_description product={query.data} />
         {/* -----------------------------------------------end productdetails------------------------- */}
-        <Similar_product />
+        <Similar_product categoryId={query.data?.categoryId?._id} productId={query.data?._id} />
         {/* ---------------- */}
-        <Viewed_products />
+        {/* <Viewed_products /> */}
         <Banner />
-
       </div>
 
     </div>

@@ -47,17 +47,17 @@ const FormAddress = ({setIsOpenForm}:Props) => {
         setIsOpenForm(false)
     }
     return (
-        <div className=' fixed top-0 left-0 bg-black/30 w-full h-full z-50 flex items-center justify-center'>
+        <div className='fixed top-0 left-0 z-50 flex items-center justify-center w-full h-full  bg-black/30'>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 bg-white relative p-6 w-[320px] lg:w-[700px]">
-                <h2 className='font-bold uppercase text-2xl text-center'>THÊM ĐỊA CHỈ</h2>
-                <span onClick={() =>{ setIsOpenForm(false)}} className=' cursor-pointer absolute top-4 right-4'><CloseOutlined /></span>
-                <div className="w-full flex flex-col lg:justify-between items-center gap-3 lg:gap-5 lg:flex-row">
-                    <input type="text" {...register("fullname",{required:true})} placeholder="Họ tên" className="placeholder:text-sm lg:text-base border rounded-md py-3 px-5 w-full  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  text-base placeholder-black lg:w-1/2" />
-                    <input type="text"  {...register("phone",{required:true})} placeholder="Số điện thoại" className="placeholder:text-sm lg:text-base border rounded-md py-3 px-5 w-full  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  text-base placeholder-black lg:w-1/2" />
+                <h2 className='text-2xl font-bold text-center uppercase'>THÊM ĐỊA CHỈ</h2>
+                <span onClick={() =>{ setIsOpenForm(false)}} className='absolute cursor-pointer  top-4 right-4'><CloseOutlined /></span>
+                <div className="flex flex-col items-center w-full gap-3 lg:justify-between lg:gap-5 lg:flex-row">
+                    <input type="text" {...register("fullname",{required:true})} placeholder="Họ tên" className="w-full px-5 py-3 text-base placeholder-black border rounded-md placeholder:text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:w-1/2" />
+                    <input type="text"  {...register("phone",{required:true})} placeholder="Số điện thoại" className="w-full px-5 py-3 text-base placeholder-black border rounded-md placeholder:text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:w-1/2" />
                 </div>
-                <div className="w-full flex flex-col items-center gap-3 lg:gap-5 lg:flex-row lg:justify-between" >
-                    <div className="w-full relative select-information" >
-                        <select {...register("city",{required:true, onChange: (e) => onChangeTinh(e.target.value),onBlur:()=>{setAddress(null)}})} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  lg:text-base text-black" onClick={() => onClickAddress(1)}>
+                <div className="flex flex-col items-center w-full gap-3 lg:gap-5 lg:flex-row lg:justify-between" >
+                    <div className="relative w-full select-information" >
+                        <select {...register("city",{required:true, onChange: (e) => onChangeTinh(e.target.value),onBlur:()=>{setAddress(null)}})} className="w-full px-5 py-3 text-sm text-black border rounded-md appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base" onClick={() => onClickAddress(1)}>
                             <option value={''} disabled selected>Tỉnh/Thành Phố</option>
                             {location?.map((item: any, i: number) => (
                                 <option key={i} value={item.name} >{item.name}</option>
@@ -65,8 +65,8 @@ const FormAddress = ({setIsOpenForm}:Props) => {
                         </select>
                         <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${address == 1 ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
                     </div>
-                    <div className="w-full relative select-information">
-                        <select {...register('district', { required: true, onChange: (e) => onChangeHuyen(e.target.value), onBlur:()=>{setAddress(null)} })} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black " onClick={() => onClickAddress(2)}>
+                    <div className="relative w-full select-information">
+                        <select {...register('district', { required: true, onChange: (e) => onChangeHuyen(e.target.value), onBlur:()=>{setAddress(null)} })} className="w-full px-5 py-3 text-sm text-black border rounded-md appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base " onClick={() => onClickAddress(2)}>
                             <option disabled selected>Quận/Huyện</option>
                             {huyen?.map((item: any, i: number) => (
                                 <option key={i} value={item.name} >{item.name}</option>
@@ -75,8 +75,8 @@ const FormAddress = ({setIsOpenForm}:Props) => {
                         <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${address == 2 ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
                     </div>
                 </div>
-                <div className="w-full relative select-information">
-                    <select {...register('ward', { required: true,  onBlur:() =>  setAddress(null)  })} onBlur={() => { setAddress(null) }} className="text-sm border rounded-md py-3 px-5 w-full appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black " onClick={() => onClickAddress(3)}>
+                <div className="relative w-full select-information">
+                    <select {...register('ward', { required: true,  onBlur:() =>  setAddress(null)  })} onBlur={() => { setAddress(null) }} className="w-full px-5 py-3 text-sm text-black border rounded-md appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base " onClick={() => onClickAddress(3)}>
                         <option disabled selected>Phường/Xã</option>
                         {xa?.map((item: any, i: number) => (
                             <option key={i} value={item.name} >{item.name}</option>
@@ -85,23 +85,23 @@ const FormAddress = ({setIsOpenForm}:Props) => {
                     <span className={`absolute right-5 top-1/2 -translate-y-1/2 ${address == 3 ? 'active' : 'anactive'}`}><i className="fa-solid fa-chevron-right" /></span>
                 </div>
                 <div>
-                    <input type="text" {...register("address",{required:true})} className="w-full  border rounded-md py-3 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:placeholder:text-base placeholder-black placeholder:text-sm" placeholder="Địa chỉ" />
+                    <input type="text" {...register("address",{required:true})} className="w-full px-5 py-3 placeholder-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:placeholder:text-base placeholder:text-sm" placeholder="Địa chỉ" />
                 </div>
                 <div className="flex items-center gap-x-8">
                     <div className="flex items-center gap-x-2">
                         <input type="radio" id="nam" value={"house"}  className="accent-slate-950 size-5" {...register("option",{required:true})}/>
-                        <label htmlFor="nam" className="block cursor-pointer text-dark font-semibold text-sm">Nhà/chung cư</label>
+                        <label htmlFor="nam" className="block text-sm font-semibold cursor-pointer text-dark">Nhà/chung cư</label>
                     </div>
                     <div className="flex items-center gap-x-2">
                         <input type="radio" id="nu" value={"company"} className="accent-slate-950 size-5" {...register("option",{required:true})}/>
-                        <label htmlFor="nu" className="block cursor-pointer text-dark font-semibold text-sm">Công ty/cơ quan</label>
+                        <label htmlFor="nu" className="block text-sm font-semibold cursor-pointer text-dark">Công ty/cơ quan</label>
                     </div>
                 </div>
                 <div className="flex items-center gap-x-2">
                     <input type="checkbox" id="checkdefault" {...register("isDefault")} className="accent-slate-950 size-5"  />
-                    <label htmlFor="checkdefault" className="block cursor-pointer  text-sm">Đặt làm mặc định</label>
+                    <label htmlFor="checkdefault" className="block text-sm cursor-pointer">Đặt làm mặc định</label>
                 </div>
-                <button type='submit' className='uppercase w-full py-3 btn-lg font-semibold border'>Thêm địa chỉ</button>
+                <button type='submit' className='w-full py-3 font-semibold uppercase border btn-lg'>Thêm địa chỉ</button>
             </form>
         </div>
     )

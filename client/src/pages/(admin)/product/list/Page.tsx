@@ -9,8 +9,19 @@ import useProductQuery from '../../../../common/hooks/products/useProductQuery'
 import useProductMutation from '../../../../common/hooks/products/useProductMutation'
 
 const ListProduct = () => {
+    const [searchParams,setSearchParams] = useSearchParams()
     const [products, setProducts] = useState([] as Iproduct[])
-    const productQuery = useProductQuery(undefined)
+    const productQuery = useProductQuery({dataFilter:{
+        limit: 3,
+        page: searchParams.get('page')?? null,
+        categorySlug: null,
+        sizes: null,
+        colors: null,
+        min_price: null,
+        max_price: null,
+        sell_order: null,
+        search: null
+    }})
     const mutation = useProductMutation()
   
    
@@ -49,7 +60,7 @@ const ListProduct = () => {
             dataIndex: "categoryId",
             key: "categoryId",
             render: (categoryId: any) => (
-                <p>{categoryId.name}</p>
+                <p>{categoryId?.name}</p>
             )
         },
         {
@@ -57,7 +68,7 @@ const ListProduct = () => {
             dataIndex: "brandId",
             key: "brandId",
             render: (brandId: any) => (
-                <p>{brandId.name}</p>
+                <p>{brandId?.name}</p>
             )
         },
         {
@@ -114,7 +125,7 @@ const ListProduct = () => {
     return (
         <div>
             <Link to={'/admin/products/add'} className='block mb-3' ><Button type='primary'><PlusOutlined /> Sản phẩm</Button></Link>
-            <Table loading={productQuery.isLoading} columns={columns} dataSource={products} />
+            <Table loading={productQuery.isLoading} columns={columns} dataSource={products} pagination={false}/>
         </div>
     )
 }

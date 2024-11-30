@@ -2,7 +2,7 @@
 import { message } from "antd";
 import instance from "../common/config/axios";
 import { Isignin, Isignup, Iuser } from "../common/interfaces/auth";
-import { loginFailed, loginStart, loginSuccess, registerFailed, registerStart, registerSuccess } from "../common/redux/features/authSlice";
+import { loginFailed, loginStart, loginSuccess} from "../common/redux/features/authSlice";
 
 
 
@@ -19,15 +19,42 @@ export const loginUser = async (user: Isignin, dispatch: any, navigate: any, set
     }
 }
 
-export const registerUser = async (user: Isignup, dispatch: any) => {
-    dispatch(registerStart());
+export const registerUser = async (user: Isignup) => {
     try {
-        console.log("User data being sent:", user);
         const res = await instance.post("/users/register", user)
-        dispatch(registerSuccess())
         return res.data
     } catch (error) {
-        dispatch(registerFailed())
+        return error
+    }
+}
+
+export const forgotUser = async (data: { email: string }) => {
+    try {
+        const res = await instance.post("/users/forgot", data)
+        return res.data
+    } catch (error) {
+        message.error("Không tìm thấy")
+        return error
+    }
+}
+
+export const verifyResetToken = async (token: string) => {
+    try {
+        const res = await instance.post("/users/verify-reset-token", {token})
+        return res.data.isValid
+    } catch (error) {
+        message.error("Không tìm thấy")
+        return error
+    }
+}
+
+export const resetPassword = async (data: { token: string; password: string }) => {
+    try {
+        const res = await instance.post("/users/reset-password", data)
+        return res.data
+    } catch (error) {
+        message.error("Không tìm thấy")
+        return error
     }
 }
 
@@ -49,7 +76,7 @@ export const logoutUser = async () => {
         return error
         // dispatch(logoutFailed());
     }
-};
+}
 
 export const getAllUser = async () => {
     try {
@@ -139,6 +166,15 @@ export const getHistoryUpdateUser = async () => {
         }
     } catch (error) {
         console.log(message.error)
+    }
+}
+
+export const changePassword =  async (option:{newPassword:string|number,currentPassword:string|number}) =>{
+    try {
+        const res = await instance.post('/users/change-password',option)
+        return res
+    } catch (error) {
+        return error
     }
 }
 
