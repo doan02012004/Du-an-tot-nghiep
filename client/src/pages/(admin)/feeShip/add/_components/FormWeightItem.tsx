@@ -1,4 +1,4 @@
-import { ClockCircleFilled, CloseCircleFilled, EditOutlined, SaveOutlined } from '@ant-design/icons'
+import { CloseCircleFilled, EditOutlined, SaveOutlined } from '@ant-design/icons'
 import { Button, Form, InputNumber } from 'antd'
 import { IWeightRate } from '../../../../../common/interfaces/ship'
 import { useEffect } from 'react'
