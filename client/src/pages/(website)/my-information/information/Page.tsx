@@ -9,8 +9,8 @@ import moment from 'moment'
 import useUserMutation from '../../../../common/hooks/users/useUserMutation';
 
 const Account = () => {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm()
   const { currentUser } = useContext(AppContext)
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const mutation = useUserMutation();
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -19,7 +19,6 @@ const Account = () => {
   useEffect(() => {
     if (currentUser) {
       reset(currentUser);
-      reset({ 'gender': currentUser.gender });
     }
   }, [currentUser, reset]);
 
@@ -83,8 +82,23 @@ const Account = () => {
               <div className="w-[170px] font-light text-dark text-sm flex-shrink-0">Email</div>
               <input
                 type="email"
-                {...register("email", { required: true })} defaultValue={currentUser?.email}
-                className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200" />
+                {...register("email", {
+                  required: "Email là bắt buộc",
+                  pattern: {
+                    value: /^\S+@(\S+\.)+\S{2,3}$/,
+                    message: "Sai định dạng email",
+                  },
+                })}
+                defaultValues={
+                  currentUser?.email
+                }
+                className={`border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200 ${errors.email ? "text-red-600" : "border-gray-300"
+                  }`}
+              />
+              {errors.email && (
+                <span className=" mx-3 text-red-600 text-sm">{errors.email.message}</span>
+              )}
+
             </div>
             <div className="flex flex-col  mb-4 lg:flex-row lg:items-center lg:mb-6">
               <div className="w-[170px] font-light text-dark text-sm flex-shrink-0">Giới tính</div>
