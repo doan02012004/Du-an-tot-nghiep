@@ -24,24 +24,22 @@ const BestSeller = () => {
     <section className="newArrival mb-[18px] lg:mb-10">
       <div className="container">
         <h1 className="text-xl lg:text-3xl font-semibold text-dark tracking-[2px] text-center uppercase mb-[10px] lg:mb-5">
-          NEW ARRIVAL | SALE 50% TOÀN BỘ SP
+          BEST SELLER | SALE 50% TOÀN BỘ SP
         </h1>
         <div>
           <div className="mx-auto w-max">
             <ul className="tabs-btn flex items-center gap-8 mb-4 lg:mb-[28px]">
               <li
                 onClick={() => gender == "male" && setGender("female")}
-                className={` ${
-                  gender == "female" && "border-b-2 border-b-black"
-                } cursor-pointer text-dark text-base lg:text-xl pb-2 lg:pb-0 `}
+                className={` ${gender == "female" && "border-b-2 border-b-black"
+                  } cursor-pointer text-dark text-base lg:text-xl pb-2 lg:pb-0 `}
               >
                 Fendi-Shop Women
               </li>
               <li
                 onClick={() => gender == "female" && setGender("male")}
-                className={` ${
-                  gender == "male" && "border-b-2 border-b-black"
-                } cursor-pointer text-dark text-base lg:text-xl pb-2 lg:pb-0 `}
+                className={` ${gender == "male" && "border-b-2 border-b-black"
+                  } cursor-pointer text-dark text-base lg:text-xl pb-2 lg:pb-0 `}
               >
                 Fendi-Shop Men
               </li>
