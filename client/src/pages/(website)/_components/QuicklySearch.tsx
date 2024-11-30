@@ -35,6 +35,26 @@ const QuicklySearch = () => {
 
     const dataSearchRecent: any = JSON.parse(localStorage.getItem("searches") || "[]");
 
+
+    // Khi tab được mở
+    window.addEventListener("load", () => {
+        const currentTabCount = parseInt(localStorage.getItem("tabCount") || "0", 10);
+        localStorage.setItem("tabCount", (currentTabCount + 1).toString());
+    });
+
+    // Khi tab được đóng
+    window.addEventListener("beforeunload", () => {
+        const currentTabCount = parseInt(localStorage.getItem("tabCount") || "1", 10);
+        if (currentTabCount <= 1) {
+            localStorage.removeItem("searches");
+            localStorage.setItem("tabCount", "0");
+        } else {
+            // Giảm số lượng tab
+            localStorage.setItem("tabCount", (currentTabCount - 1).toString());
+        }
+    });
+
+
     const onSearch = (data: any) => {
         const { keyword } = data
         console.log(keyword)
