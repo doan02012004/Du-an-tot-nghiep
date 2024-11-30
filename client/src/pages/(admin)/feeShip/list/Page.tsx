@@ -1,17 +1,26 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {  DeleteOutlined, EditOutlined, PlusOutlined, TagOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import { useEffect, useRef, useState } from 'react'
+import { DeleteOutlined, EditOutlined, PlusOutlined, TagOutlined } from '@ant-design/icons';
+import { Button, message, Modal } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { IShip, IVolumeRate, IWeightRate } from '../../../../common/interfaces/ship';
+// import useShipMutation from '../../../../common/hooks/ships/useShipMutation';
 import useShipQuery from '../../../../common/hooks/ships/useShipQuery';
+import { IShip, IVolumeRate, IWeightRate } from '../../../../common/interfaces/ship';
 import { formatPrice } from '../../../../common/utils/product';
+import { deleteVolume, deleteWeight, removeBranch, updateVolumeRate, updateWeightRate } from '../../../../services/ship';
+import FormUpdate from './_components/FormUpdate';
 
 const ListShipPage = () => {
-    const [ships, setShips] = useState<IShip[]>([])
-    const [ship, setShip] = useState<IShip>({ _id: '', nameBrand: '', weight: [], volume: [] })
+    const [ships, setShips] = useState<IShip[]>([]);
+    const [ship, setShip] = useState<IShip>({ _id: '', nameBrand: '', weight: [], volume: [] });
+    const [, setError] = useState<string | null>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const shipQuery = useShipQuery({})
+    const shipQuery = useShipQuery({});
+    // const mutationShip = useShipMutation();
+
+    const [isModalVisible, setIsModalVisible] = useState(false); // đóng mở form update
+    const [selectedRate, setSelectedRate] = useState<IWeightRate | IVolumeRate | null>(null);
+    const [rateType, setRateType] = useState<'weight' | 'volume'>('weight');
+
 
     useEffect(() => {
         const scrollContainer = scrollContainerRef.current;
@@ -51,179 +60,256 @@ const ListShipPage = () => {
             scrollContainer.removeEventListener("mouseleave", stopDragging);
         };
     }, []);
+
     useEffect(() => {
         if (shipQuery?.data?.length > 0) {
-            // const newShips =  shipQuery.data?.map((item:IShip) =>{
-            //     const newWeights = item.weight.map((weight:IWeightRate,index:number) => Number(index) == Number( item.weight.length-1) ?{...item.weight[index],maxWeight:Infinity}:weight)
-            //     const newVolumes = item.volume.map((volume:IVolumeRate,index:number) => Number(index) == Number(item.volume.length-1) ?{...item.volume[index],maxVolume:Infinity}:volume)
-            //     return ( {
-            //         ...item,
-            //         weight:newWeights,
-            //         volume:newVolumes
-            //     })
-            // })
-            // console.log(newShips)
-            setShips(shipQuery.data)
-
-            if (ship._id == '') {
-                setShip(shipQuery.data[0])
+            setShips(shipQuery.data);
+            if (ship._id === '') {
+                setShip(shipQuery.data[0]);
             }
         }
-    }, [shipQuery?.data])
+    }, [shipQuery?.data]);
+
+    const handleAddWeightRate = () => {
+        const newWeightRate = { minWeight: 0, maxWeight: 0, price: 0, _id: `${Date.now()}` };
+        const updatedWeights = [...ship.weight, newWeightRate];
+        setShip({ ...ship, weight: updatedWeights });
+    };
+
+    const handleAddVolumeRate = () => {
+        const newVolumeRate = { minVolume: 0, maxVolume: 0, price: 0, _id: `${Date.now()}` };
+        const updatedVolumes = [...ship.volume, newVolumeRate];
+        setShip({ ...ship, volume: updatedVolumes });
+    };
+
+    const handleDeleteWeight = async (weightId: string) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa khoản phí này?',
+            onOk: async () => {
+                try {
+                    await deleteWeight(ship._id, weightId);
+                    const updatedShip = { ...ship };
+                    updatedShip.weight = updatedShip.weight.filter((w) => w._id !== weightId);
+                    setShip(updatedShip);
+                    message.success('Xóa thành công phí khối lượng');
+                } catch (err) {
+                    setError('Không thể xóa weight');
+                    message.error('Có lỗi xảy ra khi xóa');
+                }
+            }
+        });
+    };
+
+    const handleDeleteVolume = async (volumeId: string) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa khoản phí này?',
+            onOk: async () => {
+                try {
+                    await deleteVolume(ship._id, volumeId);
+                    const updatedShip = { ...ship };
+                    updatedShip.volume = updatedShip.volume.filter((v) => v._id !== volumeId);
+                    setShip(updatedShip);
+                    message.success('Xóa thành công phí thể tích');
+                } catch (err) {
+                    setError('Không thể xóa volume');
+                    message.error('Có lỗi xảy ra khi xóa');
+                }
+            }
+        });
+    };
+
+    const handleEditWeightRate = (rate: IWeightRate) => {
+        setSelectedRate(rate);
+        setRateType('weight');
+        setIsModalVisible(true);
+    };
+
+    const handleEditVolumeRate = (rate: IVolumeRate) => {
+        setSelectedRate(rate);
+        setRateType('volume');
+        setIsModalVisible(true);
+    };
+
+    const handleSave = async (updatedRate: IWeightRate | IVolumeRate) => {
+        try {
+            // Cập nhật phí khối lượng
+            if (rateType === 'weight') {
+                const response = await updateWeightRate(ship?._id, updatedRate); // Gọi API để cập nhật
+                console.log(response)
+                if (response.status == 200) {
+                    // Cập nhật lại ship state sau khi thành công
+                    const updatedShip = { ...ship };
+                    updatedShip.weight = updatedShip.weight.map((rate) =>
+                        rate._id === updatedRate._id ? updatedRate : rate
+                    );
+                    setShip(updatedShip);
+                    message.success('Cập nhật phí khối lượng thành công');
+
+                } else {
+                    message.error('Cập nhật phí khối lượng thất bại');
+                }
+            } else {
+                // Cập nhật phí thể tích
+                const response = await updateVolumeRate(ship?._id, updatedRate); // Gọi API để cập nhật
+                if (response.status == 200) {
+                    // Cập nhật lại ship state sau khi thành công
+                    const updatedShip = { ...ship };
+                    updatedShip.volume = updatedShip.volume.map((rate) =>
+                        rate._id === updatedRate._id ? updatedRate : rate
+                    );
+                    setShip(updatedShip);
+                    message.success('Cập nhật phí thể tích thành công');
+                } else {
+                    message.error('Cập nhật phí thể tích thất bại');
+                }
+            }
+
+            // Đóng modal sau khi cập nhật thành công
+            setIsModalVisible(false);
+        } catch (error) {
+            message.error('Có lỗi xảy ra khi cập nhật dữ liệu');
+            console.error(error);
+        }
+    };
+
+    const handleRemoveBranch = async (id: string) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa phương tiện này?',
+            onOk: async () => {
+                try {
+                    await removeBranch(id); // Gọi API xóa sản phẩm trên server
+
+                    // Cập nhật danh sách ships trong state
+                    setShips((prevShips) => {
+                        const updatedShips = prevShips.filter((ship) => ship._id !== id);
+
+                        // Kiểm tra nếu ship hiện tại là ship vừa bị xóa
+                        if (ship._id === id) {
+                            setShip(updatedShips.length > 0 ? updatedShips[0] : { _id: '', nameBrand: '', weight: [], volume: [] });
+                        }
+
+                        return updatedShips;
+                    });
+
+                    message.success('Xóa thành công');
+                } catch (err) {
+                    setError('Không thể xóa phương tiện');
+                    message.error('Có lỗi xảy ra khi xóa');
+                }
+            }
+        });
+    };
+
+
+
+
     return (
         <div className="container">
             <h2 className="text-2xl mb-4">Quản lý phí ship</h2>
             <div className="relative flex items-center border rounded-lg bg-slate-100 p-2 mb-6">
-                <div
-                    ref={scrollContainerRef}
-                    className="scroll-container cursor-grab"
-                    style={{ userSelect: "none" }}
-                >
+                <div ref={scrollContainerRef} className="scroll-container cursor-grab" style={{ userSelect: "none" }}>
                     {ships?.map((item: IShip) => (
-                        <div key={item._id} className={`button border border-gray-400 rounded-md overflow-hidden ${ship?._id == item._id && 'bg-blue *:text-white'}`}>
-                            <Button
-                                className="w-full bg-transparent border-none rounded-none"
-                                icon={<TagOutlined />}
-                                onClick={() => setShip(item)}
-                            >
+                        <div key={item._id} className={`flex button border border-gray-400 rounded-md overflow-hidden ${ship?._id === item._id && 'bg-blue *:text-white'}`}>
+                            <Button className="w-full bg-transparent border-none rounded-none" icon={<TagOutlined />} onClick={() => setShip(item)}>
                                 {item?.nameBrand}
                             </Button>
+                            <Button className='bg-transparent border-none rounded-none'
+                                onClick={() => handleRemoveBranch(ship?._id)}
+                            > Xóa</Button>
                         </div>
-
                     ))}
-
-
                 </div>
                 <div className="add-button">
                     <Link to={`/admin/ships/add`}><Button icon={<PlusOutlined />} /></Link>
                 </div>
             </div>
-            <div className=' grid grid-cols-12 gap-6'>
+
+            <div className="grid grid-cols-12 gap-6">
                 <div className="col-span-full xl:col-span-6 bg-white dark:bg-gray-800 p-3 shadow-lg shadow-gray-300 rounded-lg">
-                    <header className="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
+                    <header className="flex justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
                         <h2 className="font-semibold text-gray-800 dark:text-gray-100">Khối lượng</h2>
+                        <Button className="w-full" icon={<PlusOutlined />} onClick={handleAddWeightRate}>
+                            Thêm khoảng giá mới
+                        </Button>
                     </header>
                     <div className="p-3">
-                        {/* Table */}
                         <div className="overflow-x-auto">
                             <table className="table-auto w-full">
-                                {/* Table header */}
                                 <thead className="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
                                     <tr>
-                                        <th className="p-2 whitespace-nowrap">
-                                            <div className="font-semibold text-left"> Khối lượng (Min)</div>
-                                        </th>
-                                        <th className="p-2 whitespace-nowrap">
-                                            <div className="font-semibold text-left"> Khối lượng (Max)</div>
-                                        </th>
-                                        <th className="p-2 whitespace-nowrap">
-                                            <div className="font-semibold text-center">Giá vận chuyển</div>
-                                        </th>
-                                        <th className="p-2 whitespace-nowrap">
-                                            <div className="font-semibold text-center">Thao tác</div>
-                                        </th>
+                                        <th className="p-2 whitespace-nowrap">Khối lượng (Min)</th>
+                                        <th className="p-2 whitespace-nowrap">Khối lượng (Max)</th>
+                                        <th className="p-2 whitespace-nowrap">Giá vận chuyển</th>
+                                        <th className="p-2 whitespace-nowrap">Thao tác</th>
                                     </tr>
                                 </thead>
-                                {/* Table body */}
                                 <tbody className="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
-                                    {
-                                        ship?.weight?.map((item: IWeightRate) => {
-                                            return (
-                                                <tr key={item?._id}>
-
-                                                    <td className="p-2 whitespace-nowrap">
-                                                        <div className="text-left">{item.minWeight}</div>
-                                                    </td>
-                                                    <td className="p-2 whitespace-nowrap">
-                                                        <div className="text-left font-medium text-green-500">{item.maxWeight}</div>
-                                                    </td>
-                                                    <td className="p-2 whitespace-nowrap">
-                                                        <div className="text-sm text-center">{formatPrice(item.price ? item.price : 0)}đ</div>
-                                                    </td>
-                                                    <td className='flex gap-2'>
-                                                        <Button type='primary'>
-                                                            <EditOutlined></EditOutlined>
-                                                        </Button>
-                                                        <Button type="dashed">
-                                                            <DeleteOutlined></DeleteOutlined>
-                                                        </Button>
-                                                    </td>
-
-                                                </tr>
-                                            )
-                                        })
-                                    }
+                                    {ship?.weight?.map((item: IWeightRate) => (
+                                        <tr key={item?._id}>
+                                            <td className="p-2 whitespace-nowrap">{item.minWeight}</td>
+                                            <td className="p-2 whitespace-nowrap font-medium text-green-500">{item.maxWeight}</td>
+                                            <td className="p-2 whitespace-nowrap text-center">{formatPrice(item.price ? item.price : 0)}đ</td>
+                                            <td className="flex gap-2">
+                                                <Button type="primary" onClick={() => handleEditWeightRate(item)}><EditOutlined /></Button>
+                                                <Button type="dashed" onClick={() => handleDeleteWeight(item?._id)}><DeleteOutlined /></Button>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
-
                         </div>
-
                     </div>
                 </div>
+
                 <div className="col-span-full xl:col-span-6 bg-white dark:bg-gray-800 p-3 shadow-lg shadow-gray-300 rounded-lg">
-                    <header className="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
+                    <header className="flex justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
                         <h2 className="font-semibold text-gray-800 dark:text-gray-100">Thể tích</h2>
+                        <Button className="w-full" icon={<PlusOutlined />} onClick={handleAddVolumeRate}>
+                            Thêm khoảng giá mới
+                        </Button>
                     </header>
                     <div className="p-3">
-                        {/* Table */}
                         <div className="overflow-x-auto">
                             <table className="table-auto w-full">
-                                {/* Table header */}
                                 <thead className="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
                                     <tr>
-                                        <th className="p-2 whitespace-nowrap">
-                                            <div className="font-semibold text-left"> Thể tích (Min)</div>
-                                        </th>
-                                        <th className="p-2 whitespace-nowrap">
-                                            <div className="font-semibold text-left"> Thể tích (Max)</div>
-                                        </th>
-                                        <th className="p-2 whitespace-nowrap">
-                                            <div className="font-semibold text-center">Giá vận chuyển</div>
-                                        </th>
-                                        <th className="p-2 whitespace-nowrap">
-                                            <div className="font-semibold text-center">Thao tác</div>
-                                        </th>
+                                        <th className="p-2 whitespace-nowrap">Thể tích (Min)</th>
+                                        <th className="p-2 whitespace-nowrap">Thể tích (Max)</th>
+                                        <th className="p-2 whitespace-nowrap">Giá vận chuyển</th>
+                                        <th className="p-2 whitespace-nowrap">Thao tác</th>
                                     </tr>
                                 </thead>
-                                {/* Table body */}
                                 <tbody className="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
-                                    {
-                                        ship?.volume?.map((item: IVolumeRate) => {
-                                            return (
-                                                <tr key={item?._id}>
-
-                                                    <td className="p-2 whitespace-nowrap">
-                                                        <div className="text-left">{item.minVolume}</div>
-                                                    </td>
-                                                    <td className="p-2 whitespace-nowrap">
-                                                        <div className="text-left font-medium text-green-500">{item.maxVolume}</div>
-                                                    </td>
-                                                    <td className="p-2 whitespace-nowrap">
-                                                        <div className="text-sm text-center">{formatPrice(item.price ? item.price : 0)}đ</div>
-                                                    </td>
-                                                    <td className='flex gap-2'>
-                                                        <Button type='primary'>
-                                                            <EditOutlined></EditOutlined>
-                                                        </Button>
-                                                        <Button type="dashed">
-                                                            <DeleteOutlined></DeleteOutlined>
-                                                        </Button>
-                                                    </td>
-
-                                                </tr>
-                                            )
-                                        })
-                                    }
+                                    {ship?.volume?.map((item: IVolumeRate) => (
+                                        <tr key={item?._id}>
+                                            <td className="p-2 whitespace-nowrap">{item.minVolume}</td>
+                                            <td className="p-2 whitespace-nowrap font-medium text-green-500">{item.maxVolume}</td>
+                                            <td className="p-2 whitespace-nowrap text-center">{formatPrice(item.price ? item.price : 0)}đ</td>
+                                            <td className="flex gap-2">
+                                                <Button type="primary" onClick={() => handleEditVolumeRate(item)}><EditOutlined /></Button>
+                                                <Button type="dashed" onClick={() => handleDeleteVolume(item?._id)}><DeleteOutlined /></Button>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
-
                         </div>
-
                     </div>
                 </div>
             </div>
+            <FormUpdate
+                visible={isModalVisible}
+                data={selectedRate}
+                type={rateType}
+                onSave={handleSave}
+                onCancel={() => setIsModalVisible(false)}
+            />
         </div>
-    )
-}
 
-export default ListShipPage
+    );
+};
+
+export default ListShipPage;

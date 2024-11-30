@@ -1,13 +1,23 @@
 import { Router } from 'express';
-import { createShip, deleteShip, getAllShipAdmin, getAllShipClient, getShipById, updateShip } from '../controllers/shipController.js';
+import { createShip, deleteVolume, deleteWeight, getAllShip, getShipById, removeBranch, updateVolumeRate, updateWeightRate } from '../controllers/shipController.js';
 
 const router = Router();
 
-router.get('/client', getAllShipClient);
-router.get('/admin', getAllShipAdmin);
+router.get('/', getAllShip);
+// router.get('/admin', getAllShipAdmin);
 router.get('/:id', getShipById);
 router.post('/add', createShip);
-router.put('/update/:id', updateShip);
-router.delete('/delete/:id', deleteShip);
+// Cập nhật phí khối lượng (Weight Rate)
+router.put('/:shipId/weights/:weightId', updateWeightRate);
+
+// Cập nhật phí thể tích (Volume Rate)
+router.put('/:shipId/volumes/:volumeId', updateVolumeRate);
+// Route để xóa khối lượng
+router.delete('/weight/:id', deleteWeight);
+
+// Route để xóa thể tích
+router.delete('/volume/:id', deleteVolume);
+
+router.delete('/:id', removeBranch);
 
 export default router;
