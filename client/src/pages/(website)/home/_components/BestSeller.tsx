@@ -68,7 +68,7 @@ const BestSeller = () => {
               >
                 {products?.map((product: Iproduct, i: number) => (
                   <SwiperSlide key={i} className="swiper-slide">
-                    <Product product={product} />
+                    <Product product={product} discount={50} />
                   </SwiperSlide>
                 ))}
                 <span className=" arrival-prev hidden absolute z-[15] left-4 top-[40%] cursor-pointer  text-[#BCBDC0] text-3xl font-thin lg:block hover:text-dark">
