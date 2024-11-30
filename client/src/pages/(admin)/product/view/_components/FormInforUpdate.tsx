@@ -7,10 +7,8 @@ import {
   Input,
   InputRef,
   message,
-  Radio,
   Select,
   Space,
-  Switch,
 } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import ReactQuill from "react-quill";
@@ -44,18 +42,6 @@ const FormInforUpdate = ({ product }: FormInforUpdateProps) => {
     form.setFieldsValue(product);
     form.setFieldValue("categoryId", product?.categoryId?._id);
   }, [product, form]);
-  const onChangePriceNew: any = (priceNew: number) => {
-    const priceOld = form.getFieldValue("price_old");
-    if (priceNew > priceOld) {
-      form.setFieldValue("price_new", 0);
-      return message.error("Vui lòng không nhập cao hơn giá niêm yết");
-    }
-    if (priceOld) {
-      const discount = Math.ceil(((priceOld - priceNew) / priceOld) * 100);
-      form.setFieldValue("discount", discount);
-    }
-  };
-
   const addItem = (
     e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
   ) => {
@@ -65,7 +51,10 @@ const FormInforUpdate = ({ product }: FormInforUpdateProps) => {
     } else {
       categoriesMutation.mutate({
         action: "add",
-        category: { name: name },
+        category: {
+          name: name,
+          slug: ""
+        },
         isOther: true,
       });
       setName("");
@@ -100,151 +89,160 @@ const FormInforUpdate = ({ product }: FormInforUpdateProps) => {
     productMutation.mutate({ action: "updateInfor", productInfor: newData });
   };
   return (
-    <div className="mb-6 border-b">
-      <div className="pr-5 mb-3 border-b w-max border-red">
-        <h3 className="text-lg text-red">Thông tin sản phẩm *</h3>
-      </div>
-      <div className="px-5">
-        <Form
-          form={form}
-          name="basic"
-          className="p-0 m-0"
-          layout="vertical"
-          onFinish={onSubmit}
-        >
-          <div className="py-2">
-            {/* Thông tin  */}
-            <div className="grid grid-cols-2 gap-x-4">
-              <Form.Item
-                label="Tên sản phẩm"
-                name={"name"}
-                rules={[{ required: true, message: "Bắt buộc nhập" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Danh mục sản phẩm"
-                name="categoryId"
-                rules={[{ required: true, message: "Bắt buộc nhập" }]}
-              >
-                <Select
-                  loading={
-                    categoriesQuery.isLoading
-                      ? categoriesQuery.isLoading
-                      : categoriesMutation.isPending
-                  }
-                  placeholder="custom dropdown render"
-                  dropdownRender={(menu) => (
-                    <>
-                      {menu}
-                      <Divider style={{ margin: "8px 0" }} />
-                      <Space style={{ padding: "0 8px 4px" }}>
-                        <Input
-                          placeholder="Please enter item"
-                          ref={inputRef}
-                          value={name}
-                          onChange={(event) => setName(event.target.value)}
-                          onKeyDown={(e) => e.stopPropagation()}
-                        />
-                        <Button
-                          type="text"
-                          icon={<PlusOutlined />}
-                          onClick={addItem}
-                        >
-                          Add item
-                        </Button>
-                      </Space>
-                    </>
-                  )}
-                  options={categoriesQuery?.data?.map((item: ICategories) => ({
-                    label: item.name,
-                    value: item._id,
-                  }))}
-                />
-              </Form.Item>
-              <Form.Item
-                label="Thương hiệu"
-                name="brandId"
-                rules={[{ required: true, message: "Bắt buộc nhập" }]}
-              >
-                <Select
-                  loading={
-                    brandsQuery.isLoading
-                      ? brandsQuery.isLoading
-                      : brandsMutation.isPending
-                  }
-                  placeholder="custom dropdown render"
-                  dropdownRender={(menu) => (
-                    <>
-                      {menu}
-                      <Divider style={{ margin: "8px 0" }} />
-                      <Space style={{ padding: "0 8px 4px" }}>
-                        <Input
-                          placeholder="Please enter item"
-                          ref={brandRef}
-                          value={brand}
-                          onChange={(event) => setBrand(event.target.value)}
-                          onKeyDown={(e) => e.stopPropagation()}
-                        />
-                        <Button
-                          type="text"
-                          icon={<PlusOutlined />}
-                          onClick={addBrand}
-                        >
-                          Add item
-                        </Button>
-                      </Space>
-                    </>
-                  )}
-                  options={brandsQuery?.data?.map((item: IBrands) => ({
-                    label: item.name,
-                    value: item._id,
-                  }))}
-                />
-              </Form.Item>
-              <Form.Item
-                label="Giới tính"
-                name={"gender"}
-                rules={[{ required: true, message: "Bắt buộc nhập" }]}
-              >
-                <Radio.Group>
-                  <Radio value="male">Nam</Radio>
-                  <Radio value="female">Nữ</Radio>
-                  <Radio value="unisex">Cả nam nữ</Radio>
-                </Radio.Group>
-              </Form.Item>
-              <div className="flex items-center gap-x-3">
-                <Form.Item
-                  label="Nổi bật"
-                  name={"featured"}
-                  className="basis-1/2"
-                >
-                  <Switch />
-                </Form.Item>
-                <Form.Item
-                  label="Hoạt động"
-                  name={"active"}
-                  className="basis-1/2"
-                >
-                  <Switch defaultValue={true} />
-                </Form.Item>
-              </div>
-            </div>
-
-            {/* Mô tả  */}
-            <div className="w-full ">
-              <Form.Item label="Mô tả sản phẩm" name={"description"}>
-                <ReactQuill className="w-full" />
-              </Form.Item>
-            </div>
-            <Button type="primary" htmlType="submit">
-              <SaveOutlined />
-              Cập nhật thông tin
-            </Button>
+    <div>
+    <div className="px-5">
+      <Form
+        form={form}
+        name="basic"
+        className="p-0 m-0"
+        layout="vertical"
+        onFinish={onSubmit}
+      >
+        <div>
+          {/* Thông tin  */}
+          <div className="grid grid-cols-2 gap-x-4">
+            <Form.Item
+              label="Tên sản phẩm"
+              name={"name"}
+              rules={[{ required: true, message: "Bắt buộc nhập" }]}
+            >
+              <Input placeholder="Nhập tên sản phẩm..." />
+            </Form.Item>
+            <Form.Item
+              label="Danh mục sản phẩm"
+              name="categoryId"
+              rules={[{ required: true, message: "Bắt buộc nhập" }]}
+            >
+              <Select
+                loading={
+                  categoriesQuery.isLoading
+                    ? categoriesQuery.isLoading
+                    : categoriesMutation.isPending
+                }
+                placeholder="Chọn danh mục"
+                dropdownRender={(menu) => (
+                  <>
+                    {menu}
+                    <Divider style={{ margin: "8px 0" }} />
+                    <Space style={{ padding: "0 8px 4px" }}>
+                      <Input
+                        placeholder="Thêm danh mục"
+                        ref={inputRef}
+                        value={name}
+                        onChange={(event) => setName(event.target.value)}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                      <Button
+                        type="text"
+                        icon={<PlusOutlined />}
+                        onClick={addItem}
+                      >
+                        Thêm
+                      </Button>
+                    </Space>
+                  </>
+                )}
+                options={categoriesQuery?.data?.map((item: ICategories) => ({
+                  label: item.name,
+                  value: item._id,
+                }))}
+              />
+            </Form.Item>
+            <Form.Item
+              label="Thương hiệu"
+              name="brandId"
+              rules={[{ required: true, message: "Bắt buộc nhập" }]}
+            >
+              <Select
+                loading={
+                  brandsQuery.isLoading
+                    ? brandsQuery.isLoading
+                    : brandsMutation.isPending
+                }
+                placeholder="Chọn thương hiệu"
+                dropdownRender={(menu) => (
+                  <>
+                    {menu}
+                    <Divider style={{ margin: "8px 0" }} />
+                    <Space style={{ padding: "0 8px 4px" }}>
+                      <Input
+                        placeholder="Please enter item"
+                        ref={brandRef}
+                        value={brand}
+                        onChange={(event) => setBrand(event.target.value)}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                      <Button
+                        type="text"
+                        icon={<PlusOutlined />}
+                        onClick={addBrand}
+                      >
+                        Add item
+                      </Button>
+                    </Space>
+                  </>
+                )}
+                options={brandsQuery?.data?.map((item: IBrands) => ({
+                  label: item.name,
+                  value: item._id,
+                }))}
+              />
+            </Form.Item>
+            <Form.Item
+              label="Giới tính"
+              name={"gender"}
+              rules={[{ required: true, message: "Bắt buộc nhập" }]}
+            >
+              <Select
+                placeholder='Chọn giới tính'
+                options={[
+                  { label: "Nam và Nữ", value:'unisex' },
+                  { label: "Nam", value: 'male' },
+                  { label: "Nữ", value: 'female' },
+                ]} />
+            </Form.Item>
+            <Form.Item
+              label="Nổi bật"
+              name={"featured"}
+              className="basis-1/2"
+            >
+              <Select
+                options={[
+                  { label: "Có", value: true },
+                  { label: "Không", value: false },
+                ]} />
+            </Form.Item>
+            <Form.Item
+              label="Hoạt động"
+              name={"active"}
+              className="basis-1/2"
+            >
+              <Select
+                options={[
+                  { label: "Có", value: true },
+                  { label: "Không", value: false },
+                ]} />
+            </Form.Item>
           </div>
-        </Form>
-      </div>
+          {/* Mô tả  */}
+          <div className="w-full mx-auto py-0">
+            <Form.Item
+            label="Mô tả sản phẩm"
+             name={"description"}
+             >
+              <ReactQuill placeholder="Nhập mô tả sản phẩm..." className="w-full" />
+            </Form.Item>
+          </div>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                <SaveOutlined />
+                Cập nhật thông tin
+              </Button>
+            </Form.Item>
+        </div>
+      </Form>
     </div>
+  </div>
     // <Form form={form} name="basic" layout="vertical" onFinish={onSubmit} disabled={productMutation.isPending}>
     //     <div className="py-3 ">
     //         {/* Thông tin  */}

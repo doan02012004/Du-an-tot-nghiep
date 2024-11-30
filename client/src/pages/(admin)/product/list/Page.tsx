@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Popconfirm, Space, Table } from 'antd'
+import { Button, Pagination, Popconfirm, Space, Table } from 'antd'
 import { Link, useSearchParams } from 'react-router-dom'
 import { formatPrice } from '../../../../common/utils/product'
 import { useEffect, useState } from 'react'
@@ -10,9 +10,10 @@ import useProductMutation from '../../../../common/hooks/products/useProductMuta
 
 const ListProduct = () => {
     const [searchParams,setSearchParams] = useSearchParams()
+    const [limit,] = useState(4)
     const [products, setProducts] = useState([] as Iproduct[])
     const productQuery = useProductQuery({dataFilter:{
-        limit: 3,
+        limit: limit,
         page: searchParams.get('page')?? null,
         categorySlug: null,
         sizes: null,
@@ -35,6 +36,7 @@ const ListProduct = () => {
             ))
             setProducts(newProducts)
         }
+        console.log(productQuery.data)
     }, [productQuery.data])
     const columns = [
         {
@@ -126,6 +128,7 @@ const ListProduct = () => {
         <div>
             <Link to={'/admin/products/add'} className='block mb-3' ><Button type='primary'><PlusOutlined /> Sản phẩm</Button></Link>
             <Table loading={productQuery.isLoading} columns={columns} dataSource={products} pagination={false}/>
+            <Pagination className='w-max mx-auto mt-2' defaultCurrent={productQuery?.data?.currentPage} onChange={(page:any) => {searchParams.set('page',page); setSearchParams(searchParams)}}  total={productQuery?.data?.total} pageSize={limit}/>
         </div>
     )
 }

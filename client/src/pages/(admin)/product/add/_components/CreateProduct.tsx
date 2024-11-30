@@ -27,11 +27,13 @@ const CreateProduct = () => {
        if(gallerys.length == 0 || attributes?.length == 0 ){
         setCheckAdd(false)
        }else{
-            if(!gallerys?.some((item:Igallery)=> item.check == false) && !attributes?.some((item:Iattribute)=> item.isCheck == false)){
+            if(!gallerys?.some((item:Igallery)=> item.check == false) && !attributes?.some((item:Iattribute)=> item.isCheck == false) && isSave){
                 setCheckAdd(true)
+            }else{
+                setCheckAdd(false)
             }
        }
-    },[gallerys,attributes])
+    },[gallerys,attributes,isSave])
 
     useEffect(()=>{
         const newColor = colorQuery?.data?.filter((item:IColor)=> colors.includes(item._id) )

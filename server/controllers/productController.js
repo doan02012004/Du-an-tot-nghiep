@@ -311,3 +311,40 @@ export const deleteColor = async (req, res) => {
     });
   }
 };
+
+export const addImageGallery = async(req,res) =>{
+  try {
+    const {productId,galleryId,imageUrl} = req.body;
+    const product = await ProductModel.findById(productId)
+    const gallery = product.gallerys.find(item => item._id.toString() == galleryId)
+    gallery.items.push(imageUrl)
+    await product.save()
+    return res.status(200).json({
+      message:"Thêm ảnh thành công",
+      data:product
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+}
+export const updateAvatarGallery = async(req,res) =>{
+  try {
+    const {productId,galleryId,imageUrl} = req.body;
+    const product = await ProductModel.findById(productId)
+    const gallery = product.gallerys.find(item => item._id.toString() == galleryId)
+    const old_avatar = gallery.avatar;
+    gallery.avatar = imageUrl;
+    gallery.items = gallery.items.map((item) => item == imageUrl?old_avatar:item)
+    await product.save()
+    return res.status(200).json({
+      message:"Cập nhật ảnh đại diện thành công",
+      data:product
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+}

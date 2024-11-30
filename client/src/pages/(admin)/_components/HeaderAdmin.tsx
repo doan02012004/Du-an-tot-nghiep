@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 const HeaderAdmin = () => {
     const {collapsed, setCollapsed,colorBgContainer} = useContext(AppContext);
   return (
-      <Header style={{ padding: 0, background: colorBgContainer }}>
+      <Header style={{ padding: 0, background: colorBgContainer }} className=' sticky top-0 z-50'>
        
             <Button
               type="text"

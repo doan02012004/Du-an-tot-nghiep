@@ -207,3 +207,12 @@ export const deleteSizeProduct = async (
     message.error("Xóa size thất bại!");
   }
 };
+
+export const addItemsGallery = async(option:{productId:string|number,galleryId:string|number,imageUrl:string|number})=>{
+  try {
+    const res = await instance.put('/products/gallerys/add',option)
+    return res
+  } catch (error) {
+    return error
+  }
+}

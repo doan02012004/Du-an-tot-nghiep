@@ -61,7 +61,7 @@ const Product = ({ product,maxPrice,minPrice,discount,colorsUrl }: Props) => {
             <img src={gallery?.avatar} className="w-full h-full object-cover" />
           </Link>
           <span className="absolute top-0 left-0 text-[12px]/[150%] font-semibold py-1 px-3 bg-rose-900 text-white rounded-br-full">
-            Best seller
+            Fendi shop
           </span>
           {
             variant?.discount !== 0 && (
