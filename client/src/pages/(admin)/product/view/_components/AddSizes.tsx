@@ -40,11 +40,16 @@ const AddSizes = ({ product,setOption }: AddSizesProps) => {
           newAttributes.push({
             size: size,
             color: color.name,
-            price_new:0,
-            price_old:0,
+            price_new: 0,
+            price_old: 0,
             discount: 0,
             isCheck: false,
-            instock: 0
+            instock: 0,
+            weight: 0,
+            volume: 0,
+            length: 0,
+            width: 0,
+            height: 0
           });
         } else {
           // nếu đã tồn tại thì lấy chính phần tử cũ đó
