@@ -20,6 +20,31 @@ export const createProduct = async (req, res) => {
 };
 
 ''
+const generateRegex = (search) => {
+  const accentsMap = { // Định nghĩa bảng ánh xạ ký tự
+    a: "[aàáạảãâầấậẩẫăằắặẳẵ]",
+    e: "[eèéẹẻẽêềếệểễ]",
+    i: "[iìíịỉĩ]",
+    o: "[oòóọỏõôồốộổỗơờớợởỡ]",
+    u: "[uùúụủũưừứựửữ]",
+    y: "[yỳýỵỷỹ]",
+    d: "[dđ]",
+    A: "[AÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴ]",
+    E: "[EÈÉẸẺẼÊỀẾỆỂỄ]",
+    I: "[IÌÍỊỈĨ]",
+    O: "[OÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]",
+    U: "[UÙÚỤỦŨƯỪỨỰỬỮ]",
+    Y: "[YỲÝỴỶỸ]",
+    D: "[DĐ]"
+  };
+
+  let regexStr = search.split('').map(char => { //search.split(''): Chia từ khóa tìm kiếm search thành mảng các ký tự.
+    return accentsMap[char] || char; // nếu là ký tự có dấu, thêm tất cả các biến thể
+  }).join('');
+
+  return new RegExp(regexStr, 'i'); // 'i' là để không phân biệt hoa thường
+};
+
 export const getAllProduct = async (req, res) => {
   const { userId } = req; // Lấy thông tin userId từ token hoặc session
   try {
@@ -52,8 +77,9 @@ export const getAllProduct = async (req, res) => {
         sort["attributes.price_new"] = -1; // Giá giảm dần
       }
     }
-    if(search){
-      query['name'] = { $regex: search, $options: 'i'}
+    if (search) {
+      const regex = generateRegex(search); // Tạo regex từ từ khóa tìm kiếm
+      query['name'] = { $regex: regex };
     }
 
     // Lọc theo size nếu có
