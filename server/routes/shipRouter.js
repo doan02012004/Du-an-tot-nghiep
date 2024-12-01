@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createShip, deleteVolume, deleteWeight, getAllShip, getShipById, removeBranch, updateVolumeRate, updateWeightRate } from '../controllers/shipController.js';
+import { createShip, deleteVolume, deleteWeight, getAllShip, getShipById, priceRangeVolume, priceRangeWeight, removeBranch, updateVolumeRate, updateWeightRate } from '../controllers/shipController.js';
 
 const router = Router();
 
@@ -19,5 +19,9 @@ router.delete('/weight/:id', deleteWeight);
 router.delete('/volume/:id', deleteVolume);
 
 router.delete('/:id', removeBranch);
+
+router.post(`/weight/addw`, priceRangeWeight)
+
+router.post(`/volume/addvl`, priceRangeVolume)
 
 export default router;

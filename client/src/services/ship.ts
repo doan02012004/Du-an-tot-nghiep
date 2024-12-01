@@ -55,7 +55,7 @@ export const updateWeightRate = async (shipId: string, updatedRate: IWeightRate)
         const response = await instance.put(`/ships/${shipId}/weights/${updatedRate._id}`, updatedRate);
         return response;  // Giả sử phản hồi trả về { success: true }
     } catch (error) {
-        console.error('Error updating weight rate:', error);
+        console.error('Lỗi cập nhật tỷ lệ cân nặng:', error);
         throw error;
     }
 };
@@ -66,12 +66,10 @@ export const updateVolumeRate = async (shipId: string, updatedRate: IVolumeRate)
         const response = await instance.put(`/ships/${shipId}/volumes/${updatedRate._id}`, updatedRate);
         return response;  // Giả sử phản hồi trả về { success: true }
     } catch (error) {
-        console.error('Error updating volume rate:', error);
+        console.error('Lỗi cập nhật tỷ lệ cân nặng:', error);
         throw error;
     }
 };
-
-
 
 
 
@@ -111,3 +109,26 @@ export const removeBranch = async (id: string) => {
         console.log("Xóa phương thức vận chuyển thất bại", message.error)
     }
 }
+
+
+// Thêm khoảng giá theo trọng lượng (weight)
+export const addWeigtRate = async (newWeight: IWeightRate) => {
+    try {
+        const res = await instance.post(`/ships/weight/addw`, newWeight);
+        return res.data; // Trả về dữ liệu từ backend
+    } catch (error) {
+        console.error("Thêm khoảng giá theo trọng lượng thất bại:", error);
+        throw error; // Ném lỗi ra ngoài để frontend xử lý
+    }
+};
+
+// Thêm khoảng giá theo thể tích (volume)
+export const addVolumeRate = async (newVolume: IVolumeRate) => {
+    try {
+        const res = await instance.post(`/ships/volume/addvl`, newVolume);
+        return res.data; // Trả về dữ liệu từ backend
+    } catch (error) {
+        console.error("Thêm khoảng giá theo thể tích thất bại:", error);
+        throw error; // Ném lỗi ra ngoài để frontend xử lý
+    }
+};

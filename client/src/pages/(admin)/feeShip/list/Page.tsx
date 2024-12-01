@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import useShipQuery from '../../../../common/hooks/ships/useShipQuery';
 import { IShip, IVolumeRate, IWeightRate } from '../../../../common/interfaces/ship';
 import { formatPrice } from '../../../../common/utils/product';
-import { deleteVolume, deleteWeight, removeBranch, updateVolumeRate, updateWeightRate } from '../../../../services/ship';
+import { addVolumeRate, addWeigtRate, deleteVolume, deleteWeight, removeBranch, updateVolumeRate, updateWeightRate } from '../../../../services/ship';
 import FormUpdate from './_components/FormUpdate';
 
 const ListShipPage = () => {
@@ -61,26 +61,89 @@ const ListShipPage = () => {
         };
     }, []);
 
+
+    // Hàm sắp xếp tự động theo maxWeight
+    const sortWeightRates = (weights: IWeightRate[]) => {
+        return weights.sort((a, b) => {
+            if (a.maxWeight !== b.maxWeight) {
+                return a.maxWeight - b.maxWeight; // Sắp xếp theo maxWeight tăng dần
+            }
+            return (a.price || 0) - (b.price || 0); // Nếu maxWeight bằng nhau, sắp xếp theo giá tăng dần
+        });
+    };
+
+    // Hàm sắp xếp tự động theo maxVolume
+    const sortVolumeRates = (volumes: IVolumeRate[]) => {
+        return volumes.sort((a, b) => {
+            if (a.maxVolume !== b.maxVolume) {
+                return a.maxVolume - b.maxVolume; // Sắp xếp theo maxVolume tăng dần
+            }
+            return (a.price || 0) - (b.price || 0); // Nếu maxVolume bằng nhau, sắp xếp theo giá tăng dần
+        });
+    };
+
     useEffect(() => {
         if (shipQuery?.data?.length > 0) {
-            setShips(shipQuery.data);
+            const sortedShips = shipQuery.data.map((shipItem: IShip) => ({
+                ...shipItem,
+                weight: sortWeightRates(shipItem.weight || []), // Sắp xếp khối lượng theo maxWeight
+                volume: sortVolumeRates(shipItem.volume || []), // Sắp xếp thể tích theo maxVolume
+            }));
+            setShips(sortedShips);
             if (ship._id === '') {
-                setShip(shipQuery.data[0]);
+                setShip(sortedShips[0]);
             }
         }
     }, [shipQuery?.data]);
 
-    const handleAddWeightRate = () => {
-        const newWeightRate = { minWeight: 0, maxWeight: 0, price: 0, _id: `${Date.now()}` };
-        const updatedWeights = [...ship.weight, newWeightRate];
-        setShip({ ...ship, weight: updatedWeights });
+    // Thêm khoảng giá weight
+    const handleAddWeightRate = async () => {
+        const newWeightRate: IWeightRate = {
+            shipMethodId: ship._id,  // Gửi kèm ID phương thức vận chuyển
+            minWeight: 0,
+            maxWeight: 0,
+            price: 0
+        };
+
+        try {
+            const createdRate = await addWeigtRate(newWeightRate);
+
+            if (createdRate) {
+                // Nếu thêm thành công, cập nhật danh sách
+                const updatedWeights = [...ship.weight, createdRate];
+                setShip({ ...ship, weight: updatedWeights });
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error("Lỗi khi thêm khoảng giá weight:", error);
+        }
     };
 
-    const handleAddVolumeRate = () => {
-        const newVolumeRate = { minVolume: 0, maxVolume: 0, price: 0, _id: `${Date.now()}` };
-        const updatedVolumes = [...ship.volume, newVolumeRate];
-        setShip({ ...ship, volume: updatedVolumes });
+    // Thêm khoảng giá volume
+    const handleAddVolumeRate = async () => {
+        const newVolumeRate: IVolumeRate = {
+            shipMethodId: ship._id,  // Gửi kèm ID phương thức vận chuyển
+            minVolume: 0,
+            maxVolume: 0,
+            price: 0
+        };
+
+        try {
+            const createdRate = await addVolumeRate(newVolumeRate);
+
+            if (createdRate) {
+                // Nếu thêm thành công, cập nhật danh sách
+                const updatedVolumes = [...ship.volume, createdRate];
+                setShip({ ...ship, volume: updatedVolumes });
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error("Lỗi khi thêm khoảng giá volume:", error);
+        }
     };
+
+
+
 
     const handleDeleteWeight = async (weightId: string) => {
         Modal.confirm({
@@ -92,7 +155,7 @@ const ListShipPage = () => {
                     const updatedShip = { ...ship };
                     updatedShip.weight = updatedShip.weight.filter((w) => w._id !== weightId);
                     setShip(updatedShip);
-                    message.success('Xóa thành công phí khối lượng');
+                    window.location.reload();
                 } catch (err) {
                     setError('Không thể xóa weight');
                     message.error('Có lỗi xảy ra khi xóa');
@@ -111,7 +174,7 @@ const ListShipPage = () => {
                     const updatedShip = { ...ship };
                     updatedShip.volume = updatedShip.volume.filter((v) => v._id !== volumeId);
                     setShip(updatedShip);
-                    message.success('Xóa thành công phí thể tích');
+                    window.location.reload();
                 } catch (err) {
                     setError('Không thể xóa volume');
                     message.error('Có lỗi xảy ra khi xóa');
@@ -146,6 +209,7 @@ const ListShipPage = () => {
                     );
                     setShip(updatedShip);
                     message.success('Cập nhật phí khối lượng thành công');
+                    window.location.reload();
 
                 } else {
                     message.error('Cập nhật phí khối lượng thất bại');
@@ -161,6 +225,7 @@ const ListShipPage = () => {
                     );
                     setShip(updatedShip);
                     message.success('Cập nhật phí thể tích thành công');
+                    window.location.reload();
                 } else {
                     message.error('Cập nhật phí thể tích thất bại');
                 }
@@ -231,7 +296,7 @@ const ListShipPage = () => {
                 <div className="col-span-full xl:col-span-6 bg-white dark:bg-gray-800 p-3 shadow-lg shadow-gray-300 rounded-lg">
                     <header className="flex justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
                         <h2 className="font-semibold text-gray-800 dark:text-gray-100">Khối lượng</h2>
-                        <Button className="w-full" icon={<PlusOutlined />} onClick={handleAddWeightRate}>
+                        <Button className="w-full" icon={<PlusOutlined />} onClick={() => handleAddWeightRate()}>
                             Thêm khoảng giá mới
                         </Button>
                     </header>
@@ -267,7 +332,7 @@ const ListShipPage = () => {
                 <div className="col-span-full xl:col-span-6 bg-white dark:bg-gray-800 p-3 shadow-lg shadow-gray-300 rounded-lg">
                     <header className="flex justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
                         <h2 className="font-semibold text-gray-800 dark:text-gray-100">Thể tích</h2>
-                        <Button className="w-full" icon={<PlusOutlined />} onClick={handleAddVolumeRate}>
+                        <Button className="w-full" icon={<PlusOutlined />} onClick={() => handleAddVolumeRate()}>
                             Thêm khoảng giá mới
                         </Button>
                     </header>
