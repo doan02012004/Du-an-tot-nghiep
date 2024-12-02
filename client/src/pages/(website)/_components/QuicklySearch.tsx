@@ -10,6 +10,7 @@ const QuicklySearch = () => {
     const { register, handleSubmit, reset } = useForm();
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
+    const { currentUser } = useContext(AppContext);
     const searchMutation = useSearchMutation();
     const searchQuery = useSearchQuery();
     const inputRef = useRef<HTMLInputElement | null>(null); // Thêm useRef cho input
