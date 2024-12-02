@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Dropdown, Form, InputNumber, message } from "antd";
+import { Button, Dropdown, Form, InputNumber, message, Select } from "antd";
 import { Iattribute, Iproduct } from "../../../../../common/interfaces/product";
 import useAttributeMutation from "../../../../../common/hooks/products/useAttributeMutation";
 import { DownOutlined } from "@ant-design/icons";
@@ -151,6 +151,24 @@ const AttributeItemUpdate = ({ data, product }: AttributeItemProps) => {
                 >
                   <InputNumber className="w-full" placeholder="số lượng kho" />
                 </Form.Item>
+                <Form.Item
+                  name="active"
+                  label="Trạng thái"
+                  className="col-span-3"
+                >
+                  <Select 
+                  options={[
+                    {
+                      label:"Hoạt động",
+                      value:true
+                    },
+                    {
+                      label:"Không hoạt động",
+                      value:false
+                    }
+                  ]}
+                  />
+                </Form.Item>
               </div>
                 <Form.Item
                 className="m-0 p-0"
@@ -164,20 +182,20 @@ const AttributeItemUpdate = ({ data, product }: AttributeItemProps) => {
           </div>
         )}
       >
-        <div className={` group flex justify-center items-center rounded-md border  p-3  cursor-pointer transition-all duration-300 ease-in-out hover:bg-indigo hover:text-white`}>
+        <div className={` group flex justify-center items-center rounded-md border  p-3  cursor-pointer transition-all duration-300 ease-in-out hover:bg-indigo hover:text-white relative`}>
           <div className=" flex items-center w-full justify-between">
-            <div className="flex items-center gap-x-4">
-              <div className=" flex items-center gap-x-1">
-                <span className=" text-gray-600 font-normal text-xs group-hover:text-white">Màu:</span>
-                <span className=" text-sm font-semibold"> {data?.color}</span>
-              </div>
-              <div className=" flex items-center gap-x-2">
-                <span className="  text-gray-600 text-xs group-hover:text-white">Size:</span>
-                <span className=" text-base"> {data?.size}</span>
-              </div>
+            <div className="flex items-center gap-x-3">
+            <span className=" text-sm font-semibold"> {data?.color} ,</span>
+             <span className="text-sm font-semibold"> {data?.size}</span> |
+             <span className={`${data?.instock==0? 'text-red':'text-green-600'} text-sm font-semibold`}>{data.instock> 0?'Còn hàng':'Hết hàng'}</span>
             </div>
             <DownOutlined />
           </div>
+          {!data?.active && (
+            <div className=" absolute top-0 left-0 right-0 bottom-0 bg-black/30 flex justify-center items-center">
+            <span className="text-[#ea2c2c] font-semibold text-base">Ngừng hoạt động</span>
+          </div>
+          )}
         </div>
       </Dropdown>
     </>

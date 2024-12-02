@@ -30,7 +30,8 @@ const ProductPage = () => {
       sell_order:sellOrder,
       categorySlug:categorySlug,
       page:page?Number(page):null,
-      limit:limit?Number(limit):null
+      limit:limit?Number(limit):null,
+      active:true
     }}
   );
 

@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  DeleteOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { Button, message, Upload, UploadProps } from "antd";
+import { Button, message, Popconfirm, Upload, UploadProps } from "antd";
 import { useEffect, useState } from "react";
 import { Igallery, Iproduct } from "../../../../../common/interfaces/product";
 import ImageExtraUpdate from "./ImageExtraUpdate";
 import { IColor } from "../../../../../common/interfaces/Color";
 import useProductMutation from "../../../../../common/hooks/products/useProductMutation";
+import useAttributeMutation from "../../../../../common/hooks/products/useAttributeMutation";
 
 
 type ColorItemProps = {
@@ -22,6 +24,7 @@ const ColorItemUpdate = ({ data, product }: ColorItemProps) => {
   const [color, setColor] = useState({} as IColor | any)
   const [loadingGal, setLoadingGal] = useState(false)
   const productMutation = useProductMutation()
+  const attributeMutation = useAttributeMutation()
   useEffect(() => {
     const findColor: IColor | undefined = product.colors.find((item: IColor) => item.name == data.name)
     if (findColor) {
@@ -33,7 +36,7 @@ const ColorItemUpdate = ({ data, product }: ColorItemProps) => {
       setLoadingGal(true)
     }
     if (info.file.status == "done") {
-      productMutation.mutate({action:'addImage',optionGallery:{productId:product._id,galleryId:data._id,imageUrl:info.file.response.url}})
+      productMutation.mutate({ action: 'addImage', optionGallery: { productId: product._id, galleryId: data._id, imageUrl: info.file.response.url } })
       setLoadingGal(false)
     } else if (info.file.status === "error") {
       message.error(`${info.file.name} file upload failed.`);
@@ -71,10 +74,26 @@ const ColorItemUpdate = ({ data, product }: ColorItemProps) => {
         >
           <Button className="bg-indigo text-white font-semibold" loading={loadingGal} disabled={data.check} icon={<UploadOutlined />}>Thêm ảnh</Button>
         </Upload>
+        <Popconfirm
+          title="Xóa màu và ảnh sản phẩm"
+          description={<p><span className='text-red'>Khi xóa màu, toàn bộ ảnh và biến thể của màu sẽ bị xóa theo.</span><br /><span className='text-blue'> Bạn có muốn xóa không?</span></p>}
+          okText="Có"
+          cancelText="Không"
+          key={data._id}
+          onConfirm={() => {
+            if (product?.colors?.length == 1) {
+              return message.error("Vui lòng không xóa hết màu")
+            } else {
+              attributeMutation.mutate({ action: 'deleteColor', color: data, productId: product._id })
+            }
+          }}
+        >
+          <Button icon={<DeleteOutlined />} danger type="primary">Xóa</Button>
+        </Popconfirm>
       </div>
       <div className="grid grid-cols-12 gap-3">
         {
-          data?.avatar  && (
+          data?.avatar && (
             <div className="col-span-3 min-h-64">
               <ImageExtraUpdate imageUrl={data?.avatar} type="main" />
             </div>

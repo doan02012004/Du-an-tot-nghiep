@@ -4,8 +4,12 @@ import { Iproduct, IproductInfor } from '../../interfaces/product'
 import { message } from 'antd'
 import { addItemsGallery, addProduct, deleteProduct, updateProductInfor } from '../../../services/products'
 import { useNavigate } from 'react-router-dom'
+import { useContext } from 'react'
+import { AppContext } from '../../contexts/AppContextProvider'
+
 
 const useProductMutation = () => {
+    const {socket} = useContext(AppContext)
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const mutation = useMutation({
@@ -44,7 +48,9 @@ const useProductMutation = () => {
                     try {
                         const data = await updateProductInfor(option.productInfor) as Iproduct
                         if (data?.slug) {
-                            navigate(`/admin/products/view/${data?.slug}`)
+                           if(socket.current){
+                            socket.current.emit('adminUpdateInforProduct',{newProduct:data})
+                           }
                         }
                     } catch (error) {
                         console.log(error)

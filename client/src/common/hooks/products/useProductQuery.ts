@@ -10,7 +10,8 @@ type DataFilter = {
     min_price:number|null,
     max_price:number|null,
     sell_order:string|null,
-    search:string|null
+    search:string|null,
+    active?:boolean
 }
 const useProductQuery = (option:{slug?:string,dataFilter?:DataFilter, similar?:{categoryId:string|number,productId:string|number}}) => {
 

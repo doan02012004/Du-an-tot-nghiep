@@ -7,7 +7,7 @@ const initialState = {
     totalCart:0 as number, // tổng giá đơn hàng
     voucher: null, // mã giảm giá
     totalSubmit: 0 as number, // tổng giá cuối cùng khi tính toán giảm giá và phí vận chuyển
-    
+    checkCarts :false
 }
 const cartSlice = createSlice({
     name: "cart",
@@ -27,10 +27,13 @@ const cartSlice = createSlice({
         },
         setTotalSubmit: (state,action)=>{
             state.totalSubmit = action.payload
+        },
+        setCheckCarts: (state,action) =>{
+            state.checkCarts = action.payload
         }
         
     }
 })
-export const {setCarts,setTotalCart,setTotalProduct,setVoucher,setTotalSubmit} = cartSlice.actions
+export const {setCarts,setTotalCart,setTotalProduct,setVoucher,setTotalSubmit,setCheckCarts} = cartSlice.actions
 
 export default cartSlice.reducer

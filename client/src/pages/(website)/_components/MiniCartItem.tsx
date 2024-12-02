@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react'
 import { formatPrice } from '../../../common/utils/product'
 import { Iattribute, Igallery } from '../../../common/interfaces/product'
 import useCartMutation from '../../../common/hooks/carts/useCartMutation'
 import { Link } from 'react-router-dom'
+import { WarningOutlined } from '@ant-design/icons'
+
 
 type Props = {
     cart: any
@@ -14,14 +17,16 @@ const MiniCartItem = ({cart}: Props) => {
     const inputRef = useRef<any>(null)
     const cartMutation = useCartMutation()
     useEffect(()=>{
+       if(inputRef?.current){
         inputRef.current.value = cart?.quantity
-    },[cart?.quantity])
+       }
+    },[cart?.quantity,inputRef])
     useEffect(()=>{
         const findAttribute = cart?.productId?.attributes?.find((item:Iattribute)=> item._id == cart?.attributeId ) 
         if (findAttribute) {
             setAttribute(findAttribute)
         }
-    },[cart?.attributeId])
+    },[cart?.attributeId,cart?.productId?.attributes])
     useEffect(()=>{
         const findGallery = cart?.productId?.gallerys?.find((item:Igallery)=> item._id == cart?.galleryId)
         if (findGallery) {
@@ -57,7 +62,7 @@ const MiniCartItem = ({cart}: Props) => {
         }
     }
     return (
-        <div className="w-full h-[94px] flex gap-3 pb-4 border-b border-gray-200  mb-4  ">
+        <div className="w-full h-[94px] flex gap-3 pb-4 border-b border-gray-200  mb-4 relative ">
             <div className="flex-shrink-0 w-16 h-full">
                 <Link to={`/productdetails/${cart?.productId?.slug}`}>
                     <img  src={gallery?.avatar} className="object-cover w-full h-full" />
@@ -86,6 +91,16 @@ const MiniCartItem = ({cart}: Props) => {
                     <span className="text-sm text-[#AC2F33] font-semibold ">{cart?.total >0 ? formatPrice(cart?.total) : '0'} <span className="underline">đ</span></span>
                 </div>
             </div>
+          {(!attribute || attribute?.instock == 0 || attribute?.active == false || cart?.productId?.active == false) && (
+              <div className='absolute z-10 top-0 left-0 right-0 bottom-0 bg-black/30 flex justify-center items-center'>
+              <div className='px-2 py-1 rounded-lg flex items-center bg-white'>
+                  <WarningOutlined className='text-red' />
+                  <span className='mx-2 text-yellow text-xs'>Đã xảy ra lỗi</span> |
+                  <button className='text-sm text-red underline ml-2 hover:text-blue'>Xóa</button>
+              </div>
+             
+      </div>
+          )}
         </div>
     )
 }

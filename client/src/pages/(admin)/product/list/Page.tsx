@@ -21,11 +21,9 @@ const ListProduct = () => {
         min_price: null,
         max_price: null,
         sell_order: null,
-        search: null
+        search: null,
     }})
     const mutation = useProductMutation()
-  
-   
     useEffect(() => {
         if (productQuery.data) {
             const newProducts = productQuery?.data?.products?.map((item: Iproduct, index: number) => (
@@ -84,10 +82,10 @@ const ListProduct = () => {
         },
         {
             title: "Hoạt động",
-            dataIndex: "status",
-            key: "status",
-            render: (status: boolean) => (
-                <p className={`${status == true ? ' text-green-500' : 'text-red'}`}>{status == true ? 'active' : 'disactive'}</p>
+            dataIndex: "active",
+            key: "active",
+            render: (active: boolean) => (
+                <p className={`${active == true ? ' text-green-500' : 'text-red'}`}>{active == true ? 'active' : 'disactive'}</p>
             )
         },
         {

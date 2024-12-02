@@ -44,6 +44,11 @@ io.on("connection", (socket) => {
         // Phát sự kiện 'updateAttributeProduct' đến tất cả các client đang kết nối
         io.emit('adminUpdateProduct',option)
     })
+     // update product price theo time
+     socket.on("adminUpdateInforProduct",(option)=>{
+        // Phát sự kiện 'updateInforProduct' đến tất cả các client đang kết nối
+        io.emit('adminUpdateProduct',option)
+    })
 })
 
 
