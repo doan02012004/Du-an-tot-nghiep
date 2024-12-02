@@ -43,7 +43,7 @@ const MenuHeader = () => {
                                 {
                                     categoryQuery?.data?.map((item: ICategories, index: number) => (
 
-                                        <li className='w-max' key={index}><Link to={`/product?category=${item.slug}`} className="block text-sm py-1 hover:text-[#AC2F33] hover:underline" >{item?.name}</Link></li>
+                                        <li className='w-max' key={index}><Link to={`/danh-muc/${item.slug}`} className="block text-sm py-1 hover:text-[#AC2F33] hover:underline" >{item?.name}</Link></li>
 
 
                                     ))

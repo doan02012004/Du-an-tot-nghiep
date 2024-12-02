@@ -2,6 +2,7 @@ import { query } from "express";
 import ProductModel from "../models/productModel.js";
 import slugify from "slugify";
 import categoryModel from "../models/categoryModel.js";
+import SearchModel from "../models/searchModel.js";
 
 export const createProduct = async (req, res) => {
   try {
@@ -18,7 +19,34 @@ export const createProduct = async (req, res) => {
   }
 };
 
+''
+const generateRegex = (search) => {
+  const accentsMap = { // Định nghĩa bảng ánh xạ ký tự
+    a: "[aàáạảãâầấậẩẫăằắặẳẵ]",
+    e: "[eèéẹẻẽêềếệểễ]",
+    i: "[iìíịỉĩ]",
+    o: "[oòóọỏõôồốộổỗơờớợởỡ]",
+    u: "[uùúụủũưừứựửữ]",
+    y: "[yỳýỵỷỹ]",
+    d: "[dđ]",
+    A: "[AÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴ]",
+    E: "[EÈÉẸẺẼÊỀẾỆỂỄ]",
+    I: "[IÌÍỊỈĨ]",
+    O: "[OÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]",
+    U: "[UÙÚỤỦŨƯỪỨỰỬỮ]",
+    Y: "[YỲÝỴỶỸ]",
+    D: "[DĐ]"
+  };
+
+  let regexStr = search.split('').map(char => { //search.split(''): Chia từ khóa tìm kiếm search thành mảng các ký tự.
+    return accentsMap[char] || char; // nếu là ký tự có dấu, thêm tất cả các biến thể
+  }).join('');
+
+  return new RegExp(regexStr, 'i'); // 'i' là để không phân biệt hoa thường
+};
+
 export const getAllProduct = async (req, res) => {
+  const { userId } = req; // Lấy thông tin userId từ token hoặc session
   try {
     const { min_price, limit, page, max_price, sizes, colors,search,categorySlug, sell_order,active } = req.query;
     const _limit = parseInt(limit) || 12;
@@ -50,6 +78,10 @@ export const getAllProduct = async (req, res) => {
         sort["attributes.price_new"] = -1; // Giá giảm dần
       }
     }
+    if (search) {
+      const regex = generateRegex(search); // Tạo regex từ từ khóa tìm kiếm
+      query['name'] = { $regex: regex };
+    }
 
     // Lọc theo size nếu có
     if (sizes) {
@@ -65,6 +97,7 @@ export const getAllProduct = async (req, res) => {
       };
     }
 
+  
     const products = await ProductModel.find(query)
       .sort(sort)
       .limit(_limit)
@@ -72,6 +105,10 @@ export const getAllProduct = async (req, res) => {
       .populate("categoryId brandId")
       .exec();
 
+    if (userId && search) {
+        await trackSearchHistory(userId, search);
+    }
+    
     const total = await ProductModel.countDocuments(query);
     const totalPage = Math.ceil(total / _limit);
 
@@ -85,6 +122,22 @@ export const getAllProduct = async (req, res) => {
     return res.status(500).json({
       message: error.message,
     });
+  }
+};
+const trackSearchHistory = async (userId, search) => {
+  try {
+      const existingSearch = await SearchModel.findOne({ userId, search });
+
+      if (existingSearch) {
+          // Tăng số lần tìm kiếm nếu từ khóa đã tồn tại trong lịch sử
+          existingSearch.searchCount += 1;
+          await existingSearch.save();
+      } else {
+          // Tạo mới bản ghi nếu từ khóa chưa từng được tìm kiếm
+          await SearchModel.create({ userId, search });
+      }
+  } catch (error) {
+      console.error('Error tracking search history:', error);
   }
 };
 

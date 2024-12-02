@@ -1,18 +1,17 @@
 import 'antd/dist/reset.css'; // Import CSS của Ant Design
-import { useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import useProductQuery from '../../../common/hooks/products/useProductQuery';
 import Breadcrumb_products from './_components/Breadcrumb_products';
 import Sidebar_prod from './_components/Sidebar_prod';
 import Sub_main_prod from './_components/Sub_main_prod';
 import Top_main_prod from './_components/Top_main_prod';
 
-
 const ProductPage = () => {
-
+  const { slug } = useParams();
   const [searchParams,] = useSearchParams();
   const page = searchParams.get("page")
   const limit = searchParams.get("limit")
-  const categorySlug = searchParams.get("category")
+  const categorySlug = slug || searchParams.get("category"); // Ưu tiên lấy từ slug nếu có
   const sizesUrl = searchParams.get('sizes')
   const colorsUrl= searchParams.get('colors')
   const minPriceUrl = searchParams.get('min_price')
@@ -34,6 +33,7 @@ const ProductPage = () => {
       active:true
     }}
   );
+  console.log(response)
 
   return (
     <div>
