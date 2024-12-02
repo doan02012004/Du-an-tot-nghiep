@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useContext, useEffect, useState } from 'react'
 import MiniCartItem from './MiniCartItem';
 import useCartQuery from '../../../common/hooks/carts/useCartQuery';

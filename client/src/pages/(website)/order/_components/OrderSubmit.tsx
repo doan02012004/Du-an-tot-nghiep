@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react"
 import useOrderMutation from "../../../../common/hooks/orders/useOrderMutation"
 import { Iaddress } from "../../../../common/interfaces/address"
@@ -23,10 +24,10 @@ type Props = {
 
 const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, ship }: Props) => {
     const voucher = useSelector((state: any) => state.cart.voucher) as Vouchers;
+    const checkCarts = useSelector((state: any) => state.cart.checkCarts)
     const [loading, setLoading] = useState(false)
     const orderMutation = useOrderMutation()
     const navigate = useNavigate()
-    // const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
     useEffect(() => {
         if (orderMutation?.data?.response?.status === 500) {
             return message.error("Lỗi thanh toán")
@@ -70,7 +71,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
             // Thêm thông tin voucher vào đơn hàng
             voucher: {
                 code: voucher?.code || null,
-                discountValue: (voucher?.type === "percentage" && (Math.min(totalCart * voucher.value / 100, Number(voucher.maxDiscountValue) ))) || (voucher?.type === "fixed" && (voucher?.value )) || (voucher?.type === "freeship" && (Math.min(Number(ship?.value?.price), Number(voucher?.maxDiscountValue) )))  || 0,
+                discountValue: (voucher?.type === "percentage" && (Math.min(totalCart * voucher.value / 100, Number(voucher.maxDiscountValue)))) || (voucher?.type === "fixed" && (voucher?.value)) || (voucher?.type === "freeship" && (Math.min(Number(ship?.value?.price), Number(voucher?.maxDiscountValue)))) || 0,
                 category: voucher?.category || null,
                 type: voucher?.type || null
             },
@@ -109,10 +110,10 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
                 totalOrder: totalProduct,
                 totalPrice: ship?.value?.price ? totalCart + ship?.value?.price : totalCart,
                 ship: ship,
-                    // Thêm thông tin voucher vào đơn hàng
+                // Thêm thông tin voucher vào đơn hàng
                 voucher: {
                     code: voucher?.code || null,
-                    discountValue: (voucher?.type === "percentage" && (Math.min(totalCart * voucher.value / 100, Number(voucher.maxDiscountValue) ))) || (voucher?.type === "fixed" && (voucher?.value )) || (voucher?.type === "freeship" && (Math.min(Number(ship?.value?.price), Number(voucher?.maxDiscountValue) )))  || 0,
+                    discountValue: (voucher?.type === "percentage" && (Math.min(totalCart * voucher.value / 100, Number(voucher.maxDiscountValue)))) || (voucher?.type === "fixed" && (voucher?.value)) || (voucher?.type === "freeship" && (Math.min(Number(ship?.value?.price), Number(voucher?.maxDiscountValue)))) || 0,
                     category: voucher?.category || null,
                     type: voucher?.type || null
                 },
@@ -149,18 +150,21 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
 
     return (
         <>
-            {payment === "cash" ? (
+            {carts.length>0 && payment === "cash" &&(
                 <button
+                    disabled={!checkCarts}
                     onClick={onHandleOrder}
-                    className="bg-black text-white w-full py-3 
-                    text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black"
+                    className={`${!checkCarts?' bg-gray-300 text-white':' bg-black text-white hover:bg-white hover:text-black hover:border hover:border-black '}  w-full py-3 
+                    text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] `}
                 >
                     HOÀN THÀNH
                 </button>
-            ) : (
+            ) }
+            {carts.length>0 && payment === "vnPay" &&(
 
 
                 <button
+                    disabled={!checkCarts}
                     onClick={onHandlePayment}
                     className="flex items-center justify-center  bg-black text-white w-full py-3 
                     text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black"

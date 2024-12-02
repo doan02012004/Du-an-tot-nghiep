@@ -17,6 +17,7 @@ const attributeSchema = new mongoose.Schema({
   price_new: { type: Number, required: true },
   discount: { type: Number, default: 0 },
   instock: { type: Number, default: 0 },
+  active:{type:Boolean,default:true}
 });
 const colorSchema = new mongoose.Schema({
   name: { type: String },

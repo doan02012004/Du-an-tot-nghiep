@@ -20,13 +20,14 @@ export const createProduct = async (req, res) => {
 
 export const getAllProduct = async (req, res) => {
   try {
-    const { min_price, limit, page, max_price, sizes, colors,search,categorySlug, sell_order } = req.query;
+    const { min_price, limit, page, max_price, sizes, colors,search,categorySlug, sell_order,active } = req.query;
     const _limit = parseInt(limit) || 12;
     const _page = parseInt(page) || 1;
     const skip = _limit * (_page - 1);
 
     let sort = {};
     let query = {
+      active:active??{$in:[true,false]},
       $and: [
         { "attributes.price_new": { $gte: parseInt(min_price) || 0 } },
         { "attributes.price_new": { $lte: parseInt(max_price) || 10000000 } },
@@ -92,7 +93,9 @@ export const getProductSlider = async (req, res) => {
     const genderQuery = req.query._gender || "";
     const featuredQuery = req.query._isFeatured || "";
     const discountQuery = parseInt(req.query._isSale, 10) || 0;
-    const queryProduct = {};
+    const queryProduct = {
+      active:true
+    };
     if (genderQuery) {
       queryProduct["gender"] = { $in: [genderQuery, "unisex"] };
     }
@@ -217,7 +220,7 @@ export const updateInforProduct = async (req, res) => {
         price_old: req.body.price_old,
         description: req.body.description,
         featured: req.body.featured,
-        status: req.body.status,
+        active: req.body.active,
         gender: req.body.gender,
       },
       { new: true }

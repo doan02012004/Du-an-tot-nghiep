@@ -51,7 +51,8 @@ export interface Iattribute {
     volume:number,
     length:number,
     width:number,
-    height:number
+    height:number,
+    active:boolean
 }
 
 export interface InewSize {

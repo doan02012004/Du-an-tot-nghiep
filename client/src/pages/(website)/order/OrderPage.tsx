@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -18,34 +19,42 @@ import { IshipSubmit } from "../../../common/interfaces/orderInterfaces"
 import FormAddress from "../my-information/address/_components/FormAddress"
 import { PlusCircleFilled } from "@ant-design/icons"
 import ProductDisplay from "./_components/ProductDisplay"
+import { IcartItem } from "../../../common/interfaces/cart"
+import { Iattribute } from "../../../common/interfaces/product"
+import { setCheckCarts } from "../../../common/redux/features/cartSlice"
+import useCartQuery from "../../../common/hooks/carts/useCartQuery"
 
 
 const OrderPage = () => {
     // const [ship, setShip] = useState<IshipItem | null>(null)
     const [shippingCost, setShippingCost] = useState<IshipSubmit | null>(null);
-    const [payment, setPayment] = useState<"cash" | "atm" | "momo" | "credit">('cash')
+    const [payment, setPayment] = useState<"cash" | "atm" | "vnPay" | "credit">('cash')
     const [productDisplay, setProductDisplay] = useState(false)
     const { currentUser } = useContext(AppContext)
     const [addressDefault, setAddressDefault] = useState<Iaddress | null>(null)
     const [isOpenForm, setIsOpenForm] = useState(false)
     const [vouchers, setVouchers] = useState<IVoucher[]>([])
-    const addressQuery = useAddressQuery()
-    const voucherQuery = useVoucherQuery({})
-    const navigate = useNavigate()
-    const carts = useSelector((state: any) => state.cart.carts)
     const totalCart = useSelector((state: any) => state.cart.totalCart)
     const totalProduct = useSelector((state: any) => state.cart.totalProduct)
-    useEffect(() => {
-        if (carts.length == 0) {
-            navigate('/cart')
+    const checkCarts = useSelector((state: any) => state.cart.checkCarts)
+    const addressQuery = useAddressQuery()
+    const voucherQuery = useVoucherQuery({})
+    const { data: cartUser } = useCartQuery()
+    const navigate = useNavigate()
+    const dispath = useDispatch()
+    const carts = useSelector((state: any) => state.cart.carts)
+    useEffect(()=>{
+        if(cartUser){
+            if(cartUser?.carts?.length == 0){
+                navigate('/cart')
+            }   
         }
-    }, [carts])
+    },[cartUser])
     useEffect(() => {
         if (voucherQuery.data && voucherQuery.data.length > 0) {
             setVouchers(voucherQuery.data)
         }
     }, [voucherQuery.data])
-
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
             const findAddressDefault = addressQuery?.data?.find((item: Iaddress) => item.isDefault == true)
@@ -54,13 +63,32 @@ const OrderPage = () => {
     }, [addressQuery?.data])
 
     useEffect(() => {
-        if (carts.lenght == 0) {
-            return navigate("/cart")
+        if (carts.length > 0) {
+            const check = carts.some((item: IcartItem) => item.productId.active == false)
+            const cartAtb = carts.map((item:IcartItem) => {
+                const findAtb = item?.productId?.attributes.find((atb:Iattribute) => atb._id == item.attributeId)
+                return findAtb
+            })
+            const checkAtb = cartAtb.some((item: Iattribute) => item.active == false)
+            const checkInstock = cartAtb.some((item: Iattribute) => item.instock == 0)
+            if(check || checkAtb || checkInstock){
+                if(checkCarts == true){
+                    dispath(setCheckCarts(false))
+                }
+                navigate('/cart')
+            }else{
+                if(checkCarts == false){
+                    dispath(setCheckCarts(true))
+                }
+            }
+        }else{
+            if(checkCarts == true){
+                navigate('/cart')
+                dispath(setCheckCarts(false))
+            }
         }
-        if (!currentUser) {
-            return navigate("/signin")
-        }
-    }, [carts, currentUser])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [carts,checkCarts])
 
 
     const handleShippingCostChange = (ship: IshipSubmit) => {

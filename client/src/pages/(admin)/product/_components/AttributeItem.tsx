@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Dropdown, Form, InputNumber, message } from "antd";
+import { Button, Dropdown, Form, InputNumber, message, Select } from "antd";
 import { Iattribute } from "../../../../common/interfaces/product";
 import { useDispatch, useSelector } from "react-redux";
 import { setAttributes } from "../../../../common/redux/features/productSlice";
@@ -156,6 +156,27 @@ const AttributeItem = ({ data, index }: AttributeItemProps) => {
                   rules={[{ required: true }, { type: "number", min: 0 }]}
                 >
                   <InputNumber className="w-full" placeholder="số lượng kho" />
+                </Form.Item>
+                <Form.Item
+                  name="active"
+                  label="Trạng thái"
+                  className="col-span-3"
+                  
+                >
+                  <Select 
+                  defaultValue={true}
+                  placeholder='Trạng thái...'
+                  options={[
+                    {
+                      label:"Hoạt động",
+                      value:true
+                    },
+                    {
+                      label:"Không hoạt động",
+                      value:false
+                    }
+                  ]}
+                  />
                 </Form.Item>
               </div>
               {!data?.isCheck && (

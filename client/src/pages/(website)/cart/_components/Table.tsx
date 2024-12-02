@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ICart, IcartItem } from '../../../../common/interfaces/cart'
+import {  IcartItem } from '../../../../common/interfaces/cart'
 import ItemCartMobile from './ItemCartMobile'
 import ItemTable from './ItemTable'
 
 type Props = {
-    carts: IcartItem[]
+    carts: IcartItem[],
+    setCheckCarts:any
 }
 
-const Table = ({carts}:Props) => {
+const Table = ({carts,setCheckCarts}:Props) => {
    
     return (
         <div>
@@ -22,11 +24,14 @@ const Table = ({carts}:Props) => {
                             <th />
                         </tr>
                     </thead>
+                    <tbody>
                     {
                         carts?.map((item:IcartItem)=>(
-                            <ItemTable cart={item} key={item.attributeId}/>
+                            <ItemTable cart={item} setCheckCarts={setCheckCarts} key={item.attributeId}/>
                         ))
                     }
+
+                    </tbody>
                     
                 </table>
             </div>

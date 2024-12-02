@@ -207,7 +207,9 @@ const Product_information = ({ product }: Props) => {
                                                 key={index + 1}
                                                 onClick={() => {
                                                     if (color.instock === 0) {
-                                                        message.error(`Sản phẩm này đã hết size: ${color.size} vui lòng chọn size khác`);
+                                                        message.error(`Sản phẩm này đã hết size: ${color?.size} vui lòng chọn size khác`);
+                                                    }else if(color?.active ==false){
+                                                        message.error(`Size ${color?.size} của màu ${color?.color} đã ngừng bán, vui lòng chọn size khác`);
                                                     } else {
                                                         setChoiceSize(color.size);
                                                     }
@@ -215,7 +217,7 @@ const Product_information = ({ product }: Props) => {
                                                 className={` ${color?._id === curentAttribute?._id && 'border-black'} size-option cursor-pointer lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border overflow-hidden flex items-center justify-center lg:mr-[14px] mr-3 relative`}
                                             >
                                                 {color?.size}
-                                                {color.instock === 0 && (
+                                                {(color.instock === 0 || color?.active == false) && (
                                                     <div className='absolute top-0 left-0 flex items-center justify-center w-full h-full'>
                                                         <div className='block rotate-[62deg] w-px h-10 lg:h-11 bg-slate-600'></div>
                                                     </div>
