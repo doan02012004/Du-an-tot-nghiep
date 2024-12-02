@@ -24,7 +24,6 @@ const OrderManager = () => {
   const orders = useOrderQuery({userId:currentUser?._id})
   const mutations = useComplaintMutation();
   const [form] = Form.useForm();
-
   const handleSubmit = (values:any) => {
     mutations.mutate({
       action: 'add',
@@ -66,6 +65,10 @@ const OrderManager = () => {
         return 'Trả hàng';
       case 'Complaints':
         return 'Khiếu nại';
+      // case 'Refunded':
+      //   return 'Hoàn tiền';
+      case 'Exchanged':
+        return 'Đổi trả hàng';
       default:
         return 'Không xác định';
     }
@@ -115,6 +118,8 @@ const OrderManager = () => {
             <option value="">Đã hủy</option>
             <option value="">Trả hàng</option>
             <option value="">Khiếu nại</option>
+            {/* <option value="">Hoàn tiền</option> */}
+            <option value="">Đổi trả hàng</option>
           </select>
           <span className="select-icon absolute right-5 bottom-0 -translate-y-1/2"><i className="fa-solid fa-chevron-right rotate-90" /></span>
         </div>
@@ -181,10 +186,9 @@ const OrderManager = () => {
                       </div>
                     )}
 
-
-                    {(order.status === "delivered" || order.status === "received") && (
+                    {/* {(order.status === "delivered" || order.status === "received") && (
                       <Button onClick={() => { setopen(!open); setitems(order.items); setid(order._id); settotalOrder(order.totalOrder); settotalPrice(order.totalPrice); settvoucher(order.voucher.discountValue), setship(order.ship.value.price) }}>Trả hàng</Button>
-                    )}
+                    )} */}
 
                     {order.status === "unpaid" && (
                       <Button onClick={() => handlePayAgain(order._id)} ><span>Tiếp tục thanh toán</span>

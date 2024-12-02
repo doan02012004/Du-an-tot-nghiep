@@ -10,6 +10,6 @@ export interface IComplaint {
 
 export interface IComplaintUpdate {
     complaintId: string;
-    status: 'new' | 'in_progress' | 'resolved';
+    status: 'new' | 'in_progress' | 'resolved' | 'cancelled';
     response?: string;
 }

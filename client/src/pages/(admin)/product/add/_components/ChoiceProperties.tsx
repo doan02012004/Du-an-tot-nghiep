@@ -67,7 +67,12 @@ const ChoiceProperties = () => {
             price_old: 0,
             discount: 0,
             instock: 0,
-            isCheck: false
+            isCheck: false,
+            weight: 0,
+            volume: 0,
+            length: 0,
+            width: 0,
+            height: 0
           });
         } else {
           // nếu đã tồn tại thì lấy chính phần tử cũ đó

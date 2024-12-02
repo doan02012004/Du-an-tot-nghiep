@@ -70,7 +70,7 @@ const DashBoardPage = () => {
         </div>
 
       </div>
-      <div className="grid grid-cols-12 gap-6 overflow-y-auto h-[500px] py-4" >
+      <div className="grid grid-cols-12 gap-6 py-4" >
         {/* doanh thu  */}
         <DashboardCard01 />
         {/* đơn hàng mới  */}

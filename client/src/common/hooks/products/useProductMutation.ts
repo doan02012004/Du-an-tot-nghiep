@@ -1,15 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Iproduct, IproductInfor } from '../../interfaces/product'
 import { message } from 'antd'
-import { addProduct, deleteProduct, updateProductInfor } from '../../../services/products'
+import { addItemsGallery, addProduct, deleteProduct, updateProductInfor } from '../../../services/products'
 import { useNavigate } from 'react-router-dom'
 
 const useProductMutation = () => {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const mutation = useMutation({
-        mutationKey:['PRODUCT'],
-        mutationFn: async(option:{action:string,product?:Iproduct,productInfor?:IproductInfor}) =>{
+        mutationKey: ['PRODUCT'],
+        mutationFn: async (option: { action: string, product?: Iproduct, productInfor?: IproductInfor,optionGallery?:any }) => {
             switch (option.action) {
                 case 'add':
                     try {
@@ -21,7 +22,15 @@ const useProductMutation = () => {
                         message.error("Thêm sản phẩm thất bại")
                     }
                     break;
-                    case 'delete':
+                    case 'addImage':
+                        try {
+                            await addItemsGallery(option.optionGallery)
+                        } catch (error) {
+                            console.log(error)
+                            message.error("Thêm ảnh thất bại")
+                        }
+                        break;
+                case 'delete':
                     try {
                         await deleteProduct(option.product?._id)
                         message.success("Xoá sản phẩm thành công")
@@ -33,10 +42,10 @@ const useProductMutation = () => {
                     break;
                 case 'updateInfor':
                     try {
-                       const data = await updateProductInfor(option.productInfor) as Iproduct
-                       if(data?.slug){
-                        navigate(`/admin/products/view/${data?.slug}`)
-                       }
+                        const data = await updateProductInfor(option.productInfor) as Iproduct
+                        if (data?.slug) {
+                            navigate(`/admin/products/view/${data?.slug}`)
+                        }
                     } catch (error) {
                         console.log(error)
                     }
@@ -45,11 +54,11 @@ const useProductMutation = () => {
                     break;
             }
         },
-        onSuccess:()=>{
-            queryClient.invalidateQueries({queryKey:['PRODUCT']})
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['PRODUCT'] })
         }
     })
-  return mutation
+    return mutation
 }
 
 export default useProductMutation

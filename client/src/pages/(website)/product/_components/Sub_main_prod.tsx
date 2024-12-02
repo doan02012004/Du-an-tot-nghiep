@@ -9,10 +9,13 @@ type Props = {
     products: Iproduct[],
     currentPage:number,
     totalPage:number
-  }
+  },
+  colorsUrl?:string|null,
+  minPrice?:number|string|null,
+  maxPrice?:number|string|null
 }
 
-const Sub_main_prod = ({ data }: Props) => {
+const Sub_main_prod = ({ data ,colorsUrl,maxPrice,minPrice}: Props) => {
   const [loading, setLoading] = useState(true)
 
   // Giả sử bạn tải dữ liệu ở đây, ví dụ từ API hoặc từ props
@@ -39,7 +42,7 @@ const Sub_main_prod = ({ data }: Props) => {
               </div>
             ) : (
               data?.products?.map((product: Iproduct) => (
-                <Product key={product._id} product={product} />
+                <Product key={product._id} product={product} colorsUrl={colorsUrl} minPrice={minPrice} maxPrice={maxPrice} />
               ))
             )}
           </div>

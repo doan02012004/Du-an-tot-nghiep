@@ -3,7 +3,6 @@ import {
   BgColorsOutlined,
   CreditCardOutlined,
   ExclamationCircleOutlined,
-  CommentOutlined,
   FileImageOutlined,
   MessageOutlined,
   OrderedListOutlined,
@@ -22,10 +21,11 @@ const SidebarAdmin = () => {
   const { collapsed } = useContext(AppContext);
   return (
     <Sider trigger={null} collapsible collapsed={collapsed}>
-      <div className="demo-logo-vertical" />
+      <div className="demo-logo-vertical " />
       <Menu
         theme="dark"
         mode="inline"
+        className="sticky left-0 top-0"
         defaultSelectedKeys={["1"]}
         items={[
           {

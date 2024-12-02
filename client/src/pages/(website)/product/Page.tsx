@@ -33,7 +33,6 @@ const ProductPage = () => {
       limit:limit?Number(limit):null
     }}
   );
-  console.log(response)
 
   return (
     <div>
@@ -46,7 +45,7 @@ const ProductPage = () => {
           <div className="main-prod lg:mb-[54px]">
             <Top_main_prod  />
             {/* <!-------------------------------------------------------end top-main-prod-----------------------------  --> */}
-            <Sub_main_prod data={response?.data} />
+            <Sub_main_prod data={response?.data} colorsUrl={colorsUrl} minPrice={minPriceUrl} maxPrice={maxPriceUrl} />
 
           </div>
         </section>

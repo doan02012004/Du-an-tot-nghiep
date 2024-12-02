@@ -7,10 +7,8 @@ import {
   Input,
   InputRef,
   message,
-  Radio,
   Select,
   Space,
-  Switch,
 } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import ReactQuill from "react-quill";
@@ -52,7 +50,10 @@ const FormInfor = () => {
     } else {
       categoriesMutation.mutate({
         action: "add",
-        category: { name: name },
+        category: {
+          name: name,
+          slug: ""
+        },
         isOther: true,
       });
       setName("");
@@ -85,22 +86,8 @@ const FormInfor = () => {
     message.success("Bạn đã lưu thay đổi !");
   };
   return (
-    <div className="mb-3 border-b">
-      <div className="pr-5 mb-3 border-b w-max border-red">
-        <h3 className="text-lg text-red">Thông tin sản phẩm *</h3>
-      </div>
+    <div>
       <div className="px-5">
-        {isSave && (
-          <div className="w-full mb-2">
-            <Button
-              onClick={() => dispath(SetIsSave(false))}
-              className="text-white bg-yellow"
-            >
-              <EditOutlined />
-              Chỉnh sửa thông tin
-            </Button>
-          </div>
-        )}
         <Form
           form={form}
           name="basic"
@@ -109,7 +96,7 @@ const FormInfor = () => {
           onFinish={onSubmit}
           disabled={isSave}
         >
-          <div className="py-2">
+          <div>
             {/* Thông tin  */}
             <div className="grid grid-cols-2 gap-x-4">
               <Form.Item
@@ -117,7 +104,7 @@ const FormInfor = () => {
                 name={"name"}
                 rules={[{ required: true, message: "Bắt buộc nhập" }]}
               >
-                <Input />
+                <Input placeholder="Nhập tên sản phẩm..." />
               </Form.Item>
               <Form.Item
                 label="Danh mục sản phẩm"
@@ -130,14 +117,14 @@ const FormInfor = () => {
                       ? categoriesQuery.isLoading
                       : categoriesMutation.isPending
                   }
-                  placeholder="custom dropdown render"
+                  placeholder="Chọn danh mục"
                   dropdownRender={(menu) => (
                     <>
                       {menu}
                       <Divider style={{ margin: "8px 0" }} />
                       <Space style={{ padding: "0 8px 4px" }}>
                         <Input
-                          placeholder="Please enter item"
+                          placeholder="Thêm danh mục"
                           ref={inputRef}
                           value={name}
                           onChange={(event) => setName(event.target.value)}
@@ -148,7 +135,7 @@ const FormInfor = () => {
                           icon={<PlusOutlined />}
                           onClick={addItem}
                         >
-                          Add item
+                          Thêm
                         </Button>
                       </Space>
                     </>
@@ -170,7 +157,7 @@ const FormInfor = () => {
                       ? brandsQuery.isLoading
                       : brandsMutation.isPending
                   }
-                  placeholder="custom dropdown render"
+                  placeholder="Chọn thương hiệu"
                   dropdownRender={(menu) => (
                     <>
                       {menu}
@@ -204,46 +191,66 @@ const FormInfor = () => {
                 name={"gender"}
                 rules={[{ required: true, message: "Bắt buộc nhập" }]}
               >
-                <Radio.Group>
-                  <Radio value="male">Nam</Radio>
-                  <Radio value="female">Nữ</Radio>
-                  <Radio value="unisex">Cả nam nữ</Radio>
-                </Radio.Group>
+                <Select
+                  placeholder='Chọn giới tính'
+                  options={[
+                    { label: "Nam và Nữ", value:'unisex' },
+                    { label: "Nam", value: 'male' },
+                    { label: "Nữ", value: 'female' },
+                  ]} />
               </Form.Item>
-              <div className="flex items-center gap-x-3">
-                <Form.Item
-                  label="Nổi bật"
-                  name={"featured"}
-                  className="basis-1/2"
-                >
-                  <Switch />
-                </Form.Item>
-                <Form.Item
-                  label="Hoạt động"
-                  name={"active"}
-                  className="basis-1/2"
-                >
-                  <Switch defaultValue={true} />
-                </Form.Item>
-              </div>
+              <Form.Item
+                label="Nổi bật"
+                name={"featured"}
+                className="basis-1/2"
+              >
+                <Select
+                  defaultValue={false}
+                  options={[
+                    { label: "Có", value: true },
+                    { label: "Không", value: false },
+                  ]} />
+              </Form.Item>
+              <Form.Item
+                label="Hoạt động"
+                name={"active"}
+                className="basis-1/2"
+              >
+                <Select
+                  defaultValue={true}
+                  options={[
+                    { label: "Có", value: true },
+                    { label: "Không", value: false },
+                  ]} />
+              </Form.Item>
             </div>
-
             {/* Mô tả  */}
-            <div className="w-full mx-auto ">
+            <div className="w-full mx-auto py-0">
               <Form.Item label="Mô tả sản phẩm" name={"description"}>
-                <ReactQuill className="w-full" />
+                <ReactQuill placeholder="Nhập mô tả sản phẩm..." className="w-full" />
               </Form.Item>
             </div>
-            <Form.Item>
-              {!isSave && (
+            {!isSave && (
+              <Form.Item>
                 <Button type="primary" htmlType="submit">
                   <SaveOutlined />
-                  Lưu thay đổi
+                  Lưu thông tin
                 </Button>
-              )}
-            </Form.Item>
+              </Form.Item>
+            )}
           </div>
         </Form>
+        {isSave && (
+          <div className="w-full">
+            <Button
+              onClick={() => dispath(SetIsSave(false))}
+              className="text-white bg-yellow"
+            >
+              <EditOutlined />
+              Chỉnh sửa thông tin
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

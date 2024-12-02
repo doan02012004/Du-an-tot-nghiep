@@ -1,98 +1,58 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import {  useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { IColor } from '../../../common/interfaces/Color'
 import { Iattribute, Igallery, Iproduct } from '../../../common/interfaces/product'
-import { setProductId } from '../../../common/redux/features/productSlice'
 import { formatPrice } from '../../../common/utils/product'
-import useCartMutation from '../../../common/hooks/carts/useCartMutation'
-import { InewCart } from '../../../common/interfaces/cart'
-import { useFilterParams } from '../../../common/hooks/products/useFilter'
+
 
 type Props = {
-  product: Iproduct
+  product: Iproduct,
+  colorsUrl?: string,
+  maxPrice?:number|string,
+  minPrice?:number|string,
+  discount?:number
 }
 
-const Product = ({ product }: Props) => {
-  const [isOpenSize, setIsOpenSize] = useState(false)
-  const [gallery, setGallery] = useState(product?.gallerys[0] as Igallery)
-  const [color, setColor] = useState('' as string)
+const Product = ({ product,maxPrice,minPrice,discount,colorsUrl }: Props) => {
+  // const [isOpenSize, setIsOpenSize] = useState(false)
+  const [gallery, setGallery] = useState<Igallery>({avatar:'',items:[],name:'',background:''})
   const [variant,setVariant] = useState<Iattribute | undefined | null>(null)
 
-  const [checkSizes, setCheckSizes] = useState([] as string[])
-  const productId = useSelector((state: any) => state.product.productId)
-  const dispath = useDispatch()
-  const cartMutation = useCartMutation()
-
-  const {getFiltersFromUrl} = useFilterParams();
-
-  const dataFilter = getFiltersFromUrl()
-
-    useEffect(() => {
-    if (productId == null) {
-      setIsOpenSize(false)
-    }
-  }, [productId])
-
-
   
-  useEffect(() => {
-    setGallery(product?.gallerys[0])
-    setColor(product.gallerys[0].name)
-    const newVariant = product?.attributes.reduce((current, item) =>item.price_new < current.price_new ? item: current, product?.attributes[0] )
-    setVariant(newVariant)
-  }, [product])
-  // useEffect(() => {
-  //   setColor( product?.gallerys[0].name);
-  
-  //   const firstMatchingVariant = product?.attributes.find(
-  //     (item) => 
-  //       item.price_new > Number(dataFilter.minPrice) && 
-  //       item.price_new < Number(dataFilter.maxPrice)
-  //   );
-
-  //   setVariant(firstMatchingVariant);
-  // }, [product, dataFilter]);
-  
-
-  // useEffect(() => {
-  //   const newAttributes = product?.attributes?.filter((item: Iattribute) => (item.color == color && item.instock > 0))
-  //   const newCheckSizes = newAttributes?.map((item: Iattribute) => item.size)
-  //   setCheckSizes(newCheckSizes)
-  // }, [color])
-  const onSetProductId = async (product: Iproduct) => {
-    if (productId !== product?._id) {
-      dispath(setProductId(product._id))
-      setIsOpenSize(true)
-    }
-    if (productId == product?._id && isOpenSize == false) {
-      await dispath(setProductId(null))
-      dispath(setProductId(product._id))
-      setIsOpenSize(true)
-    }
-    if (productId == product?._id && isOpenSize == true) {
-      dispath(setProductId(null))
+  const resultVariant = (option:{attributes:Iattribute[],colorUrl?:string,minPrice?:number,maxPrice?:number,discount?:number}) =>{
+    const min_price = option.minPrice ?? 0;
+    const max_price = option.maxPrice ?? 10000000;
+    const arrColor =  option.colorUrl?.toUpperCase().split(',')?? []
+    if(!option.colorUrl && !option.discount  && !option.minPrice && !option.maxPrice){
+      const newVariant = option.attributes?.reduce((current, item) =>item.price_new < current.price_new ? item: current, product?.attributes[0] )
+      return newVariant
+    }else if(option?.colorUrl && arrColor.length>0){
+      const newVariant = option.attributes?.find((item) => (arrColor?.includes(item.color) && item.price_new >= min_price && item.price_new <= max_price ) )
+      return newVariant
+    }else if(option.discount){
+      const newVariant = option.attributes?.reduce((current, item) =>item.discount > current.discount ? item: current, product?.attributes[0] )
+      return newVariant
+    }else{
+      const newVariant = option.attributes?.find((item) => (item.price_new >= min_price && item.price_new <= max_price ) )
+      return newVariant
     }
   }
+
+  useEffect(() => {
+    const newVariant = resultVariant({attributes:product?.attributes,colorUrl:colorsUrl,minPrice:Number(minPrice),maxPrice:Number(maxPrice),discount})
+    const newGallery = product?.gallerys?.find((item:Igallery) => newVariant?.color == item.name) as Igallery
+    setGallery(newGallery)
+    setVariant(newVariant)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product, maxPrice, minPrice, discount, colorsUrl])
+  
 
   const onPickColor = (item: IColor) => {
     const newGallery: Igallery | any = product?.gallerys.find((gallery: Igallery) => gallery.name == item.name)
     setGallery(newGallery)
-    
   }
 
-  const onAddToCart = (size: string) => {
-    const attribute = product?.attributes?.find((item: Iattribute) => (item.color == color && item.size == size)) 
-    const newCart = {
-      productId: product._id,
-      quantity: 1,
-      attributeId: attribute?._id,
-      galleryId: gallery?._id
-    } as InewCart
-    cartMutation.mutate({action:'addtocart', cart: newCart})
-    
-  }
   return (
     <>
       <div>
@@ -101,7 +61,7 @@ const Product = ({ product }: Props) => {
             <img src={gallery?.avatar} className="w-full h-full object-cover" />
           </Link>
           <span className="absolute top-0 left-0 text-[12px]/[150%] font-semibold py-1 px-3 bg-rose-900 text-white rounded-br-full">
-            Best seller
+            Fendi shop
           </span>
           {
             variant?.discount !== 0 && (

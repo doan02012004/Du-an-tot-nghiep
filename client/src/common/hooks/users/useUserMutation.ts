@@ -17,7 +17,8 @@ const useUserMutation = () => {
           break;
         case "update":
           try {
-            await updateUser(option.user)
+          const data =  await updateUser(option.user)
+          return data
           } catch (error) {
             console.log(error)
           }
