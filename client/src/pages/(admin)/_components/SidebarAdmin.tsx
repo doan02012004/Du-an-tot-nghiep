@@ -1,13 +1,16 @@
 import {
   BarChartOutlined,
   BgColorsOutlined,
+  BookOutlined,
   CreditCardOutlined,
   ExclamationCircleOutlined,
   FileImageOutlined,
+  MailOutlined,
   MessageOutlined,
   OrderedListOutlined,
   PlusOutlined,
   ProductOutlined,
+  ReadOutlined,
   ShoppingCartOutlined,
   UserOutlined
 } from "@ant-design/icons";
@@ -149,15 +152,31 @@ const SidebarAdmin = () => {
           },
           {
             key: "12",
+            icon: <ReadOutlined />,
+            label: <Link to={"/admin/blog"}>Blogs</Link>,
+          },
+          {
+            key: "13",
+            icon: <BookOutlined />,
+            label: <Link to={"/admin/categoryBlog"}>Danh mục Blog</Link>,
+          },
+          {
+            key: "14",
+            icon: <MailOutlined />,
+            label: <Link to={"/admin/contacts"}>Liên hệ</Link>,
+          },
+
+          {
+            key: "15",
             icon: <OrderedListOutlined />,
             label: "Thương Hiệu",
             children: [
               {
-                key: "12.1",
+                key: "15.1",
                 label: <NavLink to={`/admin/brands`}>Thương Hiệu</NavLink>,
               },
               {
-                key: "12.2",
+                key: "15.2",
                 label: (
                   <NavLink to={`/admin/brands/add`}>Thêm thương hiệu</NavLink>
                 ),

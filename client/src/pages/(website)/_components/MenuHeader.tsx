@@ -54,9 +54,9 @@ const MenuHeader = () => {
                         </div>
 
                     </li>
-                    <li><a href="#" className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Blogs</a>
+                    <li><a href={`/blog`} className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Blogs</a>
                     </li>
-                    <li><a href="#" className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Contact</a>
+                    <li><a href={`/contact`} className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Contact</a>
                     </li>
                 </ul>
             </div>
