@@ -15,7 +15,6 @@ import complaint from "./complaintRoutes.js"
 import commentRouter from "./commentRouter.js"
 import shipRouter from "./shipRouter.js"
 import searchRouter from "./searchRouter.js";
-import searchHistoryRouter from "./searchHistoryRouter.js";
 const routes = (app) => {
   app.use("/api/products", productRouter);
   app.use("/api/orders", orderRouter);
@@ -35,7 +34,6 @@ const routes = (app) => {
   app.use("/api/vouchers", voucherRouter);
   app.use("/api/ships", shipRouter);
   app.use("/api/searchs", searchRouter);
-  app.use("/api/trackSearchs", searchHistoryRouter);
 };
 
 export default routes;

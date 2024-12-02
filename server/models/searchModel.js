@@ -9,6 +9,7 @@ const searchSchema = new mongoose.Schema({
     type: Number, 
     default: 1 
   }, // Số lần tìm kiếm cùng từ khóa và bộ lọc này
+  lastSearchedAt: { type: Date, default: Date.now }, // Thêm trường này
   
 });
 

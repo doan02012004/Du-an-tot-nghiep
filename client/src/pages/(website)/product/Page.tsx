@@ -5,12 +5,8 @@ import Breadcrumb_products from './_components/Breadcrumb_products';
 import Sidebar_prod from './_components/Sidebar_prod';
 import Sub_main_prod from './_components/Sub_main_prod';
 import Top_main_prod from './_components/Top_main_prod';
-import { useContext } from 'react';
-import { AppContext } from '../../../common/contexts/AppContextProvider';
-
 
 const ProductPage = () => {
-  const {currentUser} = useContext(AppContext);
   const { slug } = useParams();
   const [searchParams,] = useSearchParams();
   const page = searchParams.get("page")

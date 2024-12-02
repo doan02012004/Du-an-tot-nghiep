@@ -1,17 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { message } from 'antd';
-import { trackSearch } from '../../../services/trackSearch';
-import { ITrackSearch } from '../../interfaces/search';
+import { trackSearch } from '../../../services/search';
 
-const useTrackSearchMutation = () => {
+
+const useSearchMutation = () => {
     const queryClient = useQueryClient();
     const mutation = useMutation({
         mutationKey: ['TRACKSEARCH'],
-        mutationFn: async (options: { action: string, keyword: string, userId: string }) => {
+        mutationFn: async (options: { action: string, keyword: string}) => {
             switch (options.action) {
                 case "add":
                     try {
-                        const response = await trackSearch({ keyword: options.keyword, userId: options.userId });
+                        const response = await trackSearch({ keyword: options.keyword});
                         return response;
                     } catch (error) {
                         message.error("Thêm lịch sử thất bại");
@@ -29,4 +29,4 @@ const useTrackSearchMutation = () => {
     return mutation;
 };
 
-export default useTrackSearchMutation;
+export default useSearchMutation;
