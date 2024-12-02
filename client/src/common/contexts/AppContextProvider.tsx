@@ -33,6 +33,7 @@ const fetchUser = async (setCurrentUser?: any, setIsLogin?: any, setIsLoading?: 
 export const AppContext = createContext<any>(null)
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
+  const [categoryBlogId, setCategoryBlogId] = useState('');
   const [choiceColor, setChoiceColor] = useState('')
   const [collapsed, setCollapsed] = useState(false);
   const [currentUser, setCurrentUser] = useLocalStorage('tt_user', {})
@@ -46,6 +47,23 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [location, setLocation] = useLocalStorage('location', null)
   const socket: any = useRef(null)
   const [adminId,] = useState(adminId_env)
+
+
+   // Sử dụng useEffect để lấy lại giá trị nếu cần (ví dụ từ API hoặc từ state đã lưu)
+  useEffect(() => {
+    const storedCategoryBlogId = sessionStorage.getItem('CategoryBlogId');
+    if (storedCategoryBlogId) {
+      setCategoryBlogId(storedCategoryBlogId);
+    }
+  }, []);
+  useEffect(() => {
+    if (categoryBlogId) {
+      sessionStorage.setItem('CategoryBlogId', categoryBlogId);
+    }
+  }, [categoryBlogId]);
+
+
+
   // Interceptor request axios
   useEffect(() => {
     // Thêm một request interceptor
@@ -134,7 +152,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     }
   }, [socket.current,currentUser])
   return (
-    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location, adminId ,socket}}>
+    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location, adminId ,socket,categoryBlogId,setCategoryBlogId}}>
       {children}
     </AppContext.Provider>
   )

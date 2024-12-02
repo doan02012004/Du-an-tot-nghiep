@@ -98,7 +98,7 @@ const ComplaintList = (props: Props) => {
   return (
     <div className="overflow-y-auto h-[600px]">
         <div className="flex justify-between items-center mb-4">
-                <h6 className='font-semibold text-[20px]'>CHI TIẾT ĐƠN HÀNG:</h6>
+                <h6 className='font-semibold text-[20px]'>DANH SÁCH KHIẾU NẠI:</h6>
         </div>
         <div style={{ marginBottom: 16 }}>
         {/* Tìm kiếm mã đơn hàng */}
