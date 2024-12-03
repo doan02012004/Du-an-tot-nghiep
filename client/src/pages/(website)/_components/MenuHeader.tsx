@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import useCategoryQuery from '../../../common/hooks/categories/useCategoryQuery'
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import useCategoryQuery from '../../../common/hooks/categories/useCategoryQuery';
 import { ICategories } from '../../../common/interfaces/categories';
-import { Link, useNavigate } from 'react-router-dom';
 
 const MenuHeader = () => {
     const [isOpenMenu, setIsOpenMenu] = useState(false)
@@ -43,7 +43,7 @@ const MenuHeader = () => {
                                 {
                                     categoryQuery?.data?.map((item: ICategories, index: number) => (
 
-                                        <li className='w-max' key={index}><Link to={`/danh-muc/${item.slug}`} className="block text-sm py-1 hover:text-[#AC2F33] hover:underline" >{item?.name}</Link></li>
+                                        <li className='w-max' key={index}><Link to={`/product?category=${item.slug}`} className="block text-sm py-1 hover:text-[#AC2F33] hover:underline" >{item?.name}</Link></li>
 
 
                                     ))
@@ -54,9 +54,9 @@ const MenuHeader = () => {
                         </div>
 
                     </li>
-                    <li><a href="#" className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Blogs</a>
+                    <li><a href={`/blog`} className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Blogs</a>
                     </li>
-                    <li><a href="#" className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Contact</a>
+                    <li><a href={`/contact`} className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Contact</a>
                     </li>
                 </ul>
             </div>

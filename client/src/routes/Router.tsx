@@ -53,6 +53,17 @@ import CanPayment from "../pages/(website)/thanks/CanPayment";
 import ShipPage from "../pages/(admin)/feeShip/Page";
 import ListShipPage from "../pages/(admin)/feeShip/list/Page";
 import AddShipPage from "../pages/(admin)/feeShip/add/Page";
+import PageContact from "../pages/(website)/contact/Page";
+import PageContactAdmin from "../pages/(admin)/contact/Page";
+import ContactList from "../pages/(admin)/contact/_components/ContactList";
+import ContactEdit from "../pages/(admin)/contact/_components/ContactEdit";
+import PageBlogs from "../pages/(admin)/blog/Page";
+import BlogList from "../pages/(admin)/blog/_components/BlogList";
+import BlogAdd from "../pages/(admin)/blog/_components/BlogAdd";
+import BlogEdit from "../pages/(admin)/blog/_components/BlogEdit";
+import PageCategoryBlog from "../pages/(admin)/categoryBlog/Page";
+import CategoryBlogList from "../pages/(admin)/categoryBlog/_components/CategoryBlogList";
+import CategoryBlogEdit from "../pages/(admin)/categoryBlog/_components/CategoryBlogEdit";
 
 
 const Router = () => {
@@ -62,6 +73,7 @@ const Router = () => {
     <Routes>
       <Route path="/" element={<LayoutWebsite />}>
         <Route index element={<HomePage />} />
+        <Route path="contact" element={<PageContact />} />
         <Route path="timkiem" element={<ProductPage />} />
         <Route path="/danh-muc/:slug" element={<ProductPage />} />
         <Route path="productdetails/:slug" element={<ProductDetailsPage />} />
@@ -69,7 +81,7 @@ const Router = () => {
         <Route path="signup" element={<PageSignup />} />
         <Route path="forgot" element={<PageForgot />} />
         <Route path="blog" element={<PageBlog />} />
-        <Route path="blogdetail" element={<PageDetail />} />
+        <Route path="blog/:id" element={<PageDetail />} />
         <Route path="cart" element={<CartPage />} />
         <Route path="order" element={<OrderPage />} />
         <Route path="thanks" element={<ThanksPage />} />
@@ -82,6 +94,20 @@ const Router = () => {
         </Route>
       </Route>
       <Route path="admin" element={<PrivateAdmin><LayoutAdmin /></PrivateAdmin>}>
+        <Route path="contacts" element={<PageContactAdmin />}>
+          <Route index element={<ContactList />}/>
+          <Route path="admin/contacts/:id" element={<ContactEdit />}/>
+        </Route>
+        <Route path="blog" element={<PageBlogs />}>
+          <Route index element={<BlogList />}/>
+          <Route path="add" element={<BlogAdd />}/>
+          <Route path="admin/blog/:id" element={<BlogEdit />}/>
+        </Route>
+        <Route path="categoryBlog" element={<PageCategoryBlog />}>
+          <Route index element={<CategoryBlogList />}/>
+          <Route path="add" element={<CategoryBlogEdit />}/>
+          <Route path="admin/categoryBlog/:id" element={<CategoryBlogEdit />}/>
+        </Route>
         <Route path="complaint" element={<PageComplaint />}>
           <Route index element={<ComplaintList />}/>
           <Route path="admin/complaint/:id" element={<ComplaintEdit />}/>
