@@ -122,7 +122,7 @@ const CategoryList: React.FC = () => {
           onChange={handleSearch} // Lắng nghe sự kiện nhập liệu
         />
       </div>
-      <div className='h-[550px] overflow-y-scroll mt-2'>
+      <div className='mt-2'>
         <Table
           loading={query.isLoading ? query.isLoading : mutation.isPending}
           columns={columns}
