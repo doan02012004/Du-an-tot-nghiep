@@ -34,7 +34,7 @@ const MenuHeader = () => {
                     <li><a href="/" className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Home</a>
                     </li>
                     <li className="group">
-                        <span className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">
+                        <span className="text-[12px]/[150%] cursor-pointer text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">
                             Shop
                         </span>
                         {/* Mega Menu */}
@@ -43,7 +43,7 @@ const MenuHeader = () => {
                                 {
                                     categoryQuery?.data?.map((item: ICategories, index: number) => (
 
-                                        <li className='w-max' key={index}><Link to={`/product?category=${item.slug}`} className="block text-sm py-1 hover:text-[#AC2F33] hover:underline" >{item?.name}</Link></li>
+                                        <li className='w-max' key={index}><Link to={`/danh-muc/${item.slug}`} className="block text-sm py-1 hover:text-[#AC2F33] hover:underline" >{item?.name}</Link></li>
 
 
                                     ))
