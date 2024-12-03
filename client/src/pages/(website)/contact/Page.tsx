@@ -1,9 +1,8 @@
 import { CustomerServiceOutlined, EnvironmentOutlined, MailOutlined, MessageOutlined, PhoneOutlined } from '@ant-design/icons';
-import { useContext, useState } from 'react';
+import { message } from 'antd';
+import { useContext, useRef, useState } from 'react';
 import { AppContext } from '../../../common/contexts/AppContextProvider';
 import useContactMutation from '../../../common/hooks/contact/useContactMutation';
-import { message } from 'antd';
-import { useNavigate } from 'react-router-dom';
 
 type Props = {}
 
@@ -12,6 +11,7 @@ const PageContact = (props: Props) => {
     const [content, setContent] = useState<string>("");
     const { currentUser } = useContext(AppContext);
     const mutation = useContactMutation();
+    const formRef = useRef<HTMLFormElement>(null); // Thêm useRef để truy cập form
   
     // Hàm xử lý khi submit form
     const handleSubmit = (e: React.FormEvent) => {
@@ -27,11 +27,21 @@ const PageContact = (props: Props) => {
       mutation.mutate({
         action: "add",
         contactData: {
-          userId: currentUser._id,
-          title: subject,
-          message: content
-        }
-      });
+            userId: currentUser._id,
+            title: subject,
+            message: content,
+            },
+        }, {
+            onSuccess: () => {
+                message.success("Liên hệ đã được gửi thành công!");
+                setSubject(""); // Reset giá trị state
+                setContent(""); // Reset giá trị state
+                formRef.current?.reset(); // Reset giao diện form DOM
+            },
+            onError: () => {
+                message.error("Đã có lỗi xảy ra, vui lòng thử lại sau.");
+            },
+        });
     };
   return (
     <>
@@ -101,7 +111,7 @@ const PageContact = (props: Props) => {
             <div className="lg:w-[65%] lg:h-[480px] border p-10 rounded-tl-[40px] rounded-br-[40px]">
                 <h1 className='text-[30px] font-semibold'>Email to IVYmoda</h1>
                 <p className='mt-6 mb-6 leading-normal'>We are here to help and answer any question you might have.Tell us about your issue so we can help you more quickly. We look forward to hearing from you.</p>
-                <form action="" onSubmit={handleSubmit}>
+                <form ref={formRef} action="" onSubmit={handleSubmit}>
                     <div className="mb-4 relative">
                         <MailOutlined className="absolute top-2 left-3 text-gray-400 text-lg" />
                         <input
