@@ -33,7 +33,6 @@ const ProductPage = () => {
       active:true
     }}
   );
-  console.log(response)
 
   return (
     <div>

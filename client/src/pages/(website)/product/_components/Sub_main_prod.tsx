@@ -42,7 +42,7 @@ const Sub_main_prod = ({ data ,colorsUrl,maxPrice,minPrice}: Props) => {
               </div>
             ) : (
               data?.products?.map((product: Iproduct) => (
-                <Product key={product._id} product={product} colorsUrl={colorsUrl} minPrice={minPrice} maxPrice={maxPrice} />
+                <Product key={product._id} product={product} colorsUrl={colorsUrl?colorsUrl:''} minPrice={minPrice?minPrice:0} maxPrice={maxPrice?maxPrice:0} />
               ))
             )}
           </div>

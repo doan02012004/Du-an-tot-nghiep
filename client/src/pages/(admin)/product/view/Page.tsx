@@ -8,6 +8,7 @@ import { Button, Tabs, TabsProps } from "antd"
 import { LeftOutlined, LoadingOutlined } from "@ant-design/icons"
 import TabImageUpdate from "./_components/TabImageUpdate"
 import AddProperties from "./_components/AddProperties"
+import TabComment from "./_components/TabComment"
 
 
 const ViewProductAdmin = () => {
@@ -36,7 +37,7 @@ const ViewProductAdmin = () => {
       {
         key: '4',
         label: 'Đánh giá sản phẩm',
-        children: 'Đánh giá sản phẩm',
+        children: (<TabComment productId={product?._id?product._id:''} />),
       },
       {
         key: '5',

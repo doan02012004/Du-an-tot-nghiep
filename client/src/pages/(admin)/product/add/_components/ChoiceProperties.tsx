@@ -72,7 +72,8 @@ const ChoiceProperties = () => {
             volume: 0,
             length: 0,
             width: 0,
-            height: 0
+            height: 0,
+            active: false
           });
         } else {
           // nếu đã tồn tại thì lấy chính phần tử cũ đó
@@ -100,6 +101,8 @@ const ChoiceProperties = () => {
             { value: 'L', label: 'L',disabled:optionSize == 'freesize'? true:false },
             { value: 'XL', label: 'XL' ,disabled:optionSize == 'freesize'? true:false},
             { value: 'XXL', label: 'XXL' ,disabled:optionSize == 'freesize'? true:false},
+            { value: '3XL', label: '3XL' ,disabled:optionSize == 'freesize'? true:false},
+            { value: '4XL', label: '4XL' ,disabled:optionSize == 'freesize'? true:false},
             { value: 'FREESIZE', label: 'FREESIZE',disabled:optionSize == 'size'? true:false }
            ]
           }
