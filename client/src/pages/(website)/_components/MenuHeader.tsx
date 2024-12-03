@@ -34,9 +34,9 @@ const MenuHeader = () => {
                     <li><a href="/" className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">Home</a>
                     </li>
                     <li className="group">
-                        <a href="/product" className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">
+                        <span className="text-[12px]/[150%] text-[#221F20] font-semibold transition duration-300 ease-in-out uppercase hover:text-[#AC2F33]">
                             Shop
-                        </a>
+                        </span>
                         {/* Mega Menu */}
                         <div className="bg-white w-max absolute top-14 py-4 px-8 rounded-lg left-20 border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500">
                             <ul className='flex flex-col flex-wrap gap-x-16 max-h-40 gap-2'>
