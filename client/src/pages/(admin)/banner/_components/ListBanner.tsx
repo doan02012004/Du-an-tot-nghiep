@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Table, Space, Button, Switch } from "antd";
+import { Table, Space, Button, Switch, Input } from "antd";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import useBannerQuery from "../../../../common/hooks/banners/useBannerQuery";
 import useBannerMutation from "../../../../common/hooks/banners/useBannerMutation";
@@ -14,6 +14,17 @@ const ListBanner = () => {
   const bannerMutation = useBannerMutation();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editBanner, setEditBanner] = useState<IBanner | null>(null);
+  const [searchText, setSearchText] = useState<string>(''); // State tìm kiếm
+
+  // Xử lý thay đổi tìm kiếm
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+  };
+
+  // Lọc banner theo tên chủ đề
+  const filteredBanners = banners?.filter((banner:any) =>
+    banner.title.toLowerCase().includes(searchText.toLowerCase()) // Lọc theo tên banner
+  );
 
   const handleSwitchChange = (banner: IBanner) => {
     bannerMutation.mutate({
@@ -81,18 +92,29 @@ const ListBanner = () => {
 
   return (
     <div>
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        className="mb-3"
-        onClick={() => setIsAddOpen(true)}
-      >
-        Thêm Banner
-      </Button>
+      <div className="flex justify-between">
+        {/* Form tìm kiếm */}
+        <div className="mb-3">
+          <Input
+            type="text"
+            placeholder="Tìm kiếm chủ đề banner"
+            style={{ width: "300px" }}
+            value={searchText}
+            onChange={handleSearch} // Lắng nghe sự kiện thay đổi
+          />
+        </div>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => setIsAddOpen(true)}
+        >
+          Thêm Banner
+        </Button>
+      </div>
       <Table
         loading={isLoading}
         columns={columns}
-        dataSource={banners || []}
+        dataSource={filteredBanners || []} // Sử dụng danh sách banner đã lọc
         rowKey="_id"
       />
       {isAddOpen && <AddBanner onClose={() => setIsAddOpen(false)} />}
