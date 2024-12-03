@@ -15,6 +15,9 @@ import complaint from "./complaintRoutes.js"
 import commentRouter from "./commentRouter.js"
 import shipRouter from "./shipRouter.js"
 import searchRouter from "./searchRouter.js";
+import blogRoutes from "./blogRouter.js";
+import categoriesBlog from "./categoryBlogRoutes.js";
+import contactRouter from "./contactRouter.js";
 const routes = (app) => {
   app.use("/api/products", productRouter);
   app.use("/api/orders", orderRouter);
@@ -34,6 +37,9 @@ const routes = (app) => {
   app.use("/api/vouchers", voucherRouter);
   app.use("/api/ships", shipRouter);
   app.use("/api/searchs", searchRouter);
+  app.use("/api/blogs", blogRoutes);
+  app.use("/api/categoriesBlog", categoriesBlog);
+  app.use("/api/contacts", contactRouter);
 };
 
 export default routes;

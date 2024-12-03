@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Table, Space, Button, Switch } from "antd";
+import { Table, Space, Button, Switch, Input } from "antd";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import useGalleryMutation from "../../../../common/hooks/gallerys/useGalleryMutation";
 import useGalleryQuery from "../../../../common/hooks/gallerys/useGalleryQuery";
@@ -14,6 +14,17 @@ const ListGallery = () => {
   const galleryMutation = useGalleryMutation();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editGallery, setEditGallery] = useState<IGallery | null>(null);
+  const [searchText, setSearchText] = useState<string>(''); // State tìm kiếm
+
+  // Xử lý thay đổi tìm kiếm
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+  };
+
+  // Lọc gallery theo tên chủ đề
+  const filteredGallerys = gallerys?.filter((gallery:any) =>
+    gallery.title.toLowerCase().includes(searchText.toLowerCase()) // Lọc theo tên gallery
+  );
 
   const handleSwitchChange = (gallery: IGallery) => {
     galleryMutation.mutate({
@@ -81,18 +92,30 @@ const ListGallery = () => {
 
   return (
     <div>
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        className="mb-3"
-        onClick={() => setIsAddOpen(true)}
-      >
-        Thêm Gallery
-      </Button>
+      <div className="flex justify-between">
+        {/* Form tìm kiếm */}
+        <div className="mb-3">
+          <Input
+            type="text"
+            placeholder="Tìm kiếm chủ đề gallery"
+            style={{ width: "300px" }}
+            value={searchText}
+            onChange={handleSearch} // Lắng nghe sự kiện thay đổi
+          />
+        </div>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          className="mb-3"
+          onClick={() => setIsAddOpen(true)}
+        >
+          Thêm Gallery
+        </Button>
+      </div>
       <Table
         loading={isLoading}
         columns={columns}
-        dataSource={gallerys || []}
+        dataSource={filteredGallerys || []} // Sử dụng danh sách gallery đã lọc
         rowKey="_id"
       />
       {isAddOpen && <AddGallery onClose={() => setIsAddOpen(false)} />}

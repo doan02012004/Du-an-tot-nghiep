@@ -1,10 +1,15 @@
-import React from 'react'
-import BannerSale from './_components/BannerSale'
+import { useParams } from 'react-router-dom'
+import useBlogQuery from '../../../../common/hooks/blog/useBlogQuery'
 import NewsBlog from '../../_components/NewsBlog'
-import PostBlogDetail from './_components/PostBlogDetail'
+import BannerSale from './_components/BannerSale'
 import CategoryBlogDetail from './_components/CategoryBlogDetail'
+import PostBlogDetail from './_components/PostBlogDetail'
 
 const PageDetail = () => {
+    const {id} = useParams()
+    const query = useBlogQuery(id);
+    // console.log(query)
+
     return (
         <div>
            
@@ -15,7 +20,7 @@ const PageDetail = () => {
                     <a href="http://">-</a>
                     <a href="http://">Tin Tức</a>
                     <a href="http://">-</a>
-                    <a href="http://">THE WHISPER OF CLASSY DẪN DẮT XU HƯỚNG VỚI VẺ ĐẸP SANG TRỌNG</a>
+                    <a href="http://">{query?.title}</a>
                 </div>
                 {/* trang chủ bài viết */}
                 <div className="flex flex-col justify-between pt-[50px] lg:flex-row">
@@ -32,9 +37,9 @@ const PageDetail = () => {
                     </div>
                 </div>
             </section>
-            <hr className="container my-10" />
+            {/* <hr className="container my-10" /> */}
             {/* phần list sản phẩm bên dưới */}
-            <section className="newArrival mb-[18px] lg:mb-10">
+            {/* <section className="newArrival mb-[18px] lg:mb-10">
                 <div className="container">
                     <h1 className="text-xl lg:text-3xl font-semibold text-dark tracking-[2px] text-center uppercase mb-[10px] lg:mb-5">
                         NEW
@@ -617,7 +622,7 @@ const PageDetail = () => {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
         </div>
 
     )
