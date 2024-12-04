@@ -109,7 +109,7 @@ const PageContact = (props: Props) => {
             </div>
             {/*  */}
             <div className="lg:w-[65%] lg:h-[480px] border p-10 rounded-tl-[40px] rounded-br-[40px]">
-                <h1 className='text-[30px] font-semibold'>Email to IVYmoda</h1>
+                <h1 className='text-[30px] font-semibold'>Email to FENDI SHOP</h1>
                 <p className='mt-6 mb-6 leading-normal'>We are here to help and answer any question you might have.Tell us about your issue so we can help you more quickly. We look forward to hearing from you.</p>
                 <form ref={formRef} action="" onSubmit={handleSubmit}>
                     <div className="mb-4 relative">

@@ -190,10 +190,10 @@ const OrderManager = () => {
                       <Button onClick={() => { setopen(!open); setitems(order.items); setid(order._id); settotalOrder(order.totalOrder); settotalPrice(order.totalPrice); settvoucher(order.voucher.discountValue), setship(order.ship.value.price) }}>Trả hàng</Button>
                     )} */}
 
-                    {order.status === "unpaid" && (
+                    {/* {order.status === "unpaid" && (
                       <Button onClick={() => handlePayAgain(order._id)} ><span>Tiếp tục thanh toán</span>
                       </Button>
-                    )}
+                    )} */}
                   </td>
                   <td className="order-2 flex-[100%] lg:table-cell pt-5 py-3 lg:border-t-[1px] lg:border-b-[1px] lg:border-['#f7f8f9']">
                     {

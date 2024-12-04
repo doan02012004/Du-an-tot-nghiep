@@ -284,7 +284,7 @@ export const vnpayReturn = async (req, res) => {
                     `Đơn hàng ${orderNumber} chưa được thanh toán. Vui lòng thử lại hoặc liên hệ với chúng tôi để được hỗ trợ.`
                 );
              }
-            return res.redirect('http://localhost:5173/order');
+            return res.redirect('http://localhost:5173/canpay');
         }
     } else {
         return res.status(400).json({ message: 'Chữ ký không hợp lệ' });

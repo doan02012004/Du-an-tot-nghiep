@@ -88,7 +88,11 @@ const VoucherDiscount = ({ voucher, setSelectedVoucherCode }: Props) => {
                             if (totalCart >= voucher?.minOrderValue) {
                                 if (voucher?.scope == "all") {
                                     const totalSubmit = totalCart - voucher?.value
-                                    dispatch(setTotalSubmit(totalSubmit))
+                                    if(Number(totalSubmit)<0){
+                                        dispatch(setTotalSubmit(0))
+                                    }else{
+                                        dispatch(setTotalSubmit(totalSubmit))
+                                    }
                                 } else {
                                     const hasIneligibleProduct = carts?.some((cartItem: any) =>
                                         !voucher?.applicableProducts?.includes(cartItem?.productId._id)
