@@ -82,7 +82,9 @@ export const getChatAdmin = async (req, res) => {
 export const getMessages = async (req, res) => {
     try {
         const { chatId } = req.params;
+        console.log(chatId)
         const messages = await MessageModel.find({ chatId }).populate('sender receiver productId');
+        console.log(messages)
        return res.status(200).json(messages);
     } catch (error) {
         return res.status(500).json({ message: 'lỗi get Message', error });
@@ -105,11 +107,12 @@ export const getLastMessage = async (req, res) => {
 //lấy 1 đoạn tin nhắn của 1 user nào đó với admin
 export const getFindChatUser = async (req, res) => {
     try {
-        const { senderId, reciverId } = req.params;
-        const chat = await ChatModel.findOne({ members: { $all: [senderId, reciverId] } }).populate('members');
-        res.status(200).json(chat);
+        const admin = await UserModel.findOne({role:'admin'})
+        const { senderId } = req.params;
+        const chat = await ChatModel.findOne({ members: { $all: [senderId, admin._id] } }).populate('members');
+        return res.status(200).json(chat);
     }
     catch (error) {
-        res.status(500).json({ message: 'lỗi get Message', error });
+       return res.status(500).json({ message: 'lỗi get Message', error });
     }
 }
