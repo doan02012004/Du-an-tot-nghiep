@@ -2,20 +2,32 @@
 import { message } from "antd";
 import instance from "../common/config/axios";
 import { Isignin, Isignup, Iuser } from "../common/interfaces/auth";
-import { loginFailed, loginStart, loginSuccess} from "../common/redux/features/authSlice";
+import { loginFailed, loginStart, loginSuccess } from "../common/redux/features/authSlice";
 
-export const loginUser = async (user: Isignin, dispatch: any, navigate: any, setAccesToken: any, setIsLogin: any) => {
-    dispatch(loginStart())
+export const loginUser = async (
+    user: Isignin,
+    dispatch: any,
+    navigate: (path: string) => void,
+    setAccesToken: (token: string) => void,
+    setIsLogin: (status: boolean) => void
+): Promise<void> => {
+    dispatch(loginStart());
     try {
-        const res = await instance.post("/users/login", user)
-        dispatch(loginSuccess(res.data))
-        setAccesToken(res.data.accessToken)
-        setIsLogin(true)
-        navigate("/")
+        const res = await instance.post("/users/login", user);
+
+        // Thành công: lưu thông tin và chuyển hướng
+        dispatch(loginSuccess(res.data));
+        setAccesToken(res.data.accessToken);
+        setIsLogin(true);
+        navigate("/");
+
+        message.success("Đăng nhập thành công!"); // Thông báo thành công
     } catch (error) {
-        dispatch(loginFailed())
+        // Trường hợp lỗi: bắn ra thông báo cụ thể
+        message.error("Sai tài khoản hoặc mật khẩu"); // Luôn thông báo lỗi cố định
+        dispatch(loginFailed());
     }
-}
+};
 
 export const registerUser = async (user: Isignup) => {
     try {
@@ -38,7 +50,7 @@ export const forgotUser = async (data: { email: string }) => {
 
 export const verifyResetToken = async (token: string) => {
     try {
-        const res = await instance.post("/users/verify-reset-token", {token})
+        const res = await instance.post("/users/verify-reset-token", { token })
         return res.data.isValid
     } catch (error) {
         message.error("Không tìm thấy")
@@ -177,9 +189,9 @@ export const deleteHistoryUpdateUser = async (id: string) => {
     }
 }
 
-export const changePassword =  async (option:{newPassword:string|number,currentPassword:string|number}) =>{
+export const changePassword = async (option: { newPassword: string | number, currentPassword: string | number }) => {
     try {
-        const res = await instance.post('/users/change-password',option)
+        const res = await instance.post('/users/change-password', option)
         return res
     } catch (error) {
         return error

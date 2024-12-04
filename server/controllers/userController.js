@@ -63,7 +63,6 @@ export const deleteUser = async (req, res) => {
     }
 }
 
-
 // Cập nhật thông tin user theo ID
 export const updateUser = async (req, res) => {
     try {
@@ -125,8 +124,6 @@ export const updateUser = async (req, res) => {
         });
     }
 };
-
-
 
 export const updateUserStatus = async (req, res) => {
     try {
@@ -193,7 +190,6 @@ export const add = async (req, res) => {
 }
 
 //đăng kí tài khoản
-
 export const register = async (req, res) => {
     const User = {
         firstname: req.body.firstname,

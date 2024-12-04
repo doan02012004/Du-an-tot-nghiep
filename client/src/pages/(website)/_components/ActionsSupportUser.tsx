@@ -3,9 +3,7 @@ import { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../../common/contexts/AppContextProvider'
 import { Modal, message } from 'antd'
 import { logoutUser } from '../../../services/auth'
-import { useDispatch } from 'react-redux'
-import { logoutFailed, logoutStart, logoutSuccess } from '../../../common/redux/features/authSlice'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 const ActionsSupportUser = () => {
     const [actionSupport, setActionSupport] = useState(false)
@@ -13,15 +11,15 @@ const ActionsSupportUser = () => {
     const { accessToken, currentUser, setAccesToken, setCurrentUser, setIsLogin } = useContext(AppContext)
     const { confirm } = Modal;
     const location = useLocation()
-    const dispatch = useDispatch()
-    useEffect(()=>{
-    if(actionSupport){
-        setActionSupport(false)
-    }
-    if(actionUser){
-        setActionUser(false)
-    }
-    },[location])
+    const navigate = useNavigate()
+    useEffect(() => {
+        if (actionSupport) {
+            setActionSupport(false)
+        }
+        if (actionUser) {
+            setActionUser(false)
+        }
+    }, [location])
     const onHandeActionSupport = () => {
         setActionSupport(!actionSupport)
         setActionUser(false)
@@ -45,7 +43,7 @@ const ActionsSupportUser = () => {
                         await setCurrentUser(null);
                         setIsLogin(false);
                         await setAccesToken(null);
-                        window.location.reload();
+                        navigate('/signin')
                     }
                 } catch (error) {
                     message.error('Đăng xuất thất bại');
@@ -127,14 +125,14 @@ const ActionsSupportUser = () => {
                                     Thông tin tài khoản
                                 </a>
                             </li>
-                           {currentUser&& currentUser?.role =='admin'&& (
-                             <li className="group mb-6">
-                             <Link to="/admin" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
-                                 <span className="mr-3 "><i className="fa-solid fa-screwdriver-wrench"></i></span>
-                                 Quản trị Admin
-                             </Link>
-                         </li>
-                           )}
+                            {currentUser && currentUser?.role == 'admin' && (
+                                <li className="group mb-6">
+                                    <Link to="/admin" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
+                                        <span className="mr-3 "><i className="fa-solid fa-screwdriver-wrench"></i></span>
+                                        Quản trị Admin
+                                    </Link>
+                                </li>
+                            )}
                             <li className="group mb-6">
                                 <Link to={"customer/order-manager"} className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
                                     <span className="mr-3 "><i className="fa-solid fa-arrows-rotate" /></span>
@@ -171,7 +169,7 @@ const ActionsSupportUser = () => {
                                     Hỗ trợ - Mail Shop
                                 </a>
                             </li>
-                            
+
                             <li className="group ">
                                 <button onClick={onHandleLogout} className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
                                     <span className="mr-3 "><i className="fa-solid fa-arrow-right-from-bracket" /></span>
