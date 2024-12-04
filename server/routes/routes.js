@@ -18,6 +18,7 @@ import searchRouter from "./searchRouter.js";
 import blogRoutes from "./blogRouter.js";
 import categoriesBlog from "./categoryBlogRoutes.js";
 import contactRouter from "./contactRouter.js";
+import favoriteRouter from "./favoriteRouter.js";
 const routes = (app) => {
   app.use("/api/products", productRouter);
   app.use("/api/orders", orderRouter);
@@ -40,6 +41,7 @@ const routes = (app) => {
   app.use("/api/blogs", blogRoutes);
   app.use("/api/categoriesBlog", categoriesBlog);
   app.use("/api/contacts", contactRouter);
+  app.use("/api/favorite", favoriteRouter);
 };
 
 export default routes;

@@ -156,7 +156,7 @@ const ActionsSupportUser = () => {
                                 </a>
                             </li>
                             <li className="group mb-6">
-                                <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
+                                <a href={`/customer/favourite`} className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
                                     <span className="mr-3 "><i className="fa-regular fa-heart" /></span>
                                     Sản phẩm yêu thích
                                 </a>

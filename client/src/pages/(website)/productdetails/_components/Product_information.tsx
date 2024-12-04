@@ -6,6 +6,8 @@ import { AppContext } from '../../../../common/contexts/AppContextProvider'
 import { formatPrice } from '../../../../common/utils/product'
 import { InewCart } from '../../../../common/interfaces/cart'
 import useCartMutation from '../../../../common/hooks/carts/useCartMutation'
+import useFavoriteQuery from '../../../../common/hooks/favorite/useFavoriteQuery'
+import useFavoriteMutation from '../../../../common/hooks/favorite/useFavoriteMutation'
 
 type Props = {
     product: Iproduct
@@ -19,6 +21,26 @@ const Product_information = ({ product }: Props) => {
     const [curentAttribute, setCurentAttribute] = useState<Iattribute | null>(null)
     const inputRef = useRef<any>(null)
     const cartMutation = useCartMutation()
+    const { currentUser } = useContext(AppContext);
+    const { data } = useFavoriteQuery(currentUser?._id); // Lấy danh sách yêu thích
+    const mutation = useFavoriteMutation(); // Hook để thêm hoặc bỏ yêu thích sản phẩm
+    const [liked, setLiked] = useState(false);
+    // Kiểm tra nếu sản phẩm đã có trong danh sách yêu thích
+    useEffect(() => {
+      if (data) {
+        const isFavorited = data.some((favorite:any) => favorite.productId._id === product?._id);
+        setLiked(isFavorited);
+      }
+    }, [data, product]);
+  
+    // Hàm toggle khi nhấn vào icon yêu thích
+    const toggleLike = () => {
+      if (currentUser?._id) {
+        mutation.mutate({userId:currentUser?._id, productId: product?._id, status: !liked });
+        setLiked(!liked); // Cập nhật trạng thái yêu thích
+      }
+    };
+    
     useEffect(() => {
         if (product && product.colors && choiceColor === "") {
             setChoiceColor(product.colors[0]?.name || ""); // Đảm bảo giá trị không gây lỗi
@@ -124,6 +146,7 @@ const Product_information = ({ product }: Props) => {
         console.log(newCart)
         cartMutation.mutate({action:'addtocart', cart: newCart})
     }
+
 
 
     return (
@@ -251,7 +274,13 @@ const Product_information = ({ product }: Props) => {
                             <button disabled={(curentAttribute == null || curentAttribute?.instock == 0)? true:false} onClick={onAddToCart} className={` ${(curentAttribute == null || curentAttribute?.instock == 0)? 'bg-gray-400':'bg-[#221f20] border-black hover:text-black hover:bg-white'}    border  w-[160px] h-[48px]  text-white lg:text-[16px] text-[13px] px-4 font-semibold lg:mr-[10px] mr-1
                 rounded-tl-2xl rounded-br-2xl`}>THÊM VÀO GIỎ</button>
                             <button className="buy-now hover:text-white hover:bg-black w-[125px] lg:text-[16px] text-[13px] rounded-tl-2xl rounded-br-2xl border border-black h-[48px] text-black font-semibold mx-4">MUA HÀNG</button>
-                            <button className="h-[48px] w-[48px] hover:text-white hover:bg-black border border-black rounded-tl-2xl rounded-br-2xl"><i className="fa-regular fa-heart" /></button>
+                            <button className="h-[48px] w-[48px] hover:text-white hover:bg-black border border-black rounded-tl-2xl rounded-br-2xl" onClick={toggleLike}>
+                            {liked ? (
+                                <i className="fa-solid fa-heart" /> // Trái tim đỏ khi được thích
+                            ) : (
+                                <i className="fa-regular fa-heart" /> // Trái tim xám khi chưa thích
+                            )}
+                            </button>
                         </div>
                         {/*  */}
                         <div>
