@@ -18,7 +18,7 @@ const DashboardCard04 = () => {
     }
    },[startDate,finishDate,userNewCountQuery?.data])
     return (
-      <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-3 bg-white dark:bg-gray-800 shadow-sm shadow-orange rounded-xl">
+      <div className="flex flex-col col-span-full sm:col-span-4 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm shadow-orange rounded-xl">
         <div className="p-5">
           <header className="flex justify-between items-start mb-2">
             <h2 className="text-lg font-semibold text-orange dark:text-gray-100 mb-2">Khách hàng mới</h2>

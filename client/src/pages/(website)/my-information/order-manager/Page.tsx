@@ -24,6 +24,7 @@ const OrderManager = () => {
   const orders = useOrderQuery({userId:currentUser?._id})
   const mutations = useComplaintMutation();
   const [form] = Form.useForm();
+  
   const handleSubmit = (values:any) => {
     mutations.mutate({
       action: 'add',
@@ -108,12 +109,11 @@ const OrderManager = () => {
           {/* Update select to Ant design */}
           <select name="" id="" className="text-sm border rounded-md px-4 py-3 w-[210px] appearance-none select-content focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base text-black ">
             <option value="">Tất cả</option>
-            <option value="">Đặt hàng thành công</option>
-            <option value="">Đang xử lý</option>
+            <option value="">Đang chờ xử lý</option>
             <option value="">Chưa thanh toán</option>
-            <option value="">Đang xử lý</option>
-            <option value="">Chờ giao vận</option>
-            <option value="">Đã gửi</option>
+            <option value="">Đã xác nhận</option>
+            <option value="">Đang giao hàng</option>
+            <option value="">Đã giao hàng</option>
             <option value="">Đã nhận hàng</option>
             <option value="">Đã hủy</option>
             <option value="">Trả hàng</option>
@@ -170,7 +170,7 @@ const OrderManager = () => {
                         Trả hàng
                       </Button>
                     ) }
-                    {(order.status === "delivered") && (
+                    {(order.status === "delivered" || order.status === "Exchanged") && (
                      <Button type='primary' onClick={() => onHandleReceived(order?._id) } className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
                       <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} />
                       Đã nhận hàng

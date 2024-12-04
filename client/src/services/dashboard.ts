@@ -16,6 +16,19 @@ export const getStatusOrderCount = async(option:{startDate?:string|null,endDate?
     return error
   }
 }
+export const getNewComplaintsCount = async (option: { startDate?: string | null, endDate?: string | null }) => {
+  try {
+    const data = await instance.get('/dashboard/complaint', {
+      params: {
+        start: option.startDate,
+        end: option.endDate
+      }
+    });
+    return data.data;
+  } catch (error) {
+    return error;
+  }
+};
 export const getUserNewCount = async(option:{startDate?:string|null,endDate?:string|null}) =>{
   try {
       const data = await instance.get(`/dashboard/user/count`,{params:{start:option.startDate,end:option.endDate}})
