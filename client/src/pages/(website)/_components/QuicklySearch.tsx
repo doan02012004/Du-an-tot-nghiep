@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { AppContext } from "../../../common/contexts/AppContextProvider";
 import useSearchQuery from "../../../common/hooks/searchs/useSearchQuery";
 import { ISearch } from "../../../common/interfaces/search";
@@ -13,23 +13,23 @@ const QuicklySearch = () => {
     const { currentUser } = useContext(AppContext);
     const searchMutation = useSearchMutation();
     const searchQuery = useSearchQuery();
-    const inputRef = useRef<HTMLInputElement | null>(null); // Thêm useRef cho input
     const keywordUrl = searchParams.get("search");
+    const location = useLocation()
 
     const [previousKeyword, setPreviousKeyword] = useState<string | null>(null);
     const [dataSearchRecent, setDataSearchRecent] = useState<string[]>([]); // State cho lịch sử tìm kiếm
 
     useEffect(() => {
-        if (keywordUrl) {
-            reset({ keyword: keywordUrl });
+        if (location) {
+            reset({ keyword: "" });
         }
-
-        // Khôi phục dữ liệu tìm kiếm từ localStorage
+        
+        // Khôi phục dữ liệu tìm kiếm từ sessionStorage
         const storedSearches = JSON.parse(localStorage.getItem("searches") || "[]") as string[];
         if (storedSearches && storedSearches.length > 0) {
             setDataSearchRecent(storedSearches);
         }
-    }, [keywordUrl, reset]);
+    }, [location, reset]);
 
     const saveSearch = (query: string) => {
         const searches = JSON.parse(localStorage.getItem("searches") || "[]") as string[];
@@ -41,12 +41,18 @@ const QuicklySearch = () => {
         setPreviousKeyword(query); // Cập nhật từ khóa hiện tại làm từ khóa trước
     };
 
+
     useEffect(() => {
         // Cập nhật số lượng tab khi load
         const updateTabCount = () => {
             const currentTabCount = parseInt(sessionStorage.getItem("tabCount") || "0", 10);
             sessionStorage.setItem("tabCount", (currentTabCount + 1).toString());
         };
+        const datalocal = JSON.stringify(localStorage.getItem("searches"));
+        console.log(datalocal);
+
+        const currentTabCount = parseInt(sessionStorage.getItem("tabCount") || "1", 10);
+        console.log(currentTabCount);
 
         // Giảm số lượng tab khi tab đóng, xóa dữ liệu nếu không còn tab nào
         const reduceTabCount = () => {
@@ -69,10 +75,13 @@ const QuicklySearch = () => {
 
     const onSearch = (data: any) => {
         const { keyword } = data;
-        searchMutation.mutate({ action: "add", keyword});
+        searchMutation.mutate({ action: "add", keyword });
         navigate(`/timkiem?search=${keyword}`);
         saveSearch(keyword);
-        inputRef.current?.blur(); // Mất focus sau khi điều hướng
+        reset({ keyword: "" });
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
     };
     const handleKeywordClick = (query: any) => {
         const searches = JSON.parse(localStorage.getItem("searches") || "[]") as string[];
@@ -96,12 +105,7 @@ const QuicklySearch = () => {
                     <input
                         {...register("keyword", {
                             required: true,
-                            setValueAs: () => inputRef.current?.value, // Đảm bảo giá trị được lấy từ ref
                         })}
-                        ref={(e) => {
-                            register("keyword").ref(e); // Gắn ref của React Hook Form
-                            inputRef.current = e; // Đồng thời lưu ref cho mất focus
-                        }}
                         type="text"
                         className="pl-10 py-[15px] text-sm pr-[15px] w-full h-10 border-0 outline-0 font-light"
                         placeholder="Tìm kiếm sản phẩm"
