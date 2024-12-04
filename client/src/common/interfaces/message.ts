@@ -1,4 +1,5 @@
 import { Iuser } from "./auth"
+import { Iattribute, Iproduct } from "./product"
 
 export interface Imesage {
     _id?: string
@@ -9,4 +10,12 @@ export interface Imesage {
     isRead?:boolean
     createdAt?: string
     updatedAt?: string
+}
+
+export interface messageTag {
+    type:"product"|'image'|'message',
+    image?:string,
+    product?:Iproduct,
+    attribute?:Iattribute,
+    message?:Imesage
 }

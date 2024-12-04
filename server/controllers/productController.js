@@ -408,3 +408,11 @@ export const updateAvatarGallery = async(req,res) =>{
     });
   }
 }
+
+export const deleteImage = async(req,res) =>{
+  try {
+    
+  } catch (error) {
+    
+  }
+}

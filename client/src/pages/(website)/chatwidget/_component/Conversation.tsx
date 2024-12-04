@@ -3,6 +3,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { AppContext } from "../../../../common/contexts/AppContextProvider"
 import useMessageQuery from "../../../../common/hooks/chats/useMessageQuery"
 import { Imesage } from "../../../../common/interfaces/message"
+import Message from "./Message"
 type Props = {
     chatId: string
 }
@@ -29,10 +30,13 @@ const Conversation = ({ chatId }: Props) => {
     useEffect(() => {
         checkBoxRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages])
+    useEffect(()=>{
+
+    },[checkBoxRef])
     return (
-        <div className="flex flex-col flex-1 overflow-y-scroll border border-gray-300 p-4">
+        <div className="flex flex-col flex-1 overflow-y-scroll border border-gray-300 p-4  relative">
             {messages?.map((message: Imesage) => (
-                <div ref={checkBoxRef} key={message?._id} className={`${currentUser?._id == message?.sender?._id ? "self-end text-white bg-blue" : "self-start text-dark bg-gray-200"} mb-2 px-3 py-2 border rounded-full w-max text-base  font-medium`}>{message.message}</div>
+                <Message key={message._id} checkBoxRef={checkBoxRef} currentUser={currentUser} message={message}/>
             ))}
         </div>
     )
