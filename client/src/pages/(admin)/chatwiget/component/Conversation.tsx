@@ -4,6 +4,7 @@ import useMessageQuery from "../../../../common/hooks/chats/useMessageQuery"
 import { Imesage } from "../../../../common/interfaces/message"
 import { Iuser } from "../../../../common/interfaces/auth"
 import { AppContext } from "../../../../common/contexts/AppContextProvider"
+import MessageAdmin from "./MessageAdmin"
 type Props = {
     chatId: null | string,
     userMessage: Iuser | null
@@ -11,7 +12,7 @@ type Props = {
 const Conversation = ({ chatId, userMessage }: Props) => {
     const [messages, setMessages] = useState([] as Imesage[])
     const messengeQuery = useMessageQuery(chatId)
-    const {adminId,socket} = useContext(AppContext)
+    const {currentUser,socket} = useContext(AppContext)
     const checkBoxRef = useRef<any>()
     useEffect(() => {
         if (messengeQuery?.data && messengeQuery?.data?.length > 0) {
@@ -35,7 +36,6 @@ const Conversation = ({ chatId, userMessage }: Props) => {
         <div className="flex-grow ">
             <h2 className="text-xl font-semibold mb-2 border-b-2 ">
                 {userMessage ? (<>
-                    Chat with
                     <span className="text-red"> {userMessage?.lastname} {userMessage?.firstname}</span>
                 </>)
                     :
@@ -45,9 +45,7 @@ const Conversation = ({ chatId, userMessage }: Props) => {
             <div className="flex flex-col w-full h-[450px] overflow-y-auto">
                 {
                     messages?.map((message: Imesage) => (
-                        <div ref={checkBoxRef} key={message?._id} className={`${adminId == message?.sender?._id ? "self-end text-white bg-blue" : "self-start text-dark bg-gray-200"} mb-2 px-3 py-2 border rounded-full w-max text-base  font-medium`}>
-                            {message?.message}
-                        </div>
+                        <MessageAdmin currentUser={currentUser} checkBoxRef={checkBoxRef} message={message} key={message?._id} />
                     ))
                 }
             </div>

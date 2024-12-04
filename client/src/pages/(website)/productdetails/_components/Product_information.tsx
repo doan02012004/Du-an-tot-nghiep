@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {  message } from 'antd'
+import { message } from 'antd'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { Iattribute, Igallery, Iproduct } from '../../../../common/interfaces/product'
 import { AppContext } from '../../../../common/contexts/AppContextProvider'
 import { formatPrice } from '../../../../common/utils/product'
 import { InewCart } from '../../../../common/interfaces/cart'
 import useCartMutation from '../../../../common/hooks/carts/useCartMutation'
+import { useDispatch } from 'react-redux'
+import { setMesageTag, setOpenChat } from '../../../../common/redux/features/chatSlice'
+import { messageTag } from '../../../../common/interfaces/message'
 
 type Props = {
     product: Iproduct
@@ -19,6 +22,7 @@ const Product_information = ({ product }: Props) => {
     const [curentAttribute, setCurentAttribute] = useState<Iattribute | null>(null)
     const inputRef = useRef<any>(null)
     const cartMutation = useCartMutation()
+    const dispath = useDispatch()
     useEffect(() => {
         if (product && product.colors && choiceColor === "") {
             setChoiceColor(product.colors[0]?.name || ""); // Đảm bảo giá trị không gây lỗi
@@ -42,7 +46,7 @@ const Product_information = ({ product }: Props) => {
         }
     }, [product, choiceColor, choiceSize]);
     const onBlurQuantity = (value: any) => {
-       
+
         if (value === '') {
             message.error("Không được để trống")
             inputRef.current.value = 1
@@ -91,7 +95,7 @@ const Product_information = ({ product }: Props) => {
 
     }
     const tangSl = () => {
-       
+
         if (choiceSize === "") {
             message.error("Vui lòng chọn size")
         } else {
@@ -110,22 +114,30 @@ const Product_information = ({ product }: Props) => {
             }
         }
     }
-    
-    const onAddToCart = () =>{
-        const gallery = product?.gallerys.find((item:Igallery)=> item.name == curentAttribute?.color)
-        if(!curentAttribute) return message.error("Vui lòng chọn size")
-        if(!gallery) return message.error("Vui lòng thao tác lại")
+
+    const onAddToCart = () => {
+        const gallery = product?.gallerys.find((item: Igallery) => item.name == curentAttribute?.color)
+        if (!curentAttribute) return message.error("Vui lòng chọn size")
+        if (!gallery) return message.error("Vui lòng thao tác lại")
         const newCart = {
-          productId: product._id,
-          quantity: Number(inputRef.current.value),
-          attributeId: curentAttribute?._id,
-          galleryId: gallery?._id
+            productId: product._id,
+            quantity: Number(inputRef.current.value),
+            attributeId: curentAttribute?._id,
+            galleryId: gallery?._id
         } as InewCart
         console.log(newCart)
-        cartMutation.mutate({action:'addtocart', cart: newCart})
+        cartMutation.mutate({ action: 'addtocart', cart: newCart })
     }
 
-
+    const onOpenChat = () => {
+        const newMessageTag ={
+            type:"product",
+            product:product,
+            attribute:curentAttribute
+        } as messageTag
+        dispath(setMesageTag(newMessageTag))
+        dispath(setOpenChat(true))
+    }
     return (
         <>
             {product && (
@@ -208,7 +220,7 @@ const Product_information = ({ product }: Props) => {
                                                 onClick={() => {
                                                     if (color.instock === 0) {
                                                         message.error(`Sản phẩm này đã hết size: ${color?.size} vui lòng chọn size khác`);
-                                                    }else if(color?.active ==false){
+                                                    } else if (color?.active == false) {
                                                         message.error(`Size ${color?.size} của màu ${color?.color} đã ngừng bán, vui lòng chọn size khác`);
                                                     } else {
                                                         setChoiceSize(color.size);
@@ -248,21 +260,19 @@ const Product_information = ({ product }: Props) => {
                         </div>
                         {/*  */}
                         <div className="product-detail__actions flex lg:mt-[24px] mb-4 mt-4">
-                            <button disabled={(curentAttribute == null || curentAttribute?.instock == 0)? true:false} onClick={onAddToCart} className={` ${(curentAttribute == null || curentAttribute?.instock == 0)? 'bg-gray-400':'bg-[#221f20] border-black hover:text-black hover:bg-white'}    border  w-[160px] h-[48px]  text-white lg:text-[16px] text-[13px] px-4 font-semibold lg:mr-[10px] mr-1
+                            <button disabled={(curentAttribute == null || curentAttribute?.instock == 0) ? true : false} onClick={onAddToCart} className={` ${(curentAttribute == null || curentAttribute?.instock == 0) ? 'bg-gray-400' : 'bg-[#221f20] border-black hover:text-black hover:bg-white'}    border  w-[160px] h-[48px]  text-white lg:text-[16px] text-[13px] px-4 font-semibold lg:mr-[10px] mr-1
                 rounded-tl-2xl rounded-br-2xl`}>THÊM VÀO GIỎ</button>
                             <button className="buy-now hover:text-white hover:bg-black w-[125px] lg:text-[16px] text-[13px] rounded-tl-2xl rounded-br-2xl border border-black h-[48px] text-black font-semibold mx-4">MUA HÀNG</button>
                             <button className="h-[48px] w-[48px] hover:text-white hover:bg-black border border-black rounded-tl-2xl rounded-br-2xl"><i className="fa-regular fa-heart" /></button>
                         </div>
                         {/*  */}
                         <div>
-                            <a href="#" className="text-lg text-black border-b border-black hover:no-underline text-[14px]">Tìm tại cửa hàng</a>
+                            <p onClick={onOpenChat} className="text-lg w-max cursor-pointer text-black border-b border-black hover:no-underline text-[14px]">Hỗ trợ tư vấn & giải đáp</p>
+                            <p className=' text-xs text-red'>*Vui lòng chọn size và màu bạn muốn để Fendi Shop hỗ trợ bạn dễ dàng hơn</p>
                         </div>
                         <div className="product-detail-divider mt-[57px] mb-[45px]">
                             <hr />
                         </div>
-                        {/*  */}
-                        
-                        {/*  */}
                     </div>
                 </div>
             )}

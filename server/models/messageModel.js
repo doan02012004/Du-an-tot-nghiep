@@ -26,6 +26,15 @@ const messageSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    productId:{
+        type: mongoose.Schema.Types.ObjectId,ref:'products',
+        default:null,
+    },
+    attributeId:{
+        type:String,
+         default:null,
+    },
+    images:[]
 }, { timestamps: true });
 
 const MessageModel = mongoose.model('messeage', messageSchema);
