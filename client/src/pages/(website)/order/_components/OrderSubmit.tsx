@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react"
 import useOrderMutation from "../../../../common/hooks/orders/useOrderMutation"
 import { Iaddress } from "../../../../common/interfaces/address"
@@ -24,10 +23,10 @@ type Props = {
 
 const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, ship }: Props) => {
     const voucher = useSelector((state: any) => state.cart.voucher) as Vouchers;
-    const checkCarts = useSelector((state: any) => state.cart.checkCarts)
     const [loading, setLoading] = useState(false)
     const orderMutation = useOrderMutation()
     const navigate = useNavigate()
+    // const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
     useEffect(() => {
         if (orderMutation?.data?.response?.status === 500) {
             return message.error("Lỗi thanh toán")
@@ -150,21 +149,18 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
 
     return (
         <>
-            {carts.length>0 && payment === "cash" &&(
+            {payment === "cash" ? (
                 <button
-                    disabled={!checkCarts}
                     onClick={onHandleOrder}
-                    className={`${!checkCarts?' bg-gray-300 text-white':' bg-black text-white hover:bg-white hover:text-black hover:border hover:border-black '}  w-full py-3 
-                    text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] `}
+                    className="bg-black text-white w-full py-3 
+                    text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black"
                 >
                     HOÀN THÀNH
                 </button>
-            ) }
-            {carts.length>0 && payment === "vnPay" &&(
+            ) : (
 
 
                 <button
-                    disabled={!checkCarts}
                     onClick={onHandlePayment}
                     className="flex items-center justify-center  bg-black text-white w-full py-3 
                     text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black"

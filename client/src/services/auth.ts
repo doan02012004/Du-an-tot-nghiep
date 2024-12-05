@@ -2,22 +2,32 @@
 import { message } from "antd";
 import instance from "../common/config/axios";
 import { Isignin, Isignup, Iuser } from "../common/interfaces/auth";
-import { loginFailed, loginStart, loginSuccess} from "../common/redux/features/authSlice";
+import { loginFailed, loginStart, loginSuccess } from "../common/redux/features/authSlice";
 
-
-
-export const loginUser = async (user: Isignin, dispatch: any, navigate: any, setAccesToken: any, setIsLogin: any) => {
-    dispatch(loginStart())
+export const loginUser = async (
+    user: Isignin,
+    dispatch: any,
+    navigate: (path: string) => void,
+    setAccesToken: (token: string) => void,
+    setIsLogin: (status: boolean) => void
+): Promise<void> => {
+    dispatch(loginStart());
     try {
-        const res = await instance.post("/users/login", user)
-        dispatch(loginSuccess(res.data))
-        setAccesToken(res.data.accessToken)
-        setIsLogin(true)
-        navigate("/")
+        const res = await instance.post("/users/login", user);
+
+        // Thành công: lưu thông tin và chuyển hướng
+        dispatch(loginSuccess(res.data));
+        setAccesToken(res.data.accessToken);
+        setIsLogin(true);
+        navigate("/");
+
+        message.success("Đăng nhập thành công!"); // Thông báo thành công
     } catch (error) {
-        dispatch(loginFailed())
+        // Trường hợp lỗi: bắn ra thông báo cụ thể
+        message.error("Sai tài khoản hoặc mật khẩu"); // Luôn thông báo lỗi cố định
+        dispatch(loginFailed());
     }
-}
+};
 
 export const registerUser = async (user: Isignup) => {
     try {
@@ -40,7 +50,7 @@ export const forgotUser = async (data: { email: string }) => {
 
 export const verifyResetToken = async (token: string) => {
     try {
-        const res = await instance.post("/users/verify-reset-token", {token})
+        const res = await instance.post("/users/verify-reset-token", { token })
         return res.data.isValid
     } catch (error) {
         message.error("Không tìm thấy")
@@ -61,7 +71,6 @@ export const resetPassword = async (data: { token: string; password: string }) =
 export const logoutUser = async () => {
     // dispatch(logoutStart());
     try {
-
         const data = await instance.post("/users/logout", {});
         // if (data.data.SC == 1) {
         //     setCurrentUser({});
@@ -157,24 +166,47 @@ export const getAccountUser = async () => {
 export const getHistoryUpdateUser = async () => {
     try {
         const history = await instance.get(`/users/getupdate/userhistory`)
-         // Kiểm tra xem có dữ liệu không
-         if (history.status === 200 && history.data) {
-            return history.data; 
+        // Kiểm tra xem có dữ liệu không
+        if (history.status === 200 && history.data) {
+            return history.data;
         } else {
             message.error('Không có lịch sử cập nhật nào được tìm thấy.');
             return [];
         }
     } catch (error) {
-        console.log(message.error)
+        message.error('Không tải được lịch sử cập nhật.');
+        return [];
     }
 }
 
-export const changePassword =  async (option:{newPassword:string|number,currentPassword:string|number}) =>{
+export const deleteHistoryUpdateUser = async (id: string) => {
     try {
-        const res = await instance.post('/users/change-password',option)
+        const { data } = await instance.delete(`/users/delehistory/${id}`);
+        return data;
+    } catch (error) {
+        message.error('Xóa lịch sử cập nhật thất bại');
+        return error;
+    }
+}
+
+export const changePassword = async (option: { newPassword: string | number, currentPassword: string | number }) => {
+    try {
+        const res = await instance.post('/users/change-password', option)
         return res
     } catch (error) {
         return error
     }
 }
 
+
+
+
+export const getHistoryUpdateUserById = async (id: string) => {
+    try {
+        const { data } = await instance.get(`/users/history/${id}`);
+        return data;
+    } catch (error) {
+        message.error('Không tải được lịch sử cập nhật');
+        return error;
+    }
+};
