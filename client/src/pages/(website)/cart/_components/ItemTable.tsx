@@ -87,13 +87,12 @@ const ItemTable = ({ cart }: Props) => {
     }
     const remove = () => {
         const newCart = {
-            productId: cart.productId._id as string,
+            productId: cart.productId?._id as string,
             attributeId: cart.attributeId as string,
         }
         cartMutation.mutate({ action: "remove", cart: newCart })
     }
     return (
-
         <tr className="border-b border-t  *:py-5">
             <td className="w-[27rem]">
                 <div className="flex mt-0 pt-0 w-[25rem]">
@@ -141,7 +140,6 @@ const ItemTable = ({ cart }: Props) => {
                 <DeleteOutlined className=' text-xl cursor-pointer hover:text-red' onClick={remove} />
             </td>
         </tr>
-
     )
 }
 export default ItemTable

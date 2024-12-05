@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Dropdown, Form, InputNumber, message, Select } from "antd";
+import { Button, Dropdown, Form, InputNumber, message, Select, Space } from "antd";
 import { Iattribute } from "../../../../common/interfaces/product";
 import { useDispatch, useSelector } from "react-redux";
 import { setAttributes } from "../../../../common/redux/features/productSlice";
-import {  DownOutlined, EditOutlined } from "@ant-design/icons";
+import { DownOutlined, EditOutlined } from "@ant-design/icons";
 import { useEffect } from "react";
 
 type AttributeItemProps = {
@@ -27,7 +27,7 @@ const AttributeItem = ({ data, index }: AttributeItemProps) => {
     const length = form.getFieldValue("length");
     if (height && width && length) {
       form.setFieldValue("volume", height * width * length);
-    } 
+    }
   };
   const onChangePriceNew: any = (priceNew: number) => {
     const priceOld = form.getFieldValue("price_old");
@@ -61,7 +61,14 @@ const AttributeItem = ({ data, index }: AttributeItemProps) => {
     dispath(setAttributes(newAttributes));
   };
 
-
+  const onSave = async () => {
+    const newAttributes = await attributes.map((item: Iattribute) => (item.size == data.size) ? { ...data, size: item.size, color: item.color } : item)
+    dispath(setAttributes(newAttributes))
+  }
+  const onSaveAll = async () => {
+    const newAttributes = await attributes.map((item: Iattribute) => ({ ...data, size: item.size, color: item.color }))
+    dispath(setAttributes(newAttributes))
+  }
   return (
     <>
       <Dropdown
@@ -161,27 +168,27 @@ const AttributeItem = ({ data, index }: AttributeItemProps) => {
                   name="active"
                   label="Trạng thái"
                   className="col-span-3"
-                  
+
                 >
-                  <Select 
-                  defaultValue={true}
-                  placeholder='Trạng thái...'
-                  options={[
-                    {
-                      label:"Hoạt động",
-                      value:true
-                    },
-                    {
-                      label:"Không hoạt động",
-                      value:false
-                    }
-                  ]}
+                  <Select
+                    defaultValue={true}
+                    placeholder='Trạng thái...'
+                    options={[
+                      {
+                        label: "Hoạt động",
+                        value: true
+                      },
+                      {
+                        label: "Không hoạt động",
+                        value: false
+                      }
+                    ]}
                   />
                 </Form.Item>
               </div>
               {!data?.isCheck && (
                 <Form.Item
-                className="m-0 p-0"
+                  className="m-0 p-0"
                 >
                   <Button type="primary" htmlType="submit">
                     Lưu
@@ -190,9 +197,18 @@ const AttributeItem = ({ data, index }: AttributeItemProps) => {
               )}
             </Form>
             {data?.isCheck && (
-              <Button onClick={onOpenForm} className="bg-red text-white">
-                Chỉnh sửa <EditOutlined />
-              </Button>
+              <Space>
+                <Button onClick={onOpenForm} htmlType="button" className="bg-red text-white">
+                  Chỉnh sửa <EditOutlined />
+                </Button>
+                <Button onClick={onSave} type="primary" htmlType="submit">
+                  Lưu đồng bộ size {data?.size}
+                </Button>
+                <Button onClick={onSaveAll} type="primary" htmlType="submit">
+                  Lưu đồng bộ tất cả
+                </Button>
+
+              </Space>
             )}
           </div>
         )}

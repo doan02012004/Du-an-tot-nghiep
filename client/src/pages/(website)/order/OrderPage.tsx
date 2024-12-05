@@ -64,14 +64,15 @@ const OrderPage = () => {
 
     useEffect(() => {
         if (carts.length > 0) {
-            const check = carts.some((item: IcartItem) => item.productId.active == false)
+            const check = carts.some((item: IcartItem) => item?.productId?.active == false)
+            const checkProduct = carts.some((item: IcartItem) => item?.productId == null)
             const cartAtb = carts.map((item:IcartItem) => {
-                const findAtb = item?.productId?.attributes.find((atb:Iattribute) => atb._id == item.attributeId)
+                const findAtb = item?.productId?.attributes.find((atb:Iattribute) => atb?._id == item?.attributeId)
                 return findAtb
             })
-            const checkAtb = cartAtb.some((item: Iattribute) => item.active == false)
-            const checkInstock = cartAtb.some((item: Iattribute) => item.instock == 0)
-            if(check || checkAtb || checkInstock){
+            const checkAtb = cartAtb.some((item: Iattribute) => item?.active == false)
+            const checkInstock = cartAtb.some((item: Iattribute) => item?.instock == 0)
+            if(check || checkAtb || checkInstock||checkProduct){
                 if(checkCarts == true){
                     dispath(setCheckCarts(false))
                 }
@@ -83,8 +84,8 @@ const OrderPage = () => {
             }
         }else{
             if(checkCarts == true){
-                navigate('/cart')
                 dispath(setCheckCarts(false))
+                navigate('/cart')
             }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps

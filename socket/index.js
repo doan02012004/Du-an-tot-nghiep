@@ -49,6 +49,11 @@ io.on("connection", (socket) => {
         // Phát sự kiện 'updateInforProduct' đến tất cả các client đang kết nối
         io.emit('adminUpdateProduct',option)
     })
+    // Xóa sản phẩm
+    socket.on("adminDeleteProduct",(option)=>{
+        // Phát sự kiện 'deleteProduct' đến tất cả các client đang kết nối
+        io.emit('deleteProduct',option)
+    })
 })
 
 

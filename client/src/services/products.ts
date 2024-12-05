@@ -216,3 +216,12 @@ export const addItemsGallery = async(option:{productId:string|number,galleryId:s
     return error
   }
 }
+
+export const deleteImageGallery = async(option:{productId:string|number,galleryId:string|number,imageUrl:string|number})=>{
+  try {
+    const res = await instance.put('/products/delete/image',option)
+    return res
+  } catch (error) {
+    return error
+  }
+}
