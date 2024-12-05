@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import orderModel from "../models/orderModel.js";
 import moment from 'moment'
 import UserModel from "../models/userModel.js";
+import complaintModel from "../models/complaintModel.js";
 
 
 
@@ -64,6 +65,39 @@ export const getStatusOrdersCountByDate  = async (req, res) => {
     }
     
 };
+
+
+// Hàm để lấy số lượng khiếu nại dựa trên status
+export const getNewComplaintsCountByDate = async (req, res) => {
+    try {
+        const { start, end } = req.query;
+
+        // Xử lý ngày bắt đầu và ngày kết thúc
+        const startDate = start 
+            ? new Date(`${start}T00:00:00.000Z`) 
+            : moment().subtract(1, 'month').toDate(); // Mặc định là 1 tháng trước
+        const endDate = end 
+            ? new Date(`${end}T23:59:59.999Z`) 
+            : moment().toDate(); // Mặc định là ngày hiện tại
+
+        // Đếm số lượng khiếu nại có trạng thái "new" trong khoảng thời gian
+        const newComplaintsCount = await complaintModel.countDocuments({
+            status: "new",
+            createdAt: { 
+                $gte: startDate,  // Ngày bắt đầu
+                $lte: endDate     // Ngày kết thúc
+            }
+        });
+
+        // Trả về kết quả
+        return res.status(StatusCodes.OK).json({ total: newComplaintsCount });
+    } catch (error) {
+        console.error("Lỗi khi lấy số lượng khiếu nại mới:", error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+};
+
+
 // Hàm để lấy số lượng người dùng mới
 export const getUserNewCountByDate  = async (req, res) => {
     try {

@@ -64,6 +64,7 @@ import BlogEdit from "../pages/(admin)/blog/_components/BlogEdit";
 import PageCategoryBlog from "../pages/(admin)/categoryBlog/Page";
 import CategoryBlogList from "../pages/(admin)/categoryBlog/_components/CategoryBlogList";
 import CategoryBlogEdit from "../pages/(admin)/categoryBlog/_components/CategoryBlogEdit";
+import PageFavourite from "../pages/(website)/my-information/favourite/Page";
 
 
 const Router = () => {
@@ -89,6 +90,7 @@ const Router = () => {
         <Route path="canpay" element={<CanPayment />} />
         <Route path="customer" element={currentUser?<MyInformation />:<Navigate to={'/signin'} />}>
           <Route path="infor" element={<Account />} />
+          <Route path="favourite" element={<PageFavourite />} />
           <Route path="order-manager" element={<OrderManager />} />
           <Route path="address_list" element={<AddressList />} />
         </Route>

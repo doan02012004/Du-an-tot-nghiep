@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {  useEffect, useState } from 'react'
+import {  useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { IColor } from '../../../common/interfaces/Color'
 import { Iattribute, Igallery, Iproduct } from '../../../common/interfaces/product'
 import { formatPrice } from '../../../common/utils/product'
+import { AppContext } from '../../../common/contexts/AppContextProvider'
+import useFavoriteQuery from '../../../common/hooks/favorite/useFavoriteQuery'
+import useFavoriteMutation from '../../../common/hooks/favorite/useFavoriteMutation'
 
 
 type Props = {
@@ -18,6 +21,25 @@ const Product = ({ product,maxPrice,minPrice,discount,colorsUrl }: Props) => {
   // const [isOpenSize, setIsOpenSize] = useState(false)
   const [gallery, setGallery] = useState<Igallery>({avatar:'',items:[],name:'',background:''})
   const [variant,setVariant] = useState<Iattribute | undefined | null>(null)
+  const { currentUser } = useContext(AppContext);
+  const { data } = useFavoriteQuery(currentUser?._id); // Lấy danh sách yêu thích
+  const mutation = useFavoriteMutation(); // Hook để thêm hoặc bỏ yêu thích sản phẩm
+  const [liked, setLiked] = useState(false);
+  // Kiểm tra nếu sản phẩm đã có trong danh sách yêu thích
+  useEffect(() => {
+    if (data) {
+      const isFavorited = data.some((favorite:any) => favorite.productId._id === product._id);
+      setLiked(isFavorited);
+    }
+  }, [data, product]);
+
+  // Hàm toggle khi nhấn vào icon yêu thích
+  const toggleLike = () => {
+    if (currentUser?._id) {
+      mutation.mutate({userId:currentUser?._id, productId: product._id, status: !liked });
+      setLiked(!liked); // Cập nhật trạng thái yêu thích
+    }
+  };
 
   
   const resultVariant = (option:{attributes:Iattribute[],colorUrl?:string,minPrice?:number,maxPrice?:number,discount?:number}) =>{
@@ -81,8 +103,12 @@ const Product = ({ product,maxPrice,minPrice,discount,colorsUrl }: Props) => {
               ))
             }
           </ul>
-          <span className=" cursor-pointer text-sm font-thin text-black ">
-            <i className="fa-regular fa-heart" />
+          <span className="cursor-pointer text-sm font-thin text-black" onClick={toggleLike}>
+            {liked ? (
+              <i className="fa-solid fa-heart" /> // Trái tim đỏ khi được thích
+            ) : (
+              <i className="fa-regular fa-heart" /> // Trái tim xám khi chưa thích
+            )}
           </span>
         </div>
         <a href="#" className="block text-[12px]/[16px] lg:text-sm hover:text-rose-800 mb-2 lg:mb-[10px]">{product?.name}</a>

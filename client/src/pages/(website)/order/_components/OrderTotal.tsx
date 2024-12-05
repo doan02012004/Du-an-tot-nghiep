@@ -107,7 +107,7 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
                     <div className="flex justify-between items-center border-b pb-5">
                         <span className="text-sm">Tiền thanh toán</span>
                         {/* <span className="text-lg text-dark font-semibold">{totalCart > 0 ? (voucher && totalSubmit ? formatPrice(totalSubmit) : formatPrice(totalCart)) : "0"}đ</span> */}
-                        <span className="text-lg text-dark font-semibold">{shippingCost ? (totalSubmit > 0 ? formatPrice(totalSubmit + shippingCost?.value?.price) : formatPrice(totalCart + shippingCost?.value?.price)) : formatPrice(totalCart)}đ</span>
+                        <span className="text-lg text-dark font-semibold">{shippingCost ? (totalSubmit >= 0 ? formatPrice(totalSubmit + shippingCost?.value?.price) : formatPrice(totalCart + shippingCost?.value?.price)) : formatPrice(totalCart)}đ</span>
                     </div>
                 </div>
                 <div className="px-5 pb-8 flex flex-col gap-4">

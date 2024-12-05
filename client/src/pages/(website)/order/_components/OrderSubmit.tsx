@@ -26,6 +26,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
     const voucher = useSelector((state: any) => state.cart.voucher) as Vouchers;
     const checkCarts = useSelector((state: any) => state.cart.checkCarts)
     const [loading, setLoading] = useState(false)
+    const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
     const orderMutation = useOrderMutation()
     const navigate = useNavigate()
     useEffect(() => {
@@ -66,7 +67,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
             paymentMethod: payment,
             status: "pending",
             totalOrder: totalProduct,
-            totalPrice: ship?.value?.price ? totalCart + ship?.value?.price : totalCart,
+            totalPrice: voucher?.code ? totalSubmit + ship?.value?.price  :totalCart + ship?.value?.price ,
             ship: ship,
             // Thêm thông tin voucher vào đơn hàng
             voucher: {

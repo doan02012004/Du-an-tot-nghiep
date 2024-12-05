@@ -11,6 +11,7 @@ import { useSearchParams } from "react-router-dom"
 import DashboardCard02 from "./_components/DashboardCard02"
 import DashboardCard03 from "./_components/DashboardCard03"
 import DashboardCard04 from "./_components/DashboardCard04"
+import DashboardCard05 from "./_components/DashboardCard05"
 
 
 
@@ -79,6 +80,8 @@ const DashBoardPage = () => {
         <DashboardCard03 />
         {/* khách hàng mới  */}
         <DashboardCard04 />
+        {/*  */}
+        <DashboardCard05 />
         <BarChartCard />
         <TableTopProduct />
         <TableTopUser />
