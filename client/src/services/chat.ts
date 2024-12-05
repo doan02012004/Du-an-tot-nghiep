@@ -1,6 +1,7 @@
 import instance from "../common/config/axios"
+import { Ichat } from "../common/interfaces/chat"
 
-export const sendMessage = async (option: { senderId?: string, receiverId?: string, message?: string, chatId?: string }) => {
+export const sendMessage = async (option: Ichat) => {
     try {
         const res = await instance.post('/chats/send', option)
         return res.data

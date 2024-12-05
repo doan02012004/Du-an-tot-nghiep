@@ -4,9 +4,12 @@ import UserModel from "../models/userModel.js";
 
 export const createChat = async (req, res) => {
     try {
-        const { senderId, receiverId } = req.body;
+        const { senderId } = req.body;
+        const admin = await UserModel.findOne({
+            role:'admin'
+        })
         const roomChat = await ChatModel.create({
-            members: [senderId, receiverId]
+            members: [senderId, admin._id]
         })
         const chat = await ChatModel.findById(roomChat._id).populate('members');
         return res.status(201).json(chat)
@@ -18,18 +21,39 @@ export const createChat = async (req, res) => {
 // Gửi tin nhắn
 export const sendMessage = async (req, res) => {
     try {
-        const { senderId, receiverId, message, chatId } = req.body;
+        const { senderId, receiverId, message, chatId,productId,attributeId,images } = req.body;
+        if(receiverId){
             const massage = new MessageModel({
                 sender: senderId,
                 receiver: receiverId,
                 message,
-                chatId
+                chatId,
+                productId:productId??null,
+                attributeId:attributeId??null,
+                images:images??[] 
             })
             await massage.save()
-            return res.status(200).json(massage);
+            return res.status(200).json(massage)
+        }else{
+            const admin = await UserModel.findOne({
+                role:'admin'
+            })
+            const massage = new MessageModel({
+                sender: senderId,
+                receiver: admin._id,
+                message,
+                chatId,
+                productId:productId??null,
+                attributeId:attributeId??null,
+                images:images??[] 
+            })
+            await massage.save()
+            const newMessage = await MessageModel.findById(massage._id).populate('sender receiver productId').exec()
+            return res.status(200).json(newMessage);
+        }
         
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             message: error.message
         });
     }
@@ -58,10 +82,12 @@ export const getChatAdmin = async (req, res) => {
 export const getMessages = async (req, res) => {
     try {
         const { chatId } = req.params;
-        const messages = await MessageModel.find({ chatId }).populate('sender receiver');
-        res.status(200).json(messages);
+        console.log(chatId)
+        const messages = await MessageModel.find({ chatId }).populate('sender receiver productId');
+        console.log(messages)
+       return res.status(200).json(messages);
     } catch (error) {
-        res.status(500).json({ message: 'lỗi get Message', error });
+        return res.status(500).json({ message: 'lỗi get Message', error });
     }
 };
 
@@ -81,11 +107,12 @@ export const getLastMessage = async (req, res) => {
 //lấy 1 đoạn tin nhắn của 1 user nào đó với admin
 export const getFindChatUser = async (req, res) => {
     try {
-        const { senderId, reciverId } = req.params;
-        const chat = await ChatModel.findOne({ members: { $all: [senderId, reciverId] } }).populate('members');
-        res.status(200).json(chat);
+        const admin = await UserModel.findOne({role:'admin'})
+        const { senderId } = req.params;
+        const chat = await ChatModel.findOne({ members: { $all: [senderId, admin._id] } }).populate('members');
+        return res.status(200).json(chat);
     }
     catch (error) {
-        res.status(500).json({ message: 'lỗi get Message', error });
+       return res.status(500).json({ message: 'lỗi get Message', error });
     }
 }

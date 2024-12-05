@@ -63,7 +63,7 @@ const Member = ({chat,setChatId,chatId,setUserMessage}:Props) => {
     }
    
   return (
-    <div className='w-full border-b p-1 flex' onClick={onHandeSet}>
+    <div className={`${chatId == chat?._id ? 'bg-sky-100' : 'bg-white'} w-full border-b p-1 flex  cursor-pointer`} onClick={onHandeSet}>
         <div className='size-11 rounded-full border border-dark flex items-center justify-center'>
            <UserOutlined className=' text-3xl ' />
         </div>
