@@ -32,10 +32,12 @@ const InputMessage = ({ chatId }: Props) => {
                         message: message.message,
                         images:mesageTag?.images??null,
                         productId:mesageTag?.product?._id??null,
-                        attributeId:mesageTag?.attribute?._id??null
+                        attributeId:mesageTag?.attribute?._id??null,
+                         type:mesageTag?.product?'product':'message'
                     }
                     chatMutation.mutate({ action: 'send', data: newMessage })
                     reset()
+                    dispath(setMesageTag(null))
                 }
             } catch (error) {
                 console.log(error)
@@ -47,7 +49,8 @@ const InputMessage = ({ chatId }: Props) => {
                 message: message.message,
                 images:mesageTag?.images??null,
                 productId:mesageTag?.product?._id??null,
-                attributeId:mesageTag?.attribute?._id??null
+                attributeId:mesageTag?.attribute?._id??null,
+                type:mesageTag?.product?'product':'message'
             }
             chatMutation.mutate({ action: 'send', data: newMessage })
             reset()

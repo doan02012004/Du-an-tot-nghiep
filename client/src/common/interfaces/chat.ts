@@ -10,6 +10,7 @@ export interface Ichat {
     productId?: string | Iproduct,
     attributeId?:string,
     images:string[],
+    type:'product'|'message'
     createdAt?: string,
     updatedAt?: string,
 }

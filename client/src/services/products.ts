@@ -184,11 +184,9 @@ export const deleteColorProduct = async (
 ) => {
   try {
     const res = await instance.put(`/products/deleteColor/${productId}`, color);
-    message.success("Xóa màu sắc thành công!");
     return res.data;
   } catch (error) {
     console.log(error);
-    message.error("Xóa màu sắc thất bại!");
   }
 };
 export const deleteSizeProduct = async (
@@ -200,11 +198,9 @@ export const deleteSizeProduct = async (
   };
   try {
     const res = await instance.put(`/products/deleteSize/${productId}`, option);
-    message.success("Xóa size thành công!");
     return res.data;
   } catch (error) {
-    console.log(error);
-    message.error("Xóa size thất bại!");
+    console.log(error)
   }
 };
 

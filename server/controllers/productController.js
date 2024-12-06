@@ -335,6 +335,13 @@ export const deleteSize = async (req, res) => {
         message: "Product Not Found",
       });
     }
+   if(product.sizes.length> 1){
+    // mảng attributeId để updateMany
+    const filterAttribute = product.attributes.filter(
+      (item) => item.size == req.body.size
+    );
+    const atbId = filterAttribute.map((item) => item._id)
+    // product
     const newSize = product.sizes.filter((item) => item !== req.body.size);
     const newAttributes = product.attributes.filter(
       (item) => item.size !== req.body.size
@@ -342,9 +349,26 @@ export const deleteSize = async (req, res) => {
     product.sizes = newSize;
     product.attributes = newAttributes;
     await product.save();
+
+    // cart
+     await CartModel.updateMany({},{
+      $pull:{
+        carts:{
+          productId:req.params.productId,
+          attributeId: {$in:atbId}
+        }
+      }
+    })
     return res.status(200).json({
       message: "Xóa size thành công !",
+      success: true
     });
+   }else{
+    return res.status(404).json({
+      message: "Xóa size thất bại!",
+      success: false
+    });
+   }
   } catch (error) {
     return res.status(500).json({
       message: error.message,
@@ -353,14 +377,20 @@ export const deleteSize = async (req, res) => {
 };
 export const deleteColor = async (req, res) => {
   try {
-    const product = await ProductModel.findById(req.params.productId).populate(
-      "colors"
-    );
+    const product = await ProductModel.findById(req.params.productId)
     if (!product) {
       return res.status(404).json({
         message: "Product Not Found",
       });
     }
+  if(product.colors.length>1){
+    // mảng attributeId để updateMany
+    const filterAttribute = product.attributes.filter(
+      (item) => item.color == req.body.name
+    );
+    const atbId = filterAttribute.map((item) => item._id)
+
+    // product
     product.colors = product.colors.filter(
       (item) => item.name !== req.body.name
     );
@@ -371,9 +401,25 @@ export const deleteColor = async (req, res) => {
       (item) => item.color !== req.body.name
     );
     await product.save();
+    // cart
+     await CartModel.updateMany({},{
+      $pull:{
+        carts:{
+          productId:req.params.productId,
+          attributeId: {$in:atbId}
+        }
+      }
+    })
     return res.status(200).json({
       message: "Xóa màu sắc thành công !",
+      success: true
     });
+  }else{
+    return res.status(404).json({
+      message: "Xóa màu thất bại!",
+      success: false
+    });
+  }
   } catch (error) {
     return res.status(500).json({
       message: error.message,

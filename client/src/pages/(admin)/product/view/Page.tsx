@@ -38,11 +38,6 @@ const ViewProductAdmin = () => {
         key: '4',
         label: 'Đánh giá sản phẩm',
         children: (<TabComment productId={product?._id?product._id:''} />),
-      },
-      {
-        key: '5',
-        label: 'Thêm thuộc tính',
-        children: (<AddProperties product={product} />),
       }
     ];
   return (

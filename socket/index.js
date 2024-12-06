@@ -24,6 +24,8 @@ io.on("connection", (socket) => {
         // send all active users to all users
         io.emit("getUsers", activeUsers);
     });
+
+    // Tạo hộp thoại mới
     socket.on("createChat",(newChat) =>{
         const admin = activeUsers.find((user) => user.role === "admin")
         if(admin){
@@ -31,20 +33,24 @@ io.on("connection", (socket) => {
         }
 
     })
+
+    // Gửi tin nhắn
     socket.on("sendMessage",(newMessage) =>{
+        console.log('New Message', newMessage)
+        console.log('hoạt động', activeUsers)
         const user = activeUsers.find((user) => user._id == newMessage.receiver)
+        console.log('user', user)
         if(user){
             io.to(user.socketId).emit("newMessage",newMessage)
         }
     })
   
-//    io.emit('welcome', 'Welcome to the chat')
     // update product price theo time
     socket.on("adminUpdatePrice",(option)=>{
         // Phát sự kiện 'updateAttributeProduct' đến tất cả các client đang kết nối
         io.emit('adminUpdateProduct',option)
     })
-     // update product price theo time
+     // update thôn tin sản phẩm theo time
      socket.on("adminUpdateInforProduct",(option)=>{
         // Phát sự kiện 'updateInforProduct' đến tất cả các client đang kết nối
         io.emit('adminUpdateProduct',option)
@@ -53,6 +59,22 @@ io.on("connection", (socket) => {
     socket.on("adminDeleteProduct",(option)=>{
         // Phát sự kiện 'deleteProduct' đến tất cả các client đang kết nối
         io.emit('deleteProduct',option)
+    })
+
+    // Xóa size sản phẩm 
+    socket.on("adminDeleteSize",(option)=>{
+        // Phát sự kiện 'deleteSize' đến tất cả các client đang kết nối
+        io.emit('deleteSize',option)
+    })
+     // Xóa màu sản phẩm 
+     socket.on("adminDeleteColor",(option)=>{
+        // Phát sự kiện 'deleteColor' đến tất cả các client đang kết nối
+        io.emit('deleteColor',option)
+    })
+
+    socket.on('send',(data) =>{
+        // phát sự kiện cho toàn bộ client
+        io.emit('adminSend',data)
     })
 })
 

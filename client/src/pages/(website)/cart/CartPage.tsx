@@ -47,9 +47,6 @@ const CartPage = () => {
                             const totalCart = newCarts.reduce((sum: number, cart: IcartItem) => sum + cart.total, 0)
                             dispath(setCarts(newCarts))
                             dispath(setTotalCart(totalCart))
-                           
-                           
-                        
                     }
                 }
             })
@@ -64,8 +61,9 @@ const CartPage = () => {
                 return findAtb
             })
             const checkAtb = cartAtb.some((item: Iattribute) => item?.active == false)
+            const checkUndefine = cartAtb.some((item: Iattribute) => !item)
             const checkInstock = cartAtb.some((item: Iattribute) => item?.instock == 0)
-            if(check || checkAtb || checkInstock||checkProduct){
+            if(check || checkAtb || checkUndefine| checkInstock||checkProduct){
                 if(checkCarts == true){
                     dispath(setCheckCarts(false))
                 }

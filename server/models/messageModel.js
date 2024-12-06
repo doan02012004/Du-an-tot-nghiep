@@ -34,6 +34,11 @@ const messageSchema = new mongoose.Schema({
         type:String,
          default:null,
     },
+    type:{
+        type:String,
+        enum:['product','message'],
+        default:'message'
+    },
     images:[]
 }, { timestamps: true });
 

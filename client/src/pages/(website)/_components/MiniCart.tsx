@@ -9,6 +9,7 @@ import { Iattribute, Iproduct } from '../../../common/interfaces/product';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCarts, setTotalCart, setTotalProduct } from '../../../common/redux/features/cartSlice';
 import { AppContext } from '../../../common/contexts/AppContextProvider';
+import { IColor } from '../../../common/interfaces/Color';
 
 
 const MiniCart = () => {
@@ -60,6 +61,7 @@ const MiniCart = () => {
     }, [cartUser?.carts])
     useEffect(() => {
         if (socket?.current) {
+            // update product
             socket?.current?.on("adminUpdateProduct", (option: { newProduct: Iproduct, attributeId: string }) => {
                 if (carts.length > 0) {
                     const cart = carts.find((cart: IcartItem) => (cart.productId._id === option.newProduct._id && cart.attributeId === option.attributeId)) as IcartItem
@@ -79,9 +81,66 @@ const MiniCart = () => {
                     }
                 }
             });
+            // Real-time xóa sản phẩm
             socket?.current?.on("deleteProduct", (option: { productId: string | number }) => {
                 if (carts.length > 0) {
                     const newCarts = carts.filter((cart: IcartItem) => cart?.productId?._id !== option?.productId)
+                    const totalCart = newCarts.reduce((sum: number, cart: IcartItem) => sum + cart.total, 0)
+                    if (newCarts?.length > 0) {
+                        const totalProduct = newCarts.reduce((sum: number, cart: IcartItem) => sum + cart.quantity, 0)
+                        dispath(setTotalProduct(totalProduct))
+                    } else {
+                        const totalProduct = 0
+                        dispath(setTotalProduct(totalProduct))
+                    }
+                    dispath(setCarts(newCarts))
+                    dispath(setTotalCart(totalCart))
+                  
+                }
+            });
+            // Real-time xóa size sản phẩm
+            socket?.current?.on("deleteSize", (option: { productId: string | number, size:string }) => {
+                if (carts.length > 0) {
+                    const newCarts = carts.filter((cart: IcartItem) =>{
+                        if(cart.productId._id == option.productId){
+                            const attribute = cart.productId.attributes.find((item:Iattribute) => item._id == cart.attributeId);
+                            if(attribute && attribute.size == option.size ){
+                                return false
+                            }else{
+                                return true
+                            }
+                        }else{
+                            return true
+                        }
+                    })
+                    const totalCart = newCarts.reduce((sum: number, cart: IcartItem) => sum + cart.total, 0)
+                    if (newCarts?.length > 0) {
+                        const totalProduct = newCarts.reduce((sum: number, cart: IcartItem) => sum + cart.quantity, 0)
+                        dispath(setTotalProduct(totalProduct))
+                    } else {
+                        const totalProduct = 0
+                        dispath(setTotalProduct(totalProduct))
+                    }
+                    dispath(setCarts(newCarts))
+                    dispath(setTotalCart(totalCart))
+                  
+                }
+            })
+            // Real-time xóa màu sản phẩm
+            socket?.current?.on("deleteColor", (option: { productId: string | number, color:IColor }) => {
+                if (carts.length > 0) {
+                    const newCarts = carts.filter((cart: IcartItem) =>{
+                        if(cart.productId._id == option.productId){
+                            const attribute = cart.productId.attributes.find((item:Iattribute) => item._id == cart.attributeId);
+                            if(attribute && attribute.color == option.color.name ){
+                                return false
+                            }else{
+                                return true
+                            }
+                        }else{
+                            return true
+                        }
+                    })
                     const totalCart = newCarts.reduce((sum: number, cart: IcartItem) => sum + cart.total, 0)
                     if (newCarts?.length > 0) {
                         const totalProduct = newCarts.reduce((sum: number, cart: IcartItem) => sum + cart.quantity, 0)
