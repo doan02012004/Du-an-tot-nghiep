@@ -15,14 +15,43 @@ export const create = async (req, res) => {
     }
 };
 
+// export const getAll = async (req, res) => {
+//     try {
+//         const categories = await Category.find({});
+//         return res.status(200).json(categories);
+//     } catch (error) {
+//         return res.status(500).json({ error });
+//     }
+// };
+
 export const getAll = async (req, res) => {
     try {
-        const categories = await Category.find({});
+        const categories = await Category.aggregate([
+            {
+                $lookup: {
+                    from: "products", // Collection name for products
+                    localField: "_id", // `_id` của danh mục
+                    foreignField: "categoryId", // `categoryId` trong sản phẩm
+                    as: "products", // Kết quả sau khi nối
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1, // Lấy tên danh mục
+                    slug : 1,
+                    productCount: { $size: "$products" }, // Đếm số lượng sản phẩm
+                },
+            },
+        ]);
+
         return res.status(200).json(categories);
     } catch (error) {
-        return res.status(500).json({ error });
+        console.error("Error fetching categories:", error);
+        return res.status(500).json({ error: "Server error" });
     }
 };
+
 
 export const getCategoryById = async (req, res) => {
     try {
