@@ -51,19 +51,21 @@ export interface VolumeRange {
 
 export interface IshipItem {
     nameBrand: string;
-    weight: WeightRange[];  
-    volume: VolumeRange[];  
+    weight: WeightRange[];
+    volume: VolumeRange[];
 }
 
-export interface IshipSubmit{
+export interface IshipSubmit {
     nameBrand: string;
     value: WeightRange | VolumeRange;
 }
 
 export interface Vouchers {
+    value: number
     code: string | null; // Mã voucher
     discountValue: number; // Giá trị giảm giá
     category: "discount" | "shipping" | null; // Loại voucher
-    type: "percentage" | "fixed" | "freeship" | null; // Loại voucher: cố định hoặc phần trăm hay ship 
+    type: "percentage" | "fixed" | "freeship" | null; // Loại voucher: cố định hoặc phần trăm hay ship
+    maxDiscountValue: number
 }
 

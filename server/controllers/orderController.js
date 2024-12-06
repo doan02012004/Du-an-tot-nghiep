@@ -8,7 +8,9 @@ import { formatDateToCustomString, sortObject } from '../ultil/payment.js';
 import ProductModel from "../models/productModel.js";
 import sendEmail from "../utils/sendEmail.js";
 import UserModel from "../models/userModel.js";
+import { generateOrderNumber } from "../utils/main.js";
 
+let newOrderServer = {}
 export const createOrder = async (req, res) => {
     try {
         const order = await orderModel.create(req.body);
@@ -175,7 +177,7 @@ export const updateOrderStatus = async (req, res) => {
 //hàm thanh toán với VNPay
 export const paymentVNPay = async (req, res) => {
     try {
-
+        const { userId, amount, ship, voucher, totalOrder, totalPrice, customerInfor } = req.body
         const ipAddr = req.headers['x-forwarded-for'] ||
             req.connection.remoteAddress ||
             req.socket.remoteAddress ||
@@ -188,25 +190,22 @@ export const paymentVNPay = async (req, res) => {
         const returnUrl = "http://localhost:5000/api/orders/payment/vnpay/return";
         const date = new Date();
         const createDate = dateFormat(date, 'yyyymmddHHmmss');
-        const orderId = req.body.orderId;
-        const amount = req.body.amount;
         const bankCode = "";
-        const orderInfo = 'Thanh toan cho ma GD:' + orderId;
+        const orderNumber = generateOrderNumber();
+        const orderInfo = 'Thanh toan cho ma GD:' + userId;
         const orderType = 'other';
         date.setMinutes(date.getMinutes() + 15);
         const expireDateFormat = formatDateToCustomString(date); // Định dạng thành yyyyMMddHHmmss
         let locale = "vn";
         if (!locale) locale = 'vn';
         const currCode = 'VND';
-        console.log('ip', ipAddr)
-
         let vnp_Params = {};
         vnp_Params['vnp_Version'] = '2.1.0';
         vnp_Params['vnp_Command'] = 'pay';
         vnp_Params['vnp_TmnCode'] = tmnCode;
         vnp_Params['vnp_Locale'] = locale;
         vnp_Params['vnp_CurrCode'] = currCode;
-        vnp_Params['vnp_TxnRef'] = orderId;
+        vnp_Params['vnp_TxnRef'] = orderNumber;
         vnp_Params['vnp_OrderInfo'] = orderInfo;
         vnp_Params['vnp_OrderType'] = orderType;
         vnp_Params['vnp_Amount'] = amount * 100;
@@ -231,6 +230,40 @@ export const paymentVNPay = async (req, res) => {
         // Tạo URL thanh toán
         const paymentUrl = `${vnpUrl}?${querystring.stringify(vnp_Params, { encode: false })}`;
 
+        // tạo newOrder
+        const cartUser = await CartModel.findOne({ userId }).populate('carts.productId')
+        if (cartUser) {
+            const newCartUser = cartUser.toObject()
+            const newProductsOrder = newCartUser.carts.map((item) => {
+                const gallery = item.productId.gallerys.find((gallery) => gallery._id == item.galleryId)
+                const attribute = item.productId.attributes.find((attribute) => attribute._id == item.attributeId)
+                return {
+                    productId: item.productId._id,
+                    name: item.productId.name,
+                    categoryId: item.productId.categoryId,
+                    price: attribute?.price_new,
+                    gallery,
+                    attribute,
+                    total: Number(item.quantity) * Number(attribute?.price_new),
+                    quantity: item.quantity
+                }
+
+            })
+            const newOrder = {
+                userId,
+                customerInfor,
+                items: [...newProductsOrder],
+                paymentMethod: 'vnPay',
+                status: "pending",
+                totalOrder,
+                totalPrice,
+                ship: ship,
+                voucher,
+                orderNumber
+            }
+            newOrderServer = newOrder
+        }
+
         // Chuyển hướng đến URL thanh toán
         return res.json({ paymentUrl });
     } catch (error) {
@@ -244,50 +277,55 @@ export const vnpayReturn = async (req, res) => {
     const secureHash = vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
-
     const secretKey = 'TXA23XAHD604Z31OCUA3EKVP2PI5QOHA';
     const sortedParams = sortObject(vnp_Params);
-
     const queryString = querystring.stringify(sortedParams, { encode: false });
     const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
 
     if (hash === secureHash) {
-        const orderNumber = vnp_Params['vnp_TxnRef']
-        const order = await orderModel.findOne({ orderNumber });
-
-        if (!order) {
-            console.error("Không tìm thấy đơn hàng cho orderNumber:", orderNumber);
-            return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
-        }
-        // Lấy email từ UserModel dựa trên userId của đơn hàng
-        const user = await UserModel.findById(order.userId);
-        const userEmail = user?.email || ""; // Email của người dùng
+        const userId = vnp_Params['vnp_TxnRef']
         if (vnp_Params['vnp_ResponseCode'] === '00') {
+            const order = await orderModel.create(newOrderServer);
+            if (order) {
+                const cart = await CartModel.findOne({ userId: order.userId })
+                cart.carts.map(async (item) => {
+                    const product = await ProductModel.findById(item.productId)
+                    product.attributes.map(async (attribute) => {
+                        if (attribute._id == item.attributeId) {
+                            attribute.instock = attribute.instock - item.quantity
+                            await product.save()
+                        }
+                    })
+                })
+                cart.carts = [];
+                cart.totalPrice = 0;
+                cart.totalCart = 0;
 
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "pending", paymentStatus: "Đã thanh toán" })
-            // Gửi email xác nhận thanh toán thành công
-            if (userEmail) {
-                await sendEmail(
-                    userEmail,
-                    "Thanh toán thành công",
-                    `Đơn hàng ${orderNumber} đã được thanh toán thành công. Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!`
-                );
+                if (order?.voucher) {
+                    const voucherItem = await VoucherModel.findOne({ code: order?.voucher?.code })
+                    if (!voucherItem) throw new Error("Invalid voucher.");
+                    const alreadyUsed = voucherItem.usedBy.includes(order?.userId);
+                    if (alreadyUsed) {
+                        throw new Error("Bạn đã sử dụng voucher này rồi.");
+                    }
+                    voucherItem.usedBy.push(order?.userId);
+                    if (voucherItem.quantity >= 1) {
+                        voucherItem.quantity -= 1;
+                        voucherItem.usedQuantity += 1;
+                    }
+                }
+                await voucherItem.save()
+                await cart.save()
+                return res.redirect('http://localhost:5173/thanks');
+            } else {
+                return res.redirect('http://localhost:5173/order');
             }
-            return res.redirect('http://localhost:5173/thanks');
+
         } else {
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "unpaid", paymentStatus: "Chưa thanh toán" })
-            if (userEmail) {
-                // Gửi email thông báo thanh toán thất bại
-                await sendEmail(
-                    userEmail,
-                    "Thanh toán thất bại",
-                    `Đơn hàng ${orderNumber} chưa được thanh toán. Vui lòng thử lại hoặc liên hệ với chúng tôi để được hỗ trợ.`
-                );
-            }
+            // return res.status(400).json({ message: 'Chữ ký không hợp lệ' });
             return res.redirect('http://localhost:5173/order');
         }
-    } else {
-        return res.status(400).json({ message: 'Chữ ký không hợp lệ' });
+
     }
 };
 
