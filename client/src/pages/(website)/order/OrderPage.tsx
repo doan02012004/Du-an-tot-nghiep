@@ -43,13 +43,13 @@ const OrderPage = () => {
     const navigate = useNavigate()
     const dispath = useDispatch()
     const carts = useSelector((state: any) => state.cart.carts)
-    useEffect(()=>{
-        if(cartUser){
-            if(cartUser?.carts?.length == 0){
+    useEffect(() => {
+        if (cartUser) {
+            if (cartUser?.carts?.length == 0) {
                 navigate('/cart')
-            }   
+            }
         }
-    },[cartUser])
+    }, [cartUser])
     useEffect(() => {
         if (voucherQuery.data && voucherQuery.data.length > 0) {
             setVouchers(voucherQuery.data)
@@ -77,8 +77,8 @@ const OrderPage = () => {
                     dispath(setCheckCarts(false))
                 }
                 navigate('/cart')
-            }else{
-                if(checkCarts == false){
+            } else {
+                if (checkCarts == false) {
                     dispath(setCheckCarts(true))
                 }
             }
@@ -88,14 +88,13 @@ const OrderPage = () => {
                 navigate('/cart')
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [carts,checkCarts])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [carts, checkCarts])
 
 
     const handleShippingCostChange = (ship: IshipSubmit) => {
         setShippingCost(ship);
     };
-
 
     return (
         <section>

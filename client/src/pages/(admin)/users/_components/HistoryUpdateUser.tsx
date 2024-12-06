@@ -1,84 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import { Table, message } from 'antd';
-import type { TableColumnsType } from 'antd';
-import { getHistoryUpdateUser } from '../../../../services/auth';
+import { Button, Space, Table, message, Modal } from 'antd';
+import { getHistoryUpdateUser, getHistoryUpdateUserById, deleteHistoryUpdateUser } from '../../../../services/auth';
+import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import FormHistoryUpdate from './FormHistoryUpdate';
 
 interface DataType {
-    key: React.Key;
-    name: string;
+    key: string;
     time: string;
+    email: string;
     updatedDetails: Record<string, any>; // Chi tiết các trường đã thay đổi dưới dạng object
 }
 
-const columns: TableColumnsType<DataType> = [
-    { title: 'Tài khoản', dataIndex: 'name', key: 'name' },
-    { title: 'Thời gian', dataIndex: 'time', key: 'time' },
-    {
-        title: 'Action',
-        dataIndex: '',
-        key: 'x',
-        render: () => <a>Delete</a>,
-    },
-];
-
 const HistoryUpdateUser: React.FC = () => {
-    const [loading, setLoading] = useState(false);
     const [data, setData] = useState<DataType[]>([]);
+    const [selectedRecord, setSelectedRecord] = useState<any>(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
-        const fetchHistory = async () => {
-            setLoading(true);
-            try {
-                const historyData = await getHistoryUpdateUser();
-                
-                const formattedData = historyData.map((item) => ({
-                    key: item._id,
-                    name: `${item.originalUser?.firstname || ''} ${item.originalUser?.lastname || ''}`,
-                    time: new Date(item.updateTime).toLocaleString(),
-                    updatedDetails: item.changes,
-                }));
-                setData(formattedData);
-            } catch (error) {
-                message.error('Không tải được danh sách cập nhật.');
-            } finally {
-                setLoading(false);
-            }
-        };
+        const fetchData = async () => {
+            const result = await getHistoryUpdateUser();
+            setData(result.map((item: any) => {
+                // Lọc các thay đổi thực sự trong 'changes'
+                const updatedDetails = Object.keys(item.changes).reduce((acc: any, key: string) => {
+                    if (item.changes[key] !== item.originalUser[key]) {
+                        acc[key] = item.changes[key];
+                    }
+                    return acc;
+                }, {});
 
-        fetchHistory();
+                return {
+                    key: item._id,
+                    time: new Date(item.updateTime).toLocaleString(),
+                    email: item.originalUser.email,
+                    updatedDetails: updatedDetails, // Lưu các thay đổi thực sự
+                };
+            }));
+        };
+        fetchData();
     }, []);
 
-    const renderUpdatedDetails = (updatedDetails: Record<string, any>) => {
-        return (
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                <ul>
-                    {Object.entries(updatedDetails).map(([key, value]) => (
-                        <li key={key}>
-                            <strong>{key}:</strong> {value.toString()}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        );
+    const handleViewDetails = async (id: string) => {
+        const record = await getHistoryUpdateUserById(id);
+        setSelectedRecord(record);
+        setIsModalVisible(true);
     };
+
+    const handleDelete = async (id: string) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa lịch sử cập nhật này?',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk: async () => {
+                await deleteHistoryUpdateUser(id);
+                setData(data.filter(item => item.key !== id));
+                message.success('Xóa lịch sử cập nhật thành công');
+            },
+            onCancel() {
+                message.info('Hủy xóa lịch sử cập nhật');
+            },
+        });
+    };
+
+    const columns = [
+        {
+            title: 'Thời gian sửa',
+            dataIndex: 'time',
+            key: 'time',
+        },
+        {
+            title: 'Email người dùng',
+            dataIndex: 'email',
+            key: 'email',
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (_, record: DataType) => (
+                <Space size="middle">
+                    <Button type="primary" onClick={() => handleViewDetails(record.key)}><EyeOutlined /></Button>
+                    <Button type="primary" danger onClick={() => handleDelete(record.key)}><DeleteOutlined /></Button>
+                </Space>
+            ),
+        },
+    ];
 
     return (
         <>
-            <h1 className='text-2xl text-red'>Danh sách tài khoản được cập nhật</h1>
-            <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-                <Table<DataType>
-                    columns={columns}
-                    dataSource={data}
-                    loading={loading}
-                    expandable={{
-                        expandedRowRender: (record) => (
-                            renderUpdatedDetails(record.updatedDetails)
-                        ),
-                        rowExpandable: (record) => Object.keys(record.updatedDetails).length > 0,
-                    }}
-                    pagination={{ pageSize: 5 }}
+            <Table<DataType> columns={columns} dataSource={data} />
+
+            {isModalVisible && selectedRecord && (
+                <FormHistoryUpdate
+                    onClose={() => setIsModalVisible(false)}
+                    record={selectedRecord}
                 />
-            </div>
+            )}
         </>
     );
 };

@@ -9,19 +9,32 @@ import BlackListModel from '../models/blackListModel.js'
 import { HistoryUpdateUser } from '../models/historyUpdateUserModel.js'
 import AddressModel from '../models/addressModel.js'
 import sendEmail from '../utils/sendEmail.js'
+import orderModel from '../models/orderModel.js'
 dotenv.config()
 let refreshTokens = [];
 // lấy toàn bộ user
 export const getAllUser = async (req, res) => {
     try {
-        const users = await UserModel.find()
-        return res.status(StatusCodes.OK).json(users)
+        // Lấy tất cả người dùng
+        const users = await UserModel.find();
+
+        // Duyệt qua từng người dùng để kiểm tra xem họ có đơn hàng chưa thanh toán không
+        const usersWithOrders = await Promise.all(users.map(async (user) => {
+            const unpaidOrder = await orderModel.findOne({ userId: user._id, status: { $in: ['pending', 'unpaid'] } });
+            return {
+                ...user.toObject(),
+                hasUnpaidOrder: unpaidOrder ? true : false  // Thêm trường này vào
+            };
+        }));
+
+        return res.status(StatusCodes.OK).json(usersWithOrders);
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: error.message
-        })
+        });
     }
-}
+};
+
 
 // lấy user theo id
 export const getByIdUser = async (req, res) => {
@@ -63,7 +76,7 @@ export const deleteUser = async (req, res) => {
     }
 }
 
-//update usser theo id
+// Cập nhật thông tin user theo ID
 export const updateUser = async (req, res) => {
     try {
         const { password, ...others } = req.body; // Lấy password riêng ra
@@ -75,6 +88,10 @@ export const updateUser = async (req, res) => {
                 message: 'Không tìm thấy người dùng với ID này',
             });
         }
+
+        // Sao lưu thông tin gốc để lưu lịch sử
+        const originalUser = { ...user._doc };
+
         // Tạo đối tượng để lưu những thay đổi
         const changes = {};
 
@@ -82,10 +99,11 @@ export const updateUser = async (req, res) => {
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
             if (hashedPassword !== user.password) {
-                changes.password = hashedPassword; // Ghi nhận thay đổi mật khẩu
+                changes.password = 'Mật khẩu đã thay đổi'; // Không lưu mật khẩu dưới dạng plaintext
                 user.password = hashedPassword; // Cập nhật mật khẩu đã hash vào user
             }
         }
+
         // So sánh và ghi nhận các thay đổi khác
         Object.keys(others).forEach((key) => {
             if (others[key] !== user[key]) {
@@ -96,7 +114,6 @@ export const updateUser = async (req, res) => {
 
         // Lưu người dùng với thông tin mới
         await user.save();
-
         // Chỉ lưu vào collection `HistoryUpdateUser` nếu có thay đổi
         if (Object.keys(changes).length > 0) {
             const updatedUserData = {
@@ -187,7 +204,6 @@ export const add = async (req, res) => {
 
 //đăng kí tài khoản
 export const register = async (req, res) => {
-    //nhận request từ user 
     const User = {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
@@ -694,7 +710,8 @@ export const getHistoryUpdateUser = async (req, res) => {
     try {
         // Lấy toàn bộ lịch sử cập nhật từ database
         const history = await HistoryUpdateUser.find()
-            .populate('originalUser', 'firstname lastname') // Lấy tên người dùng từ thông tin gốc (nếu cần)
+            .populate('originalUser', 'email firstname lastname') // Lấy email và tên người dùng từ thông tin gốc
+            .sort({ updateTime: -1 }) // Sắp xếp theo thời gian cập nhật mới nhất
             .exec();
 
         // Format lại dữ liệu để chỉ trả về các trường đã thay đổi
@@ -708,10 +725,52 @@ export const getHistoryUpdateUser = async (req, res) => {
         });
 
         // Trả về lịch sử đã được format
-        res.status(200).json(formattedHistory);
+        res.status(200).json(history);
     } catch (error) {
         res.status(500).json({
             message: 'Lỗi máy chủ: không thể lấy được lịch sử cập nhật',
+        });
+    }
+};
+
+
+// Xóa lịch sử cập nhật user theo id
+export const deleteHistoryUpdateUser = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const historyRecord = await HistoryUpdateUser.findByIdAndDelete(id);
+        if (!historyRecord) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Không tìm thấy lịch sử cập nhật với ID này',
+            });
+        }
+        return res.status(StatusCodes.OK).json({
+            message: 'Xóa lịch sử cập nhật thành công',
+        });
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
+        });
+    }
+};
+
+// Lấy chi tiết lịch sử cập nhật user theo id
+export const getHistoryUpdateUserById = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const historyRecord = await HistoryUpdateUser.findById(id)
+            .populate('originalUser', 'email firstname lastname'); // Lấy thông tin người dùng liên quan
+        if (!historyRecord) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Không tìm thấy lịch sử cập nhật với ID này',
+            });
+        }
+
+        return res.status(StatusCodes.OK).json(historyRecord);
+    } catch (error) {
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: error.message,
         });
     }
 };

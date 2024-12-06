@@ -39,11 +39,13 @@ export const deleteOrder = async (orderId) => {
     const response = await instance.delete(`/orders/${orderId}`);
     return response.data;
 };
+
+
 // Gọi API thanh toán đơn hàng bằng VNPay
-export const paymentVNPay = async (amount, orderId) => {
+export const paymentVNPay = async (option: { amount: number, userId: string | number, customerInfor: any, totalOrder: number, totalPrice: number, ship: any, voucher: any }) => {
     try {
         // Gửi request POST đến endpoint VNPay
-        const response = await instance.post('/orders/payment/vnpay', { amount, orderId });
+        const response = await instance.post('/orders/payment/vnpay', option);
 
         // Trả về dữ liệu nếu thành công
         return response.data;
