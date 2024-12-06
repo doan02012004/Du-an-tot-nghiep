@@ -71,7 +71,7 @@ const FormLogin = ({ state, onChangeForm }: FormLoginProps) => {
             </span>
             {/* Mobile */}
             <p className="text-base hidden pb-3 lg:text-xl font-semibold lg:cursor-auto lg:block">
-                Bạn đã có tài khoản 
+                Bạn đã có tài khoản
             </p>
             <div
                 ref={formRef}
@@ -85,19 +85,31 @@ const FormLogin = ({ state, onChangeForm }: FormLoginProps) => {
                     <div className="mb-3">
                         <input
                             type="text"
-                            {...register('email', { required: 'Email không để trống' })}
+                            {...register('email', {
+                                required: 'Email không để trống', pattern: {
+                                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                    message: 'Email không đúng định dạng'
+                                }
+                            })}
                             placeholder="Email"
-                            className="h-12 w-full mb-5 px-3 py-2 placeholder-#57585A text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="h-12  w-full mb-5 px-3 py-2 placeholder-#57585A text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
-                        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+                        {errors.email && <p className="text-rose-600">{errors.email.message}</p>}
 
                         <input
                             type="password"
-                            {...register('password', { required: 'Mật khẩu không được để trống' })}
+                            {...register('password', {
+                                required: 'Mật khẩu không được để trống', minLength: {
+                                    value: 6,
+                                    message: 'Mật khẩu phải có ít nhất 6 ký tự'
+                                }
+                            })}
                             placeholder="Mật khẩu"
                             className="h-12 w-full px-3 py-2 placeholder-#57585A text-#57585A border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
-                        {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+                        {errors.password && (
+                            <p className="text-rose-600 pt-6">{errors.password.message}</p>
+                        )}
                     </div>
                     {/* Forgot Password */}
                     <div className="flex justify-between items-center mb-5">

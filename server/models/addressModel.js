@@ -25,24 +25,19 @@ const addressSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    permanent: {
-        type: Boolean,
-        default: false,
-        required: true
-    },
-    option: {
-        type: String,
-        enum: ["house", "company"],
-        default: "house",
-    },
+    // permanent: {
+    //     type: Boolean,
+    //     default: false,
+    //     required: true
+    // },
     isDefault: {
         type: Boolean,
         default: false,
         required: true
     },
-    userId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'users'
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users'
     }
 
 }, {

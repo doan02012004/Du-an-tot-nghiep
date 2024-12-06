@@ -1,13 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-
-// Hàm để sinh orderNumber
-const generateOrderNumber = () => {
-    const timestamp = Date.now().toString();
-    const random = Math.floor(Math.random() * 1000)
-        .toString()
-        .padStart(3, "0");
-    return `${timestamp}-${random}`;
-};
+import { generateOrderNumber } from "../utils/main.js";
 
 
 const OrderItemSchema = new mongoose.Schema({
@@ -111,7 +103,7 @@ const orderSchema = new Schema(
         },
         status: {
             type: String,
-            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
+            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints", "Refunded", "Exchanged"],
             default: "pending",
         },
         totalPrice: {
@@ -136,7 +128,7 @@ const orderSchema = new Schema(
                 required: true
             },
             value: {
-                
+
             }
         },
         voucher: {
@@ -155,7 +147,7 @@ const orderSchema = new Schema(
             },
             type: {
                 type: String,
-                enum: ["percentage","fixed","freeship"],
+                enum: ["percentage", "fixed", "freeship"],
                 required: false,
             },
         },
