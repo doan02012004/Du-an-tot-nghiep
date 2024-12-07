@@ -19,7 +19,7 @@ type CommentExtralProps = {
 
 const CommentExtra = ({ comment, userTag, setUserTag }: CommentExtralProps) => {
   const [contentExtra, setContentExtra] = useState<string>('')
-  const { currentUser,socket } = useContext(AppContext)
+  const { currentUser } = useContext(AppContext)
   const commentMutation = useCommentMutation()
   useEffect(() => {
     if (comment.recomments?.length == 0) {

@@ -126,13 +126,6 @@ const ItemTable = ({ cart }: Props) => {
                     </div>
                     <p className="text-xs font-bold text-red"><ArrowDownOutlined />{attribute ? attribute?.discount: 0}%</p>
                 </div>
-                <div className="text-left">
-                    <span className='text-xs font-bold text-rose-600'>
-                        {attribute?.price_old && attribute?.price_new
-                            ? `( -${((attribute.price_old - attribute.price_new) / attribute.price_old * 100).toFixed(0)}% )`
-                            : 'Không xác định'}
-                    </span>
-                </div>
             </td>
             <td className="w-24 align-top">
                 <div className="border grid grid-cols-3 items-center rounded-tl-[20px] rounded-br-[20px]">
