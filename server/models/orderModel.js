@@ -1,5 +1,13 @@
 import mongoose, { Schema } from "mongoose";
-import { generateOrderNumber } from "../utils/main.js";
+
+// Hàm để sinh orderNumber
+const generateOrderNumber = () => {
+    const timestamp = Date.now().toString();
+    const random = Math.floor(Math.random() * 1000)
+        .toString()
+        .padStart(3, "0");
+    return `${timestamp}-${random}`;
+};
 
 
 const OrderItemSchema = new mongoose.Schema({
@@ -103,8 +111,15 @@ const orderSchema = new Schema(
         },
         status: {
             type: String,
-            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints", "Refunded", "Exchanged"],
+            enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
             default: "pending",
+        },
+        cancelReason: {
+            type: String,
+            required: function () {
+                return this.status === "cancelled";
+            }, // Lý do hủy bắt buộc nếu trạng thái là cancelled
+            trim: true,
         },
         totalPrice: {
             type: Number,
@@ -128,7 +143,7 @@ const orderSchema = new Schema(
                 required: true
             },
             value: {
-
+                
             }
         },
         voucher: {
@@ -147,7 +162,7 @@ const orderSchema = new Schema(
             },
             type: {
                 type: String,
-                enum: ["percentage", "fixed", "freeship"],
+                enum: ["percentage","fixed","freeship"],
                 required: false,
             },
         },

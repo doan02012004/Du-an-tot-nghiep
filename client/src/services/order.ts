@@ -29,18 +29,24 @@ export const fetchOrderById = async (orderId) => {
 };
 
 // Cập nhật trạng thái đơn hàng
-export const updateOrderStatus = async (orderId, status) => {
-    const response = await instance.put('/orders/update-status', { orderId, status });
+export const updateOrderStatus = async (orderId, status, cancelReason) => {
+    const data: any = { orderId, status };
+
+    // Nếu trạng thái là 'cancelled', thêm lý do huỷ vào dữ liệu gửi đi
+    if (status === "cancelled" && cancelReason) {
+        data.cancelReason = cancelReason;
+    }
+
+    const response = await instance.put('/orders/update-status', data);
     return response.data;
 };
+
 
 // Xóa đơn hàng
 export const deleteOrder = async (orderId) => {
     const response = await instance.delete(`/orders/${orderId}`);
     return response.data;
 };
-
-
 // Gọi API thanh toán đơn hàng bằng VNPay
 export const paymentVNPay = async (option: { amount: number, userId: string | number, customerInfor: any, totalOrder: number, totalPrice: number, ship: any, voucher: any }) => {
     try {
