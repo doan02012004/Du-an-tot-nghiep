@@ -56,10 +56,7 @@ export const getAllVouchers = async (req, res) => {
 // Lấy voucher theo ID
 export const getVoucherById = async (req, res) => {
     try {
-        const voucher = await VoucherModel.findById(req.params.voucherId).populate({
-            path: 'applicableProducts', // tên trường cần populate
-            select: 'name', // các trường cần lấy từ sản phẩm
-        });
+        const voucher = await VoucherModel.findById(req.params.voucherId)
 
         if (!voucher) {
             return res.status(404).json({ success: false, message: 'Voucher không tồn tại' });
@@ -87,7 +84,7 @@ export const getVoucherByCode = async (req, res) => {
 // Cập nhật voucher
 export const updateVoucher = async (req, res) => {
     try {
-        const { name, code, type, value, minOrderValue, maxDiscountValue, quantity, category,scope, startDate, endDate, applicableProducts, status } = req.body;
+        const { name, code, type, value, minOrderValue, maxDiscountValue, quantity, category,scope, startDate, endDate, status } = req.body;
 
         // Chuyển đổi định dạng ngày từ DD/MM/YYYY sang YYYY-MM-DD
         const formattedStartDate = startDate.split("/").reverse().join("-");
@@ -105,7 +102,6 @@ export const updateVoucher = async (req, res) => {
                 quantity,
                 category,
                 scope,
-                applicableProducts,
                 startDate: new Date(formattedStartDate),
                 endDate: new Date(formattedEndDate),
                 status
@@ -122,87 +118,6 @@ export const updateVoucher = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
-
-// Kiểm tra voucher
-export const checkVoucher = async (req, res) => {
-    try {
-        const { code, totalPrice, userId, productIds } = req.body;
-        const voucher = await VoucherModel.findOne({ code, status: true });
-
-        if (!voucher) {
-            return res.status(404).json({ success: false, message: 'Voucher không tồn tại hoặc đã hết hạn' });
-        }
-
-        if (voucher.startDate > new Date() || voucher.endDate < new Date()) {
-            return res.status(400).json({ success: false, message: 'Voucher chưa bắt đầu hoặc đã hết hạn' });
-        }
-
-        if (voucher.quantity <= voucher.usedQuantity) {
-            return res.status(400).json({ success: false, message: 'Voucher đã được sử dụng hết' });
-        }
-
-        // Kiểm tra xem user đã sử dụng voucher này chưa
-        const userUsedVoucher = voucher.usedBy.find(entry => entry.userId === userId && entry.type === voucher.category);
-        if (userUsedVoucher) {
-            return res.status(400).json({ success: false, message: `Bạn đã sử dụng voucher ${voucher.category} rồi` });
-        }
-
-        if (totalPrice < voucher.minOrderValue) {
-            return res.status(400).json({ success: false, message: 'Giá trị đơn hàng không đủ để áp dụng voucher' });
-        }
-
-        // Kiểm tra phạm vi voucher
-        if (voucher.scope === 'specific') {
-            const applicableProductIds = voucher.applicableProducts || [];
-            const isProductApplicable = productIds.some(productId => applicableProductIds.includes(productId));
-
-            if (!isProductApplicable) {
-                return res.status(400).json({ success: false, message: 'Voucher này không áp dụng cho sản phẩm của bạn' });
-            }
-        }
-
-        // Tính giảm giá
-        let discount = 0;
-        if (voucher.type === 'percentage') {
-            discount = (voucher.value / 100) * totalPrice;
-            if (voucher.maxDiscountValue) {
-                discount = Math.min(discount, voucher.maxDiscountValue);
-            }
-        } else if (voucher.type === 'fixed') {
-            discount = voucher.value;
-        }
-
-        const finalPrice = totalPrice - discount;
-
-        // Cập nhật số lượng voucher đã sử dụng
-        voucher.usedQuantity += 1;
-        voucher.usedBy.push({ userId, type: voucher.category });
-        await voucher.save();
-
-        return res.status(200).json({ success: true, discount, finalPrice });
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
-    }
-};
-
-// khi hoàn thành đơn
-export const completeOrderVoucher = async (req,res) =>{
-    try {
-        const {code,userId} = req.body;
-        const voucher = await VoucherModel.findOne({ code });
-        if (!voucher) {
-            return res.status(404).json({ message: 'Voucher không tồn tại' });
-        }
-        // Nếu tất cả điều kiện của voucher đã được kiểm tra và đơn hàng đã thành công
-        voucher.usedBy.push(userId); // Lưu userId vào danh sách usedBy
-        voucher.usedQuantity += 1; // Tăng số lượng sử dụng voucher
-        await voucher.save(); // Lưu voucher
-        res.status(200).json({ message: 'Đơn hàng hoàn thành và voucher đã được sử dụng' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Có lỗi xảy ra' });
-    }
-}
 
 // Xóa voucher
 export const deleteVoucher = async (req, res) => {

@@ -7,11 +7,11 @@ import { IColor } from '../../interfaces/Color'
 import { useContext } from 'react'
 import { AppContext } from '../../contexts/AppContextProvider'
 const useAttributeMutation = () => {
-    const {socket} = useContext(AppContext)
+    const { socket } = useContext(AppContext)
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey: ['PRODUCT'],
-        mutationFn: async (option: { action: string,size?:string|any, color?:IColor|any, gallery?: Igallery | any, productId: string | number | any, newSize?: InewSize | any, newColor?: InewColor | any, attribute?: Iattribute | any }) => {
+        mutationFn: async (option: { action: string, size?: string | any, color?: IColor | any, gallery?: Igallery | any, productId: string | number | any, newSize?: InewSize | any, newColor?: InewColor | any, attribute?: Iattribute | any }) => {
             switch (option.action) {
                 case 'updateGallery':
                     try {
@@ -24,10 +24,10 @@ const useAttributeMutation = () => {
                     break;
                 case 'updateAtb':
                     try {
-                       const res = await updateProductAttribute(option.productId, option.attribute)
-                       if(res?.status === 200){
-                         socket.current.emit('adminUpdatePrice',{newProduct:res?.data?.data,attributeId:option.attribute._id})
-                       }
+                        const res = await updateProductAttribute(option.productId, option.attribute)
+                        if (res?.status === 200) {
+                            socket.current.emit('adminUpdatePrice', { newProduct: res?.data?.data, attributeId: option.attribute._id })
+                        }
                     } catch (error) {
                         console.log(error)
                     }
@@ -46,20 +46,32 @@ const useAttributeMutation = () => {
                         console.log(error)
                     }
                     break;
-                    case 'deleteSize':
-                        try {
-                            await deleteSizeProduct(option.productId, option.size)
-                        } catch (error) {
-                            console.log(error)
-                        }
-                        break;
-                        case 'deleteColor':
-                            try {
-                                await deleteColorProduct(option.productId, option.color)
-                            } catch (error) {
-                                console.log(error)
-                            }
-                            break;
+                case 'deleteSize':
+                    try {
+                      const data =   await deleteSizeProduct(option.productId, option.size) as {message:string,success:boolean}
+                        if(data?.success == true){
+                            message.success(`Xóa size ${option?.size} thành công!`);
+                            socket?.current?.emit('adminDeleteSize',{productId:option.productId,size:option.size})
+                           }else{
+                            message.error('Xóa thất bại !')
+                           }
+                    } catch (error) {
+                        console.log(error)
+                    }
+                    break;
+                case 'deleteColor':
+                    try {
+                       const data =  await deleteColorProduct(option.productId, option.color) as {message:string,success:boolean}
+                       if(data?.success == true){
+                        message.success("Xóa màu sắc thành công!");
+                        socket?.current?.emit('adminDeleteColor',{productId:option.productId,color:option.color})
+                       }else{
+                        message.error('Xóa thất bại !')
+                       }
+                    } catch (error) {
+                        console.log(error)
+                    }
+                    break;
                 default:
                     break;
             }

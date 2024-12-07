@@ -74,22 +74,6 @@ const ColorItemUpdate = ({ data, product }: ColorItemProps) => {
         >
           <Button className="bg-indigo text-white font-semibold" loading={loadingGal} disabled={data.check} icon={<UploadOutlined />}>Thêm ảnh</Button>
         </Upload>
-        <Popconfirm
-          title="Xóa màu và ảnh sản phẩm"
-          description={<p><span className='text-red'>Khi xóa màu, toàn bộ ảnh và biến thể của màu sẽ bị xóa theo.</span><br /><span className='text-blue'> Bạn có muốn xóa không?</span></p>}
-          okText="Có"
-          cancelText="Không"
-          key={data._id}
-          onConfirm={() => {
-            if (product?.colors?.length == 1) {
-              return message.error("Vui lòng không xóa hết màu")
-            } else {
-              attributeMutation.mutate({ action: 'deleteColor', color: data, productId: product._id })
-            }
-          }}
-        >
-          <Button icon={<DeleteOutlined />} danger type="primary">Xóa</Button>
-        </Popconfirm>
       </div>
       <div className="grid grid-cols-12 gap-3">
         {

@@ -7,6 +7,7 @@ import { IOrder } from '../../../../common/interfaces/orderInterfaces';
 import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { formatPrice } from '../../../../common/utils/product';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -19,6 +20,7 @@ const OrderList = (props: Props) => {
     const totalSubmit = useSelector((state:any)=> state.cart.totalSubmit)
     console.log(Orders)
     // Trạng thái tìm kiếm
+    console.log(query)
     const [searchParams, setSearchParams] = useState({
         orderId: '',
         customerName: '',
@@ -157,10 +159,8 @@ const OrderList = (props: Props) => {
         {
             title: 'Tổng tiền',
             dataIndex: 'totalPrice',
-            render: (totalSubmit: number, record: any) => {
-                const voucher = record.voucher?.discountValue || 0; // Lấy giá trị voucher, nếu có
-                const totalWithoutShipping = totalSubmit - voucher; // Tính tổng không bao gồm phí ship
-                return `${totalWithoutShipping.toLocaleString()}₫`;
+            render: (totalSubmit: number) => {
+                return `${formatPrice(totalSubmit)}₫`;
             },
         },
         {

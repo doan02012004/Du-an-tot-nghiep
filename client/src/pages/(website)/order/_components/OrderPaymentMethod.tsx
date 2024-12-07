@@ -14,7 +14,7 @@ const OrderPaymentMethod = ({ setPayment, payment }: Props) => {
             <div className="px-5 py-4 my-4 border rounded-tl-[30px] rounded-br-[30px] lg:py-8 lg:px-10 flex flex-col gap-8" >
                 <span className="text-sm ">Mọi giao dịch đều được bảo mật và mã hóa. Thông tin thẻ tín dụng sẽ không bao giờ
                     được lưu lại.</span>
-                <div className="  flex items-center gap-3">
+                {/* <div className="  flex items-center gap-3">
                     <div className={` cursor-pointer flex items-center gap-x-3`} onClick={() => setPayment("credit")}>
                         <input type="radio" name="radio-example" id="payment" checked={payment == "credit" ? true : false} className='hidden' />
                         <div className={`size-4 rounded-full border flex justify-center items-center  ${payment == "credit" ? 'bg-black' : ''} `}>
@@ -37,14 +37,14 @@ const OrderPaymentMethod = ({ setPayment, payment }: Props) => {
 
 
 
-                </div>
+                </div> */}
                 <div className="  flex items-center gap-3">
                     <div className={` cursor-pointer flex items-center gap-x-3`} onClick={() => setPayment("vnPay")}>
                         <input type="radio" name="radio-example" id="payment" checked={payment == "vnPay" ? true : false} className='hidden' />
                         <div className={`size-4 rounded-full border flex justify-center items-center  ${payment == "vnPay" ? 'bg-black' : ''} `}>
                             <span className={`text-white text-[12px] ${payment !== "vnPay" && 'hidden'}`}><i className="fa-solid fa-check" /></span>
                         </div>
-                        <span className="text-sm text-black">Thanh toán bằng VN Pay</span>
+                        <span className="text-sm text-black">Thanh toán bằng VNPAY</span>
                     </div>
 
 

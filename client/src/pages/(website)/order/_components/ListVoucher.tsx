@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { IVoucher } from '../../../../common/interfaces/voucher'
 import moment from 'moment'
 import { formatPrice } from '../../../../common/utils/product'
 import { useDispatch, useSelector } from 'react-redux'
 import DetailVoucher from './DetailVoucher'
 import { Button } from 'antd'
+import { AppContext } from '../../../../common/contexts/AppContextProvider'
 
 type Props = {
     displayVoucher: boolean
@@ -17,12 +18,19 @@ const ListVoucher = ({ displayVoucher, setDisplayVoucher, vouchers, onVoucherSel
     const [selectedVoucher, setSelectedVoucher] = useState('');
     const [detailVoucher, setDetailVoucher] = useState<IVoucher | null>(null);
     const [displayList, setDisplayList] = useState(true); // Quản lý hiển thị danh sách hoặc chi tiết
+    const { currentUser } = useContext(AppContext)
     const totalCart = useSelector((state: any) => state.cart.totalCart)
+    const voucher = useSelector((state: any) => state.cart.voucher) as IVoucher
     const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (!voucher) {
+            setSelectedVoucher('')
+        }
+    }, [voucher]);
     const handleSelectVoucher = (voucherCode: string) => {
         setSelectedVoucher(voucherCode); // Cập nhật trạng thái khi chọn voucher
     };
-
     const handleConfirmVoucher = () => {
         if (selectedVoucher) {
             onVoucherSelect(selectedVoucher);
@@ -40,6 +48,7 @@ const ListVoucher = ({ displayVoucher, setDisplayVoucher, vouchers, onVoucherSel
         setDetailVoucher(null);
         setDisplayList(true); // Show list and hide detail
     };
+    
     return (
         <>
             {displayList ? (<div id="myModalVoucher" className={`modal fixed top-0 left-0 w-full h-full bg-black/45 z-[51] ${displayVoucher ? "" : "hidden"}`}>
@@ -62,8 +71,10 @@ const ListVoucher = ({ displayVoucher, setDisplayVoucher, vouchers, onVoucherSel
                                         ?.filter((voucher) => 
                                             moment().isBefore(moment(voucher?.endDate)) && // Chưa hết hạn
                                             moment().isSameOrAfter(moment(voucher?.startDate)) && // Ngày bắt đầu <= ngày hiện tại
-                                            voucher?.category === "discount")
-                                        ?.sort((a, b) => {
+                                            !voucher?.usedBy?.includes(currentUser?._id) && // Loại bỏ voucher đã được sử dụng bởi người dùng hiện tại
+                                            voucher?.category === "discount"
+                                        )    
+                                        ?.sort((a:any, b:any) => {
                                             // Sắp xếp voucher đủ điều kiện lên trước
                                             const isEligibleA = totalCart >= a?.minOrderValue;
                                             const isEligibleB = totalCart >= b?.minOrderValue;
@@ -123,6 +134,7 @@ const ListVoucher = ({ displayVoucher, setDisplayVoucher, vouchers, onVoucherSel
                                         ?.filter((voucher) => 
                                             moment().isBefore(moment(voucher?.endDate)) && // Chưa hết hạn
                                             moment().isSameOrAfter(moment(voucher?.startDate)) && // Ngày bắt đầu <= ngày hiện tại
+                                            !voucher?.usedBy?.includes(currentUser?._id) && // Loại bỏ voucher đã được sử dụng bởi người dùng hiện tại
                                             voucher?.category === "shipping")
                                         ?.sort((a, b) => {// sort để phân loại a và b luôn là 2 phần tử khác nhau của mảng
                                             // Sắp xếp voucher đủ điều kiện lên trước

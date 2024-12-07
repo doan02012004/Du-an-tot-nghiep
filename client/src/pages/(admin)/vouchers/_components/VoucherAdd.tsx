@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useVoucherMutation from '../../../../common/hooks/voucher/useVoucherMutation';
 import { IVoucher } from '../../../../common/interfaces/voucher';
-import { getAllProducts } from '../../../../services/products';
 
-type Props = {}
 
 const { Option } = Select;
 
@@ -19,28 +17,47 @@ const generateRandomCode = (length: number) => {
     return result.toUpperCase();
 };
 
-const VoucherAdd = (props: Props) => {
+const VoucherAdd = () => {
     const mutation = useVoucherMutation();
     const [form] = Form.useForm();
     const [voucherCode, setVoucherCode] = useState('');
-    const [scope, setScope] = useState<'all' | 'specific'>('all');
-    const [products, setProducts] = useState([]); // Lưu danh sách sản phẩm
+    // const [scope, setScope] = useState<'all'>('all');
+    // const [products, setProducts] = useState([]); // Lưu danh sách sản phẩm
     const [voucherType, setVoucherType] = useState<'fixed' | 'percentage' | 'freeship'>('fixed'); // Lưu trạng thái loại voucher
-    const [voucherCategory,setVoucherCategory] = useState<'discount'|'shipping'>('discount')
+    const [voucherCategory, setVoucherCategory] = useState<'discount' | 'shipping'>('discount')
 
     // Lấy danh sách sản phẩm từ API
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await getAllProducts();
-                setProducts(response.products || []);
-            } catch (error) {
-                console.error('Lỗi khi lấy danh sách sản phẩm:', error);
-            }
-        };
-        fetchProducts();
-    }, []);
+    // useEffect(() => {
+    //     const fetchProducts = async () => {
+    //         try {
+    //             const response = await getAllProducts();
+    //             setProducts(response.products || []);
+    //         } catch (error) {
+    //             console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+    //         }
+    //     };
+    //     fetchProducts();
+    // }, []);
 
+    useEffect(() => {
+        // Reset các trường liên quan khi thay đổi loại voucher hoặc danh mục voucher
+        if (voucherType === 'freeship') {
+            form.setFieldsValue({ maxDiscountValue: null, value: null });
+        } else if (voucherType === 'percentage') {
+            form.setFieldsValue({ maxDiscountValue: null });
+        }
+
+        if (voucherCategory === 'shipping') {
+            form.setFieldsValue({ value: null });
+        }
+    }, [voucherType, voucherCategory, form]);
+    useEffect(() => {
+        if (voucherCategory === 'shipping') {
+            form.setFieldsValue({ type: 'freeship' });
+        } else if (voucherCategory === 'discount') {
+            form.setFieldsValue({ type: 'select' }); // hoặc type mặc định khác phù hợp
+        }
+    }, [voucherCategory, form]);
     const handleGenerateCode = () => {
         const newCode = generateRandomCode(5);
         setVoucherCode(newCode);
@@ -60,7 +77,6 @@ const VoucherAdd = (props: Props) => {
             quantity: values.quantity,
             category: values.category,
             scope: values.scope,
-            applicableProducts: values.applicableProducts || [],
             startDate: values.startDate.format('YYYY-MM-DD'),
             endDate: values.endDate.format('YYYY-MM-DD'),
             status: values.status === 'active',
@@ -90,7 +106,6 @@ const VoucherAdd = (props: Props) => {
                 layout="vertical"
                 onFinish={onFinish}
                 initialValues={{
-                    type: 'fixed',
                     category: 'discount',
                     scope: 'all',
                     status: 'active',
@@ -135,16 +150,26 @@ const VoucherAdd = (props: Props) => {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item label="Loại voucher" name="type">
+                        <Form.Item label="Loại voucher" name="type" rules={[{ required: true, message: 'Vui lòng chọn loại voucher' }]}>
                             <Select onChange={(value) => setVoucherType(value)}>
-                                <Option value="fixed">Giảm giá cố định</Option>
-                                <Option value="percentage">Giảm giá phần trăm</Option>
-                                <Option value="freeship">Miễn phí vận chuyển</Option>
+                            <Option value="select" disabled>
+                                    Chọn loại voucher
+                                </Option>
+                                {voucherCategory !== 'shipping' && (
+                                    <Option value="fixed">Giảm giá cố định</Option>
+                                )}
+                                {voucherCategory !== 'shipping' && (
+                                    <Option value="percentage">Giảm giá phần trăm</Option>
+                                )}
+                                {voucherCategory !== 'discount' && (
+                                    <Option value="freeship">Miễn phí vận chuyển</Option>
+                                )}
+
                             </Select>
                         </Form.Item>
                     </Col>
 
-                    
+
                 </Row>
 
                 {/* Row 3: Giá trị đơn hàng tối thiểu và Giá trị giảm tối đa */}
@@ -161,10 +186,10 @@ const VoucherAdd = (props: Props) => {
 
                     <Col span={12}>
                         <Form.Item
-                            label="Giá trị giảm tối đa (cho phần trăm)"
+                            label={`${voucherType !== 'fixed' ? 'Giá trị giảm tối đa (VND)' : 'Giá trị giảm tối đa (VND)'}`}
                             name="maxDiscountValue"
                         >
-                            <InputNumber min={0} style={{ width: '100%' }} disabled={voucherType !== 'percentage' && voucherType !== 'freeship' } />
+                            <InputNumber min={0}  style={{ width: '100%' }} disabled={voucherType !== 'percentage' && voucherCategory !== 'shipping'} />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -183,27 +208,19 @@ const VoucherAdd = (props: Props) => {
 
                     <Col span={12}>
                         <Form.Item
-                            label="Giá trị giảm"
+                            label={`${voucherType !== 'percentage' ? 'Giá trị giảm (VND)' : 'Giá trị giảm (%)'}`}
                             name="value"
-                            // rules={[{ required: true, message: 'Giá trị giảm là bắt buộc' }]}
                         >
-                            <InputNumber min={0} style={{ width: '100%' }}  disabled={voucherType === "freeship"}/>
+                            <InputNumber min={0} max={voucherType === 'percentage' ? 90 : 1000000} style={{ width: '100%' }} disabled={voucherCategory == 'shipping'} />
                         </Form.Item>
                     </Col>
                 </Row>
 
                 {/* Row 5: Phạm vi áp dụng và Chọn sản phẩm */}
                 <Row gutter={16}>
-                    <Col span={12}>
-                        <Form.Item label="Phạm vi áp dụng" name="scope">
-                            <Select onChange={(value) => setScope(value)}>
-                                <Option value="all">Tất cả sản phẩm</Option>
-                                <Option value="specific">Một số sản phẩm</Option>
-                            </Select>
-                        </Form.Item>
-                    </Col>
 
-                    {scope === 'specific' && (
+
+                    {/* {scope === 'specific' && (
                         <Col span={12}>
                             <Form.Item
                                 label="Chọn sản phẩm"
@@ -219,7 +236,7 @@ const VoucherAdd = (props: Props) => {
                                 </Select>
                             </Form.Item>
                         </Col>
-                    )}
+                    )} */}
                 </Row>
 
                 {/* Row 6: Ngày bắt đầu và Ngày kết thúc */}
@@ -247,6 +264,13 @@ const VoucherAdd = (props: Props) => {
 
                 {/* Row 7: Trạng thái của voucher */}
                 <Row gutter={16}>
+                    <Col span={12}>
+                        <Form.Item label="Phạm vi áp dụng" name="scope">
+                            <Select>
+                                <Option value="all">Tất cả sản phẩm</Option>
+                            </Select>
+                        </Form.Item>
+                    </Col>
                     <Col span={12}>
                         <Form.Item label="Trạng thái" name="status">
                             <Select>

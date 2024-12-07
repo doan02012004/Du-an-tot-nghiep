@@ -1,13 +1,11 @@
 import express from 'express';
 import { 
     createVoucher, 
-    checkVoucher, 
     getAllVouchers, 
     updateVoucher, 
     getVoucherById,  // Thêm hàm getVoucherById
     deleteVoucher,     // Thêm hàm deleteVoucher
     getVoucherByCode,
-    completeOrderVoucher
 } from '../controllers/voucherController.js';
 
 const router = express.Router();
@@ -25,11 +23,6 @@ router.get('/code/:voucherCode', getVoucherByCode);
 
 // Route cập nhật voucher
 router.put('/:voucherId', updateVoucher);
-
-// Route kiểm tra voucher
-router.post('/check', checkVoucher);
-
-router.post('/completeOrder',completeOrderVoucher)
 
 // Route xóa voucher
 router.delete('/:voucherId', deleteVoucher);  // Thêm route xóa voucher theo ID

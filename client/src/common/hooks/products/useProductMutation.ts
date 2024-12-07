@@ -36,9 +36,13 @@ const useProductMutation = () => {
                         break;
                 case 'delete':
                     try {
-                        await deleteProduct(option.product?._id)
+                       const data = await deleteProduct(option.product?._id)
+                       if(data?.message && data?.message =='ok'){
+                        if(socket.current){
+                            socket.current.emit('adminDeleteProduct',{productId:option.product?._id})
+                           }
+                       }
                         message.success("Xoá sản phẩm thành công")
-                        navigate('/admin/products')
                     } catch (error) {
                         console.log(error)
                         message.error("Xoá sản phẩm thất bại")

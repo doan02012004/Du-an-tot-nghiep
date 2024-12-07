@@ -56,6 +56,10 @@ const OrderItemSchema = new mongoose.Schema({
     total: {
         type: Number,
         required: true,
+    },
+    checkComment:{
+        type:Boolean,
+        default:false
     }
 },
     { timestamps: true, versionKey: false }
@@ -113,6 +117,13 @@ const orderSchema = new Schema(
             type: String,
             enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
             default: "pending",
+        },
+        cancelReason: {
+            type: String,
+            required: function () {
+                return this.status === "cancelled";
+            }, // Lý do hủy bắt buộc nếu trạng thái là cancelled
+            trim: true,
         },
         totalPrice: {
             type: Number,

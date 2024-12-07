@@ -193,7 +193,7 @@ const AttributeItemUpdate = ({ data, product }: AttributeItemProps) => {
           </div>
           {!data?.active && (
             <div className=" absolute top-0 left-0 right-0 bottom-0 bg-black/30 flex justify-center items-center">
-            <span className="text-[#ea2c2c] font-semibold text-base">Ngừng hoạt động</span>
+            <span className="text-[#ea2c2c] font-semibold text-base px-3 py-1 bg-white rounded-sm">Ngừng hoạt động</span>
           </div>
           )}
         </div>

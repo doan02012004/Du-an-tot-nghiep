@@ -9,7 +9,7 @@ import useUserMutation from '../../../../common/hooks/users/useUserMutation';
 import FormUser from './FormUser';
 import Highlighter from 'react-highlight-words';
 const ListUser = () => {
-    const [user, setUser] = useState<Iuser|null>(null)
+    const [user, setUser] = useState<Iuser | null>(null)
     const query = useUserQuery()
     const [users, setUsers] = useState([] as Iuser[])
     const [searchText, setSearchText] = useState('');
@@ -32,12 +32,12 @@ const ListUser = () => {
         selectedKeys: string[],
         confirm: FilterDropdownProps['confirm'],
         dataIndex: any,
-        
+
     ) => {
         confirm();
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
-        
+
     };
     const handleReset = (clearFilters: () => void) => {
         clearFilters();
@@ -97,7 +97,7 @@ const ListUser = () => {
         filterIcon: (filtered: boolean) => (
             <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
         ),
-        onFilter: (value, record:any) =>
+        onFilter: (value, record: any) =>
             record[dataIndex]
                 .toString()
                 .toLowerCase()
@@ -119,16 +119,16 @@ const ListUser = () => {
                 text
             ),
     });
-    const handleStatusChange = async (dataUser:Iuser) => {
+    const handleStatusChange = async (dataUser: Iuser) => {
         const newStatus = !dataUser.status;
-        const newUsers:Iuser = {
+        const newUsers: Iuser = {
             ...dataUser,
             status: newStatus
         }
         mutation.mutate({ action: 'checked', user: newUsers })
         console.log(dataUser)
     };
-    
+
     const columns: TableColumnsType<Iuser> = [
         {
             title: 'Name',
@@ -157,48 +157,53 @@ const ListUser = () => {
             dataIndex: 'createdAt',
             key: 'createdAt',
             render: (createdAt: Date) => moment(createdAt).format('DD/MM/YYYY'),
-            sorter: (a:any, b:any) => {
+            sorter: (a: any, b: any) => {
                 const dateA = new Date(a.createdAt);
                 const dateB = new Date(b.createdAt);
                 return dateA.getTime() - dateB.getTime();
-              },
-              sortDirections: ['descend', 'ascend'],
+            },
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Status',
-            dataIndex:'status',
+            dataIndex: 'status',
             key: 'status',
-            render: (status: boolean,record:Iuser) => {
+            render: (status: boolean, record: Iuser) => {
                 return (
                     <p className={`flex gap-2 justify-between flex-shrink-0 ${status ? "text-green-500" : "text-rose-500"}`}>
-                    {status ? "Hoạt động" : "Ngừng hoạt động"}
-                    <Switch defaultValue={status}  onClick={() => handleStatusChange(record)} />
-                </p>
+                        {status ? "Hoạt động" : "Ngừng hoạt động"}
+                        <Switch defaultValue={status} onClick={() => handleStatusChange(record)} />
+                    </p>
                 )
             },
             filters: [
                 {
-                  text: 'Hoạt động',
-                  value: true,
+                    text: 'Hoạt động',
+                    value: true,
                 },
                 {
-                  text: 'Ngừng hoạt động',
-                  value: false,
+                    text: 'Ngừng hoạt động',
+                    value: false,
                 },
-              ],
-              onFilter: (value, record:any) => record.status === value,
+            ],
+            onFilter: (value, record: any) => record.status === value,
 
         }, {
             title: "Action",
             render: (user: Iuser) => (
                 <div className='flex gap-2'>
-                    <Popconfirm title="Xóa sản phẩm" description="Bạn có muốn xóa không?"
-                        okText="Có"
-                        cancelText="Không"
-                        onConfirm={() => mutation.mutate({ action: 'delete', user: user })}
-                    >
-                        <Button type="primary" danger><DeleteOutlined /></Button>
-                    </Popconfirm>
+                    {/* Kiểm tra nếu người dùng có đơn hàng chưa thanh toán */}
+                    {user.hasUnpaidOrder ? (
+                        <Button type="default" disabled> Không thể xóa</Button>  // Vô hiệu hóa nút xóa
+                    ) : (
+                        <Popconfirm title="Xóa người dùng?" description="Bạn có muốn xóa không?"
+                            okText="Có"
+                            cancelText="Không"
+                            onConfirm={() => mutation.mutate({ action: 'delete', user: user })}
+                        >
+                            <Button type="primary" danger><DeleteOutlined /></Button>
+                        </Popconfirm>
+                    )}
                     <Button type="primary" onClick={() => setUser(user)}>
                         <EditOutlined />
                     </Button>
@@ -209,7 +214,7 @@ const ListUser = () => {
     ];
     return (
         <div>
-            <FormUser  data={user} setUser={setUser}/>
+            <FormUser data={user} setUser={setUser} />
             <Table dataSource={users} columns={columns} />
         </div>
     )

@@ -17,7 +17,7 @@ const OrderAddressItem = ({ address, listAddress }: Props) => {
             <div className="my-4 border rounded-tl-[30px] rounded-br-[30px]">
                 <div className="px-5 py-6 lg:py-8 lg:px-10 justify-between">
                     <div className="flex items-center justify-between">
-                        <span className="text-lg text-black font-semibold">{addressOrder?.fullname} {addressOrder.option == "house" ? "(Nhà riêng)" : "(Cơ quan)"}</span>
+                        <span className="text-lg text-black font-semibold">{addressOrder?.fullname}</span>
                         <div className="flex items-center gap-2">
                             <button onClick={() => setIsOpenAddress(!isOpenAddress)} className='underline'><u>Chọn địa chỉ khác</u></button>
                             {addressOrder.isDefault && (

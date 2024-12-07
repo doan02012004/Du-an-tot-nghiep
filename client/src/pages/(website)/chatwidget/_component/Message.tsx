@@ -6,6 +6,8 @@ import { formatPrice } from "../../../../common/utils/product"
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { setOpenChat } from "../../../../common/redux/features/chatSlice"
+import { Space } from "antd"
+import { WarningOutlined } from "@ant-design/icons"
 
 type Props = {
     checkBoxRef: any,
@@ -34,7 +36,7 @@ const Message = ({ checkBoxRef, currentUser, message }: Props) => {
         if (message && message?.productId) {
             if (message.attributeId) {
                 const attribute = message.productId.attributes.find((item: Iattribute) => item._id == message.attributeId)
-                const findGallery = message.productId?.gallerys.find((item: Igallery) => item.name == attribute.color)
+                const findGallery = message.productId?.gallerys.find((item: Igallery) => item.name == attribute?.color)
                 setGallery(findGallery ? findGallery : null)
                 setCurrentAtb(attribute)
             } else {
@@ -49,13 +51,13 @@ const Message = ({ checkBoxRef, currentUser, message }: Props) => {
         }
     }, [message])
 
-    const onViewProduct =  () =>{
-      navigate(`/productdetails/${message?.productId?.slug}`)
-      dispath(setOpenChat(false))
+    const onViewProduct = () => {
+        navigate(`/productdetails/${message?.productId?.slug}`)
+        dispath(setOpenChat(false))
     }
     return (
         <>
-            {message.productId && (
+            {message.productId && currentAtb &&(
                 <div className='flex gap-x-3 max-w-48 self-end mb-3 mt-5'>
                     <div className='w-14 h-20 overflow-hidden'>
                         <img src={gallery?.avatar} className=' cursor-pointer object-cover w-full h-full' alt={message?.productId?.name} />
@@ -64,8 +66,8 @@ const Message = ({ checkBoxRef, currentUser, message }: Props) => {
                         <h5 onClick={onViewProduct} className='font-semibold cursor-pointer text-xs text-black w-full hover:text-blue hover:underline'>{message.productId?.name}</h5>
                         {currentAtb && (
                             <p className='text-xs m-0'>
-                                <span className='block'>size: {currentAtb.size}</span>
-                                <span>màu:  {currentAtb.color}</span>
+                                <span className='block'>size: {currentAtb?.size}</span>
+                                <span>màu:  {currentAtb?.color}</span>
                             </p>
                         )}
                         {currentAtb ?
@@ -89,7 +91,19 @@ const Message = ({ checkBoxRef, currentUser, message }: Props) => {
                             )}
                     </div>
                 </div>
-            )}
+            ) }
+            {!currentAtb && message.type == 'product' && (
+                    <div className='flex gap-x-3 max-w-48 self-end mb-3 mt-5'>
+                        <div className="bg-black/30 w-full h-full px-3 py-2">
+                            <div className="bg-white px-2 py-1">
+                                <Space>
+                                    <WarningOutlined className="text-red" />
+                                    <span className="text-yellow text-xs">Sản phẩm không còn tồn tại</span>
+                                </Space>
+                            </div>
+                        </div>
+                    </div>
+                )}
             <div ref={messageRef} key={message?._id} className={`${currentUser?._id == message?.sender?._id ? "self-end text-white bg-blue" : "self-start text-dark bg-gray-200"} mb-2 px-3 py-2  max-w-52 border`}>
                 <div ref={checkBoxRef} className={` text-sm   font-medium`} style={{ overflowWrap: 'break-word', wordWrap: 'break-word' }}>
                     {message.message}

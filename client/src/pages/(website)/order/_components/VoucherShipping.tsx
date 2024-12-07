@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { IVoucher } from '../../../../common/interfaces/voucher'
 import { useDispatch, useSelector } from 'react-redux'
 import { setTotalSubmit, setVoucher } from '../../../../common/redux/features/cartSlice'
 import { IshipSubmit } from '../../../../common/interfaces/orderInterfaces'
 import { formatPrice } from '../../../../common/utils/product'
 import { message } from 'antd'
+import { AppContext } from '../../../../common/contexts/AppContextProvider'
 
 type Props = {
     voucher: IVoucher,
@@ -15,42 +16,45 @@ type Props = {
 const VoucherShipping = ({ voucher, setSelectedVoucherCode, shippingCost }: Props) => {
     const totalCart = useSelector((state: any) => state.cart.totalCart)
     const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
+    const { currentUser } = useContext(AppContext)
     const carts = useSelector((state: any) => state.cart.carts)
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(setTotalSubmit(totalCart));
         if (voucher) {
-            if (voucher?.status == true || new Date(voucher?.endDate) >= new Date()) {
-                if (voucher?.quantity >= Number(voucher?.usedQuantity)) {
-                    if (voucher?.minOrderValue <= totalCart) {
-                        if (voucher?.type === 'freeship') {
-                            if (Number(voucher?.maxDiscountValue) >= Number(shippingCost?.value?.price)) {
-                                const total = totalCart - Number(shippingCost?.value?.price)
-                                dispatch(setTotalSubmit(total))
-                            } else {
-                                const total = totalCart - Number(voucher?.maxDiscountValue)
-                                dispatch(setTotalSubmit(total))
+            if (!voucher?.usedBy?.includes(currentUser?._id)) {
+                if (voucher?.status == true || new Date(voucher?.endDate) >= new Date()) {
+                    if (voucher?.quantity > 0) {
+                        if (voucher?.minOrderValue <= totalCart) {
+                            if (voucher?.type === 'freeship') {
+                                if (Number(voucher?.maxDiscountValue) >= Number(shippingCost?.value?.price)) {
+                                    const total = totalCart - Number(shippingCost?.value?.price)
+                                    dispatch(setTotalSubmit(total))
+                                } else {
+                                    const total = totalCart - Number(voucher?.maxDiscountValue)
+                                    dispatch(setTotalSubmit(total))
+                                }
                             }
+                        } else {
+                            dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
+                            message.error("Tổng giá không đủ điều kiện");
+                            setTimeout(() => {
+                                dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
+                            }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
                         }
                     } else {
-                        dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
-                        message.error("Tổng giá không đủ điều kiện");
-                        setTimeout(() => {
-                            dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
-                        }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
+                        message.error("Số lượng voucher đã hết");
+                        dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                     }
                 } else {
-                    message.error("Số lượng voucher đã hết");
-                    setTimeout(() => {
-                        dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
-                    }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
+                    message.error("Voucher đã hết hạn");
+                    dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                 }
-            }else{
-                message.error("Voucher đã hết hạn");
-                    setTimeout(() => {
-                        dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
-                    }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
+            } else {
+                message.error("Bạn đã sử dụng voucher này rồi");
+                dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
             }
+
         } else {
             dispatch(setTotalSubmit(0))
         }

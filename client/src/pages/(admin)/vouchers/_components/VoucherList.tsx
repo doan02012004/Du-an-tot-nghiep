@@ -7,9 +7,7 @@ import useVoucherQuery from '../../../../common/hooks/voucher/useVoucherQuery';
 import { IVoucher } from '../../../../common/interfaces/voucher';
 import { Link } from 'react-router-dom';
 
-type Props = {};
-
-const VoucherList = (props: Props) => {
+const VoucherList = () => {
     const [Vouchers, SetVouchers] = useState<IVoucher[]>([]);
     const [filterType, setFilterType] = useState<'discount' | 'shipping'>('discount'); // Mặc định lọc voucher giảm giá
     const [filterStatus, setFilterStatus] = useState<'active' | 'inactive'>('active'); // Mặc định lọc voucher đang hoạt động
@@ -26,7 +24,7 @@ const VoucherList = (props: Props) => {
             SetVouchers(newVouchers);
         }
     }, [query?.data]);
-
+    console.log(query?.data)
     // Lọc danh sách voucher theo trạng thái và loại voucher
     const filteredVouchers = Vouchers.filter(voucher =>
         voucher.category === filterType &&
@@ -38,7 +36,7 @@ const VoucherList = (props: Props) => {
     // Xử lý xóa tất cả các voucher được chọn
     const handleDeleteSelected = () => {
         selectedRowKeys.forEach((key) => {
-            const voucher = Vouchers.find(voucher => voucher.key === key);
+            const voucher = Vouchers.find(voucher => voucher?.key === key);
             if (voucher) {
                 mutation.mutate({ action: "delete", voucher });
             }
@@ -80,8 +78,8 @@ const VoucherList = (props: Props) => {
             dataIndex: 'type',
         },
         {
-            title: 'Giá trị giảm',
-            dataIndex: 'value',
+            title: filterType =='discount' ? 'Giá trị giảm':'Giá trị giảm tối đa',
+            dataIndex: filterType =='discount' ? 'value':'maxDiscountValue',
         },
         {
             title: 'Số lượng',
