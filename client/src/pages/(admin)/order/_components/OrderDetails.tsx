@@ -1,34 +1,50 @@
 import { CloseOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Form, Input, Menu, Radio, Table, TableProps } from "antd";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useOrderMutation from "../../../../common/hooks/orders/useOrderMutation";
 import { useOrderQuery } from "../../../../common/hooks/orders/useOrderQuery";
+import { IOrder } from "../../../../common/interfaces/orderInterfaces";
 import { formatPrice } from "../../../../common/utils/product";
-import { Iproduct } from "../../../../common/interfaces/product";
+import { AppContext } from "../../../../common/contexts/AppContextProvider";
 
 
 const OrderDetails = () => {
     const { id } = useParams();
     const query = useOrderQuery({ orderId: id });
+    const [order,setorder] = useState({} as IOrder)
+    const {currentUser,socket} = useContext(AppContext)
+    useEffect(()=>{
+        if(query?.data){
+            setorder(query?.data)
+        }
+    },[query?.data])
     const mutation = useOrderMutation();
     const [check,setcheck] = useState(false)
     const [selectedReason, setSelectedReason] = useState('');
     const [otherReason, setOtherReason] = useState('');
     const [status,setstatus] = useState('');
     const [form] = Form.useForm()
-    // console.log(check)
-    // console.log(query.data);
+    useEffect(()=>{
+        if(socket?.current){
+          socket.current?.on('onUpdateOrderStatus',(data:any) =>{
+            if(data?._id == order?._id){
+              if(data?.status == 'cancelled' || data?.status == 'received'|| data?.status == 'Complaints'|| data?.status == 'Returngoods'|| data?.status == 'Exchanged'){
+                setorder(data)
+              }
+            }
+          })
+        }
+      },[socket,order,currentUser])
 
     if (query.isLoading) return <div>Đang tải...</div>;
     if (query.isError) return <div>Lỗi khi tải chi tiết đơn hàng</div>;
 
-    const order = query.data;
     const customer = order.customerInfor;
-    const items = order.items;
-    const ship = order.ship;
-    const voucher = order.voucher
-    const totalCartOrder = items.reduce((sum:number,item:any)=>sum+item?.total,0)
+    const items = order?.items;
+    const ship = order?.ship;
+    const voucher = order?.voucher
+    const totalCartOrder = items?.reduce((sum:number,item:any)=>sum+item?.total,0)
     // Map trạng thái đơn hàng sang tiếng Việt
     const getStatusText = (status: string) => {
         switch (status) {
@@ -266,21 +282,21 @@ const OrderDetails = () => {
                         )}
                         <div className="grid grid-cols-2">
                             <p>Tổng tiền hàng:</p>
-                            <p>{formatPrice(totalCartOrder)} VND</p>
+                            <p>{formatPrice(totalCartOrder?totalCartOrder:0)} VND</p>
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Phí vận chuyển:</p>
-                            <p>{ship.value?.price.toLocaleString()} VND</p>
+                            <p>{ship?.value?.price?.toLocaleString()} VND</p>
                         </div>
                         {voucher && (
                             <div className="grid grid-cols-2">
                                 <p>Giảm giá:</p>
-                                <p>-{voucher?.discountValue.toLocaleString()} VND</p>
+                                <p>-{voucher?.discountValue?.toLocaleString()} VND</p>
                             </div>
                         )}
                         <div className="grid grid-cols-2">
                             <p>Tổng giá trị đơn hàng:</p>
-                            <p>{formatPrice(order.totalPrice)} VND</p>
+                            <p>{formatPrice(order?.totalPrice?order.totalOrder:0)} VND</p>
                         </div>
                     </div>
                 </div>
@@ -292,19 +308,19 @@ const OrderDetails = () => {
                     <div className="pt-3">
                         <div className="grid grid-cols-2">
                             <p>Tên:</p>
-                            <p>{customer.fullname}</p>
+                            <p>{customer?.fullname}</p>
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Địa chỉ:</p>
-                            <p>{customer.address}, {customer.ward}, {customer.district}, {customer.city}</p>
+                            <p>{customer?.address}, {customer?.ward}, {customer?.district}, {customer?.city}</p>
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Số điện thoại:</p>
-                            <p>{customer.phone}</p>
+                            <p>{customer?.phone}</p>
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Email:</p>
-                            <p>{order.userId.email}</p>
+                            <p>{order?.userId?.email}</p>
                         </div>
                     </div>
                 </div>
@@ -316,15 +332,15 @@ const OrderDetails = () => {
                     <div className="pt-3">
                         <div className="grid grid-cols-2">
                             <p>Phương thức thanh toán:</p>
-                            <p>{order.paymentMethod === 'credit' ? 'Thẻ tín dụng' :
-                                order.paymentMethod === 'atm' ? 'Thẻ ATM' :
-                                    order.paymentMethod === 'vnPay' ? 'VN Pay' :
+                            <p>{order?.paymentMethod === 'credit' ? 'Thẻ tín dụng' :
+                                order?.paymentMethod === 'atm' ? 'Thẻ ATM' :
+                                    order?.paymentMethod === 'vnPay' ? 'VN Pay' :
                                         'Tiền mặt'}</p>
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Trạng thái thanh toán:</p>
                             <p>
-                                {order.paymentMethod === "vnPay" ? (order.paymentStatus === "Đã thanh toán" ? "Đã thanh toán" : "Chưa thanh toán") : (order.status === "pending" || order.status === "unpaid" || order.status === "confirmed" || order.status === "shipped" || order.status === "cancelled" ? "Chưa thanh toán" : "Đã thanh toán")}
+                                {order?.paymentMethod === "vnPay" ? (order?.paymentStatus === "Đã thanh toán" ? "Đã thanh toán" : "Chưa thanh toán") : (order.status === "pending" || order.status === "unpaid" || order.status === "confirmed" || order.status === "shipped" || order.status === "cancelled" ? "Chưa thanh toán" : "Đã thanh toán")}
                             </p>
                         </div>
                     </div>
@@ -338,7 +354,7 @@ const OrderDetails = () => {
                         <div className="grid grid-cols-2">
                             <p>Hình thức giao hàng:</p>
                             <p>
-                                {ship.nameBrand}
+                                {ship?.nameBrand}
                             </p>
                         </div>
                     </div>
@@ -346,9 +362,9 @@ const OrderDetails = () => {
                         <div className="grid grid-cols-2">
                             <p>Trạng thái giao hàng:</p>
                             <p>
-                                {(order.status === 'Complaints' ||
-                                    order.status === 'received' ||
-                                    order.status === 'delivered')
+                                {(order?.status === 'Complaints' ||
+                                    order?.status === 'received' ||
+                                    order?.status === 'delivered')
                                     ? 'Đã giao'
                                     : 'Chưa giao'}
                             </p>

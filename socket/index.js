@@ -84,6 +84,11 @@ io.on("connection", (socket) => {
         // phát sự kiện cho toàn bộ client
         io.emit('userAddRecomment',data)
     })
+
+    socket.on('updateOrderStatus',(data) =>{
+        // phát sự kiện cho toàn bộ client
+        io.emit('onUpdateOrderStatus',data)
+    })
     
     
 })

@@ -30,8 +30,11 @@ export interface IOrder {
     };
     items: IOrderItem[];
     orderNumber: string;
-    paymentMethod: 'cash' | 'momo' | 'atm' | 'credit';
+    paymentMethod: "cash" | "vnPay" | "atm" | "credit";
     status: "pending" | "unpaid" | "confirmed" | "shipped" | "delivered" | "cancelled" | "received" | "Returngoods" | "Complaints" |"Refunded" | "Exchanged";
+    ship?:any;
+    voucher?:any;
+    paymentStatus?:any;
     cancelReason?: string; // Lý do hủy đơn, chỉ có khi status = "cancelled"
     totalPrice: number;
     totalOrder: number;

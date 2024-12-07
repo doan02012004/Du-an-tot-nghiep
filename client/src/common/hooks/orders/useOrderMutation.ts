@@ -2,8 +2,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createOrder, deleteOrder, updateOrderStatus } from '../../../services/order'
 import { message } from 'antd'
+import { useContext } from 'react'
+import { AppContext } from '../../contexts/AppContextProvider'
 
 const useOrderMutation = () => {
+    const {socket} = useContext(AppContext)
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey: ['ORDERS'],
@@ -23,7 +26,12 @@ const useOrderMutation = () => {
                         const { orderId, status, cancelReason } = option;
                         // Nếu trạng thái là 'cancelled', truyền thêm lý do huỷ
                         const response = await updateOrderStatus(orderId, status, cancelReason);
-                        message.success('Cập nhật trạng thái thành công');
+                        if(response?._id){
+                            message.success('Cập nhật trạng thái thành công');
+                            if(socket?.current){
+                                socket.current?.emit('updateOrderStatus',response)
+                            }
+                        }
                         return response;
                     } catch (error) {
                         message.error('Cập nhật trạng thái thất bại');
