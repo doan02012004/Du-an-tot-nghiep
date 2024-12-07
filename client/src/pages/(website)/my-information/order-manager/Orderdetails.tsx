@@ -1,11 +1,19 @@
 import { useParams } from 'react-router-dom';
 import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
+import { Button } from 'antd';
+import { CheckCircleOutlined } from '@ant-design/icons';
+import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
+import { useState } from 'react';
 
 type Props = {};
 
 const OrderDetails = (props: Props) => {
   const { id } = useParams();
   const query = useOrderQuery({ orderId: id });
+  const mutation = useOrderMutation();
+  const [check,setcheck] = useState(false)
+  const [selectedReason, setSelectedReason] = useState('');
+  const [otherReason, setOtherReason] = useState('');
   const order = query?.data;
   const customer = order?.customerInfor;
   const items = order?.items;
@@ -69,18 +77,28 @@ const OrderDetails = (props: Props) => {
         return 'Không xác định';
     }
   };
+  // Hàm xử lý nhận hàng
+  const onHandleReceived = (orderId:string) =>{
+    mutation.mutate({ action: "updateStatus", orderId: orderId, status: "received" })
+  }
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-700 mb-6">Chi tiết đơn hàng</h1>
 
       {/* Trạng thái đơn hàng */}
-      <div className="mb-6">
+      <div className="mb-6 flex">
         <span
           className={`px-4 py-2 rounded-full font-semibold ${getStatusStyle(order?.status || '')}`}
         >
           Trạng thái: {translateStatus(order?.status || '')}
         </span>
+        {(order?.status === "delivered" || order?.status === "Exchanged") && (
+                     <Button type='primary' onClick={() => onHandleReceived(order?._id) } className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline ml-2">
+                      <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} />
+                      Đã nhận hàng
+                     </Button>
+                    )}
       </div>
 
       {/* Thông tin đơn hàng */}
@@ -120,9 +138,13 @@ const OrderDetails = (props: Props) => {
                 <span>Màu:{item?.attribute?.color}</span><br /><span>Size:{item?.attribute?.size}</span>
                 <p className="text-sm text-gray-600">Số lượng: {item.quantity}</p>
               </div>
+              <div className="">
               <p className="font-semibold text-gray-800">
                 {(item.price * item.quantity).toLocaleString()}₫
               </p>
+              <Button type='primary' >ĐÁNH GIÁ</Button>
+              </div>
+              
             </div>
           ))}
         </div>

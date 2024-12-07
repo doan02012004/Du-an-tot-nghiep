@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-const sendEmail = async (to, subject, text) => {
+const sendEmail = async (to, subject, htmlContent) => {
   const transporter = nodemailer.createTransport({
     service: "gmail", // Hoặc cấu hình SMTP khác của bạn
     auth: {
@@ -13,7 +13,7 @@ const sendEmail = async (to, subject, text) => {
     from: process.env.EMAIL_USER,
     to,
     subject,
-    text,
+    html: htmlContent, // Thay text bằng html để gửi email dưới dạng HTML
   };
 
   try {

@@ -1,5 +1,6 @@
-import { EditOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Menu, Table, TableProps } from "antd";
+import { CloseOutlined, EditOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Form, Input, Menu, Radio, Table, TableProps } from "antd";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useOrderMutation from "../../../../common/hooks/orders/useOrderMutation";
 import { useOrderQuery } from "../../../../common/hooks/orders/useOrderQuery";
@@ -8,7 +9,13 @@ const OrderDetails = () => {
     const { id } = useParams();
     const query = useOrderQuery({ orderId: id });
     const mutation = useOrderMutation();
-    console.log(query.data);
+    const [check,setcheck] = useState(false)
+    const [selectedReason, setSelectedReason] = useState('');
+    const [otherReason, setOtherReason] = useState('');
+    const [status,setstatus] = useState('');
+    const [form] = Form.useForm()
+    // console.log(check)
+    // console.log(query.data);
 
     if (query.isLoading) return <div>Đang tải...</div>;
     if (query.isError) return <div>Lỗi khi tải chi tiết đơn hàng</div>;
@@ -20,6 +27,7 @@ const OrderDetails = () => {
     const voucher = order.voucher
     const Goodsmoney = order.totalPrice - ship.value?.price
     const Totalamount = voucher ? order.totalPrice - voucher?.discountValue : order.totalPrice
+
 
     // Map trạng thái đơn hàng sang tiếng Việt
     const getStatusText = (status: string) => {
@@ -51,6 +59,34 @@ const OrderDetails = () => {
         }
     };
 
+    const reasons = [
+        'Sản phẩm không như mong đợi',
+        'Chất lượng sản phẩm không tốt',
+        'Giá sản phẩm quá cao',
+        'Giao hàng quá chậm',
+        'Khác'
+    ];
+
+    const onSubmit = (values) => {
+        console.log("Submitting with status:", status); // Kiểm tra status trước khi gửi
+        if (status === '') {
+          alert('Vui lòng chọn trạng thái đơn hàng');
+          return;
+        }
+      
+        const cancelReason = values.reason === "Khác" ? values.otherReason : values.reason;
+        
+        mutation.mutate({
+          action: "updateStatus",
+          orderId: order._id,
+          status: status,  // Kiểm tra giá trị này
+          cancelReason: cancelReason,
+        });
+      
+        setcheck(!check);
+      };
+           
+
     // Hàm kiểm tra tính hợp lệ của việc chuyển đổi trạng thái
     const validateStatusChange = (currentStatus: string, newStatus: string) => {
         const invalidTransitions: Record<string, string[]> = {
@@ -59,7 +95,7 @@ const OrderDetails = () => {
             confirmed: ["pending", "unpaid", "confirmed", "delivered", "cancelled", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
             shipped: ["pending", "unpaid", "confirmed", "shipped", "cancelled", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
             delivered: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "Returngoods","Complaints","Refunded","Exchanged"],
-            cancelled: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints"],
+            cancelled: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
             received: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
             Complaints: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
             Returngoods: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
@@ -72,15 +108,10 @@ const OrderDetails = () => {
 
 
     const handleStatusChange = (newStatus: string) => {
-        const currentStatus = order.status;
-
-        // Kiểm tra tính hợp lệ của việc chuyển trạng thái
-        if (!validateStatusChange(currentStatus, newStatus)) {
-            // Hiển thị thông báo lỗi (có thể dùng notification hoặc alert)
-            alert(`Không thể chuyển từ trạng thái "${getStatusText(currentStatus)}" sang "${getStatusText(newStatus)}"`);
+        if(newStatus === "cancelled"){
+            setstatus(newStatus)
             return;
         }
-
         // Nếu hợp lệ, thực hiện cập nhật trạng thái
         mutation.mutate({
             action: "updateStatus",
@@ -122,7 +153,7 @@ const OrderDetails = () => {
                 Đã giao thành công
             </Menu.Item>
             <Menu.Item
-                onClick={() => handleStatusChange('cancelled')}
+                onClick={() => {handleStatusChange('cancelled');setcheck(!check)}}
                 disabled={!validateStatusChange(order.status, 'cancelled')}
             >
                 Đã hủy
@@ -193,7 +224,7 @@ const OrderDetails = () => {
             render: (price: number) => `${price.toLocaleString()} VND`,
         },
     ];
-
+    
     return (
         <div className="overflow-y-auto h-[600px]">
             <div className="flex justify-between items-center mb-4">
@@ -227,6 +258,12 @@ const OrderDetails = () => {
                                 </Dropdown>
                             </div>
                         </div>
+                        {order.status === "cancelled" && (
+                            <div className="grid grid-cols-2">
+                            <p>Lý do huỷ hàng:</p>
+                            <p>{order?.cancelReason}</p>
+                        </div>
+                        )}
                         <div className="grid grid-cols-2">
                             <p>Tổng tiền hàng:</p>
                             <p>{Goodsmoney.toLocaleString()} VND</p>
@@ -325,6 +362,63 @@ const OrderDetails = () => {
                 <hr />
                 <Table columns={columns} dataSource={items} rowKey="_id" />
             </div>
+            {/* lý do huỷ đơn */}
+            {check === true && (
+                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <div className="relative">
+                        <h2 className="text-2xl font-semibold mb-4 text-center text-red">LÝ DO HUỶ ĐƠN HÀNG</h2>
+                        <CloseOutlined
+                        style={{ fontSize: '24px', color: 'red' }}
+                        className="absolute top-1 right-1"
+                        onClick={() => setcheck(!check)}
+                        />
+                    </div>
+                    <Form form={form} layout="vertical" onFinish={onSubmit}>
+                    <Form.Item name="reason" initialValue={selectedReason}>
+                        <Radio.Group
+                        value={selectedReason}
+                        onChange={(e) => setSelectedReason(e.target.value)}
+                        className="w-full"
+                        >
+                        {reasons?.length > 0 &&
+                            reasons.map((reason, index) => (
+                            <div key={index} className="flex items-center">
+                                <Radio value={reason} className="mr-2">
+                                {reason}
+                                </Radio>
+                            </div>
+                            ))}
+                        </Radio.Group>
+                    </Form.Item>
+
+                    {selectedReason === 'Khác' && (
+                        <Form.Item name="otherReason" initialValue={otherReason}>
+                        <div className="mt-4">
+                            <label htmlFor="otherReason" className="block text-lg mb-2">
+                            Lý do khác:
+                            </label>
+                            <Input.TextArea
+                            id="otherReason"
+                            value={otherReason}
+                            onChange={(e) => setOtherReason(e.target.value)}
+                            placeholder="Nhập lý do khác..."
+                            required
+                            className="w-full"
+                            rows={4} // Số dòng của TextArea
+                            />
+                        </div>
+                        </Form.Item>
+                    )}
+                    <Button className="mt-2" type="primary" danger htmlType="submit">
+                        Xác nhận huỷ
+                    </Button>
+                    </Form>
+
+                    </div>
+                </div>
+                )}
+
         </div>
     );
 }
