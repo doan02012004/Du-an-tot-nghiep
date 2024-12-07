@@ -12,8 +12,6 @@ const DetailVoucher = ({ voucher, onBack }: Props) => {
     const handleClick = () => {
         setShowEligibleProducts(!showEligibleProducts);
     };
-    console.log(voucher)
-    console.log(voucher?.applicableProducts)
     return (
         <div id="myModalVoucherDetail" className="modal fixed top-0 left-0 w-full h-full bg-black/45 z-[51]">
             <div className="w-[400px] mt-3 lg:w-[800px] mx-auto bg-white lg:mt-9 rounded-lg relative">

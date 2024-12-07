@@ -3,13 +3,15 @@ import { Button, Dropdown, Menu, Table, TableProps } from "antd";
 import { Link, useParams } from "react-router-dom";
 import useOrderMutation from "../../../../common/hooks/orders/useOrderMutation";
 import { useOrderQuery } from "../../../../common/hooks/orders/useOrderQuery";
+import { formatPrice } from "../../../../common/utils/product";
+import { Iproduct } from "../../../../common/interfaces/product";
+
 
 const OrderDetails = () => {
     const { id } = useParams();
     const query = useOrderQuery({ orderId: id });
     const mutation = useOrderMutation();
-    console.log(query.data);
-
+    
     if (query.isLoading) return <div>Đang tải...</div>;
     if (query.isError) return <div>Lỗi khi tải chi tiết đơn hàng</div>;
 
@@ -18,9 +20,7 @@ const OrderDetails = () => {
     const items = order.items;
     const ship = order.ship;
     const voucher = order.voucher
-    const Goodsmoney = order.totalPrice - ship.value?.price
-    const Totalamount = voucher ? order.totalPrice - voucher?.discountValue : order.totalPrice
-
+    const totalCartOrder = items.reduce((sum:number,item:any)=>sum+item?.total,0)
     // Map trạng thái đơn hàng sang tiếng Việt
     const getStatusText = (status: string) => {
         switch (status) {
@@ -229,7 +229,7 @@ const OrderDetails = () => {
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Tổng tiền hàng:</p>
-                            <p>{Goodsmoney.toLocaleString()} VND</p>
+                            <p>{formatPrice(totalCartOrder)} VND</p>
                         </div>
                         <div className="grid grid-cols-2">
                             <p>Phí vận chuyển:</p>
@@ -238,12 +238,12 @@ const OrderDetails = () => {
                         {voucher && (
                             <div className="grid grid-cols-2">
                                 <p>Giảm giá:</p>
-                                <p>{voucher?.discountValue.toLocaleString()} VND</p>
+                                <p>-{voucher?.discountValue.toLocaleString()} VND</p>
                             </div>
                         )}
                         <div className="grid grid-cols-2">
                             <p>Tổng giá trị đơn hàng:</p>
-                            <p>{Totalamount.toLocaleString()} VND</p>
+                            <p>{formatPrice(order.totalPrice)} VND</p>
                         </div>
                     </div>
                 </div>

@@ -201,7 +201,7 @@ const OrderManager = () => {
                       <div className="" key={item?._id}>{item.quantity}x {item.name}</div>
                     ))
                   }</td>
-                  <td className="order-3 flex-[50%] pt-5 py-3 lg:border-t-[1px] border-b-[1px] font-bold border-['#f7f8f9']"> {formatPrice(order.totalPrice-order.voucher.discountValue)}₫</td>
+                  <td className="order-3 flex-[50%] pt-5 py-3 lg:border-t-[1px] border-b-[1px] font-bold border-['#f7f8f9']"> {formatPrice(order.totalPrice)}₫</td>
                 </tr>
               )
             })}

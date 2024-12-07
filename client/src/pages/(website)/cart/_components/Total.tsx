@@ -23,10 +23,6 @@ const Total = ({totalCart,totalProduct}:Props) => {
                     <span className="text-sm">Thành tiền</span>
                     <span className="text-lg font-semibold text-dark">{totalCart>0 ?formatPrice(totalCart):"0"}đ</span>
                 </div>
-                <div className="flex items-center justify-between pb-5 border-b">
-                    <span className="text-sm">Tạm tính</span>
-                    <span className="text-lg font-semibold text-dark">{totalCart>0 ?formatPrice(totalCart):"0"}đ</span>
-                </div>
                 <div>
                     <span className="text-red"><i className="fa-solid fa-circle-exclamation" /></span>
                     <span className="text-sm text-red">Miễn <strong>đổi trả</strong> đối với sản phẩm đồng giá / sale trên 50%</span>

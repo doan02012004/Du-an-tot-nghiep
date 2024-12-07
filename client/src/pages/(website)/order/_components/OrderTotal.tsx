@@ -45,6 +45,11 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
             dispatch(setTotalSubmit(newTotalSubmit));
         }
     }, [carts, voucher, totalCart, dispatch]);
+    useEffect(() => {
+        if (!voucher) {
+            setSelectedVoucherCode('');
+        }
+    }, [voucher]);
     const handleVoucherSelect = (voucherCode: string) => {
         setSelectedVoucherCode(voucherCode); // Cập nhật mã voucher vào state
     };
@@ -90,10 +95,6 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
                         <span className="text-sm">Tổng tiền hàng</span>
                         <span className="text-sm">{formatPrice(totalCart)}đ</span> {/* chỉ hiển thị tổng tiền hàng */}
                     </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm">Tạm tính</span>
-                        <span className="text-sm">{formatPrice(totalCart)}đ</span> {/* giống tổng tiền hàng */}
-                    </div>
                     {voucher && voucher.category == 'discount' && (
                         <VoucherDiscount voucher={voucher} setSelectedVoucherCode={selectedVoucherCode} />
                     )}
@@ -134,11 +135,6 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
                             ÁP DỤNG
                         </button>
 
-                    </div>
-                    <div>
-                        <select className="text-sm border w-full rounded-md py-3 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:text-base">
-                            <option value=''>Mã nhân viên hỗ trợ</option>
-                        </select>
                     </div>
                 </div>
             </div>

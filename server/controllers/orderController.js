@@ -8,6 +8,7 @@ import { formatDateToCustomString, sortObject } from '../ultil/payment.js';
 import ProductModel from "../models/productModel.js";
 import sendEmail from "../utils/sendEmail.js";
 import UserModel from "../models/userModel.js";
+import VoucherModel from "../models/voucherModel.js";
 
 export const createOrder = async (req, res) => {
     try {
@@ -27,6 +28,21 @@ export const createOrder = async (req, res) => {
             cart.totalPrice = 0;
             cart.totalCart = 0;
             await cart.save()
+            if (order?.voucher?.code) {
+                const voucherItem =  await VoucherModel.findOne({code:order?.voucher?.code})
+                if (!voucherItem) throw new Error("Invalid voucher.");
+                const alreadyUsed = voucherItem.usedBy.includes(order?.userId);
+                if (alreadyUsed){
+                    throw new Error("Bạn đã sử dụng voucher này rồi.");
+                }
+                voucherItem.usedBy.push(order?.userId);
+                if (voucherItem.quantity >=1) {
+                    voucherItem.quantity -= 1;
+                    voucherItem.usedQuantity +=1;
+                }
+                await voucherItem.save()
+            }
+
             // Sử dụng userModel để tìm người dùng từ userId
             const user = await UserModel.findById(order.userId);  
             const userEmail = user?.email;

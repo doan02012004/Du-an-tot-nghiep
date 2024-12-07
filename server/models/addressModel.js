@@ -30,11 +30,11 @@ const addressSchema = new mongoose.Schema({
         default: false,
         required: true
     },
-    option: {
-        type: String,
-        enum: ["house", "company"],
-        default: "house",
-    },
+    // option: {
+    //     type: String,
+    //     enum: ["house", "company"],
+    //     default: "house",
+    // },
     isDefault: {
         type: Boolean,
         default: false,
