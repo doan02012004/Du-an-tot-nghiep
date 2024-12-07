@@ -1,5 +1,6 @@
 
 import Category from "../models/categoryModel.js";
+import Product from "../models/productModel.js";
 import slugify from "slugify";
 export const create = async (req, res) => {
     try {
@@ -14,15 +15,6 @@ export const create = async (req, res) => {
         return res.status(500).json({ error });
     }
 };
-
-// export const getAll = async (req, res) => {
-//     try {
-//         const categories = await Category.find({});
-//         return res.status(200).json(categories);
-//     } catch (error) {
-//         return res.status(500).json({ error });
-//     }
-// };
 
 export const getAll = async (req, res) => {
     try {
@@ -64,7 +56,17 @@ export const getCategoryById = async (req, res) => {
 export const deleteCategoryById = async (req, res) => {
     try {
         const category = await Category.findByIdAndDelete(req.params.id);
-        return res.status(200).json(category);
+
+        const cateData = await Category.findOne({ name: "Không xác định" });
+        if (!cateData) {
+            return res.status(404).json({ message: "Danh mục  không tồn tại!" });
+        }
+        const productUpdate = await Product.updateMany(
+            { categoryId: req.params.id }, 
+            { categoryId: cateData._id }  
+        );
+
+        return res.status(200).json(category, productUpdate);
     } catch (error) {
         return res.status(500).json({ error });
     }
