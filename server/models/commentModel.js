@@ -48,6 +48,33 @@ const commentSchema = new Schema(
             type: String,
             required: true
         },
+        item:{
+            name:{
+                type:String,
+                required:true
+            },
+            gallery:{
+                avatar:{
+                    type:String,
+                    required:true
+                },
+                name:{
+                    type:String,
+                    required:true
+                },
+                items:[]
+            },
+            attribute:{
+                size:{
+                    type:String,
+                    required:true
+                },
+                color:{
+                    type:String,
+                    required:true
+                }
+            }
+        },
         recomments: [
             recommentItemSchema
         ],

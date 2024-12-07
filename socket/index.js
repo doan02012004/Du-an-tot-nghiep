@@ -76,6 +76,16 @@ io.on("connection", (socket) => {
         // phát sự kiện cho toàn bộ client
         io.emit('adminSend',data)
     })
+    socket.on('addComment',(data) =>{
+        // phát sự kiện cho toàn bộ client
+        io.emit('userAddComment',data)
+    })
+    socket.on('addReComment',(data) =>{
+        // phát sự kiện cho toàn bộ client
+        io.emit('userAddRecomment',data)
+    })
+    
+    
 })
 
 

@@ -1,21 +1,23 @@
-import { useParams } from 'react-router-dom';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
-import { Button, Form, Input, Radio } from 'antd';
+import { Button, Form, Input, message, Radio } from 'antd';
 import { CheckCircleOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 import { useState } from 'react';
 import instance from '../../../../common/config/axios';
+import CommentForm from './_components/CommentForm';
 
-type Props = {};
-
-const OrderDetails = (props: Props) => {
+const OrderDetails = () => {
   const { id } = useParams();
   const query = useOrderQuery({ orderId: id });
   const mutation = useOrderMutation();
+  const navigate = useNavigate()
   const [form] = Form.useForm();
   const [check,setcheck] = useState(false)
   const [selectedReason, setSelectedReason] = useState('');
   const [otherReason, setOtherReason] = useState('');
+  const [dataComment,setDataComment] = useState<any>(null)
   const order = query?.data;
   const customer = order?.customerInfor;
   const items = order?.items;
@@ -23,7 +25,6 @@ const OrderDetails = (props: Props) => {
   const voucher = order?.voucher
   const Goodsmoney = order?.totalPrice - ship?.value?.price || 0
   const Totalamount = voucher ? order?.totalPrice - voucher?.discountValue : order?.totalPrice
-  console.log(order)
   const reasons = [
     'Sản phẩm không như mong đợi',
     'Chất lượng sản phẩm không tốt',
@@ -191,7 +192,7 @@ const OrderDetails = (props: Props) => {
             <div key={index} className="flex items-center it py-4">
               <img src={item?.gallery?.avatar || 'https://via.placeholder.com/80'} alt={item.name} className="w-20 h-[84px] rounded-lg mr-4 object-cover" />
               <div className="flex-grow">
-                <span className="font-medium text-gray-800">{item?.name}</span><br />
+                <span onClick={()=> item.productId?navigate(`/productdetails/${item.productId.slug}`): message.error('Sản phẩm này không còn tồn tại!')} className="font-medium cursor-pointer text-gray-800 hover:underline">{item?.name}</span><br />
                 <span>Màu:{item?.attribute?.color}</span><br /><span>Size:{item?.attribute?.size}</span>
                 <p className="text-sm text-gray-600">Số lượng: {item.quantity}</p>
               </div>
@@ -199,14 +200,15 @@ const OrderDetails = (props: Props) => {
               <p className="font-semibold text-gray-800">
                 {(item.price * item.quantity).toLocaleString()}₫
               </p>
-              <Button type='primary' >ĐÁNH GIÁ</Button>
+             {order?.status == 'received' &&item?.checkComment == false && ( <Button type='primary' onClick={() => setDataComment(item)} >ĐÁNH GIÁ</Button>)}
+             {order?.status == 'received' &&item?.checkComment&& ( <Button type='primary' disabled >ĐÃ ĐÁNH GIÁ</Button>)}
               </div>
               
             </div>
           ))}
         </div>
       </div>
-
+        
       {/* Tổng chi phí */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Tổng thanh toán</h3>
@@ -283,6 +285,10 @@ const OrderDetails = (props: Props) => {
                     </div>
                 </div>
                 )}
+      {/* form đánh giá  */}
+      {dataComment && (
+        <CommentForm item={dataComment} setDataComment={setDataComment} orderId={order?._id?order._id:''}/>
+      )}
     </div>
   );
 };
