@@ -55,18 +55,22 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
     };
     const onAplly = async () => {
         if (selectedVoucherCode) {
-            try {
-                const data = await getVoucherByCode(selectedVoucherCode)// Gọi API lấy voucher theo mã 
-                if (data) {
-                    dispatch(setVoucher(data))
-                } else {
-                    dispatch(setVoucher(null))
+            if(selectedVoucherCode !== voucher?.code){
+                try {
+                    const data = await getVoucherByCode(selectedVoucherCode)// Gọi API lấy voucher theo mã 
+                    if (data) {
+                        dispatch(setVoucher(data))
+                    } else {
+                        dispatch(setVoucher(null))
+                    }
+                } catch (error) {
+                    console.log(error)
                 }
-            } catch (error) {
-                console.log(error)
+            }else{
+                message.error("Mã đã tồn tại")
             }
         } else {
-            message.error("Chưa tồn tại mã")
+            message.error("Mã không hợp lệ")
         }
     }
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

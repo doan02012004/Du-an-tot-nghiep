@@ -28,16 +28,24 @@ const VoucherDiscount = ({ voucher, setSelectedVoucherCode }: Props) => {
                         if (voucher?.status == true || new Date(voucher?.endDate) >= new Date()) {
                             if (voucher?.quantity > 0) {
                                 if (voucher?.minOrderValue <= totalCart) {
-                                    if (voucher?.scope == "all") {
                                         const discountVoucher = totalCart * voucher?.value / 100
                                         if (voucher?.maxDiscountValue && voucher?.maxDiscountValue > discountVoucher) {
                                             const totalSubmit = totalCart - discountVoucher
-                                            dispatch(setTotalSubmit(totalSubmit))
+                                            if (Number(totalSubmit) < 0) {
+                                                dispatch(setTotalSubmit(0))
+                                            } else {
+                                                dispatch(setTotalSubmit(totalSubmit))
+                                            }
                                         } else {
                                             const totalSubmit = totalCart - Number(voucher?.maxDiscountValue)
+                                            if (Number(totalSubmit) < 0) {
+                                                dispatch(setTotalSubmit(0))
+                                            } else {
+                                                dispatch(setTotalSubmit(totalSubmit))
+                                            }
                                             dispatch(setTotalSubmit(totalSubmit))
                                         }
-                                    }
+                                    
                                 } else {
                                     dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
                                     message.error("Tổng giá không đủ điều kiện");
@@ -64,14 +72,14 @@ const VoucherDiscount = ({ voucher, setSelectedVoucherCode }: Props) => {
                         if (voucher?.status == true || new Date(voucher?.endDate) >= new Date()) {
                             if (voucher?.quantity > 0) {
                                 if (totalCart >= voucher?.minOrderValue) {
-                                    if (voucher?.scope == "all") {
+                                    
                                         const totalSubmit = totalCart - voucher?.value
                                         if (Number(totalSubmit) < 0) {
                                             dispatch(setTotalSubmit(0))
                                         } else {
                                             dispatch(setTotalSubmit(totalSubmit))
                                         }
-                                    }
+                                  
                                 } else {
                                     dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
                                     message.error("Tổng giá không đủ điều kiện");
