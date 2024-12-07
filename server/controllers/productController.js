@@ -3,6 +3,8 @@ import ProductModel from "../models/productModel.js";
 import slugify from "slugify";
 import categoryModel from "../models/categoryModel.js";
 import SearchModel from "../models/searchModel.js";
+import deleteImage from "../utils/signature.js";
+import CartModel from "../models/cartModel.js";
 
 export const createProduct = async (req, res) => {
   try {
@@ -311,7 +313,14 @@ export const deleteProduct = async (req, res) => {
         message: "Product Not Found",
       });
     }
-    return res.status(200).json(product);
+    const carts = await CartModel.updateMany({},{
+      $pull:{
+        carts:{
+          productId:req.params.productId
+        }
+      }
+    })
+    return res.status(200).json({message:'ok'});
   } catch (error) {
     return res.status(500).json({
       message: error.message,
@@ -326,6 +335,13 @@ export const deleteSize = async (req, res) => {
         message: "Product Not Found",
       });
     }
+   if(product.sizes.length> 1){
+    // mảng attributeId để updateMany
+    const filterAttribute = product.attributes.filter(
+      (item) => item.size == req.body.size
+    );
+    const atbId = filterAttribute.map((item) => item._id)
+    // product
     const newSize = product.sizes.filter((item) => item !== req.body.size);
     const newAttributes = product.attributes.filter(
       (item) => item.size !== req.body.size
@@ -333,9 +349,26 @@ export const deleteSize = async (req, res) => {
     product.sizes = newSize;
     product.attributes = newAttributes;
     await product.save();
+
+    // cart
+     await CartModel.updateMany({},{
+      $pull:{
+        carts:{
+          productId:req.params.productId,
+          attributeId: {$in:atbId}
+        }
+      }
+    })
     return res.status(200).json({
       message: "Xóa size thành công !",
+      success: true
     });
+   }else{
+    return res.status(404).json({
+      message: "Xóa size thất bại!",
+      success: false
+    });
+   }
   } catch (error) {
     return res.status(500).json({
       message: error.message,
@@ -344,14 +377,20 @@ export const deleteSize = async (req, res) => {
 };
 export const deleteColor = async (req, res) => {
   try {
-    const product = await ProductModel.findById(req.params.productId).populate(
-      "colors"
-    );
+    const product = await ProductModel.findById(req.params.productId)
     if (!product) {
       return res.status(404).json({
         message: "Product Not Found",
       });
     }
+  if(product.colors.length>1){
+    // mảng attributeId để updateMany
+    const filterAttribute = product.attributes.filter(
+      (item) => item.color == req.body.name
+    );
+    const atbId = filterAttribute.map((item) => item._id)
+
+    // product
     product.colors = product.colors.filter(
       (item) => item.name !== req.body.name
     );
@@ -362,9 +401,25 @@ export const deleteColor = async (req, res) => {
       (item) => item.color !== req.body.name
     );
     await product.save();
+    // cart
+     await CartModel.updateMany({},{
+      $pull:{
+        carts:{
+          productId:req.params.productId,
+          attributeId: {$in:atbId}
+        }
+      }
+    })
     return res.status(200).json({
       message: "Xóa màu sắc thành công !",
+      success: true
     });
+  }else{
+    return res.status(404).json({
+      message: "Xóa màu thất bại!",
+      success: false
+    });
+  }
   } catch (error) {
     return res.status(500).json({
       message: error.message,
@@ -409,10 +464,27 @@ export const updateAvatarGallery = async(req,res) =>{
   }
 }
 
-export const deleteImage = async(req,res) =>{
+export const deleteImageProduct = async(req,res) =>{
   try {
-    
+    const {imageUrl,galleryId,productId} = req.body
+    const product = await ProductModel.findById(productId)
+    const objectProduct = product.toObject()
+    const gallery = objectProduct.gallerys.find((item) => item._id == galleryId)
+    if(gallery.items.length>1){
+      const data = await deleteImage(imageUrl)
+      if(data?.result == 'ok'){
+        gallery.items = gallery.items.filter((item) => item !== imageUrl)
+        await product.save()
+        return res.status(200).json({message:"ok"})
+      }else{
+        return res.status(400).json({message:"Fail"})
+      }
+    }else{
+      return res.status(400).json({message:"Không thể xóa"})
+    }
   } catch (error) {
-    
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 }

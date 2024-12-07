@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
-import AddSizes from './AddSizes'
 import { Iattribute, Igallery, InewColor, Iproduct } from '../../../../../common/interfaces/product'
-import AddColors from './AddColors'
 import { Button, Select, Space, Tabs, TabsProps } from 'antd'
 import useColorQuery from '../../../../../common/hooks/color/useColorQuery'
 import { IColor } from '../../../../../common/interfaces/Color'
@@ -12,11 +10,11 @@ import AttributeItem from '../../_components/AttributeItem'
 import ColorItem from '../../_components/ColorItem'
 import { CheckOutlined, PlusOutlined } from '@ant-design/icons'
 import useAttributeMutation from '../../../../../common/hooks/products/useAttributeMutation'
+import ChoicePropertiesUpdate from './ChoicePropertiesUpdate'
 type AddProperties = {
   product: Iproduct
 }
 const AddProperties = ({ product }: AddProperties) => {
-  const [option, setOption] = useState<'size' | 'color' | null>(null)
   const [optionSize, setOptionSize] = useState<'size' | 'freesize' | null>(null)
   const [checkGallerys, setCheckGallerys] = useState(false)
   const [checkAttributes, setCheckAttributes] = useState(false)
@@ -41,11 +39,10 @@ const AddProperties = ({ product }: AddProperties) => {
             attributes?.length > 0 && (
               <div className='mb-4 '>
                 <h3 className='font-bold text-base mb-2 text-red'>Biến thể *</h3>
-                <div className='grid grid-cols-4 gap-6' >
+                <div className='grid grid-cols-2 gap-6' >
                   {attributes?.map((attribute: Iattribute, index: number) => (
                     <AttributeItem data={attribute} index={index} key={index} />
                   ))}
-
                 </div>
               </div>
             )
@@ -217,72 +214,75 @@ const AddProperties = ({ product }: AddProperties) => {
     }
   }
   return (
-    <div className='mb-4'>
-      {option == 'size' && (<AddSizes product={product} setOption={setOption} />)}
-      {option == 'color' && (<AddColors setOption={setOption} product={product} />)}
-      <p className='text-red text-xs'>Lưu ý*: chỉ thêm được lần lượt size hoặc màu sắc</p>
-      <Space>
-        <Select
-          mode="multiple"
-          value={sizes}
-          disabled={colors.length > 0 ? true : false}
-          className='w-80'
-          onChange={(value) => setSizes(value)}
-          placeholder="Vui lòng chọn size"
-          options={
-            [
-              { value: 'S', label: 'S', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('S') ? true : false) },
-              { value: 'M', label: 'M', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('M') ? true : false) },
-              { value: 'L', label: 'L', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('L') ? true : false) },
-              { value: 'XL', label: 'XL', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('XL') ? true : false) },
-              { value: 'XXL', label: 'XXL', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('XXL') ? true : false) },
-              { value: '3XL', label: '3XL', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('3XL') ? true : false) },
-              { value: '4XL', label: '4XL', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('4XL') ? true : false) },
-              { value: 'FREESIZE', label: 'FREESIZE', disabled: optionSize == 'size' ? true : false }
-            ]
+    <div>
+      <ChoicePropertiesUpdate product={product} />
+        {/* Thêm thuộc tính  */}
+      <div className='mb-4'>
+        <h1 className='font-semibold w-max border-b text-lg'>2. Thêm thuộc tính</h1>
+        <p className='text-red text-xs'>Lưu ý*: chỉ thêm được lần lượt size hoặc màu sắc</p>
+        <Space>
+          <Select
+            mode="multiple"
+            value={sizes}
+            disabled={colors.length > 0 ? true : false}
+            className='w-80'
+            onChange={(value) => setSizes(value)}
+            placeholder="Vui lòng chọn size"
+            options={
+              [
+                { value: 'S', label: 'S', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('S') ? true : false) },
+                { value: 'M', label: 'M', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('M') ? true : false) },
+                { value: 'L', label: 'L', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('L') ? true : false) },
+                { value: 'XL', label: 'XL', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('XL') ? true : false) },
+                { value: 'XXL', label: 'XXL', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('XXL') ? true : false) },
+                { value: '3XL', label: '3XL', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('3XL') ? true : false) },
+                { value: '4XL', label: '4XL', disabled: optionSize == 'freesize' ? true : (product?.sizes.includes('4XL') ? true : false) },
+                { value: 'FREESIZE', label: 'FREESIZE', disabled: optionSize == 'size' ? true : false }
+              ]
+            }
+          />
+          <Select
+            loading={colorQuery.isLoading}
+            mode="multiple"
+            value={colors}
+            disabled={sizes.length > 0 ? true : false}
+            className='w-80'
+            onChange={(value) => setColors(value)}
+            placeholder="Vui lòng chọn màu sắc"
+            options={colorQuery?.data?.map((item: IColor) => ({ label: item.name, value: item._id, disabled: colorsProduct?.includes(item.name) ? true : false }))}
+          />
+          {
+            (colors.length > 0) && (
+              <Button
+                icon={<PlusOutlined />}
+                type='primary'
+                className='bg-indigo font-semibold'
+                disabled={!checkAttributes || !checkGallerys}
+                onClick={onAdd}
+              >
+                Thêm màu
+              </Button>
+            )
           }
-        />
-        <Select
-          loading={colorQuery.isLoading}
-          mode="multiple"
-          value={colors}
-          disabled={sizes.length > 0 ? true : false}
-          className='w-80'
-          onChange={(value) => setColors(value)}
-          placeholder="Vui lòng chọn màu sắc"
-          options={colorQuery?.data?.map((item: IColor) => ({ label: item.name, value: item._id, disabled: colorsProduct?.includes(item.name) ? true : false }))}
-        />
-        {
-          (colors.length > 0) && (
-            <Button
-              icon={<PlusOutlined />}
-              type='primary'
-              className='bg-indigo font-semibold'
-              disabled={!checkAttributes || !checkGallerys}
-              onClick={onAdd}
-            >
-              Thêm màu
-            </Button>
-          )
-        }
-        {
-          sizes.length > 0 && (
-            <Button
-              icon={<PlusOutlined />}
-              type='primary'
-              className='bg-indigo font-semibold'
-              disabled={!checkAttributes}
-              onClick={onAdd}
-            >
-              Thêm size
-            </Button>
-          )
-        }
-      </Space>
-      {attributes.length > 0 && (
-        <Tabs items={items} />
-      )}
+          {
+            sizes.length > 0 && (
+              <Button
+                icon={<PlusOutlined />}
+                type='primary'
+                className='bg-indigo font-semibold'
+                disabled={!checkAttributes}
+                onClick={onAdd}
+              >
+                Thêm size
+              </Button>
+            )
+          }
+        </Space>
+        {attributes.length > 0 && (
+          <Tabs items={items} />
+        )}
 
+      </div>
     </div>
   )
 }

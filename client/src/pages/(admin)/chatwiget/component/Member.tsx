@@ -4,7 +4,6 @@ import { Ichatmember } from '../../../../common/interfaces/chat'
 import { useContext, useEffect, useState } from 'react'
 import { Iuser } from '../../../../common/interfaces/auth'
 import { Imesage } from '../../../../common/interfaces/message'
-import useMessageQuery from '../../../../common/hooks/chats/useMessageQuery'
 import { useQuery } from '@tanstack/react-query'
 import { getLastMessage } from '../../../../services/chat'
 import { AppContext } from '../../../../common/contexts/AppContextProvider'
@@ -24,7 +23,6 @@ const Member = ({chat,setChatId,chatId,setUserMessage}:Props) => {
         queryFn: async() =>{
             try {
                 const data = await getLastMessage(chat?._id)
-                console.log(data)
                 return data
             } catch (error) {
                 console.log(error)

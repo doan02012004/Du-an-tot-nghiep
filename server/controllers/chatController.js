@@ -21,7 +21,7 @@ export const createChat = async (req, res) => {
 // Gửi tin nhắn
 export const sendMessage = async (req, res) => {
     try {
-        const { senderId, receiverId, message, chatId,productId,attributeId,images } = req.body;
+        const { senderId, receiverId, message, chatId,productId,attributeId,images,type } = req.body;
         if(receiverId){
             const massage = new MessageModel({
                 sender: senderId,
@@ -30,7 +30,8 @@ export const sendMessage = async (req, res) => {
                 chatId,
                 productId:productId??null,
                 attributeId:attributeId??null,
-                images:images??[] 
+                images:images??[] ,
+                type
             })
             await massage.save()
             return res.status(200).json(massage)
@@ -45,11 +46,11 @@ export const sendMessage = async (req, res) => {
                 chatId,
                 productId:productId??null,
                 attributeId:attributeId??null,
-                images:images??[] 
+                images:images??[],
+                type
             })
             await massage.save()
-            const newMessage = await MessageModel.findById(massage._id).populate('sender receiver productId').exec()
-            return res.status(200).json(newMessage);
+            return res.status(200).json(massage);
         }
         
     } catch (error) {
@@ -82,9 +83,7 @@ export const getChatAdmin = async (req, res) => {
 export const getMessages = async (req, res) => {
     try {
         const { chatId } = req.params;
-        console.log(chatId)
         const messages = await MessageModel.find({ chatId }).populate('sender receiver productId');
-        console.log(messages)
        return res.status(200).json(messages);
     } catch (error) {
         return res.status(500).json({ message: 'lỗi get Message', error });

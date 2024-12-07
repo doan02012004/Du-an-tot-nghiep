@@ -3,6 +3,7 @@ const AdminProduct = () => {
 
   return (
    <>
+        
         <Outlet />
    </>
   )

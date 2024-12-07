@@ -23,7 +23,6 @@ const Conversation = ({ chatId }: Props) => {
                 if(newMessage.chatId == chatId){
                     setMessages([...messages,newMessage])
                 }
-               
             })
         }
     },[messages, socket])

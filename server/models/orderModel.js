@@ -114,6 +114,13 @@ const orderSchema = new Schema(
             enum: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
             default: "pending",
         },
+        cancelReason: {
+            type: String,
+            required: function () {
+                return this.status === "cancelled";
+            }, // Lý do hủy bắt buộc nếu trạng thái là cancelled
+            trim: true,
+        },
         totalPrice: {
             type: Number,
             default: 0

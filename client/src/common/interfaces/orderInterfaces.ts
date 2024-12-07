@@ -32,6 +32,7 @@ export interface IOrder {
     orderNumber: string;
     paymentMethod: 'cash' | 'momo' | 'atm' | 'credit';
     status: "pending" | "unpaid" | "confirmed" | "shipped" | "delivered" | "cancelled" | "received" | "Returngoods" | "Complaints" |"Refunded" | "Exchanged";
+    cancelReason?: string; // Lý do hủy đơn, chỉ có khi status = "cancelled"
     totalPrice: number;
     totalOrder: number;
     createdAt: Date;
@@ -55,15 +56,17 @@ export interface IshipItem {
     volume: VolumeRange[];  
 }
 
-export interface IshipSubmit{
+export interface IshipSubmit {
     nameBrand: string;
     value: WeightRange | VolumeRange;
 }
 
 export interface Vouchers {
+    value: number
     code: string | null; // Mã voucher
     discountValue: number; // Giá trị giảm giá
     category: "discount" | "shipping" | null; // Loại voucher
-    type: "percentage" | "fixed" | "freeship" | null; // Loại voucher: cố định hoặc phần trăm hay ship 
+    type: "percentage" | "fixed" | "freeship" | null; // Loại voucher: cố định hoặc phần trăm hay ship
+    maxDiscountValue: number
 }
 

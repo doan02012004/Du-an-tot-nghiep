@@ -22,13 +22,13 @@ const Conversation = ({ chatId, userMessage }: Props) => {
     useEffect(()=>{
         if(socket?.current){
             socket?.current?.on("newMessage",(newMessage:Imesage)=>{
+                console.log('Đã vào')
                 if(newMessage.chatId == chatId){
                     setMessages([...messages,newMessage])
                 }
-               
             })
         }
-    },[messages, socket])
+    },[messages, socket?.current])
     useEffect(() => {
         checkBoxRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages])

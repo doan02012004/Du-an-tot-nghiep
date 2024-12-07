@@ -47,9 +47,6 @@ const CartPage = () => {
                             const totalCart = newCarts.reduce((sum: number, cart: IcartItem) => sum + cart.total, 0)
                             dispath(setCarts(newCarts))
                             dispath(setTotalCart(totalCart))
-                           
-                           
-                        
                     }
                 }
             })
@@ -57,14 +54,16 @@ const CartPage = () => {
     }, [socket?.current, carts])
     useEffect(() => {
         if (carts.length > 0) {
-            const check = carts.some((item: IcartItem) => item.productId.active == false)
+            const check = carts.some((item: IcartItem) => item?.productId?.active == false)
+            const checkProduct = carts.some((item: IcartItem) => item?.productId == null)
             const cartAtb = carts.map((item:IcartItem) => {
-                const findAtb = item?.productId?.attributes.find((atb:Iattribute) => atb._id == item.attributeId)
+                const findAtb = item?.productId?.attributes.find((atb:Iattribute) => atb?._id == item?.attributeId)
                 return findAtb
             })
-            const checkAtb = cartAtb.some((item: Iattribute) => item.active == false)
-            const checkInstock = cartAtb.some((item: Iattribute) => item.instock == 0)
-            if(check || checkAtb || checkInstock){
+            const checkAtb = cartAtb.some((item: Iattribute) => item?.active == false)
+            const checkUndefine = cartAtb.some((item: Iattribute) => !item)
+            const checkInstock = cartAtb.some((item: Iattribute) => item?.instock == 0)
+            if(check || checkAtb || checkUndefine| checkInstock||checkProduct){
                 if(checkCarts == true){
                     dispath(setCheckCarts(false))
                 }
@@ -88,7 +87,6 @@ const CartPage = () => {
             return navigate("/order")
         }
     }
-    // console.log(checkCarts)
     return (
         <section>
             <div>

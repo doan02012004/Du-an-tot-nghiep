@@ -65,6 +65,7 @@ import PageCategoryBlog from "../pages/(admin)/categoryBlog/Page";
 import CategoryBlogList from "../pages/(admin)/categoryBlog/_components/CategoryBlogList";
 import CategoryBlogEdit from "../pages/(admin)/categoryBlog/_components/CategoryBlogEdit";
 import PageFavourite from "../pages/(website)/my-information/favourite/Page";
+import Orderdetails from "../pages/(website)/my-information/order-manager/Orderdetails";
 
 
 const Router = () => {
@@ -92,6 +93,7 @@ const Router = () => {
           <Route path="infor" element={<Account />} />
           <Route path="favourite" element={<PageFavourite />} />
           <Route path="order-manager" element={<OrderManager />} />
+          <Route path="orderdetails/:id" element={<Orderdetails />} />
           <Route path="address_list" element={<AddressList />} />
         </Route>
       </Route>

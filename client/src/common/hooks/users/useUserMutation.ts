@@ -17,8 +17,8 @@ const useUserMutation = () => {
           break;
         case "update":
           try {
-          const data =  await updateUser(option.user)
-          return data
+            const data = await updateUser(option.user)
+            return data
           } catch (error) {
             console.log(error)
           }
@@ -37,14 +37,14 @@ const useUserMutation = () => {
             console.log(error)
           }
           break;
-          case "forgotPassword":
+        case "forgotPassword":
           try {
             await forgotUser(option.payload);
           } catch (error) {
             console.log(error);
           }
           break;
-          case "verifyResetToken":
+        case "verifyResetToken":
           try {
             await verifyResetToken(option.payload);
           } catch (error) {

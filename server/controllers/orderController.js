@@ -9,7 +9,9 @@ import ProductModel from "../models/productModel.js";
 import sendEmail from "../utils/sendEmail.js";
 import UserModel from "../models/userModel.js";
 import VoucherModel from "../models/voucherModel.js";
+import { generateOrderNumber } from "../utils/main.js";
 
+let newOrderServer = {}
 export const createOrder = async (req, res) => {
     try {
         const order = await orderModel.create(req.body);
@@ -44,18 +46,114 @@ export const createOrder = async (req, res) => {
             }
 
             // Sử dụng userModel để tìm người dùng từ userId
-            const user = await UserModel.findById(order.userId);  
-            const userEmail = user?.email;
-            const voucher = order.voucher?.discountValue || 0; // Lấy giá trị voucher, nếu có
-            const price = order.totalPrice - voucher; // Tính tổng không bao gồm phí ship
-            if (userEmail) {
-                if(order.paymentMethod === "cash"){
-                    // Gửi email xác nhận đơn hàng nếu có email
-                const subject = "Xác nhận đơn hàng";
-                const message = `Xin chào ${order.customerInfor.fullname || "Khách hàng"},\n\nCảm ơn bạn đã đặt hàng tại cửa hàng chúng tôi. Đơn hàng của bạn đang được xử lý. Chúng tôi sẽ sớm cập nhật trạng thái cho bạn.\n\nChi tiết đơn hàng:\nMã đơn hàng: ${order.orderNumber}\nTổng tiền: ${price.toLocaleString()}₫\n\nCảm ơn bạn đã tin tưởng!`;
+            const user = await UserModel.findById(order.userId);
+            const userEmail = user?.email || null;
+            const voucher = order.voucher?.discountValue || 0;
+            const shipPrice = order?.ship?.value?.price || 0;
+            const price = order.totalPrice - shipPrice;
+            const TotalAmount = voucher ? (order?.totalPrice - voucher?.discountValue) : order?.totalPrice;
 
-                // Gửi email
-                await sendEmail(userEmail, subject, message);
+            if (userEmail) {
+                if (order.paymentMethod === "cash") {
+                    const subject = "Xác nhận đơn hàng từ Fendi Shop";
+
+                    const message = `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px;">
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <h1 style="color: #4CAF50; margin: 0;">FENDI SHOP</h1>
+                                <p style="margin: 0; font-style: italic; color: #888;">- THỜI TRANG NAM NỮ -</p>
+                            </div>
+                            <h2 style="text-align: center; color: #4CAF50;">🎉 Cảm ơn bạn đã đặt hàng! 🎉</h2>
+                            <p style="color: #555;">Xin chào <strong>${order.customerInfor.fullname || "Khách hàng"}</strong>,</p>
+                            <p style="color: #555;">Chúng tôi đã nhận được đơn hàng của bạn. Đơn hàng hiện đang được xử lý và sẽ sớm được giao đến bạn. Dưới đây là thông tin chi tiết:</p>
+                            
+                            <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Thông tin đơn hàng</h3>
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="color: #555;">Mã đơn hàng:</td>
+                                        <td style="color: #000;"><strong>${order.orderNumber}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Ngày đặt hàng:</td>
+                                        <td style="color: #000;">${new Date(order.createdAt).toLocaleString()}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Phương thức thanh toán:</td>
+                                        <td style="color: #000;">Thanh toán khi nhận hàng</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Tổng tiền (chưa bao gồm phí ship):</td>
+                                        <td style="color: #000;">${price.toLocaleString()}₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Phí vận chuyển:</td>
+                                        <td style="color: #000;">${shipPrice.toLocaleString()}₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Mã giảm giá:</td>
+                                        <td style="color: #000;">${voucher.toLocaleString()}₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Tổng cộng:</td>
+                                        <td style="color: #4CAF50; font-weight: bold;">${TotalAmount.toLocaleString()}₫</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Thông tin giao hàng</h3>
+                                <p style="color: #555;">
+                                    <strong>Người nhận:</strong> ${order.customerInfor.fullname}<br>
+                                    <strong>Địa chỉ:</strong> ${order.customerInfor.address}, ${order.customerInfor.ward}, ${order.customerInfor.district}, ${order.customerInfor.city}<br>
+                                    <strong>Số điện thoại:</strong> ${order.customerInfor.phone}
+                                </p>
+                            </div>
+
+                            <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Chi tiết sản phẩm</h3>
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background-color: #f0f0f0;">
+                                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd;">Hình ảnh</th>
+                                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd;">Tên sản phẩm</th>
+                                            <th style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">Kích thước</th>
+                                            <th style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">Màu sắc</th>
+                                            <th style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">Số lượng</th>
+                                            <th style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">Giá</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${order.items
+                                            .map(
+                                                (item) => `
+                                                <tr>
+                                                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">
+                                                        <img src="${item?.gallery?.avatar}" alt="${item.name}" style="max-width: 50px; border-radius: 5px;">
+                                                    </td>
+                                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${item.name}</td>
+                                                    <td style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">${item?.attribute?.color || "N/A"}</td>
+                                                    <td style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">${item?.attribute?.size || "N/A"}</td>
+                                                    <td style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">${item.quantity}</td>
+                                                    <td style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">${item.price.toLocaleString()}₫</td>
+                                                </tr>
+                                            `
+                                            )
+                                            .join("")}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <p style="text-align: center; font-size: 14px; color: #888;">Cảm ơn bạn đã tin tưởng và lựa chọn Fendi Shop! Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:</p>
+                            <p style="text-align: center; font-weight: bold; color: #333;">💌 Hotline: 0968 949 781 | Email: support@shop.com</p>
+                        </div>
+                    `;
+
+                    try {
+                        await sendEmail(userEmail, subject, message);
+                    } catch (emailError) {
+                        console.error("Lỗi khi gửi email:", emailError);
+                    }
                 }
             } else {
                 console.log("Không tìm thấy email người dùng");
@@ -132,9 +230,8 @@ export const deleteOrder = async (req, res) => {
     }
 };
 
-
 export const updateOrderStatus = async (req, res) => {
-    const { orderId, status } = req.body;
+    const { orderId, status, cancelReason } = req.body;
   
     try {
       // Kiểm tra trạng thái hợp lệ
@@ -143,16 +240,21 @@ export const updateOrderStatus = async (req, res) => {
         return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
       }
   
-      // Cập nhật trạng thái đơn hàng
-      const updatedOrder = await orderModel.findByIdAndUpdate(
+      // Nếu trạng thái là "cancelled", kiểm tra xem lý do huỷ có tồn tại không
+      if (status === "cancelled" && !cancelReason) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Cancel reason is required for cancelled orders" });
+    }
+    
+    // Cập nhật trạng thái đơn hàng
+    const updatedOrder = await orderModel.findByIdAndUpdate(
         orderId,
-        { status },
+        { status, cancelReason }, // Cập nhật lý do huỷ nếu có
         { new: true }
-      ).populate('userId', 'email fullname');  // Lấy email và fullname từ userId
-  
-      if (!updatedOrder) {
+    ).populate('userId', 'email fullname');  // Lấy email và fullname từ userId
+
+    if (!updatedOrder) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
-      }
+    }
   
       // Kiểm tra email người dùng
       const userEmail = updatedOrder.userId.email;
@@ -175,10 +277,47 @@ export const updateOrderStatus = async (req, res) => {
         };
   
       const vietnameseStatus = statusTranslations[status];
-  
       // Gửi email cho khách hàng
       const subject = "Cập nhật trạng thái đơn hàng";
-      const message = `Xin chào ${updatedOrder.customerInfor.fullname},\n\nĐơn hàng của bạn đã được cập nhật trạng thái: ${vietnameseStatus}. Cảm ơn bạn đã tin tưởng mua sắm tại cửa hàng chúng tôi!`;
+  
+      const message = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #4CAF50; margin: 0;">FENDI SHOP</h1>
+                <p style="margin: 0; font-style: italic; color: #888;">- THỜI TRANG NAM NỮ -</p>
+            </div>
+            <h2 style="text-align: center; color: #FF0000;">📢 Cập nhật trạng thái đơn hàng 📢</h2>
+            <p style="color: #555;">Xin chào <strong>${updatedOrder.customerInfor.fullname}</strong>,</p>
+            <p style="color: #555;">Chúng tôi muốn thông báo rằng đơn hàng <strong>${updatedOrder.orderNumber}</strong> của bạn đã được cập nhật trạng thái thành: <strong style="color: #FF0000;">${vietnameseStatus}</strong>.</p>
+            
+            <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Thông tin đơn hàng</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="background-color: #f0f0f0;">
+                        <td style="color: #555; padding: 10px;">Mã đơn hàng:</td>
+                        <td style="color: #000; padding: 10px;"><strong>${updatedOrder.orderNumber}</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="color: #555; padding: 10px;">Ngày đặt hàng:</td>
+                        <td style="color: #000; padding: 10px;">${new Date(updatedOrder.createdAt).toLocaleString()}</td>
+                    </tr>
+                    <tr style="background-color: #f0f0f0;">
+                        <td style="color: #555; padding: 10px;">Trạng thái hiện tại:</td>
+                        <td style="color: #FF0000; padding: 10px;"><strong>${vietnameseStatus}</strong></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <p style="color: #555;">Cảm ơn bạn đã tin tưởng mua sắm tại Fendi Shop! Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua:</p>
+                <p style="text-align: center; font-weight: bold; color: #333;">💌 Hotline: 0968 949 781 | Email: support@shop.com</p>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <p style="color: #555;">Chúc bạn một ngày tuyệt vời và hẹn gặp lại trong những lần mua sắm tiếp theo!</p>
+            </div>
+        </div>
+      `;
   
       await sendEmail(userEmail, subject, message);
   
@@ -192,7 +331,7 @@ export const updateOrderStatus = async (req, res) => {
 //hàm thanh toán với VNPay
 export const paymentVNPay = async (req, res) => {
     try {
-
+        const { userId, amount, ship, voucher, totalOrder, totalPrice, customerInfor } = req.body
         const ipAddr = req.headers['x-forwarded-for'] ||
             req.connection.remoteAddress ||
             req.socket.remoteAddress ||
@@ -205,25 +344,22 @@ export const paymentVNPay = async (req, res) => {
         const returnUrl = "http://localhost:5000/api/orders/payment/vnpay/return";
         const date = new Date();
         const createDate = dateFormat(date, 'yyyymmddHHmmss');
-        const orderId = req.body.orderId;
-        const amount = req.body.amount;
         const bankCode = "";
-        const orderInfo = 'Thanh toan cho ma GD:' + orderId;
+        const orderNumber = generateOrderNumber();
+        const orderInfo = 'Thanh toan cho ma GD:' + userId;
         const orderType = 'other';
         date.setMinutes(date.getMinutes() + 15);
         const expireDateFormat = formatDateToCustomString(date); // Định dạng thành yyyyMMddHHmmss
         let locale = "vn";
         if (!locale) locale = 'vn';
         const currCode = 'VND';
-        console.log('ip', ipAddr)
-
         let vnp_Params = {};
         vnp_Params['vnp_Version'] = '2.1.0';
         vnp_Params['vnp_Command'] = 'pay';
         vnp_Params['vnp_TmnCode'] = tmnCode;
         vnp_Params['vnp_Locale'] = locale;
         vnp_Params['vnp_CurrCode'] = currCode;
-        vnp_Params['vnp_TxnRef'] = orderId;
+        vnp_Params['vnp_TxnRef'] = orderNumber;
         vnp_Params['vnp_OrderInfo'] = orderInfo;
         vnp_Params['vnp_OrderType'] = orderType;
         vnp_Params['vnp_Amount'] = amount * 100;
@@ -248,6 +384,40 @@ export const paymentVNPay = async (req, res) => {
         // Tạo URL thanh toán
         const paymentUrl = `${vnpUrl}?${querystring.stringify(vnp_Params, { encode: false })}`;
 
+        // tạo newOrder
+        const cartUser = await CartModel.findOne({ userId }).populate('carts.productId')
+        if (cartUser) {
+            const newCartUser = cartUser.toObject()
+            const newProductsOrder = newCartUser.carts.map((item) => {
+                const gallery = item.productId.gallerys.find((gallery) => gallery._id == item.galleryId)
+                const attribute = item.productId.attributes.find((attribute) => attribute._id == item.attributeId)
+                return {
+                    productId: item.productId._id,
+                    name: item.productId.name,
+                    categoryId: item.productId.categoryId,
+                    price: attribute?.price_new,
+                    gallery,
+                    attribute,
+                    total: Number(item.quantity) * Number(attribute?.price_new),
+                    quantity: item.quantity
+                }
+
+            })
+            const newOrder = {
+                userId,
+                customerInfor,
+                items: [...newProductsOrder],
+                paymentMethod: 'vnPay',
+                status: "pending",
+                totalOrder,
+                totalPrice,
+                ship: ship,
+                voucher,
+                orderNumber
+            }
+            newOrderServer = newOrder
+        }
+
         // Chuyển hướng đến URL thanh toán
         return res.json({ paymentUrl });
     } catch (error) {
@@ -255,55 +425,226 @@ export const paymentVNPay = async (req, res) => {
     }
 };
 
+
+
+
+
+const successEmail = async (userEmail, orderNumber) => {
+    const order = await orderModel.findOne({ orderNumber });
+    if (!order) {
+        return; // Nếu không tìm thấy đơn hàng, không làm gì thêm
+    }
+
+    const subject = "Thanh toán thành công";
+    const voucher = order.voucher?.discountValue || 0;
+    const shipPrice = order?.ship?.value?.price || 0;
+    const price = order.totalPrice - shipPrice;
+    const TotalAmount = voucher ? (order?.totalPrice - voucher?.discountValue) : order?.totalPrice;
+
+    const message = `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px;">
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <h1 style="color: #4CAF50; margin: 0;">FENDI SHOP</h1>
+                                <p style="margin: 0; font-style: italic; color: #888;">- THỜI TRANG NAM NỮ -</p>
+                            </div>
+                            <h2 style="text-align: center; color: #4CAF50;">🎉 Cảm ơn bạn đã đặt hàng! 🎉</h2>
+                            <p style="color: #555;">Xin chào <strong>${order.customerInfor.fullname || "Khách hàng"}</strong>,</p>
+                            <p style="color: #555;">Chúng tôi đã nhận được đơn hàng của bạn. Đơn hàng hiện đang được xử lý và sẽ sớm được giao đến bạn. Dưới đây là thông tin chi tiết:</p>
+                            
+                            <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Thông tin đơn hàng</h3>
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="color: #555;">Mã đơn hàng:</td>
+                                        <td style="color: #000;"><strong>${order.orderNumber}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Ngày đặt hàng:</td>
+                                        <td style="color: #000;">${new Date(order.createdAt).toLocaleString()}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Phương thức thanh toán:</td>
+                                        <td style="color: #000;">Thanh toán khi nhận hàng</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Tổng tiền (chưa bao gồm phí ship):</td>
+                                        <td style="color: #000;">${price.toLocaleString()}₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Phí vận chuyển:</td>
+                                        <td style="color: #000;">${shipPrice.toLocaleString()}₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Mã giảm giá:</td>
+                                        <td style="color: #000;">${voucher.toLocaleString()}₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #555;">Tổng cộng:</td>
+                                        <td style="color: #4CAF50; font-weight: bold;">${TotalAmount.toLocaleString()}₫</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Thông tin giao hàng</h3>
+                                <p style="color: #555;">
+                                    <strong>Người nhận:</strong> ${order.customerInfor.fullname}<br>
+                                    <strong>Địa chỉ:</strong> ${order.customerInfor.address}, ${order.customerInfor.ward}, ${order.customerInfor.district}, ${order.customerInfor.city}<br>
+                                    <strong>Số điện thoại:</strong> ${order.customerInfor.phone}
+                                </p>
+                            </div>
+
+                            <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Chi tiết sản phẩm</h3>
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background-color: #f0f0f0;">
+                                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd;">Hình ảnh</th>
+                                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd;">Tên sản phẩm</th>
+                                            <th style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">Kích thước</th>
+                                            <th style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">Màu sắc</th>
+                                            <th style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">Số lượng</th>
+                                            <th style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">Giá</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${order.items
+                                            .map(
+                                                (item) => `
+                                                <tr>
+                                                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">
+                                                        <img src="${item?.gallery?.avatar}" alt="${item.name}" style="max-width: 50px; border-radius: 5px;">
+                                                    </td>
+                                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${item.name}</td>
+                                                    <td style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">${item?.attribute?.color || "N/A"}</td>
+                                                    <td style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">${item?.attribute?.size || "N/A"}</td>
+                                                    <td style="text-align: center; padding: 10px; border-bottom: 1px solid #ddd;">${item.quantity}</td>
+                                                    <td style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">${item.price.toLocaleString()}₫</td>
+                                                </tr>
+                                            `
+                                            )
+                                            .join("")}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <p style="text-align: center; font-size: 14px; color: #888;">Cảm ơn bạn đã tin tưởng và lựa chọn Fendi Shop! Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:</p>
+                            <p style="text-align: center; font-weight: bold; color: #333;">💌 Hotline: 0968 949 781 | Email: support@shop.com</p>
+                        </div>
+                    `;
+
+    await sendEmail(userEmail, subject, message);
+};
+
+
+
+
+const failedEmail = async (userEmail, orderNumber) => {
+    const order = await orderModel.findOne({ orderNumber });
+    if (!order) {
+        return; // Nếu không tìm thấy đơn hàng, không làm gì thêm
+    }
+
+    const subject = "Thanh toán thất bại";
+
+    const message = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #FF0000; margin: 0;">FENDI SHOP</h1>
+                <p style="margin: 0; font-style: italic; color: #888;">- THỜI TRANG NAM NỮ -</p>
+            </div>
+            <h2 style="text-align: center; color: #FF0000;">❌ Thanh toán thất bại ❌</h2>
+            <p style="color: #555;">Xin chào <strong>${order?.customerInfor?.fullname || "Khách hàng"}</strong>,</p>
+            <p style="color: #555;">Đơn hàng <strong>${orderNumber}</strong> của bạn chưa được thanh toán thành công. Vui lòng thử lại hoặc liên hệ với chúng tôi để được hỗ trợ.</p>
+            <p style="color: #555;">Lưu ý: Nếu bạn không thực hiện thanh toán trong vòng 3 ngày kể từ ngày đặt hàng, đơn hàng của bạn sẽ bị huỷ.</p>
+
+            <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Thông tin đơn hàng</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="background-color: #f0f0f0;">
+                        <td style="color: #555; padding: 10px;">Mã đơn hàng:</td>
+                        <td style="color: #000; padding: 10px;"><strong>${orderNumber}</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="color: #555; padding: 10px;">Ngày đặt hàng:</td>
+                        <td style="color: #000; padding: 10px;">${new Date(order.createdAt).toLocaleString()}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <p style="text-align: center; font-size: 14px; color: #888;">Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi:</p>
+            <p style="text-align: center; font-weight: bold; color: #333;">💌 Hotline: 0968 949 781 | Email: support@shop.com</p>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <p style="color: #555;">Cảm ơn bạn đã tin tưởng mua sắm tại Fendi Shop. Chúng tôi luôn sẵn sàng hỗ trợ bạn!</p>
+                <p style="color: #555;">Chúc bạn một ngày tuyệt vời!</p>
+            </div>
+        </div>
+    `;
+
+    await sendEmail(userEmail, subject, message);
+};
+
+
+
+
+
+
 //huyển hướng lại trang của bạn với thông tin thanh toán
 export const vnpayReturn = async (req, res) => {
     const vnp_Params = req.query;
     const secureHash = vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
-
     const secretKey = 'TXA23XAHD604Z31OCUA3EKVP2PI5QOHA';
     const sortedParams = sortObject(vnp_Params);
-
     const queryString = querystring.stringify(sortedParams, { encode: false });
     const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
-    if (hash === secureHash) {
-        const orderNumber = vnp_Params['vnp_TxnRef']
-        const order = await orderModel.findOne({ orderNumber });
-        if (!order) {
-            console.error("Order not found for orderNumber:", orderNumber);
-            return res.status(404).json({ message: 'Order not found' });
-        }
-        // Lấy email từ UserModel dựa trên userId của đơn hàng
-        const user = await UserModel.findById(order.userId);
-        const userEmail = user?.email || ""; // Email của người dùng
-        console.log(userEmail)
-        if (vnp_Params['vnp_ResponseCode'] === '00') {
 
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "pending",paymentStatus: "Đã thanh toán" })
-             // Gửi email xác nhận thanh toán thành công
-             if(userEmail){
-                await sendEmail(
-                    userEmail,
-                    "Thanh toán thành công",
-                    `Đơn hàng ${orderNumber} đã được thanh toán thành công. Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!`
-                );
-             }
-            return res.redirect('http://localhost:5173/thanks');
+    if (hash === secureHash) {
+        const userId = vnp_Params['vnp_TxnRef']
+        if (vnp_Params['vnp_ResponseCode'] === '00') {
+            const order = await orderModel.create(newOrderServer);
+            if (order) {
+                const cart = await CartModel.findOne({ userId: order.userId })
+                cart.carts.map(async (item) => {
+                    const product = await ProductModel.findById(item.productId)
+                    product.attributes.map(async (attribute) => {
+                        if (attribute._id == item.attributeId) {
+                            attribute.instock = attribute.instock - item.quantity
+                            await product.save()
+                        }
+                    })
+                })
+                cart.carts = [];
+                cart.totalPrice = 0;
+                cart.totalCart = 0;
+
+                if (order?.voucher) {
+                    const voucherItem = await VoucherModel.findOne({ code: order?.voucher?.code })
+                    if (!voucherItem) throw new Error("Invalid voucher.");
+                    const alreadyUsed = voucherItem.usedBy.includes(order?.userId);
+                    if (alreadyUsed) {
+                        throw new Error("Bạn đã sử dụng voucher này rồi.");
+                    }
+                    voucherItem.usedBy.push(order?.userId);
+                    if (voucherItem.quantity >= 1) {
+                        voucherItem.quantity -= 1;
+                        voucherItem.usedQuantity += 1;
+                    }
+                }
+                await voucherItem.save()
+                await cart.save()
+                return res.redirect('http://localhost:5173/thanks');
+            } else {
+                return res.redirect('http://localhost:5173/order');
+            }
+
         } else {
-            await orderModel.findOneAndUpdate({ orderNumber }, { status: "unpaid",paymentStatus: "Chưa thanh toán" })
-            if(userEmail){
-                // Gửi email thông báo thanh toán thất bại
-                await sendEmail(
-                    userEmail,
-                    "Thanh toán thất bại",
-                    `Đơn hàng ${orderNumber} chưa được thanh toán. Vui lòng thử lại hoặc liên hệ với chúng tôi để được hỗ trợ.`
-                );
-             }
-            return res.redirect('http://localhost:5173/canpay');
+            // return res.status(400).json({ message: 'Chữ ký không hợp lệ' });
+            return res.redirect('http://localhost:5173/order');
         }
-    } else {
-        return res.status(400).json({ message: 'Chữ ký không hợp lệ' });
+
     }
 };
 

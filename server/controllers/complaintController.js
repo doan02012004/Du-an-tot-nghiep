@@ -36,11 +36,45 @@ export const createComplaint = async (req, res) => {
         if (userEmail) {
             // Gửi email thông báo đã nhận được khiếu nại
             const subject = "Thông báo khiếu nại đơn hàng";
-            const message = `Xin chào ${user.firstname} ${user.lastname},\n\nChúng tôi đã nhận được khiếu nại của bạn liên quan đến đơn hàng ${order.orderNumber}. Chúng tôi sẽ xem xét và xử lý trong thời gian sớm nhất.\n\nCảm ơn bạn đã thông báo cho chúng tôi!`;
-
+            const message = `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #4CAF50; margin: 0;">FENDI SHOP</h1>
+                    <p style="margin: 0; font-style: italic; color: #888;">- THỜI TRANG NAM NỮ -</p>
+                </div>
+                <h2 style="text-align: center; color: #FF0000;">📢 Thông báo khiếu nại đơn hàng 📢</h2>
+                <p style="color: #555;">Xin chào <strong>${user.firstname} ${user.lastname}</strong>,</p>
+                <p style="color: #555;">Chúng tôi đã nhận được khiếu nại của bạn liên quan đến đơn hàng <strong>${order.orderNumber}</strong> với lý do: <strong>${complaintReason}</strong>.</p>
+                <p style="color: #555;">Chúng tôi sẽ xem xét và xử lý khiếu nại của bạn trong thời gian sớm nhất. Bạn sẽ nhận được thông báo khi chúng tôi có kết quả xử lý.</p>
+                
+                <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Thông tin đơn hàng</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="background-color: #f0f0f0;">
+                            <td style="color: #555; padding: 10px;">Mã đơn hàng:</td>
+                            <td style="color: #000; padding: 10px;"><strong>${order.orderNumber}</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #555; padding: 10px;">Ngày đặt hàng:</td>
+                            <td style="color: #000; padding: 10px;">${new Date(order.createdAt).toLocaleString()}</td>
+                        </tr>
+                    </table>
+                </div>
+      
+                <div style="text-align: center; margin-top: 30px;">
+                    <p style="color: #555;">Cảm ơn bạn đã thông báo cho chúng tôi. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất nếu cần thêm thông tin.</p>
+                    <p style="text-align: center; font-weight: bold; color: #333;">💌 Hotline: 0968 949 781 | Email: support@shop.com</p>
+                </div>
+      
+                <div style="margin-top: 30px; text-align: center;">
+                    <p style="color: #555;">Chúc bạn một ngày tuyệt vời và hẹn gặp lại trong những lần mua sắm tiếp theo!</p>
+                </div>
+              </div>
+            `;
+      
             // Gửi email cho khách hàng
             await sendEmail(userEmail, subject, message);
-        }
+          }
 
         // Trả về thông tin khiếu nại đã được tạo
         return res.status(StatusCodes.CREATED).json(complaint);
@@ -115,9 +149,51 @@ export const updateComplaintStatus = async (req, res) => {
         const order = await orderModel.findById(updatedComplaint.orderId);  
         if (userEmail) {
             // Gửi email thông báo về trạng thái khiếu nại
-            const subject = "Cập nhật khiếu nại của bạn";
-            const message = `Xin chào ${user.firstname} ${user.lastname},\n\nChúng tôi muốn thông báo rằng khiếu nại của bạn về đơn hàng ${order.orderNumber} đã được cập nhật với trạng thái: ${vietnameseStatus}.\n\nTrả lời của chúng tôi: ${updatedComplaint.response}\n\nCảm ơn bạn đã thông báo cho chúng tôi!`;
+            const subject = "Cập nhật trạng thái khiếu nại của bạn";
+            const message = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #4CAF50; margin: 0;">FENDI SHOP</h1>
+                        <p style="margin: 0; font-style: italic; color: #888;">- THỜI TRANG NAM NỮ -</p>
+                    </div>
+                    <h2 style="text-align: center; color: #FF0000;">📢 Cập nhật khiếu nại của bạn 📢</h2>
+                    <p style="color: #555;">Xin chào <strong>${user.firstname} ${user.lastname}</strong>,</p>
+                    <p style="color: #555;">Chúng tôi muốn thông báo rằng khiếu nại của bạn về đơn hàng <strong>${order.orderNumber}</strong> đã được cập nhật với trạng thái: <strong style="color: #FF0000;">${vietnameseStatus}</strong>.</p>
+                    <p style="color: #555;">Trả lời của chúng tôi: <em>${updatedComplaint.response}</em></p>
+                    
+                    <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                        <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Thông tin khiếu nại</h3>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr style="background-color: #f0f0f0;">
+                                <td style="color: #555; padding: 10px;">Mã khiếu nại:</td>
+                                <td style="color: #000; padding: 10px;"><strong>${updatedComplaint._id}</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="color: #555; padding: 10px;">Ngày khiếu nại:</td>
+                                <td style="color: #000; padding: 10px;">${new Date(updatedComplaint.createdAt).toLocaleString()}</td>
+                            </tr>
+                            <tr style="background-color: #f0f0f0;">
+                                <td style="color: #555; padding: 10px;">Trạng thái hiện tại:</td>
+                                <td style="color: #FF0000; padding: 10px;"><strong>${vietnameseStatus}</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="color: #555; padding: 10px;">Lý do khiếu nại:</td>
+                                <td style="color: #000; padding: 10px;">${updatedComplaint.complaintReason}</td>
+                            </tr>
+                        </table>
+                    </div>
 
+                    <div style="text-align: center; margin-top: 30px;">
+                        <p style="color: #555;">Chúng tôi xin chân thành cảm ơn bạn đã liên hệ và phản ánh vấn đề. Chúng tôi luôn nỗ lực để nâng cao chất lượng dịch vụ và mang lại sự hài lòng cho khách hàng. Nếu bạn cần thêm thông tin, vui lòng liên hệ chúng tôi qua:</p>
+                        <p style="text-align: center; font-weight: bold; color: #333;">💌 Hotline: 0968 949 781 | Email: support@shop.com</p>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: center;">
+                        <p style="color: #555;">Chúc bạn một ngày tuyệt vời và hẹn gặp lại trong những lần mua sắm tiếp theo!</p>
+                    </div>
+                </div>
+            `;
+  
             // Gửi email cho khách hàng
             await sendEmail(userEmail, subject, message);
         }

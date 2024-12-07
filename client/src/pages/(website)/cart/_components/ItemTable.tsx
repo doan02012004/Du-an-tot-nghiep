@@ -6,7 +6,7 @@ import useCartMutation from '../../../../common/hooks/carts/useCartMutation'
 import { IcartItem } from '../../../../common/interfaces/cart'
 import { Link } from 'react-router-dom'
 import { message } from 'antd'
-import { DeleteOutlined, WarningOutlined } from '@ant-design/icons'
+import { ArrowDownOutlined, DeleteOutlined, WarningOutlined } from '@ant-design/icons'
 import { setCheckCarts } from '../../../../common/redux/features/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 type Props = {
@@ -87,13 +87,12 @@ const ItemTable = ({ cart }: Props) => {
     }
     const remove = () => {
         const newCart = {
-            productId: cart.productId._id as string,
+            productId: cart.productId?._id as string,
             attributeId: cart.attributeId as string,
         }
         cartMutation.mutate({ action: "remove", cart: newCart })
     }
     return (
-
         <tr className="border-b border-t  *:py-5">
             <td className="w-[27rem]">
                 <div className="flex mt-0 pt-0 w-[25rem]">
@@ -105,7 +104,7 @@ const ItemTable = ({ cart }: Props) => {
                             <div className='absolute z-10 top-0 left-0 right-0 bottom-0 bg-black/30 flex justify-center items-center'>
                                 <div className='px-2 py-1 rounded-lg flex items-center bg-white'>
                                     <WarningOutlined className='text-red' />
-                                    <span className='ml-2 text-yellow text-xs'>Đã xảy ra lỗi</span>
+                                    <span className='ml-2 text-yellow text-xs'>Ngừng bán</span>
                                 </div>
                             </div>
                         )}
@@ -121,8 +120,11 @@ const ItemTable = ({ cart }: Props) => {
             </td>
             <td className="align-top">
                 <div className="text-left">
-                    <span className='text-sm'>{attribute ? formatPrice(attribute?.price_new) : 0}đ</span>
-                    {/* <p className="text-xs font-bold text-red">( -60% )</p> */}
+                    <div className=' relative'>
+                    <span className='text-sm text-black'>{attribute ? formatPrice(attribute?.price_new) : 0}đ</span>
+                    <span className='text-xs absolute -top-2.5 right-0 line-through text-gray-500'>{attribute ? formatPrice(attribute?.price_new) : 0}đ</span>
+                    </div>
+                    <p className="text-xs font-bold text-red"><ArrowDownOutlined />{attribute ? attribute?.discount: 0}%</p>
                 </div>
             </td>
             <td className="w-24 align-top">
@@ -141,7 +143,6 @@ const ItemTable = ({ cart }: Props) => {
                 <DeleteOutlined className=' text-xl cursor-pointer hover:text-red' onClick={remove} />
             </td>
         </tr>
-
     )
 }
 export default ItemTable

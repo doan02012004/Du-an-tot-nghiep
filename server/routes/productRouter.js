@@ -5,6 +5,7 @@ import {
   addSizes,
   createProduct,
   deleteColor,
+  deleteImageProduct,
   deleteProduct,
   deleteSize,
   getAllProduct,
@@ -32,6 +33,7 @@ router.put("/addSizes/:productId", addSizes);
 router.put("/addColors/:productId", addColors);
 router.put("/deleteColor/:productId", deleteColor);
 router.put("/deleteSize/:productId", deleteSize);
+router.put("/delete/image", deleteImageProduct);
 router.delete("/:productId", deleteProduct),
 router.get("/:slug", getBySlugProduct);
 

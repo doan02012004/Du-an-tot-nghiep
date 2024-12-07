@@ -27,7 +27,8 @@ const InputSendMessgae = ({chatId,userMessage}:Props) => {
             senderId: currentUser?._id,
             receiverId: userMessage?._id,
             message: data.message,
-            images: []
+            images: [],
+            type:'message'
         }
         chatMutation.mutate({ action: 'send', data: newMessage })
         reset()
