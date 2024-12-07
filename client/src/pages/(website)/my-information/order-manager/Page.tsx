@@ -149,7 +149,7 @@ const OrderManager = () => {
                 });
                 return (
                   <tr className="flex flex-wrap lg:table-row" key={order?._id}>
-                    <td className="flex-[50%] lg:table-cell pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']  underline lg:no-underline">{order.orderNumber}</td>
+                    <td className="flex-[50%] lg:table-cell pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']  underline lg:no-underline"><a href={`/customer/orderdetails/${order?._id}`}>{order.orderNumber}</a></td>
                     <td className="lg:table-cell  pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']">{formattedDate}</td>
 
 
@@ -164,7 +164,7 @@ const OrderManager = () => {
                           Huỷ đơn
                         </Button>
                       )}
-                      {(order.status === "delivered" || order.status === "received") && (
+                      {(order.status === "delivered") && (
                         <Button onClick={() => { setopen(!open); setitems(order.items); setid(order._id); settotalOrder(order.totalOrder); settotalPrice(order.totalPrice); settvoucher(order.voucher.discountValue), setship(order.ship.value.price) }}>
                           <RollbackOutlined style={{ fontSize: '18px', marginRight: '8px' }} />
                           Trả hàng
