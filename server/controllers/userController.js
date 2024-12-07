@@ -62,13 +62,17 @@ export const getByIdUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
     const id = req.params.id
     try {
-        const users = await UserModel.findByIdAndDelete(id)
-        if (!users) {
+        const user = await UserModel.findByIdAndDelete(id)
+        if (!user) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 message: 'Không tìm thấy người dùng với ID này',
             });
         }
-        return res.status(StatusCodes.OK).json(users)
+        return res.status(StatusCodes.OK).json({
+            message: 'Xóa người dùng thành công',
+            data: user,
+            success: true
+        })
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: error.message
@@ -681,7 +685,6 @@ export const getAccount = async (req, res) => {
 
 // đăng xuất tài khoản
 export const logout = async (req, res) => {
-
     try {
         const refreshToken = req.cookies.refeshToken;
         // Kiểm tra nếu không có cookie accessToken và refreshToken
@@ -690,6 +693,7 @@ export const logout = async (req, res) => {
                 message: "Người dùng chưa đăng nhập hoặc token không tồn tại",
             });
         }
+
         const token = await BlackListModel.create({ token: refreshToken });
 
         // Xóa token khỏi cookies
@@ -732,7 +736,6 @@ export const getHistoryUpdateUser = async (req, res) => {
         });
     }
 };
-
 
 // Xóa lịch sử cập nhật user theo id
 export const deleteHistoryUpdateUser = async (req, res) => {
@@ -889,3 +892,27 @@ export const changePassword = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Có lỗi xảy ra!', error: error.message });
     }
 };
+
+
+
+export const deleteToken = async (req, res) => {
+
+    try {
+        const refreshToken = req.cookies.refeshToken;
+
+        const token = await BlackListModel.create({ token: refreshToken });
+        if (!token) {
+            return res.status(500).json("token chưa vào được black list")
+        }
+
+        res.clearCookie('accessToken');
+        res.clearCookie('refeshToken');
+
+        return res.status(StatusCodes.OK).json({
+            message: 'ép buộc dừng lại',
+            status: true
+        });
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
+    }
+}

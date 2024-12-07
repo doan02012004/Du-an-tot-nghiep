@@ -16,6 +16,8 @@ const ListUser = () => {
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef<InputRef>(null);
     const mutation = useUserMutation()
+
+
     useEffect(() => {
         if (query.data) {
             const newUsers = query?.data?.map((user: Iuser) => {
@@ -26,22 +28,32 @@ const ListUser = () => {
             })
             setUsers(newUsers)
         }
-
     }, [query.data])
+
+    useEffect(() => {
+
+    }, [])
+
     const handleSearch = (
         selectedKeys: string[],
         confirm: FilterDropdownProps['confirm'],
         dataIndex: any,
-
     ) => {
         confirm();
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
-
     };
+
+
     const handleReset = (clearFilters: () => void) => {
         clearFilters();
         setSearchText('');
+    };
+
+
+    // Xóa người dùng
+    const handleDeleteUser = (user: Iuser) => {
+        mutation.mutate({ action: 'delete', user });
     };
     const getColumnSearchProps = (dataIndex: any): TableColumnType<Iuser> => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
@@ -199,7 +211,7 @@ const ListUser = () => {
                         <Popconfirm title="Xóa người dùng?" description="Bạn có muốn xóa không?"
                             okText="Có"
                             cancelText="Không"
-                            onConfirm={() => mutation.mutate({ action: 'delete', user: user })}
+                            onConfirm={() => handleDeleteUser(user)}
                         >
                             <Button type="primary" danger><DeleteOutlined /></Button>
                         </Popconfirm>

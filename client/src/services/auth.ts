@@ -139,7 +139,6 @@ export const updateUserStatus = async (user: Iuser) => {
 export const deleteUser = async (user: Iuser) => {
     try {
         const { data } = await instance.delete(`/users/delete/${user._id}`)
-        message.success('Xoá thành công')
         return data
     } catch (error) {
         message.error('Xoá lỗi!')
@@ -210,3 +209,14 @@ export const getHistoryUpdateUserById = async (id: string) => {
         return error;
     }
 };
+
+
+export const removeToken = async () => {
+    try {
+        const res = await instance.delete(`/users/removetoken`)
+        return res.data
+    } catch (error) {
+        message.error("lỗi không thể gọi api remove token")
+        return error
+    }
+}
