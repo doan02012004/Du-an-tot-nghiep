@@ -6,7 +6,7 @@ const useUserMutation = () => {
   const queryClient = useQueryClient()
   const mutation = useMutation({
     mutationKey: ['USER'],
-    mutationFn: async (option: { action: string, user: Iuser; payload: any }) => {
+    mutationFn: async (option: { action?: string, user: Iuser; payload?: any }) => {
       switch (option.action) {
         case "add":
           try {

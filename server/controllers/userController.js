@@ -564,15 +564,21 @@ export const login = async (req, res) => {
 
         //kiểm tra tài khoản đã tồn tại chưa thông qua email
         if (!user) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không có tài khoản" })
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Tài khoản không tồn tại" })
         }
 
         //kiểm tra mật khẩu có đúng không giữa req người dùng nhập với pass có sẵn trong db
         if (!passwordCorrect) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ error: "sai mật khẩu" });
+            return res.status(StatusCodes.NOT_FOUND).json({ error: "Sai mật khẩu" });
         }
+
+        
+
         //    const token =  generateRefreshToken(user._id, res);
         if (user && passwordCorrect) {
+            if (user?.status == false) {
+                return res.status(StatusCodes.NOT_FOUND).json({ message: "Tài khoản này đã ngừng hoạt động" })
+            }
             //accessToken
             const accessToken = generateAccessToken(user)
             //refreshToken  

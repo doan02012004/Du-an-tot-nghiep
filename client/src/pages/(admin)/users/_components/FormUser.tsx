@@ -25,7 +25,7 @@ const FormUser = ({ data, setUser }: FormUserProps) => {
         if (data) {
             setIsOpen(true)
             setId(data._id)
-            form.setFieldsValue({ ...data, date: moment() })
+            form.setFieldsValue({ ...data, date: moment(data.date) })
             setOptionForm('update')
         }
     }, [data])
