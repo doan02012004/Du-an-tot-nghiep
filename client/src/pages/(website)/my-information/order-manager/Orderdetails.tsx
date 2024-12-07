@@ -1,9 +1,10 @@
 import { useParams } from 'react-router-dom';
 import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
-import { Button } from 'antd';
-import { CheckCircleOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Radio } from 'antd';
+import { CheckCircleOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 import { useState } from 'react';
+import instance from '../../../../common/config/axios';
 
 type Props = {};
 
@@ -11,6 +12,7 @@ const OrderDetails = (props: Props) => {
   const { id } = useParams();
   const query = useOrderQuery({ orderId: id });
   const mutation = useOrderMutation();
+  const [form] = Form.useForm();
   const [check,setcheck] = useState(false)
   const [selectedReason, setSelectedReason] = useState('');
   const [otherReason, setOtherReason] = useState('');
@@ -22,6 +24,46 @@ const OrderDetails = (props: Props) => {
   const Goodsmoney = order?.totalPrice - ship?.value?.price || 0
   const Totalamount = voucher ? order?.totalPrice - voucher?.discountValue : order?.totalPrice
   console.log(order)
+  const reasons = [
+    'Sản phẩm không như mong đợi',
+    'Chất lượng sản phẩm không tốt',
+    'Giá sản phẩm quá cao',
+    'Giao hàng quá chậm',
+    'Khác'
+  ];
+
+  const onSubmit = (values) => {
+    const cancelReason = values.reason === "Khác" ? values.otherReason : values.reason;
+        
+        mutation.mutate({
+          action: "updateStatus",
+          orderId: id,
+          status: "cancelled",  // Kiểm tra giá trị này
+          cancelReason: cancelReason,
+        });
+      
+        setcheck(!check);
+  }
+
+  // Xử lý logic thanh toán lại đơn hàng
+  const handlePayAgain = async (orderId:string) => {
+    try {
+      // Gửi yêu cầu tới API backend để tạo liên kết thanh toán
+      const response = await instance.post(`/orders/pay-again/${orderId}`);
+
+      if (response.status === 200) {
+        const { paymentLink } = response.data;
+        window.location.href = paymentLink; // Điều hướng tới cổng thanh toán VNPay
+      } else {
+        // message.error('Không thể tạo yêu cầu thanh toán lại.');
+        console.log("Không thể tạo yêu cầu thanh toán lại.");
+      }
+    } catch (error) {
+      // message.error('Lỗi khi tạo yêu cầu thanh toán lại.');
+      console.log("Lỗi khi tạo yêu cầu thanh toán lại.");
+    }
+  };
+
   // Hàm xác định màu sắc trạng thái
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -99,6 +141,21 @@ const OrderDetails = (props: Props) => {
                       Đã nhận hàng
                      </Button>
                     )}
+        {(order?.paymentMethod === "cash" && order.status === "pending") && (
+                     <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] ml-1 mt-1 cursor-pointer italic underline">
+                     <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />
+                     Huỷ đơn 
+                     </Button>
+                    )}
+        {order?.status === "unpaid" && (
+                      <div className='flex'>
+                        <Button onClick={() => handlePayAgain(order._id)} ><span>Tiếp tục thanh toán</span>
+                        </Button>
+                        <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
+                        <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} /> Huỷ đơn hàng
+                        </Button>
+                      </div>
+                    )}
       </div>
 
       {/* Thông tin đơn hàng */}
@@ -170,6 +227,62 @@ const OrderDetails = (props: Props) => {
           <span>{Totalamount?.toLocaleString() || '0'}₫</span>
         </div>
       </div>
+      {/* lý do huỷ đơn */}
+      {check === true && (
+                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <div className="relative">
+                        <h2 className="text-2xl font-semibold mb-4 text-center text-red">LÝ DO HUỶ ĐƠN HÀNG</h2>
+                        <CloseOutlined
+                        style={{ fontSize: '24px', color: 'red' }}
+                        className="absolute top-1 right-1"
+                        onClick={() => setcheck(!check)}
+                        />
+                    </div>
+                    <Form form={form} layout="vertical" onFinish={onSubmit}>
+                    <Form.Item name="reason" initialValue={selectedReason}>
+                        <Radio.Group
+                        value={selectedReason}
+                        onChange={(e) => setSelectedReason(e.target.value)}
+                        className="w-full"
+                        >
+                        {reasons?.length > 0 &&
+                            reasons.map((reason, index) => (
+                            <div key={index} className="flex items-center">
+                                <Radio value={reason} className="mr-2">
+                                {reason}
+                                </Radio>
+                            </div>
+                            ))}
+                        </Radio.Group>
+                    </Form.Item>
+
+                    {selectedReason === 'Khác' && (
+                        <Form.Item name="otherReason" initialValue={otherReason}>
+                        <div className="mt-4">
+                            <label htmlFor="otherReason" className="block text-lg mb-2">
+                            Lý do khác:
+                            </label>
+                            <Input.TextArea
+                            id="otherReason"
+                            value={otherReason}
+                            onChange={(e) => setOtherReason(e.target.value)}
+                            placeholder="Nhập lý do khác..."
+                            required
+                            className="w-full"
+                            rows={4} // Số dòng của TextArea
+                            />
+                        </div>
+                        </Form.Item>
+                    )}
+                    <Button className="mt-2" type="primary" danger htmlType="submit">
+                        Xác nhận huỷ
+                    </Button>
+                    </Form>
+
+                    </div>
+                </div>
+                )}
     </div>
   );
 };
