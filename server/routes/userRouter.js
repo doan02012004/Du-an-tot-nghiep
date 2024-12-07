@@ -1,5 +1,5 @@
 import express from 'express'
-import { add, changePassword, deleteHistoryUpdateUser, deleteUser, forgot, getAccount, getAllUser, getByIdUser, getHistoryUpdateUser, getHistoryUpdateUserById, login, logout, register, requestRefreshToken, resetPassword, updateUser, updateUserStatus, verifyResetToken } from '../controllers/userController.js'
+import { add, changePassword, deleteHistoryUpdateUser, deleteToken, deleteUser, forgot, getAccount, getAllUser, getByIdUser, getHistoryUpdateUser, getHistoryUpdateUserById, login, logout, register, requestRefreshToken, resetPassword, updateUser, updateUserStatus, verifyResetToken } from '../controllers/userController.js'
 import { checkAuth } from '../middleware/checkAuth.js'
 
 const router = express.Router()
@@ -22,5 +22,6 @@ router.post('/token/refresh', requestRefreshToken)
 router.post('/verify-reset-token', verifyResetToken);
 router.post('/reset-password', resetPassword);
 router.post('/change-password', checkAuth, changePassword);
+router.delete('/removetoken', deleteToken)
 
 export default router

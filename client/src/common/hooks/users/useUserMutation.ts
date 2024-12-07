@@ -1,8 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Iuser } from '../../interfaces/auth'
 import { creatUser, deleteUser, forgotUser, resetPassword, updateUser, updateUserStatus, verifyResetToken } from '../../../services/auth'
+import { useContext } from 'react'
+import { AppContext } from '../../contexts/AppContextProvider'
+import { message } from 'antd'
 
 const useUserMutation = () => {
+  const { socket } = useContext(AppContext)
   const queryClient = useQueryClient()
   const mutation = useMutation({
     mutationKey: ['USER'],
@@ -25,14 +29,26 @@ const useUserMutation = () => {
           break;
         case "checked":
           try {
-            await updateUserStatus(option.user)
+            const data = await updateUserStatus(option.user)
+            if (data?.success) {
+              if (socket?.current) {
+                socket.current?.emit('adminStatusUser', data.data)
+              }
+            }
+            
           } catch (error) {
             console.log(error)
           }
           break;
         case "delete":
           try {
-            await deleteUser(option.user)
+            const data = await deleteUser(option.user)
+            if (data?.success) {
+              message.success('Xoá thành công')
+              if (socket?.current) {
+                socket.current?.emit('adminDeleteUser', data.data)
+              }
+            }
           } catch (error) {
             console.log(error)
           }
