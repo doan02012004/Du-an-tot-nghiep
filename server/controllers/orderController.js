@@ -620,20 +620,20 @@ export const vnpayReturn = async (req, res) => {
                 cart.totalPrice = 0;
                 cart.totalCart = 0;
 
-                if (order?.voucher) {
-                    const voucherItem = await VoucherModel.findOne({ code: order?.voucher?.code })
-                    if (!voucherItem) throw new Error("Invalid voucher.");
-                    const alreadyUsed = voucherItem.usedBy.includes(order?.userId);
-                    if (alreadyUsed) {
-                        throw new Error("Bạn đã sử dụng voucher này rồi.");
-                    }
-                    voucherItem.usedBy.push(order?.userId);
-                    if (voucherItem.quantity >= 1) {
-                        voucherItem.quantity -= 1;
-                        voucherItem.usedQuantity += 1;
-                    }
-                }
-                await voucherItem.save()
+                // if (order?.voucher) {
+                //     const voucherItem = await VoucherModel.findOne({ code: order?.voucher?.code })
+                //     if (!voucherItem) throw new Error("Invalid voucher.");
+                //     const alreadyUsed = voucherItem.usedBy.includes(order?.userId);
+                //     if (alreadyUsed) {
+                //         throw new Error("Bạn đã sử dụng voucher này rồi.");
+                //     }
+                //     voucherItem.usedBy.push(order?.userId);
+                //     if (voucherItem.quantity >= 1) {
+                //         voucherItem.quantity -= 1;
+                //         voucherItem.usedQuantity += 1;
+                //     }
+                // }
+                // await voucherItem.save()
                 await cart.save()
                 return res.redirect('http://localhost:5173/thanks');
             } else {
