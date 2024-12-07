@@ -62,13 +62,17 @@ export const getByIdUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
     const id = req.params.id
     try {
-        const users = await UserModel.findByIdAndDelete(id)
-        if (!users) {
+        const user = await UserModel.findByIdAndDelete(id)
+        if (!user) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 message: 'Không tìm thấy người dùng với ID này',
             });
         }
-        return res.status(StatusCodes.OK).json(users)
+        return res.status(StatusCodes.OK).json({
+            message: 'Xóa người dùng thành công',
+            data: user,
+            success: true
+        })
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: error.message
@@ -142,7 +146,10 @@ export const updateUserStatus = async (req, res) => {
     try {
         const users = await UserModel.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true })
         //kiem tra user xem đã tồn tại theo id trên đường dẫn
-        return res.status(StatusCodes.OK).json(users)
+        return res.status(StatusCodes.OK).json({
+            data: users,
+            success: true
+        })
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: error.message
@@ -564,15 +571,21 @@ export const login = async (req, res) => {
 
         //kiểm tra tài khoản đã tồn tại chưa thông qua email
         if (!user) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: "Không có tài khoản" })
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Tài khoản không tồn tại" })
         }
 
         //kiểm tra mật khẩu có đúng không giữa req người dùng nhập với pass có sẵn trong db
         if (!passwordCorrect) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ error: "sai mật khẩu" });
+            return res.status(StatusCodes.NOT_FOUND).json({ error: "Sai mật khẩu" });
         }
+
+        
+
         //    const token =  generateRefreshToken(user._id, res);
         if (user && passwordCorrect) {
+            if (user?.status == false) {
+                return res.status(StatusCodes.NOT_FOUND).json({ message: "Tài khoản này đã ngừng hoạt động" })
+            }
             //accessToken
             const accessToken = generateAccessToken(user)
             //refreshToken  
@@ -681,7 +694,6 @@ export const getAccount = async (req, res) => {
 
 // đăng xuất tài khoản
 export const logout = async (req, res) => {
-
     try {
         const refreshToken = req.cookies.refeshToken;
         // Kiểm tra nếu không có cookie accessToken và refreshToken
@@ -690,6 +702,7 @@ export const logout = async (req, res) => {
                 message: "Người dùng chưa đăng nhập hoặc token không tồn tại",
             });
         }
+
         const token = await BlackListModel.create({ token: refreshToken });
 
         // Xóa token khỏi cookies
@@ -732,7 +745,6 @@ export const getHistoryUpdateUser = async (req, res) => {
         });
     }
 };
-
 
 // Xóa lịch sử cập nhật user theo id
 export const deleteHistoryUpdateUser = async (req, res) => {
@@ -889,3 +901,27 @@ export const changePassword = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Có lỗi xảy ra!', error: error.message });
     }
 };
+
+
+
+export const deleteToken = async (req, res) => {
+
+    try {
+        const refreshToken = req.cookies.refeshToken;
+
+        const token = await BlackListModel.create({ token: refreshToken });
+        if (!token) {
+            return res.status(500).json("token chưa vào được black list")
+        }
+
+        res.clearCookie('accessToken');
+        res.clearCookie('refeshToken');
+
+        return res.status(StatusCodes.OK).json({
+            message: 'ép buộc dừng lại',
+            status: true
+        });
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "lỗi máy chủ" })
+    }
+}

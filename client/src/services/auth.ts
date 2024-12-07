@@ -22,10 +22,13 @@ export const loginUser = async (
         navigate("/");
 
         message.success("Đăng nhập thành công!"); // Thông báo thành công
-    } catch (error) {
+    } catch (error:any) {
         // Trường hợp lỗi: bắn ra thông báo cụ thể
-        message.error("Sai tài khoản hoặc mật khẩu"); // Luôn thông báo lỗi cố định
-        dispatch(loginFailed());
+        if (error.response && error.response.data && error.response.data.message) {
+            message.error(error.response.data.message); // Hiển thị lỗi tùy theo thông báo từ server
+        } else {
+            message.error("Sai tài khoản hoặc mật khẩu"); // Thông báo chung nếu không có chi tiết
+        }
     }
 };
 
@@ -139,7 +142,6 @@ export const updateUserStatus = async (user: Iuser) => {
 export const deleteUser = async (user: Iuser) => {
     try {
         const { data } = await instance.delete(`/users/delete/${user._id}`)
-        message.success('Xoá thành công')
         return data
     } catch (error) {
         message.error('Xoá lỗi!')
@@ -210,3 +212,14 @@ export const getHistoryUpdateUserById = async (id: string) => {
         return error;
     }
 };
+
+
+export const removeToken = async () => {
+    try {
+        const res = await instance.delete(`/users/removetoken`)
+        return res.data
+    } catch (error) {
+        message.error("lỗi không thể gọi api remove token")
+        return error
+    }
+}

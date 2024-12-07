@@ -3,7 +3,7 @@
 import { theme } from 'antd'
 import { createContext, ReactNode, useEffect, useRef, useState } from 'react'
 import instance from '../config/axios'
-import { getAccountUser, getNewToken } from '../../services/auth'
+import { getAccountUser, getNewToken, removeToken } from '../../services/auth'
 import useLocalStorage from '../hooks/localstorage/useLocalStorage'
 import useApiLocationQuery from '../hooks/API_location/useApiLocationQuery'
 import { io } from 'socket.io-client'
@@ -18,15 +18,15 @@ const fetchUser = async (setCurrentUser?: any, setIsLogin?: any, setIsLoading?: 
     const user = await getAccountUser()
 
     if (user) {
-      setCurrentUser(user)
-      setIsLogin(true)
+      await setCurrentUser(user)
+      await setIsLogin(true)
 
     }
     setIsLoading(false)
   } catch (error) {
-    setCurrentUser(null)
-    setIsLogin(false)
-    setIsLoading(false)
+    await setCurrentUser({})
+    await setIsLogin(false)
+    await setIsLoading(false)
     console.log(error)
   }
 }
@@ -37,7 +37,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [choiceColor, setChoiceColor] = useState('')
   const [collapsed, setCollapsed] = useState(false);
   const [currentUser, setCurrentUser] = useLocalStorage('tt_user', {})
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [validateAuth, setValidateAuth] = useState(false)
   const locationQuery = useApiLocationQuery()
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -125,13 +126,15 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
 
   // get user
   useEffect(() => {
-    if (accessToken || accessToken == undefined) {
-      fetchUser(setCurrentUser, setIsLogin, setIsLoading)
-    } else {
-      setIsLogin(false)
-      setCurrentUser({})
-      console.log('logout fail')
-    }
+    (async () => {
+      if (accessToken || accessToken == undefined) {
+        fetchUser(setCurrentUser, setIsLogin, setIsLoading)
+      } else {
+        await setIsLogin(false)
+        await setCurrentUser({})
+        console.log('logout fail')
+      }
+    })();
   }, [accessToken])
 
   //set địa chỉ 
@@ -145,14 +148,50 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   useEffect(() => {
     socket.current = io('http://localhost:8000')
   }, [])
-
+  // gửi người dùng hoạt động lên socket
   useEffect(() => {
     if (socket.current && currentUser) {
       socket.current.emit('addUser', currentUser)
     }
-  }, [socket.current,currentUser])
+  }, [socket.current, currentUser])
+
+  // Realtime xóa người dùng 
+  useEffect(() => {
+    if (socket?.current) {
+      socket.current?.on('deleteUser', async (data: any) => {
+        if (currentUser?._id == data._id) {
+          const res = await removeToken()
+          if (res.status && res?.status == true) {
+            await setAccesToken(null)
+            await setIsLogin(false)
+            await setCurrentUser(null)
+            setValidateAuth(true)
+          }
+        }
+      })
+    }
+  }, [socket, currentUser])
+
+
+  
+  useEffect(()=>{
+    if (socket?.current) {
+      socket?.current?.on('statusUser',async (data:any)=>{
+        if (currentUser?._id == data._id) {
+          const res = await removeToken()
+          if (res.status && res?.status == true) {
+            await setAccesToken(null)
+            await setIsLogin(false)
+            await setCurrentUser(null)
+            setValidateAuth(true)
+          }
+        }
+      })
+
+    }
+  },[socket, currentUser])
   return (
-    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location, adminId ,socket,categoryBlogId,setCategoryBlogId}}>
+    <AppContext.Provider value={{ collapsed, setCollapsed, colorBgContainer, borderRadiusLG, accessToken, setAccesToken, setIsLogin, isLogin, isLoading, currentUser, setCurrentUser, choiceColor, setChoiceColor, location, adminId, socket, categoryBlogId, setCategoryBlogId, validateAuth }}>
       {children}
     </AppContext.Provider>
   )
