@@ -40,6 +40,8 @@ const CommentMain = ({ comment, user,commentRef,commentId,setCommentId }: Commen
       }
     }
   },[userTag,commentId,comment])
+
+ 
   // Xử lý khi người dùng click vào icon xóa bình luận
   const handleDelete = async (commentId: string) => {
     commentMutation.mutate({ action: 'deleteMain', newComment: { commentId: commentId } })

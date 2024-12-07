@@ -31,7 +31,6 @@ const CommentExtra = ({ comment, userTag, setUserTag }: CommentExtralProps) => {
   }, [comment?.recomments, setUserTag, currentUser]);
 
 
-
   const handleSubmit = () => {
     if (!contentExtra.trim()) return; // Kiểm tra nội dung rỗng
     if (!currentUser) {

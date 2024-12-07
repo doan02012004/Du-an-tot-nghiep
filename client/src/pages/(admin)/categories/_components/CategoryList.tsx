@@ -15,6 +15,8 @@ const CategoryList: React.FC = () => {
   const query = useCategoryQuery();
   const mutation = useCategoryMutation();
 
+  console.log(categories)
+
   useEffect(() => {
     if (query.data) {
       const newCategories = query.data.map((category: ICategories, index: number) => ({
@@ -54,6 +56,10 @@ const CategoryList: React.FC = () => {
     {
       title: "Slug",
       dataIndex: "slug",
+    },
+    {
+      title: "Số lượng sản phẩm",
+      dataIndex: "productCount",
     },
     {
       title: "Trạng thái",

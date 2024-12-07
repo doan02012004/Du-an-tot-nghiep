@@ -56,6 +56,10 @@ const OrderItemSchema = new mongoose.Schema({
     total: {
         type: Number,
         required: true,
+    },
+    checkComment:{
+        type:Boolean,
+        default:false
     }
 },
     { timestamps: true, versionKey: false }

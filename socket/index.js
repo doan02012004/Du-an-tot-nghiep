@@ -85,6 +85,21 @@ io.on("connection", (socket) => {
     socket.on('adminStatusUser', (userStatusData)=>{
         io.emit("statusUser", userStatusData)
     })
+    socket.on('addComment',(data) =>{
+        // phát sự kiện cho toàn bộ client
+        io.emit('userAddComment',data)
+    })
+    socket.on('addReComment',(data) =>{
+        // phát sự kiện cho toàn bộ client
+        io.emit('userAddRecomment',data)
+    })
+
+    socket.on('updateOrderStatus',(data) =>{
+        // phát sự kiện cho toàn bộ client
+        io.emit('onUpdateOrderStatus',data)
+    })
+    
+    
 })
 
 

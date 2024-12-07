@@ -187,7 +187,7 @@ export const getOrderById = async (req, res) => {
         // Tìm đơn hàng theo ID và populate thông tin người dùng và sản phẩm
         const order = await orderModel.findById(orderId)
             .populate('userId', 'fullname email phone')
-            .populate('items.productId', 'name price');
+            .populate('items.productId', 'name slug');
 
         if (!order) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });

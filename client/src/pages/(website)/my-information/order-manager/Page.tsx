@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CheckCircleOutlined, CloseOutlined, DeleteOutlined, RollbackOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Radio, } from 'antd';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../../../common/contexts/AppContextProvider';
 import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
 import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
@@ -12,8 +12,9 @@ import instance from '../../../../common/config/axios';
 
 
 const OrderManager = () => {
-  const {currentUser} = useContext(AppContext)
+  const {currentUser,socket} = useContext(AppContext)
   const [open,setopen] = useState(false)
+  const [order,setorder] = useState([])
   const [items,setitems] = useState('')
   const [id,setid] = useState('')
   const [totalOrder,settotalOrder] = useState('')
@@ -22,6 +23,11 @@ const OrderManager = () => {
   const [ship,setship] = useState('')
   const mutation = useOrderMutation();
   const orders = useOrderQuery({userId:currentUser?._id})
+  useEffect(()=>{
+    if(orders?.data){
+      setorder(orders?.data)
+    }
+  },[orders?.data])
   const mutations = useComplaintMutation();
   const [form] = Form.useForm();
   const [check,setcheck] = useState(false)
@@ -29,6 +35,21 @@ const OrderManager = () => {
   const [otherReason, setOtherReason] = useState('');
   const [orderId,setorderId] = useState("")
 
+  useEffect(()=>{
+    if(socket?.current){
+      socket.current?.on('onUpdateOrderStatus',(data:any) =>{
+        if(currentUser?._id == data?.userId?._id){
+          if(order?.length>0){
+            const findOrder = order.findIndex((item:any) => item?._id == data?._id)
+            if(findOrder>=0) {
+              const newOrder = order.map((item:any) => item._id == data?._id ? {...item,status:data.status} : item ) as any
+              setorder(newOrder)
+            }
+          }
+        }
+      })
+    }
+  },[socket,order])
 
   const reasons = [
     'Sản phẩm không như mong đợi',
@@ -128,7 +149,7 @@ const OrderManager = () => {
   const [filterStatus, setFilterStatus] = useState(""); // Trạng thái được chọn để lọc
 
   // Lọc và sắp xếp danh sách đơn hàng
-  const filteredOrders = orders?.data
+  const filteredOrders = order
     ?.filter((order: any) => (filterStatus ? order.status === filterStatus : true)) // Lọc theo trạng thái
     ?.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Sắp xếp
 

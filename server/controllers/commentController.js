@@ -1,27 +1,47 @@
+import mongoose from "mongoose";
 import commentModel from "../models/commentModel.js";
+import orderModel from "../models/orderModel.js";
+import ProductModel from "../models/productModel.js";
 
 export const createComment = async (req, res) => {
   try {
-    const { userId, comment,productId,rate } = req.body;
+    const { userId, comment,orderId,rate, item } = req.body;
   
 
-    if (!userId || !productId || !comment) {
+    if (!userId || !orderId || !comment) {
       return res.status(400).json({ message: "Thiếu thông tin bắt buộc!" });
     }
-    const existComment = await commentModel.findOne({userId,productId})
-    if(existComment){
-      return res.status(400).json({ message: "Bạn đã đánh giá rồi!", exist:true });
+    const checkProduct = await ProductModel.findById(item.productId)
+    if(!checkProduct){
+      return res.status(400).json({ message: "Sản phẩm này không tồn tại !" });
     }
     const newComment = await commentModel.create({
       userId,
-      productId,
+      productId:item.productId,
       comment,
+      item:{
+        name:item.name,
+        gallery:item.gallery,
+        attribute:item.attribute
+      },
       like: [],
       recomments: [],
       rating: rate
-    });
+    })
+    if(newComment){
+      const order = await orderModel.findById(orderId)
+      if(!order){
+        return res.status(400).json({ message: "Đơn hàng này không tồn tại !" });
+      }else{
+        order.items = order.items.map((orderItem) => orderItem._id == item._id? {...orderItem,checkComment:true}: orderItem)
+        await order.save()
+        const comment = await commentModel.findById(newComment?._id).populate("userId", "firstname lastname email role").exec()
+        return res.status(201).json({ message: "Tạo đánh giá thành công!", comment: comment });
+      }
+    }else{
+      return res.status(400).json({ message: "Đánh giá thất bại!" });
+    }
 
-    return res.status(201).json({ message: "Tạo đánh giá thành công!", comment: newComment });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -34,18 +54,30 @@ export const createCommentExtra = async (req, res) => {
   const tag = recomment.tag;
   const userId = recomment.userId;
 
+
     if (!userId || !commentId || !text) {
       return res.status(400).json({ message: "Thiếu thông tin bắt buộc!" });
     }
-    const comment = await commentModel.findById(commentId)
-    comment.recomments.push({
+    const recommentItem = {
+      _id: new mongoose.Types.ObjectId(),
       userId,
-      comment:text,
-      tag:tag??null
-    })
+      comment: text,
+      tag: tag ?? null,
+    }
+    const comment = await commentModel.findById(commentId)
+    comment.recomments.push(recommentItem)
     await comment.save()
     const newComment = await commentModel.findById(commentId)
-    return res.status(201).json({ message: "Phản hồi đánh giá thành công!", comment: newComment });
+    .populate("userId", "firstname lastname email role")
+    .populate("tag", "firstname lastname email")
+    .populate("recomments.userId","firstname lastname email role")
+    .populate("recomments.tag","firstname lastname email role");
+    const newRecomment = newComment.recomments.find((item) => item._id.toString() == recommentItem._id)
+    if(newComment){
+      return res.status(201).json({ message: "Phản hồi đánh giá thành công!", recomment: newRecomment,productId:newComment.productId,commentId:commentId });
+    }else{
+      return res.status(400).json({ message: "Phản hồi đánh giá thất bại!" });
+    }
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -54,13 +86,13 @@ export const createCommentExtra = async (req, res) => {
 export const getCommentsByProductId = async (req, res) => {
   try {
     const { productId } = req.params;
-    const Prdcomments = await commentModel.find({ productId })
+    const comments = await commentModel.find({ productId })
       .populate("userId", "firstname lastname email role")
       .populate("tag", "firstname lastname email")
       .populate("recomments.userId","firstname lastname email role")
       .populate("recomments.tag","firstname lastname email role")
       .sort({createdAt:-1})
-    return res.status(200).json(Prdcomments);
+    return res.status(200).json(comments);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

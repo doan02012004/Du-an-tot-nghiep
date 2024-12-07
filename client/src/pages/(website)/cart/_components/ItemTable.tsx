@@ -11,7 +11,7 @@ import { setCheckCarts } from '../../../../common/redux/features/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 type Props = {
     cart: IcartItem,
-    setCheckCarts:any
+    setCheckCarts: any
 }
 
 const ItemTable = ({ cart }: Props) => {
@@ -22,16 +22,16 @@ const ItemTable = ({ cart }: Props) => {
     const dispath = useDispatch()
     const cartMutation = useCartMutation()
     useEffect(() => {
-       if(inputRef?.current){
-        inputRef.current.value = cart?.quantity
-       }
-    }, [cart?.quantity,inputRef])
+        if (inputRef?.current) {
+            inputRef.current.value = cart?.quantity
+        }
+    }, [cart?.quantity, inputRef])
     useEffect(() => {
         const findAttribute = cart?.productId?.attributes?.find((item: Iattribute) => item?._id == cart?.attributeId)
         if (findAttribute) {
             setAttribute(findAttribute)
         }
-    }, [cart?.attributeId, cart?.total,cart?.productId?.attributes])
+    }, [cart?.attributeId, cart?.total, cart?.productId?.attributes])
     useEffect(() => {
         const findGallery = cart?.productId?.gallerys?.find((item: Igallery) => item._id == cart?.galleryId)
         if (findGallery) {
@@ -40,21 +40,21 @@ const ItemTable = ({ cart }: Props) => {
     }, [cart?.galleryId])
     useEffect(() => {
         if (attribute) {
-            if(attribute.active == false){
-                if(checkCarts !== false){
+            if (attribute.active == false) {
+                if (checkCarts !== false) {
                     dispath(setCheckCarts(false))
                 }
-            }else{
-                if(checkCarts !== true){
+            } else {
+                if (checkCarts !== true) {
                     dispath(setCheckCarts(true))
                 }
             }
-        }else{
-            if(checkCarts !== false){
+        } else {
+            if (checkCarts !== false) {
                 dispath(setCheckCarts(false))
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [attribute])
     const increaseQuantity = () => {
         if (attribute && Number(inputRef.current.value) + 1 > attribute?.instock) return message.error("Đã đạt số lượng tối đa")
@@ -129,9 +129,9 @@ const ItemTable = ({ cart }: Props) => {
             </td>
             <td className="w-24 align-top">
                 <div className="border grid grid-cols-3 items-center rounded-tl-[20px] rounded-br-[20px]">
-                    <button disabled={(!attribute||attribute.instock == 0 || !attribute.active|| !cart?.productId?.active) } onClick={decreaseQuantity} className=" border border-t-0 border-l-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">-</button>
-                    <input disabled={(!attribute ||attribute.instock == 0|| !attribute.active|| !cart?.productId?.active) } ref={inputRef} onBlur={onInput} className="h-full text-xs text-center bg-transparent outline-0 " defaultValue={cart?.quantity} />
-                    <button disabled={(!attribute ||attribute.instock == 0|| !attribute.active|| !cart?.productId?.active) } onClick={increaseQuantity} className=" border border-t-0 border-r-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">+</button>
+                    <button disabled={(!attribute || attribute.instock == 0 || !attribute.active || !cart?.productId?.active)} onClick={decreaseQuantity} className=" border border-t-0 border-l-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">-</button>
+                    <input disabled={(!attribute || attribute.instock == 0 || !attribute.active || !cart?.productId?.active)} ref={inputRef} onBlur={onInput} className="h-full text-xs text-center bg-transparent outline-0 " defaultValue={cart?.quantity} />
+                    <button disabled={(!attribute || attribute.instock == 0 || !attribute.active || !cart?.productId?.active)} onClick={increaseQuantity} className=" border border-t-0 border-r-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">+</button>
                 </div>
             </td>
             <td className="align-top">

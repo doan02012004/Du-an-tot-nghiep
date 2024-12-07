@@ -67,7 +67,7 @@ export const commentService = {
   addReComment: async (option:{commentId:string|number,recomment:{userId:string|number,text:string,tag?:string|number,}}) => {
     try {
       const response = await instance.post(`/comments/recomment`, option);
-      const data: IComment = response.data; // Dữ liệu trả về là bình luận đã được cập nhật
+      const data: any = response.data; // Dữ liệu trả về là bình luận đã được cập nhật
       return data;
     } catch (error) {
       console.error('Error adding recomment:', error);

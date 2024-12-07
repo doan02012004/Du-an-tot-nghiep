@@ -51,7 +51,7 @@ const Product_description = ({ product }: Props) => {
         <div
           className="content-section text-[14px] overflow-hidden"
           style={{
-            height: isOpen ? "100%" : "50px", // Điều chỉnh chiều cao theo trạng thái mở/đóng
+            height: isOpen ? "100%" : "120px", // Điều chỉnh chiều cao theo trạng thái mở/đóng
           }}
         >
           {activeTab === "des" ? <div ref={desRef}></div> : <CommentList productId={product._id? product._id: ''} />}

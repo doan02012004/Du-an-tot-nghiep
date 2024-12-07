@@ -1,29 +1,50 @@
-import { useParams } from 'react-router-dom';
-import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
-import { Button, Form, Input, Radio } from 'antd';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CheckCircleOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
-import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
-import { useState } from 'react';
+import { Button, Form, Input, message, Radio } from 'antd';
+import { useContext, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import instance from '../../../../common/config/axios';
+import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
+import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
+import { IOrder } from '../../../../common/interfaces/orderInterfaces';
+import CommentForm from './_components/CommentForm';
+import { AppContext } from '../../../../common/contexts/AppContextProvider';
 
-type Props = {};
-
-const OrderDetails = (props: Props) => {
+const OrderDetails = () => {
   const { id } = useParams();
   const query = useOrderQuery({ orderId: id });
+  const [orders,setorder] =useState({} as IOrder)
+  const {currentUser,socket} = useContext(AppContext)
+  useEffect(()=>{
+    if(query?.data){
+      setorder(query?.data)
+    }
+  },[query?.data])
   const mutation = useOrderMutation();
+  const navigate = useNavigate()
   const [form] = Form.useForm();
   const [check,setcheck] = useState(false)
   const [selectedReason, setSelectedReason] = useState('');
   const [otherReason, setOtherReason] = useState('');
-  const order = query?.data;
-  const customer = order?.customerInfor;
-  const items = order?.items;
-  const ship = order?.ship;
-  const voucher = order?.voucher
-  const Goodsmoney = order?.totalPrice - ship?.value?.price || 0
-  const Totalamount = voucher ? order?.totalPrice - voucher?.discountValue : order?.totalPrice
-  console.log(order)
+  const [dataComment,setDataComment] = useState<any>(null)
+  const customer = orders?.customerInfor;
+  const items = orders?.items;
+  const ship = orders?.ship;
+  const voucher = orders?.voucher
+  const Goodsmoney = orders?.totalPrice - ship?.value?.price || 0
+  const Totalamount = voucher ? orders?.totalPrice - voucher?.discountValue : orders?.totalPrice
+
+  useEffect(()=>{
+    if(socket?.current){
+      socket.current?.on('onUpdateOrderStatus',(data:any) =>{
+        if(currentUser?._id == data?.userId?._id){
+          if(orders?._id == data?._id){
+            setorder(data)
+          }
+        }
+      })
+    }
+  },[socket,orders,currentUser])
   const reasons = [
     'Sản phẩm không như mong đợi',
     'Chất lượng sản phẩm không tốt',
@@ -131,25 +152,25 @@ const OrderDetails = (props: Props) => {
       {/* Trạng thái đơn hàng */}
       <div className="mb-6 flex">
         <span
-          className={`px-4 py-2 rounded-full font-semibold ${getStatusStyle(order?.status || '')}`}
+          className={`px-4 py-2 rounded-full font-semibold ${getStatusStyle(orders?.status || '')}`}
         >
-          Trạng thái: {translateStatus(order?.status || '')}
+          Trạng thái: {translateStatus(orders?.status || '')}
         </span>
-        {(order?.status === "delivered" || order?.status === "Exchanged") && (
-                     <Button type='primary' onClick={() => onHandleReceived(order?._id) } className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline ml-2">
+        {(orders?.status === "delivered" || orders?.status === "Exchanged") && (
+                     <Button type='primary' onClick={() => onHandleReceived(orders?._id) } className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline ml-2">
                       <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} />
                       Đã nhận hàng
                      </Button>
                     )}
-        {(order?.paymentMethod === "cash" && order.status === "pending") && (
+        {(orders?.paymentMethod === "cash" && orders.status === "pending") && (
                      <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] ml-1 mt-1 cursor-pointer italic underline">
                      <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />
                      Huỷ đơn 
                      </Button>
                     )}
-        {order?.status === "unpaid" && (
+        {orders?.status === "unpaid" && (
                       <div className='flex'>
-                        <Button onClick={() => handlePayAgain(order._id)} ><span>Tiếp tục thanh toán</span>
+                        <Button onClick={() => handlePayAgain(orders._id)} ><span>Tiếp tục thanh toán</span>
                         </Button>
                         <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
                         <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} /> Huỷ đơn hàng
@@ -176,7 +197,7 @@ const OrderDetails = (props: Props) => {
           <p><strong>Hình thức giao hàng:</strong> {ship?.nameBrand || 'N/A'}</p>
           <p>
             <strong>Trạng thái giao hàng:</strong>{' '}
-            {(order?.status === 'delivered' || order?.status === 'received')
+            {(orders?.status === 'delivered' || orders?.status === 'received')
               ? 'Đã giao'
               : 'Chưa giao'}
           </p>
@@ -191,7 +212,7 @@ const OrderDetails = (props: Props) => {
             <div key={index} className="flex items-center it py-4">
               <img src={item?.gallery?.avatar || 'https://via.placeholder.com/80'} alt={item.name} className="w-20 h-[84px] rounded-lg mr-4 object-cover" />
               <div className="flex-grow">
-                <span className="font-medium text-gray-800">{item?.name}</span><br />
+                <span onClick={()=> item.productId?navigate(`/productdetails/${item.productId.slug}`): message.error('Sản phẩm này không còn tồn tại!')} className="font-medium cursor-pointer text-gray-800 hover:underline">{item?.name}</span><br />
                 <span>Màu:{item?.attribute?.color}</span><br /><span>Size:{item?.attribute?.size}</span>
                 <p className="text-sm text-gray-600">Số lượng: {item.quantity}</p>
               </div>
@@ -199,14 +220,15 @@ const OrderDetails = (props: Props) => {
               <p className="font-semibold text-gray-800">
                 {(item.price * item.quantity).toLocaleString()}₫
               </p>
-              <Button type='primary' >ĐÁNH GIÁ</Button>
+             {orders?.status == 'received' &&item?.checkComment == false && ( <Button type='primary' onClick={() => setDataComment(item)} >ĐÁNH GIÁ</Button>)}
+             {orders?.status == 'received' &&item?.checkComment&& ( <Button type='primary' disabled >ĐÃ ĐÁNH GIÁ</Button>)}
               </div>
               
             </div>
           ))}
         </div>
       </div>
-
+        
       {/* Tổng chi phí */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Tổng thanh toán</h3>
@@ -283,6 +305,10 @@ const OrderDetails = (props: Props) => {
                     </div>
                 </div>
                 )}
+      {/* form đánh giá  */}
+      {dataComment && (
+        <CommentForm item={dataComment} setDataComment={setDataComment} orderId={orders?._id?orders._id:''}/>
+      )}
     </div>
   );
 };

@@ -2,9 +2,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { commentService } from '../../../services/comment'
 import { message } from 'antd';
+import { useContext } from 'react';
+import { AppContext } from '../../contexts/AppContextProvider';
 
 
 const useCommentMutation = () => {
+  const {socket} = useContext(AppContext)
   const queryClient = useQueryClient()
   const mutation = useMutation({
     mutationKey: ['comments'],
@@ -16,9 +19,9 @@ const useCommentMutation = () => {
             if (data) {
               if (data?.comment) {
                 message.success('Đã gửi đánh giá')
-              }
-              if (data?.exist) {
-                message.error('Bạn chỉ được đánh giá 1 lần')
+                if(socket?.current){
+                  socket.current?.emit('addComment',data.comment)
+                }
               }
             } else {
               message.error('Gửi đánh giá thất bại')
@@ -30,8 +33,11 @@ const useCommentMutation = () => {
         case 'addExtra':
           try {
             const data = await commentService.addReComment(option.newComment)
-            if (data && data.comment) {
+            if (data && data.recomment) {
               message.success('Đã gửi phản hồi')
+              if(socket?.current){
+                socket.current?.emit('addReComment',{recomment:data.recomment,productId:data.productId,commentId:data.commentId})
+              }
             } else {
               message.error('Gửi phản hồi thất bại')
             }
@@ -81,6 +87,7 @@ const useCommentMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments'] })
+      queryClient.invalidateQueries({ queryKey: ['ORDERS'] })
     },
   })
   return mutation

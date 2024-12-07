@@ -15,7 +15,7 @@ export interface IComment {
     likes: string[]; // Danh sách ID người dùng đã thích bình luận
     comment: string; // Nội dung bình luận
     rating: number; // Đánh giá (số sao)
-    recomments?: IReComment[]; // Danh sách bình luận phản hồi
+    recomments: IReComment[]; // Danh sách bình luận phản hồi
     tag?:{
       _id:string,
       firstname: string,
