@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { Link, NavLink } from "react-router-dom"
+import { AppContext } from "../../../../common/contexts/AppContextProvider"
 
 const SidebarAccount = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 576)
     const [maxHeightUl, setMaxHeightUl] = useState(null)
+    const {currentUser} = useContext(AppContext)
     const listMenu = useRef<any>()
     useEffect(()=>{
         window.addEventListener('resize',()=>{
@@ -38,7 +40,7 @@ const SidebarAccount = () => {
         <div className="size-10 rounded-full overflow-hidden">
           <img src="http://picsum.photos/id/3/300/300" className="w-full object-cover"   />
         </div>
-        <p className="font-semibold text-lg">Bùi Văn Đoàn</p>
+        <p className="font-semibold text-lg">{currentUser?.lastname} {currentUser?.firstname}</p>
       </div>
       <span className="w-max rotate-90 lg:hidden ">
         <i className="fa-solid fa-chevron-right" />

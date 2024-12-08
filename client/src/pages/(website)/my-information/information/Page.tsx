@@ -105,7 +105,7 @@ const Account = () => {
                   }`}
               />
               {errors.email && (
-                <span className=" mx-3 text-red-600 text-sm">{errors.email.message}</span>
+                <span className=" mx-3 text-red-600 text-sm">{errors?.email?.message}</span>
               )}
 
 
@@ -166,9 +166,7 @@ const Account = () => {
               <input type="text" defaultValue={moment(currentUser?.date).format('DD/MM/YYYY')} className="border text-sm text-dark font-semibold p-[15px] w-full rounded disabled:bg-gray-200" disabled />
             </div>
             <div className=" flex items-center w-max mx-auto">
-              <button type="submit" className="border mr-4 border-dark rounded-tl-2xl bg-dark rounded-br-2xl text-white px-6 py-3 hover:bg-white hover:text-dark transition duration-300 ease-in-out">Cập nhật</button>
               <button onClick={(e) => { setIsForm1Open(true); e.preventDefault() }} className="border mr-4 border-dark rounded-tl-2xl bg-dark rounded-br-2xl text-white px-6 py-3 hover:bg-white hover:text-dark transition duration-300 ease-in-out">Cập nhật</button>
-
               <button onClick={(e) => { setIsOpen(true); e.preventDefault() }} className="btn-changePass border border-dark rounded-tl-2xl bg-white rounded-br-2xl text-dark px-6 py-3 hover:bg-dark hover:text-white transition duration-300 ease-in-out">Đổi mật khẩu</button>
             </div>
           </form>
