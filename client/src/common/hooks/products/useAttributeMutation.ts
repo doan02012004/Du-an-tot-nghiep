@@ -2,7 +2,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Iattribute, Igallery, InewColor, InewSize } from '../../interfaces/product'
 import { message } from 'antd'
-import { addColorProduct, addSizeProduct, deleteColorProduct, deleteSizeProduct, updateProductAttribute, updateProductGallery } from '../../../services/products'
+import { addColorProduct, addSizeProduct, deleteColorProduct, deleteImageGallery, deleteSizeProduct, updateProductAttribute, updateProductGallery } from '../../../services/products'
 import { IColor } from '../../interfaces/Color'
 import { useContext } from 'react'
 import { AppContext } from '../../contexts/AppContextProvider'
@@ -11,7 +11,7 @@ const useAttributeMutation = () => {
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey: ['PRODUCT'],
-        mutationFn: async (option: { action: string, size?: string | any, color?: IColor | any, gallery?: Igallery | any, productId: string | number | any, newSize?: InewSize | any, newColor?: InewColor | any, attribute?: Iattribute | any }) => {
+        mutationFn: async (option: { action: string, size?: string | any, color?: IColor | any, gallery?: Igallery | any, productId?: string | number | any, newSize?: InewSize | any, newColor?: InewColor | any, attribute?: Iattribute | any,dataDeleteImage?:any }) => {
             switch (option.action) {
                 case 'updateGallery':
                     try {
@@ -72,6 +72,20 @@ const useAttributeMutation = () => {
                         console.log(error)
                     }
                     break;
+
+                case 'deleteImage': 
+                    try {
+                        const res = await deleteImageGallery(option.dataDeleteImage) as any
+                        if(res?.status == 200){
+                            message.success('Xóa thành công!')
+                        }else{
+                            message.error('Xóa thất bại')
+                        }
+                        return res
+                    } catch (error) {
+                        console.log(error)
+                    }
+                break;
                 default:
                     break;
             }

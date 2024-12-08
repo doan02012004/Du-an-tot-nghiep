@@ -469,11 +469,11 @@ export const deleteImageProduct = async(req,res) =>{
     const {imageUrl,galleryId,productId} = req.body
     const product = await ProductModel.findById(productId)
     const objectProduct = product.toObject()
-    const gallery = objectProduct.gallerys.find((item) => item._id == galleryId)
-    if(gallery.items.length>1){
-      const data = await deleteImage(imageUrl)
-      if(data?.result == 'ok'){
-        gallery.items = gallery.items.filter((item) => item !== imageUrl)
+    const galleryIndex = product.gallerys.findIndex((item) => item._id == galleryId);
+    if(galleryIndex > -1 && product.gallerys[galleryIndex].items.length > 1){
+      const data = await deleteImage(imageUrl);
+      if(data?.status == 200){
+        product.gallerys[galleryIndex].items = product.gallerys[galleryIndex].items.filter((item) => item !== imageUrl);
         await product.save()
         return res.status(200).json({message:"ok"})
       }else{

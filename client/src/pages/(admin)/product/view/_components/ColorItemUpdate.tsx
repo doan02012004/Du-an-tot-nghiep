@@ -43,6 +43,14 @@ const ColorItemUpdate = ({ data, product }: ColorItemProps) => {
       setLoadingGal(false)
     }
   };
+  const onDeleteImage = (imageUrl:string) =>{
+    const newDataDeleteImage = {
+      imageUrl,
+      productId:product?._id,
+      galleryId:data._id
+    }
+    attributeMutation.mutate({action:"deleteImage",dataDeleteImage:newDataDeleteImage})
+  }
   // const onSave = () => {
   //   if (avatar == '') return message.error('Bạn chưa thêm ảnh đại diện');
   //   if (items.length == 0) return message.error('Bạn chưa thêm ảnh phụ')
@@ -79,14 +87,14 @@ const ColorItemUpdate = ({ data, product }: ColorItemProps) => {
         {
           data?.avatar && (
             <div className="col-span-3 min-h-64">
-              <ImageExtraUpdate imageUrl={data?.avatar} type="main" />
+              <ImageExtraUpdate onDeleteImage={onDeleteImage} imageUrl={data?.avatar} type="main" />
             </div>
           )
         }
         {
           data?.items?.map((item: string) => (
             <div className=" col-span-3 min-h-64">
-              <ImageExtraUpdate imageUrl={item} />
+              <ImageExtraUpdate onDeleteImage={onDeleteImage} imageUrl={item} />
             </div>
           ))
         }

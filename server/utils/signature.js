@@ -1,5 +1,6 @@
 import crypto from 'crypto'
-
+import dotenv from 'dotenv'
+dotenv.config()
 const cloud_name = process.env.CLOUND_NAME;
 const api_key = process.env.CLOUDINARY_API_KEY;
 const api_secret = process.env.CLOUDINARY_API_SECRET;
@@ -10,7 +11,7 @@ const deleteImage = async (imageUrl) => {
         // Lấy public_id
         const parts = imageUrl.split("/");
         const public_id = parts[parts.length - 1].split(".")[0];
-        console.log(public_id); // Output: x3zjcyr3elgatiromhsn
+        const timestamp = Math.floor(Date.now() / 1000); // Lấy timestamp hiện tại (tính bằng giây)
         // tạo chữ ký
         const signature = crypto
             .createHash('sha1')
@@ -19,18 +20,18 @@ const deleteImage = async (imageUrl) => {
         const data = await fetch(`https://api.cloudinary.com/v1_1/${cloud_name}/image/destroy`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'aplication/json'
+               'Content-Type': 'application/json'
             },
-            body: {
+            body: JSON.stringify({
                 public_id,
                 api_key,
                 timestamp,
                 signature,
-            }
+            })
         })
         return data
     } catch (error) {
-        console.log(error)
+        return error
     }
 
 
