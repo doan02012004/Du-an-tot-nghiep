@@ -31,8 +31,8 @@ const OrderDetails = () => {
   const items = orders?.items;
   const ship = orders?.ship;
   const voucher = orders?.voucher
-  const Goodsmoney = orders?.totalPrice - ship?.value?.price || 0
-  const Totalamount = voucher ? orders?.totalPrice - voucher?.discountValue : orders?.totalPrice
+  const Goodsmoney = orders.items?.reduce((sum,item:any)=> item?.total + sum, 0 ) || 0
+  const Totalamount =orders?.totalPrice 
 
   useEffect(()=>{
     if(socket?.current){

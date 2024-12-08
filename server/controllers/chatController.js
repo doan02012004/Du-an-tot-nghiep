@@ -34,7 +34,8 @@ export const sendMessage = async (req, res) => {
                 type
             })
             await massage.save()
-            return res.status(200).json(massage)
+            const newMessage = await MessageModel.findById(massage?._id).populate('sender receiver productId');
+            return res.status(200).json(newMessage)
         }else{
             const admin = await UserModel.findOne({
                 role:'admin'
@@ -50,7 +51,8 @@ export const sendMessage = async (req, res) => {
                 type
             })
             await massage.save()
-            return res.status(200).json(massage);
+            const newMessage = await MessageModel.findById(massage?._id).populate('sender receiver productId');
+            return res.status(200).json(newMessage);
         }
         
     } catch (error) {

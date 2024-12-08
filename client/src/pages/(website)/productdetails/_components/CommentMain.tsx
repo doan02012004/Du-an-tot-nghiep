@@ -4,7 +4,7 @@ import { CommentOutlined, DeleteOutlined, LikeOutlined, LoadingOutlined } from '
 import { IComment } from '../../../../common/interfaces/comment'; // Giả sử IComment là interface định nghĩa bình luận
 import CommentExtra from './CommentExtra'; // Component để hiển thị các bình luận trả lời
 import useCommentMutation from '../../../../common/hooks/comments/useCommentMutation';
-import { Rate } from 'antd';
+import { Rate, Space } from 'antd';
 import { formatDateComment } from '../../../../common/utils/product';
 
 type CommentMainProps = {
@@ -56,10 +56,14 @@ const CommentMain = ({ comment, user,commentRef,commentId,setCommentId }: Commen
       {/* Nội dung bình luận */}
       <div className="bg-gray-100 rounded-md p-2">
         <h5 className="text-black text-base font-semibold m-0">{comment.userId.lastname} {comment.userId.firstname}</h5>
-          <Rate value={comment?.rating} className='text-xs p-0 mb-2' disabled />
-        <p>{comment.comment}</p>
+          <Rate value={comment?.rating} className='text-xs p-0 m-0 block' disabled />
+          <Space className='mb-3 *:text-xs *:text-black'>
+            <span >size: {comment?.item?.attribute?.size}</span>
+            <span>màu: {comment?.item?.attribute?.color}</span>
+          </Space>
+        <p className='font-semibold text-black'>{comment.comment}</p>
         <div className="flex justify-between items-center">
-          <div className='text-xs text-black font-medium'>
+          <div className='text-xs font-medium'>
             {formatDateComment(comment.createdAt)}
           </div>
          <div className=' flex items-center gap-x-8 pr-5 '>

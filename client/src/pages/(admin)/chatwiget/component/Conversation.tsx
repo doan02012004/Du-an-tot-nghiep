@@ -22,8 +22,8 @@ const Conversation = ({ chatId, userMessage }: Props) => {
     useEffect(()=>{
         if(socket?.current){
             socket?.current?.on("newMessage",(newMessage:Imesage)=>{
-                console.log('Đã vào')
-                if(newMessage.chatId == chatId){
+                console.log(newMessage)
+                if(newMessage?.chatId == chatId){
                     setMessages([...messages,newMessage])
                 }
             })

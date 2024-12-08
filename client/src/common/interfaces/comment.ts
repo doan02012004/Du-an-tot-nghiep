@@ -23,6 +23,12 @@ export interface IComment {
       email: string,
       role:string
     };
+    item?:{
+      attribute:{
+        size:string,
+        color:string
+      }
+    }
     createdAt:string
   }
   

@@ -273,11 +273,11 @@ const OrderManager = () => {
 
           </tbody>
         </table>
-        <div className="flex justify-center mt-8">
+        {/* <div className="flex justify-center mt-8">
           <button className="border mr-4 border-dark rounded-tl-lg bg-dark rounded-br-lg text-white px-3 py-1 pointer-events-none transition duration-300 ease-in-out">
             1
           </button>
-        </div>
+        </div> */}
       </section>
       {open && (
         <div className="w-[50%] h-[80%] border border-black rounded-xl fixed top-20 p-5 shadow-2xl bg-white overflow-y-auto">
