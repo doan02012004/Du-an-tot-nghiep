@@ -638,6 +638,9 @@ export const vnpayReturn = async (req, res) => {
                 const user = await UserModel.findById(order?.userId);
                 const userEmail = user?.email || ""; // Email của người dùng
                 console.log(userEmail)
+                if(userEmail){
+                    await successEmail(userEmail, order?.orderNumber);  // Gọi hàm gửi email thành công
+                 }
                 return res.redirect('http://localhost:5173/thanks');
             } else {
                 return res.redirect('http://localhost:5173/order');
