@@ -114,8 +114,6 @@ const Account = () => {
               <div className="w-[170px] font-light text-dark text-sm flex-shrink-0">Giới tính</div>
               <div className="flex items-center gap-x-8">
                 <div className="flex items-center gap-x-2">
-                  <input type="radio" id="nam" className="accent-slate-950 size-5" defaultChecked={currentUser?.gender == 'male' ? true : false} name="gender" value={'male'} disabled />
-                  <label htmlFor="nam" className="block cursor-pointer text-dark font-semibold text-sm">Nam</label>
                   <input
                     type="radio"
                     id="male"
@@ -128,10 +126,7 @@ const Account = () => {
                     Nam
                   </label>
                 </div>
-
                 <div className="flex items-center gap-x-2">
-                  <input type="radio" id="nu" className="accent-slate-950 size-5" defaultChecked={currentUser?.gender == 'female' ? true : false} name="gender" value={'female'} disabled />
-                  <label htmlFor="nu" className="block cursor-pointer text-dark font-semibold text-sm">Nữ</label>
                   <input
                     type="radio"
                     id="female"
@@ -144,10 +139,7 @@ const Account = () => {
                     Nữ
                   </label>
                 </div>
-
                 <div className="flex items-center gap-x-2">
-                  <input type="radio" id="khac" className="accent-slate-950 size-5" defaultChecked={currentUser?.gender == 'other' ? true : false} name="gender" value={'other'} disabled />
-                  <label htmlFor="khac" className="block cursor-pointer text-dark font-semibold text-sm">Khác</label>
                   <input
                     type="radio"
                     id="other"
