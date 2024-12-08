@@ -216,7 +216,6 @@ export const register = async (req, res) => {
         lastname: req.body.lastname,
         email: req.body.email,
         password: req.body.password,
-        confirmPassword: req.body.confirmPassword,
         phone: req.body.phone,
         date: req.body.date,
         gender: req.body.gender,
@@ -227,7 +226,7 @@ export const register = async (req, res) => {
     }
     try {
         //lấy schemma để validate
-        const { error } = registerSchema.validate(req.body, { abortEarly: false });
+        const { error } = registerSchema.validate(User, { abortEarly: false });
         if (error) {
             // Nếu có lỗi sẽ trả về tất cả lỗi
             return res.status(StatusCodes.NOT_FOUND).json({ errors: error.details.map(err => err.message) });
@@ -579,7 +578,7 @@ export const login = async (req, res) => {
             return res.status(StatusCodes.NOT_FOUND).json({ error: "Sai mật khẩu" });
         }
 
-        
+
 
         //    const token =  generateRefreshToken(user._id, res);
         if (user && passwordCorrect) {
