@@ -12,7 +12,6 @@ const ComplaintEdit = (props: Props) => {
   const query = useComplaintQuery(id);
   const mutation = useComplaintMutation();
   const mutations = useOrderMutation();
-  
   // State để lưu thông tin chỉnh sửa
   const [status, setStatus] = useState<'new' | 'in_progress' | 'resolved' | 'cancelled' | ''>(''); 
   const [response, setResponse] = useState<string>('');

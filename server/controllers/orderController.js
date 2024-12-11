@@ -50,8 +50,8 @@ export const createOrder = async (req, res) => {
             const userEmail = user?.email || null;
             const voucher = order.voucher?.discountValue || 0;
             const shipPrice = order?.ship?.value?.price || 0;
-            const price = order.totalPrice - shipPrice;
-            const TotalAmount = voucher ? (order?.totalPrice - voucher?.discountValue) : order?.totalPrice;
+            const price = order?.items?.reduce((sum,item)=>sum+item?.total,0);
+            const TotalAmount = order?.totalPrice || 0;
 
             if (userEmail) {
                 if (order.paymentMethod === "cash") {
@@ -277,6 +277,15 @@ export const updateOrderStatus = async (req, res) => {
         };
   
       const vietnameseStatus = statusTranslations[status];
+      const cancelReasonRow = updatedOrder?.cancelReason
+  ? `
+      <tr>
+          <td style="color: #555; padding: 10px;">Lý do:</td>
+          <td style="color: #000; padding: 10px;">${updatedOrder.cancelReason}</td>
+      </tr>
+    `
+  : "";
+
       // Gửi email cho khách hàng
       const subject = "Cập nhật trạng thái đơn hàng";
   
@@ -305,6 +314,7 @@ export const updateOrderStatus = async (req, res) => {
                         <td style="color: #555; padding: 10px;">Trạng thái hiện tại:</td>
                         <td style="color: #FF0000; padding: 10px;"><strong>${vietnameseStatus}</strong></td>
                     </tr>
+                    ${cancelReasonRow}
                 </table>
             </div>
 
@@ -438,8 +448,8 @@ const successEmail = async (userEmail, orderNumber) => {
     const subject = "Thanh toán thành công";
     const voucher = order.voucher?.discountValue || 0;
     const shipPrice = order?.ship?.value?.price || 0;
-    const price = order.totalPrice - shipPrice;
-    const TotalAmount = voucher ? (order?.totalPrice - voucher?.discountValue) : order?.totalPrice;
+    const price = order?.items?.reduce((sum,item)=>sum+item?.total,0);
+    const TotalAmount = order?.totalPrice || 0;
 
     const message = `
                         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px;">

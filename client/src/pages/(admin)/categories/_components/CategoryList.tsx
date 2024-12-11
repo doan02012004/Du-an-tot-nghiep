@@ -57,10 +57,7 @@ const CategoryList: React.FC = () => {
       title: "Slug",
       dataIndex: "slug",
     },
-    {
-      title: "Số lượng sản phẩm",
-      dataIndex: "productCount",
-    },
+    
     {
       title: "Trạng thái",
       dataIndex: "status",

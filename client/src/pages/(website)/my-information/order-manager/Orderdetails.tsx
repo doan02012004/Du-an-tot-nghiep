@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CheckCircleOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Form, Input, message, Radio } from 'antd';
+import { Button, Form, Input, message, Radio, Spin } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import instance from '../../../../common/config/axios';
@@ -33,7 +33,7 @@ const OrderDetails = () => {
   const voucher = orders?.voucher
   const Goodsmoney = orders.items?.reduce((sum,item:any)=> item?.total + sum, 0 ) || 0
   const Totalamount =orders?.totalPrice 
-
+  console.log(orders)
   useEffect(()=>{
     if(socket?.current){
       socket.current?.on('onUpdateOrderStatus',(data:any) =>{
@@ -162,9 +162,8 @@ const OrderDetails = () => {
                       Đã nhận hàng
                      </Button>
                     )}
-        {(orders?.paymentMethod === "cash" && orders.status === "pending") && (
-                     <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] ml-1 mt-1 cursor-pointer italic underline">
-                     <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />
+        {(orders?.paymentMethod === "cash" && (orders?.status === "pending" || orders?.status === "confirmed")) && (
+                     <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] ml-1 mt-1 cursor-pointer italic underline" disabled={mutation.isPending} icon={mutation.isPending ? <Spin size="small" /> : <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />}>
                      Huỷ đơn 
                      </Button>
                     )}
@@ -177,8 +176,16 @@ const OrderDetails = () => {
                         </Button>
                       </div>
                     )}
+        {orders?.cancelReason && (
+          <div className="px-4 py-2 rounded-full font-semibold">
+            Lý do: {orders?.cancelReason}
+          </div>
+        )}
       </div>
 
+      <div className="px-4 mb-6">
+        <span>Ngày tạo: {new Date(orders?.createdAt).toLocaleString()}</span>
+      </div>
       {/* Thông tin đơn hàng */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Địa chỉ nhận hàng */}
