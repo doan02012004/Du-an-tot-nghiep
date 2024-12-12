@@ -269,6 +269,19 @@ export const updateOrderStatus = async (req, res) => {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
         }
         if (updatedOrder?.status == 'cancelled') {
+            
+            if (updatedOrder?.voucher?.code) {
+                const voucherItem = await VoucherModel.findOne({ code: updatedOrder?.voucher?.code })
+                if (voucherItem) {
+                    const alreadyUsed = voucherItem.usedBy.includes(updatedOrder?.userId._id);
+                    if (alreadyUsed) {
+                        voucherItem.usedBy = voucherItem.usedBy.filter(id => id.toString() !== updatedOrder?.userId._id.toString());
+                    }
+                    voucherItem.quantity += 1;
+                    voucherItem.usedQuantity -= 1;
+                    await voucherItem.save()
+                }
+            }
             updatedOrder.items.map(async (orderItem) => {
                 const product = await ProductModel.findById(orderItem.productId)
                 if (product) {
