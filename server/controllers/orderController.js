@@ -14,6 +14,20 @@ import { generateOrderNumber } from "../utils/main.js";
 let newOrderServer = {}
 export const createOrder = async (req, res) => {
     try {
+        let check = false
+        const cart = await CartModel.findOne({ userId: req.body.userId }).populate('carts.productId')
+        const newCarts = cart.toObject()
+        newCarts.carts.map(async (item) => {
+            const attribute = await item.productId.attributes.find((atb) => atb?._id == item.attributeId)
+            if (attribute.instock < item.quantity) {
+                check = true
+            }
+        })
+        if (check) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: 'Số lượng không đủ'
+            })
+        }
         const order = await orderModel.create(req.body);
         if (order) {
             const cart = await CartModel.findOne({ userId: order.userId })
@@ -31,16 +45,16 @@ export const createOrder = async (req, res) => {
             cart.totalCart = 0;
             await cart.save()
             if (order?.voucher?.code) {
-                const voucherItem =  await VoucherModel.findOne({code:order?.voucher?.code})
+                const voucherItem = await VoucherModel.findOne({ code: order?.voucher?.code })
                 if (!voucherItem) throw new Error("Invalid voucher.");
                 const alreadyUsed = voucherItem.usedBy.includes(order?.userId);
-                if (alreadyUsed){
+                if (alreadyUsed) {
                     throw new Error("Bạn đã sử dụng voucher này rồi.");
                 }
                 voucherItem.usedBy.push(order?.userId);
-                if (voucherItem.quantity >=1) {
+                if (voucherItem.quantity >= 1) {
                     voucherItem.quantity -= 1;
-                    voucherItem.usedQuantity +=1;
+                    voucherItem.usedQuantity += 1;
                 }
                 await voucherItem.save()
             }
@@ -125,8 +139,8 @@ export const createOrder = async (req, res) => {
                                     </thead>
                                     <tbody>
                                         ${order.items
-                                            .map(
-                                                (item) => `
+                            .map(
+                                (item) => `
                                                 <tr>
                                                     <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">
                                                         <img src="${item?.gallery?.avatar}" alt="${item.name}" style="max-width: 50px; border-radius: 5px;">
@@ -138,8 +152,8 @@ export const createOrder = async (req, res) => {
                                                     <td style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">${item.price.toLocaleString()}₫</td>
                                                 </tr>
                                             `
-                                            )
-                                            .join("")}
+                            )
+                            .join("")}
                                     </tbody>
                                 </table>
                             </div>
@@ -232,55 +246,67 @@ export const deleteOrder = async (req, res) => {
 
 export const updateOrderStatus = async (req, res) => {
     const { orderId, status, cancelReason } = req.body;
-  
-    try {
-      // Kiểm tra trạng thái hợp lệ
-      const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"];
-      if (!validStatuses.includes(status)) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
-      }
-  
-      // Nếu trạng thái là "cancelled", kiểm tra xem lý do huỷ có tồn tại không
-      if (status === "cancelled" && !cancelReason) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Cancel reason is required for cancelled orders" });
-    }
-    
-    // Cập nhật trạng thái đơn hàng
-    const updatedOrder = await orderModel.findByIdAndUpdate(
-        orderId,
-        { status, cancelReason }, // Cập nhật lý do huỷ nếu có
-        { new: true }
-    ).populate('userId', 'email fullname');  // Lấy email và fullname từ userId
 
-    if (!updatedOrder) {
-        return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
-    }
-  
-      // Kiểm tra email người dùng
-      const userEmail = updatedOrder.userId.email;
-      if (!userEmail) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Email not found for the user" });
-      }
-  
-      const statusTranslations = {
-          pending: "Chờ xử lý",
-          unpaid: "Chưa thanh toán",
-          confirmed: "Đã xác nhận",
-          shipped: "Đang giao",
-          delivered: "Đã giao hàng",
-          cancelled: "Đã hủy",
-          received: "Đã nhận hàng",
-          Returngoods:"Trả hàng",
-          Complaints:"Đang xử lý khiếu nại",
-        //   Refunded:"Hoàn tiền",
-          Exchanged:"Đổi trả hàng",
+    try {
+        // Kiểm tra trạng thái hợp lệ
+        const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints", "Refunded", "Exchanged"];
+        if (!validStatuses.includes(status)) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
+        }
+
+        // Nếu trạng thái là "cancelled", kiểm tra xem lý do huỷ có tồn tại không
+        if (status === "cancelled" && !cancelReason) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Cancel reason is required for cancelled orders" });
+        }
+
+        // Cập nhật trạng thái đơn hàng
+        const updatedOrder = await orderModel.findByIdAndUpdate(
+            orderId,
+            { status, cancelReason }, // Cập nhật lý do huỷ nếu có
+            { new: true }
+        ).populate('userId', 'email fullname');  // Lấy email và fullname từ userId
+        if (!updatedOrder) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
+        }
+        if (updatedOrder?.status == 'cancelled') {
+            updatedOrder.items.map(async (orderItem) => {
+                const product = await ProductModel.findById(orderItem.productId)
+                if (product) {
+                    product.attributes.map(async (attribute) => {
+                        if (attribute.size == orderItem.attribute.size &&attribute.color == orderItem.attribute.color ) {
+                            attribute.instock = attribute.instock + orderItem.quantity
+                            await product.save()
+                        }
+                    })
+                }
+            })
+        }
+
+        // Kiểm tra email người dùng
+        const userEmail = updatedOrder.userId.email;
+        if (!userEmail) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Email not found for the user" });
+        }
+
+        const statusTranslations = {
+            pending: "Chờ xử lý",
+            unpaid: "Chưa thanh toán",
+            confirmed: "Đã xác nhận",
+            shipped: "Đang giao",
+            delivered: "Đã giao hàng",
+            cancelled: "Đã hủy",
+            received: "Đã nhận hàng",
+            Returngoods: "Trả hàng",
+            Complaints: "Đang xử lý khiếu nại",
+            //   Refunded:"Hoàn tiền",
+            Exchanged: "Đổi trả hàng",
         };
-  
-      const vietnameseStatus = statusTranslations[status];
-      // Gửi email cho khách hàng
-      const subject = "Cập nhật trạng thái đơn hàng";
-  
-      const message = `
+
+        const vietnameseStatus = statusTranslations[status];
+        // Gửi email cho khách hàng
+        const subject = "Cập nhật trạng thái đơn hàng";
+
+        const message = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px;">
             <div style="text-align: center; margin-bottom: 30px;">
                 <h1 style="color: #4CAF50; margin: 0;">FENDI SHOP</h1>
@@ -318,13 +344,13 @@ export const updateOrderStatus = async (req, res) => {
             </div>
         </div>
       `;
-  
-      await sendEmail(userEmail, subject, message);
-  
-      // Trả về đơn hàng đã được cập nhật
-      return res.status(StatusCodes.OK).json(updatedOrder);
+
+        await sendEmail(userEmail, subject, message);
+
+        // Trả về đơn hàng đã được cập nhật
+        return res.status(StatusCodes.OK).json(updatedOrder);
     } catch (error) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
 
@@ -348,7 +374,7 @@ export const paymentVNPay = async (req, res) => {
         const orderNumber = generateOrderNumber();
         const orderInfo = 'Thanh toan cho ma GD:' + userId;
         const orderType = 'other';
-        date.setMinutes(date.getMinutes() + 15);
+        date.setMinutes(date.getMinutes() + 1);
         const expireDateFormat = formatDateToCustomString(date); // Định dạng thành yyyyMMddHHmmss
         let locale = "vn";
         if (!locale) locale = 'vn';
@@ -509,8 +535,8 @@ const successEmail = async (userEmail, orderNumber) => {
                                     </thead>
                                     <tbody>
                                         ${order.items
-                                            .map(
-                                                (item) => `
+            .map(
+                (item) => `
                                                 <tr>
                                                     <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">
                                                         <img src="${item?.gallery?.avatar}" alt="${item.name}" style="max-width: 50px; border-radius: 5px;">
@@ -522,8 +548,8 @@ const successEmail = async (userEmail, orderNumber) => {
                                                     <td style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">${item.price.toLocaleString()}₫</td>
                                                 </tr>
                                             `
-                                            )
-                                            .join("")}
+            )
+            .join("")}
                                     </tbody>
                                 </table>
                             </div>
@@ -600,7 +626,7 @@ export const vnpayReturn = async (req, res) => {
     const sortedParams = sortObject(vnp_Params);
     const queryString = querystring.stringify(sortedParams, { encode: false });
     const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
-
+    console.log('Đã vào')
     if (hash === secureHash) {
         const userId = vnp_Params['vnp_TxnRef']
         if (vnp_Params['vnp_ResponseCode'] === '00') {
@@ -638,9 +664,9 @@ export const vnpayReturn = async (req, res) => {
                 const user = await UserModel.findById(order?.userId);
                 const userEmail = user?.email || ""; // Email của người dùng
                 console.log(userEmail)
-                if(userEmail){
+                if (userEmail) {
                     await successEmail(userEmail, order?.orderNumber);  // Gọi hàm gửi email thành công
-                 }
+                }
                 return res.redirect('http://localhost:5173/thanks');
             } else {
                 return res.redirect('http://localhost:5173/order');

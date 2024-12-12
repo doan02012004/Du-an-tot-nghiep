@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PlusOutlined } from '@ant-design/icons'
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, message } from 'antd'
 import { useEffect, useState } from 'react'
 import {  useSelector } from 'react-redux'
@@ -58,7 +58,12 @@ const CreateProduct = () => {
   return (
     <div>
     {checkAdd && (<div className='flex justify-center items-end'>
-        <Button onClick={onCreateProduct} className='bg-black text-white  mx-auto'><PlusOutlined /> Sản phẩm</Button>
+        <Button disabled={productMutation?.isPending} loading={productMutation?.isPending} onClick={onCreateProduct} className='bg-black text-white  mx-auto'><PlusOutlined /> Sản phẩm</Button>
+        {productMutation?.isPending && (
+            <div className="fixed w-full z-[50] h-full top-0 left-0 bottom-0 right-0 bg-slate-800/30  flex justify-center items-center">
+            <LoadingOutlined className="text-7xl text-blue font-light" />
+          </div>
+        )}
     </div>)}
   </div>
   )

@@ -84,6 +84,7 @@ const FormInforUpdate = ({ product }: FormInforUpdateProps) => {
   const onSubmit = async (data: IproductInfor) => {
     const newData: IproductInfor = {
       ...data,
+      slug:product.slug,
       _id: product._id,
     };
     productMutation.mutate({ action: "updateInfor", productInfor: newData });

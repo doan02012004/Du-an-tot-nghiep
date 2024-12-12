@@ -53,12 +53,12 @@ const SidebarAccount = () => {
           Thông tin tài khoản
         </NavLink>
       </li>
-      <li className="group mb-5 lg:mb-8">
+      {/* <li className="group mb-5 lg:mb-8">
         <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
           <span className="mr-3 "><i className="fa-solid fa-unlock" /></span>
           Lịch sử đăng nhập
         </a>
-      </li>
+      </li> */}
       <li className="group mb-5 lg:mb-8">
         <Link to={"/customer/order-manager"} className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
           <span className="mr-3 "><i className="fa-solid fa-arrows-rotate" /></span>
@@ -71,26 +71,26 @@ const SidebarAccount = () => {
           Sổ địa chỉ
         </NavLink>
       </li>
-      <li className="group mb-5 lg:mb-8">
+      {/* <li className="group mb-5 lg:mb-8">
         <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
           <span className="mr-3 "><i className="fa-solid fa-glasses" /></span>
           Sản phẩm đã xem
         </a>
-      </li>
+      </li> */}
       <li className="group mb-5 lg:mb-8">
         <a href={`/customer/favourite`} className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
           <span className="mr-3 "><i className="fa-regular fa-heart" /></span>
           Sản phẩm yêu thích
         </a>
       </li>
-      <li className="group mb-5 lg:mb-8">
+      {/* <li className="group mb-5 lg:mb-8">
         <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
           <span className="mr-3 "><i className="fa-solid fa-headphones" /></span>
           Hỏi đáp sản phẩm
         </a>
-      </li>
+      </li> */}
       <li className="group ">
-        <a href="#" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
+        <a href="/contact" className="flex items-center text-sm font-semibold group-hover:text-gray-800 ">
           <span className="mr-3 "><i className="fa-regular fa-hand-point-right" /></span>
           Hỗ trợ - Mail Shop
         </a>

@@ -28,6 +28,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
     const voucher = useSelector((state: any) => state.cart.voucher) as Vouchers;
     const [loading, setLoading] = useState(false)
     const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
+    const checkCarts = useSelector((state: any) => state.cart.checkCarts)
     const orderMutation = useOrderMutation()
     const navigate = useNavigate()
     // const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
@@ -136,9 +137,9 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
         <>
             {payment === "cash" ? (
                 <button
+                disabled={!checkCarts}
                     onClick={onHandleOrder}
-                    className="bg-black text-white w-full py-3 
-                    text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black"
+                    className={`${checkCarts? 'bg-black hover:bg-white hover:text-black hover:border hover:border-black' : 'bg-gray-300'} text-white w-full py-3 text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] `}
                 >
                     HOÀN THÀNH
                 </button>
