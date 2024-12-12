@@ -6,6 +6,7 @@ import useVoucherMutation from '../../../../common/hooks/voucher/useVoucherMutat
 import { IVoucher } from '../../../../common/interfaces/voucher';
 
 
+
 const { Option } = Select;
 
 const generateRandomCode = (length: number) => {
@@ -21,23 +22,17 @@ const VoucherAdd = () => {
     const mutation = useVoucherMutation();
     const [form] = Form.useForm();
     const [voucherCode, setVoucherCode] = useState('');
-    // const [scope, setScope] = useState<'all'>('all');
-    // const [products, setProducts] = useState([]); // Lưu danh sách sản phẩm
     const [voucherType, setVoucherType] = useState<'fixed' | 'percentage' | 'freeship'>('fixed'); // Lưu trạng thái loại voucher
     const [voucherCategory, setVoucherCategory] = useState<'discount' | 'shipping'>('discount')
 
-    // Lấy danh sách sản phẩm từ API
-    // useEffect(() => {
-    //     const fetchProducts = async () => {
-    //         try {
-    //             const response = await getAllProducts();
-    //             setProducts(response.products || []);
-    //         } catch (error) {
-    //             console.error('Lỗi khi lấy danh sách sản phẩm:', error);
-    //         }
-    //     };
-    //     fetchProducts();
-    // }, []);
+    useEffect(() => {
+        const value = form.getFieldValue('value');
+        const maxValue = voucherType === 'percentage' ? 50 : Infinity;
+
+        if (value > maxValue) {
+            form.setFieldsValue({ value: maxValue });
+        }
+    }, [voucherType, form]);
 
     useEffect(() => {
         // Reset các trường liên quan khi thay đổi loại voucher hoặc danh mục voucher
@@ -49,6 +44,8 @@ const VoucherAdd = () => {
 
         if (voucherCategory === 'shipping') {
             form.setFieldsValue({ value: null });
+        } else {
+            form.setFieldsValue({ value: null, maxDiscountValue: null });
         }
     }, [voucherType, voucherCategory, form]);
     useEffect(() => {
@@ -152,7 +149,7 @@ const VoucherAdd = () => {
                     <Col span={12}>
                         <Form.Item label="Loại voucher" name="type" rules={[{ required: true, message: 'Vui lòng chọn loại voucher' }]}>
                             <Select onChange={(value) => setVoucherType(value)}>
-                            <Option value="select" disabled>
+                                <Option value="select" disabled>
                                     Chọn loại voucher
                                 </Option>
                                 {voucherCategory !== 'shipping' && (
@@ -186,10 +183,35 @@ const VoucherAdd = () => {
 
                     <Col span={12}>
                         <Form.Item
-                            label={`${voucherType !== 'fixed' ? 'Giá trị giảm tối đa (VND)' : 'Giá trị giảm tối đa (VND)'}`}
+                            label="Giá trị giảm tối đa (VND)"
                             name="maxDiscountValue"
+                            dependencies={['minOrderValue']}
+                            rules={[
+                                {
+                                    required: (voucherCategory === 'shipping' || (voucherCategory === 'discount' && voucherType === 'percentage')),
+                                    message: 'Giá trị giảm tối đa là bắt buộc',
+                                }, {
+                                    validator(_, value) {
+                                        const minOrderValue = form.getFieldValue('minOrderValue');
+
+                                        if (!value || minOrderValue === 0) {
+                                            return Promise.resolve();
+                                        }
+
+                                        if (value > minOrderValue) {
+                                            return Promise.reject(new Error('Giá trị giảm tối đa không được vượt quá giá trị đơn hàng tối thiểu'));
+                                        }
+
+                                        return Promise.resolve();
+                                    }
+                                }
+                            ]}
                         >
-                            <InputNumber min={0}  style={{ width: '100%' }} disabled={voucherType !== 'percentage' && voucherCategory !== 'shipping'} />
+                            <InputNumber
+                                min={0}
+                                style={{ width: '100%' }}
+                                disabled={voucherType !== 'percentage' && voucherCategory !== 'shipping'}
+                            />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -210,8 +232,35 @@ const VoucherAdd = () => {
                         <Form.Item
                             label={`${voucherType !== 'percentage' ? 'Giá trị giảm (VND)' : 'Giá trị giảm (%)'}`}
                             name="value"
+                            dependencies={['minOrderValue', 'type', 'category']}
+                            rules={[
+                                {
+                                    required: (voucherCategory === 'discount' && voucherType !== 'freeship'),
+                                    message: 'Giá trị giảm là bắt buộc',
+                                }, {
+                                    validator(_, value) {
+                                        const minOrderValue = form.getFieldValue('minOrderValue');
+                                        const type = form.getFieldValue('type');
+
+                                        // Cho phép nhập bình thường nếu minOrderValue là 0 hoặc không phải loại fixed
+                                        if (!value || minOrderValue === 0 || type !== 'fixed') {
+                                            return Promise.resolve();
+                                        }
+
+                                        // Kiểm tra nếu giá trị giảm vượt quá giá trị đơn hàng tối thiểu
+                                        if (value > minOrderValue) {
+                                            return Promise.reject(
+                                                new Error('Giá trị giảm không được vượt quá giá trị đơn hàng tối thiểu')
+                                            );
+                                        }
+
+                                        return Promise.resolve();
+                                    },
+                                }
+                            ]}
+
                         >
-                            <InputNumber min={0} max={voucherType === 'percentage' ? 90 : 1000000} style={{ width: '100%' }} disabled={voucherCategory == 'shipping'} />
+                            <InputNumber min={0} max={voucherType === 'percentage' ? 50 : Infinity} style={{ width: '100%' }} disabled={voucherCategory == 'shipping'} />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -250,14 +299,37 @@ const VoucherAdd = () => {
                             <DatePicker style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
-
                     <Col span={12}>
                         <Form.Item
                             label="Ngày kết thúc"
                             name="endDate"
-                            rules={[{ required: true, message: 'Ngày kết thúc là bắt buộc' }]}
+                            dependencies={['startDate']}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Ngày kết thúc là bắt buộc'
+                                },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        const startDate = getFieldValue('startDate');
+                                        if (!value || !startDate) {
+                                            return Promise.resolve();
+                                        }
+                                        if (value <= startDate) {
+                                            return Promise.reject(new Error('Ngày kết thúc phải lớn hơn ngày bắt đầu'));
+                                        }
+                                        return Promise.resolve();
+                                    },
+                                }),
+                            ]}
                         >
-                            <DatePicker style={{ width: '100%' }} />
+                            <DatePicker
+                                style={{ width: '100%' }}
+                                disabledDate={(current) => {
+                                    const startDate = form.getFieldValue('startDate');
+                                    return startDate ? current <= startDate : false;
+                                }}
+                            />
                         </Form.Item>
                     </Col>
                 </Row>
