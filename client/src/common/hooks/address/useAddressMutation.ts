@@ -23,16 +23,26 @@ const useAddressMutation = () => {
           break;
         case "delete":
           try {
-            await deleteAddress(option.newAddress._id);
+           const res = await deleteAddress(option.newAddress._id);
+           if(res?.status == 200){
             message.success("Xóa địa chỉ thành công!");
+
+          }else{
+           message.error("Xóa địa chỉ thất bại!");
+          }
           } catch (error) {
             console.log(error);
           }
           break;
         case "update":
           try {
-            await updateAddress(option.newAddress);
-            message.success("Cập nhật địa chỉ thành công!");
+           const res = await updateAddress(option.newAddress);
+           if(res?.status == 201){
+             message.success("Cập nhật địa chỉ thành công!");
+
+           }else{
+            message.error("Cập nhật địa chỉ thất bại!");
+           }
           } catch (error) {
             console.log(error);
           }
