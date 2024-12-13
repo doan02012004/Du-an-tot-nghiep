@@ -11,9 +11,36 @@ import UserModel from "../models/userModel.js";
 import VoucherModel from "../models/voucherModel.js";
 import { generateOrderNumber } from "../utils/main.js";
 
-let newOrderServer = {}
 export const createOrder = async (req, res) => {
     try {
+        let check = false
+        let checkVoucher = false
+        const cart = await CartModel.findOne({ userId: req.body.userId }).populate('carts.productId').exec()
+        const newCarts = cart.toObject()
+        await newCarts.carts.map(async (item) => {
+            const attribute = await item.productId.attributes.find((atb) => atb?._id == item.attributeId)
+            if (attribute.instock < item.quantity) {
+                check = true
+            }
+        })
+        if (check) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: 'Số lượng không đủ'
+            })
+        }
+        if (req.body.voucher?.code) {
+            const voucher = await VoucherModel.findOne({code:req.body.voucher.code})
+            if (voucher) {
+                if (voucher?.quantity <= 0) {
+                    checkVoucher = true
+                }
+            }
+        }
+        if (checkVoucher) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: 'Số lượng không đủ'
+            })
+        }
         const order = await orderModel.create(req.body);
         if (order) {
             const cart = await CartModel.findOne({ userId: order.userId })
@@ -21,7 +48,7 @@ export const createOrder = async (req, res) => {
                 const product = await ProductModel.findById(item.productId)
                 product.attributes.map(async (attribute) => {
                     if (attribute._id == item.attributeId) {
-                        attribute.instock = attribute.instock - item.quantity
+                        attribute.instock = attribute.instock - item.quantity < 0 ? 0 : attribute.instock - item.quantity
                         await product.save()
                     }
                 })
@@ -31,16 +58,22 @@ export const createOrder = async (req, res) => {
             cart.totalCart = 0;
             await cart.save()
             if (order?.voucher?.code) {
-                const voucherItem =  await VoucherModel.findOne({code:order?.voucher?.code})
-                if (!voucherItem) throw new Error("Invalid voucher.");
+                const voucherItem = await VoucherModel.findOne({ code: order?.voucher?.code })
+                if (!voucherItem){
+                    return res.status(StatusCodes.BAD_REQUEST).json({
+                        message: 'Voucher không tồn tại'
+                    })
+                } 
                 const alreadyUsed = voucherItem.usedBy.includes(order?.userId);
-                if (alreadyUsed){
-                    throw new Error("Bạn đã sử dụng voucher này rồi.");
+                if (alreadyUsed) {
+                    return res.status(StatusCodes.BAD_REQUEST).json({
+                        message: 'Bạn đã sử dụng voucher này rồi'
+                    })
                 }
                 voucherItem.usedBy.push(order?.userId);
-                if (voucherItem.quantity >=1) {
+                if (voucherItem.quantity >= 1) {
                     voucherItem.quantity -= 1;
-                    voucherItem.usedQuantity +=1;
+                    voucherItem.usedQuantity += 1;
                 }
                 await voucherItem.save()
             }
@@ -66,7 +99,7 @@ export const createOrder = async (req, res) => {
                             <h2 style="text-align: center; color: #4CAF50;">🎉 Cảm ơn bạn đã đặt hàng! 🎉</h2>
                             <p style="color: #555;">Xin chào <strong>${order.customerInfor.fullname || "Khách hàng"}</strong>,</p>
                             <p style="color: #555;">Chúng tôi đã nhận được đơn hàng của bạn. Đơn hàng hiện đang được xử lý và sẽ sớm được giao đến bạn. Dưới đây là thông tin chi tiết:</p>
-                            
+
                             <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                                 <h3 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Thông tin đơn hàng</h3>
                                 <table style="width: 100%;">
@@ -125,8 +158,8 @@ export const createOrder = async (req, res) => {
                                     </thead>
                                     <tbody>
                                         ${order.items
-                                            .map(
-                                                (item) => `
+                            .map(
+                                (item) => `
                                                 <tr>
                                                     <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">
                                                         <img src="${item?.gallery?.avatar}" alt="${item.name}" style="max-width: 50px; border-radius: 5px;">
@@ -138,8 +171,8 @@ export const createOrder = async (req, res) => {
                                                     <td style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">${item.price.toLocaleString()}₫</td>
                                                 </tr>
                                             `
-                                            )
-                                            .join("")}
+                            )
+                            .join("")}
                                     </tbody>
                                 </table>
                             </div>
@@ -232,55 +265,80 @@ export const deleteOrder = async (req, res) => {
 
 export const updateOrderStatus = async (req, res) => {
     const { orderId, status, cancelReason } = req.body;
-  
-    try {
-      // Kiểm tra trạng thái hợp lệ
-      const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"];
-      if (!validStatuses.includes(status)) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
-      }
-  
-      // Nếu trạng thái là "cancelled", kiểm tra xem lý do huỷ có tồn tại không
-      if (status === "cancelled" && !cancelReason) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Cancel reason is required for cancelled orders" });
-    }
-    
-    // Cập nhật trạng thái đơn hàng
-    const updatedOrder = await orderModel.findByIdAndUpdate(
-        orderId,
-        { status, cancelReason }, // Cập nhật lý do huỷ nếu có
-        { new: true }
-    ).populate('userId', 'email fullname');  // Lấy email và fullname từ userId
 
-    if (!updatedOrder) {
-        return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
-    }
-  
-      // Kiểm tra email người dùng
-      const userEmail = updatedOrder.userId.email;
-      if (!userEmail) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Email not found for the user" });
-      }
-  
-      const statusTranslations = {
-          pending: "Chờ xử lý",
-          unpaid: "Chưa thanh toán",
-          confirmed: "Đã xác nhận",
-          shipped: "Đang giao",
-          delivered: "Đã giao hàng",
-          cancelled: "Đã hủy",
-          received: "Đã nhận hàng",
-          Returngoods:"Trả hàng",
-          Complaints:"Đang xử lý khiếu nại",
-        //   Refunded:"Hoàn tiền",
-          Exchanged:"Đổi trả hàng",
+    try {
+        // Kiểm tra trạng thái hợp lệ
+        const validStatuses = ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received", "Returngoods", "Complaints", "Refunded", "Exchanged"];
+        if (!validStatuses.includes(status)) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid order status" });
+        }
+
+        // Nếu trạng thái là "cancelled", kiểm tra xem lý do huỷ có tồn tại không
+        if (status === "cancelled" && !cancelReason) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Cancel reason is required for cancelled orders" });
+        }
+
+        // Cập nhật trạng thái đơn hàng
+        const updatedOrder = await orderModel.findByIdAndUpdate(
+            orderId,
+            { status, cancelReason }, // Cập nhật lý do huỷ nếu có
+            { new: true }
+        ).populate('userId', 'email fullname');  // Lấy email và fullname từ userId
+        if (!updatedOrder) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
+        }
+        if (updatedOrder?.status == 'cancelled') {
+            
+            if (updatedOrder?.voucher?.code) {
+                const voucherItem = await VoucherModel.findOne({ code: updatedOrder?.voucher?.code })
+                if (voucherItem) {
+                    const alreadyUsed = voucherItem.usedBy.includes(updatedOrder?.userId._id);
+                    if (alreadyUsed) {
+                        voucherItem.usedBy = voucherItem.usedBy.filter(id => id.toString() !== updatedOrder?.userId._id.toString());
+                    }
+                    voucherItem.quantity += 1;
+                    voucherItem.usedQuantity -= 1;
+                    await voucherItem.save()
+                }
+            }
+            updatedOrder.items.map(async (orderItem) => {
+                const product = await ProductModel.findById(orderItem.productId)
+                if (product) {
+                    product.attributes.map(async (attribute) => {
+                        if (attribute.size == orderItem.attribute.size && attribute.color == orderItem.attribute.color) {
+                            attribute.instock = attribute.instock + orderItem.quantity
+                            await product.save()
+                        }
+                    })
+                }
+            })
+        }
+
+        // Kiểm tra email người dùng
+        const userEmail = updatedOrder.userId.email;
+        if (!userEmail) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Email not found for the user" });
+        }
+
+        const statusTranslations = {
+            pending: "Chờ xử lý",
+            unpaid: "Chưa thanh toán",
+            confirmed: "Đã xác nhận",
+            shipped: "Đang giao",
+            delivered: "Đã giao hàng",
+            cancelled: "Đã hủy",
+            received: "Đã nhận hàng",
+            Returngoods: "Trả hàng",
+            Complaints: "Đang xử lý khiếu nại",
+            //   Refunded:"Hoàn tiền",
+            Exchanged: "Đổi trả hàng",
         };
-  
-      const vietnameseStatus = statusTranslations[status];
-      // Gửi email cho khách hàng
-      const subject = "Cập nhật trạng thái đơn hàng";
-  
-      const message = `
+
+        const vietnameseStatus = statusTranslations[status];
+        // Gửi email cho khách hàng
+        const subject = "Cập nhật trạng thái đơn hàng";
+
+        const message = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px;">
             <div style="text-align: center; margin-bottom: 30px;">
                 <h1 style="color: #4CAF50; margin: 0;">FENDI SHOP</h1>
@@ -318,13 +376,13 @@ export const updateOrderStatus = async (req, res) => {
             </div>
         </div>
       `;
-  
-      await sendEmail(userEmail, subject, message);
-  
-      // Trả về đơn hàng đã được cập nhật
-      return res.status(StatusCodes.OK).json(updatedOrder);
+
+        await sendEmail(userEmail, subject, message);
+
+        // Trả về đơn hàng đã được cập nhật
+        return res.status(StatusCodes.OK).json(updatedOrder);
     } catch (error) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
 
@@ -367,7 +425,6 @@ export const paymentVNPay = async (req, res) => {
         vnp_Params['vnp_IpAddr'] = ipAddr;
         vnp_Params['vnp_CreateDate'] = createDate;
         vnp_Params['vnp_ExpireDate'] = expireDateFormat;
-
         if (bankCode) {
             vnp_Params['vnp_BankCode'] = bankCode;
         }
@@ -387,6 +444,8 @@ export const paymentVNPay = async (req, res) => {
         // tạo newOrder
         const cartUser = await CartModel.findOne({ userId }).populate('carts.productId')
         if (cartUser) {
+            let check = false
+            let checkVoucher = false
             const newCartUser = cartUser.toObject()
             const newProductsOrder = newCartUser.carts.map((item) => {
                 const gallery = item.productId.gallerys.find((gallery) => gallery._id == item.galleryId)
@@ -408,14 +467,72 @@ export const paymentVNPay = async (req, res) => {
                 customerInfor,
                 items: [...newProductsOrder],
                 paymentMethod: 'vnPay',
-                status: "pending",
+                status: "unpaid",
                 totalOrder,
                 totalPrice,
                 ship: ship,
                 voucher,
                 orderNumber
             }
-            newOrderServer = newOrder
+            await newCartUser.carts.map(async (item) => {
+                const attribute = await item.productId.attributes.find((atb) => atb?._id == item.attributeId)
+                if (attribute.instock < item.quantity) {
+                    check = true
+                }
+            })
+            if (check) {
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    message: 'Số lượng không đủ'
+                })
+            }
+            if (req.body.voucher?.code) {
+                const voucher = await VoucherModel.findOne({code:req.body.voucher.code})
+                console.log(voucher)
+                if (voucher) {
+                    if (voucher?.quantity <= 0) {
+                        checkVoucher = true
+                    }
+                }
+            }
+            if (checkVoucher) {
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    message: 'Số lượng không đủ'
+                })
+            }
+            const order = await orderModel.create(newOrder);
+            if (order) {
+                const cart = await CartModel.findOne({ userId: order.userId })
+                cart.carts.map(async (item) => {
+                    const product = await ProductModel.findById(item.productId)
+                    product.attributes.map(async (attribute) => {
+                        if (attribute._id == item.attributeId) {
+                            attribute.instock = attribute.instock - item.quantity < 0 ? 0 : attribute.instock - item.quantity
+                            await product.save()
+                        }
+                    })
+                })
+                if (order?.voucher?.code) {
+                    const voucherItem = await VoucherModel.findOne({ code: order?.voucher?.code })
+                    if (!voucherItem){
+                        return res.status(StatusCodes.BAD_REQUEST).json({
+                            message: 'Voucher không tồn tại'
+                        })
+                    } 
+                    const alreadyUsed = voucherItem.usedBy.includes(order?.userId);
+                    if (alreadyUsed) {
+                        return res.status(StatusCodes.BAD_REQUEST).json({
+                            message: 'Bạn đã sử dụng voucher này rồi'
+                        })
+                    }
+                    voucherItem.usedBy.push(order?.userId);
+                    if (voucherItem.quantity >= 1) {
+                        voucherItem.quantity -= 1;
+                        voucherItem.usedQuantity += 1;
+                    }
+                    await voucherItem.save()
+                }
+                
+            }
         }
 
         // Chuyển hướng đến URL thanh toán
@@ -509,8 +626,8 @@ const successEmail = async (userEmail, orderNumber) => {
                                     </thead>
                                     <tbody>
                                         ${order.items
-                                            .map(
-                                                (item) => `
+            .map(
+                (item) => `
                                                 <tr>
                                                     <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">
                                                         <img src="${item?.gallery?.avatar}" alt="${item.name}" style="max-width: 50px; border-radius: 5px;">
@@ -522,8 +639,8 @@ const successEmail = async (userEmail, orderNumber) => {
                                                     <td style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">${item.price.toLocaleString()}₫</td>
                                                 </tr>
                                             `
-                                            )
-                                            .join("")}
+            )
+            .join("")}
                                     </tbody>
                                 </table>
                             </div>
@@ -600,47 +717,28 @@ export const vnpayReturn = async (req, res) => {
     const sortedParams = sortObject(vnp_Params);
     const queryString = querystring.stringify(sortedParams, { encode: false });
     const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
-
     if (hash === secureHash) {
-        const userId = vnp_Params['vnp_TxnRef']
+        const orderNumber = vnp_Params['vnp_TxnRef']
+        const orderInfo =  vnp_Params['vnp_OrderInfo']
         if (vnp_Params['vnp_ResponseCode'] === '00') {
-            const order = await orderModel.create(newOrderServer);
+            const order = await orderModel.findOneAndUpdate({
+                orderNumber:orderNumber
+            },{
+                status:'pending'
+            });
             if (order) {
-                const cart = await CartModel.findOne({ userId: order.userId })
-                cart.carts.map(async (item) => {
-                    const product = await ProductModel.findById(item.productId)
-                    product.attributes.map(async (attribute) => {
-                        if (attribute._id == item.attributeId) {
-                            attribute.instock = attribute.instock - item.quantity
-                            await product.save()
-                        }
-                    })
-                })
-                cart.carts = [];
-                cart.totalPrice = 0;
-                cart.totalCart = 0;
-
-                // if (order?.voucher) {
-                //     const voucherItem = await VoucherModel.findOne({ code: order?.voucher?.code })
-                //     if (!voucherItem) throw new Error("Invalid voucher.");
-                //     const alreadyUsed = voucherItem.usedBy.includes(order?.userId);
-                //     if (alreadyUsed) {
-                //         throw new Error("Bạn đã sử dụng voucher này rồi.");
-                //     }
-                //     voucherItem.usedBy.push(order?.userId);
-                //     if (voucherItem.quantity >= 1) {
-                //         voucherItem.quantity -= 1;
-                //         voucherItem.usedQuantity += 1;
-                //     }
-                // }
-                // await voucherItem.save()
-                await cart.save()
+                if(!orderInfo.includes('Thanh toan lai')){
+                    const cart = await CartModel.findOne({ userId: order.userId })
+                    cart.carts = [];
+                    cart.totalPrice = 0;
+                    cart.totalCart = 0;
+                    await cart.save()
+                }
                 const user = await UserModel.findById(order?.userId);
                 const userEmail = user?.email || ""; // Email của người dùng
-                console.log(userEmail)
-                if(userEmail){
+                if (userEmail) {
                     await successEmail(userEmail, order?.orderNumber);  // Gọi hàm gửi email thành công
-                 }
+                }
                 return res.redirect('http://localhost:5173/thanks');
             } else {
                 return res.redirect('http://localhost:5173/order');
@@ -729,7 +827,7 @@ export const generateVNPayLink = async (order) => {
         vnp_Amount: order.totalPrice * 100, // Đơn vị: VND * 100
         vnp_CurrCode: 'VND',
         vnp_TxnRef: orderNumber, // Sử dụng orderNumber làm mã tham chiếu
-        vnp_OrderInfo: `Thanh toan don hang ${orderNumber}`,
+        vnp_OrderInfo: `Thanh toan lai don hang ${orderNumber}`,
         vnp_OrderType: 'other',
         vnp_Locale: 'vn',
         vnp_ReturnUrl: returnUrl,

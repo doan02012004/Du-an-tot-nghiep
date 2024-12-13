@@ -72,6 +72,7 @@ const ListVoucher = ({ displayVoucher, setDisplayVoucher, vouchers, onVoucherSel
                                             moment().isBefore(moment(voucher?.endDate)) && // Chưa hết hạn
                                             moment().isSameOrAfter(moment(voucher?.startDate)) && // Ngày bắt đầu <= ngày hiện tại
                                             !voucher?.usedBy?.includes(currentUser?._id) && // Loại bỏ voucher đã được sử dụng bởi người dùng hiện tại
+                                            voucher?.status == true &&
                                             voucher?.category === "discount"
                                         )    
                                         ?.sort((a:any, b:any) => {
@@ -135,6 +136,7 @@ const ListVoucher = ({ displayVoucher, setDisplayVoucher, vouchers, onVoucherSel
                                             moment().isBefore(moment(voucher?.endDate)) && // Chưa hết hạn
                                             moment().isSameOrAfter(moment(voucher?.startDate)) && // Ngày bắt đầu <= ngày hiện tại
                                             !voucher?.usedBy?.includes(currentUser?._id) && // Loại bỏ voucher đã được sử dụng bởi người dùng hiện tại
+                                            voucher?.status == true &&
                                             voucher?.category === "shipping")
                                         ?.sort((a, b) => {// sort để phân loại a và b luôn là 2 phần tử khác nhau của mảng
                                             // Sắp xếp voucher đủ điều kiện lên trước

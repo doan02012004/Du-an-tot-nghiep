@@ -172,8 +172,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     }
   }, [socket, currentUser])
 
-
-  
   useEffect(()=>{
     if (socket?.current) {
       socket?.current?.on('statusUser',async (data:any)=>{

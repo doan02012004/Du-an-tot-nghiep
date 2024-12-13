@@ -8,19 +8,20 @@ import {
 } from "../../../../common/interfaces/product";
 import { AppContext } from "../../../../common/contexts/AppContextProvider";
 import { formatPrice } from "../../../../common/utils/product";
-import { InewCart } from "../../../../common/interfaces/cart";
+import { IcartItem, InewCart } from "../../../../common/interfaces/cart";
 import useCartMutation from "../../../../common/hooks/carts/useCartMutation";
 import useFavoriteQuery from "../../../../common/hooks/favorite/useFavoriteQuery";
 import useFavoriteMutation from "../../../../common/hooks/favorite/useFavoriteMutation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setMesageTag,
   setOpenChat,
 } from "../../../../common/redux/features/chatSlice";
 import { messageTag } from "../../../../common/interfaces/message";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
-  product: Iproduct;
+  product: Iproduct | null;
 };
 
 const Product_information = ({ product }: Props) => {
@@ -28,12 +29,13 @@ const Product_information = ({ product }: Props) => {
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
   const [choiceSize, setChoiceSize] = useState("");
-  const [curentAttribute, setCurentAttribute] = useState<Iattribute | null>(
-    null
-  );
+  const [curentAttribute, setCurentAttribute] = useState<Iattribute | null>(null);
+  const carts = useSelector((state: any) => state.cart.carts)
   const inputRef = useRef<any>(null);
+  const navigate = useNavigate()
   const cartMutation = useCartMutation();
-  const { currentUser } = useContext(AppContext);
+
+  const { currentUser, socket } = useContext(AppContext);
   const { data } = useFavoriteQuery(currentUser?._id); // Lấy danh sách yêu thích
   const mutation = useFavoriteMutation(); // Hook để thêm hoặc bỏ yêu thích sản phẩm
   const [liked, setLiked] = useState(false);
@@ -42,7 +44,7 @@ const Product_information = ({ product }: Props) => {
   useEffect(() => {
     if (data) {
       const isFavorited = data.some(
-        (favorite: any) => favorite.productId._id === product?._id
+        (favorite: any) => favorite?.productId?._id === product?._id
       );
       setLiked(isFavorited);
     }
@@ -53,8 +55,8 @@ const Product_information = ({ product }: Props) => {
     }
 
     // lấy giá thấp nhất và giá cao nhất
-    if (!minPrice || !maxPrice) {
-      const attributeMinPrice = product?.attributes.reduce(
+    if (product) {
+      const attributeMinPrice = product?.attributes?.reduce(
         (current, item) =>
           item.price_new < current.price_new ? item : current,
         product?.attributes[0]
@@ -67,8 +69,7 @@ const Product_information = ({ product }: Props) => {
       setMinPrice(attributeMinPrice?.price_new);
       setMaxPrice(attributeMaxPrice?.price_new);
     }
-  }, [product, choiceColor]);
-
+  }, [product, choiceColor, socket]);
   useEffect(() => {
     if (product && choiceColor !== "" && choiceSize !== "") {
       const findAtb = product.attributes.find(
@@ -78,12 +79,18 @@ const Product_information = ({ product }: Props) => {
     }
   }, [product, choiceColor, choiceSize]);
 
+
+  // hàm trả về 1 attribute từ giỏ hàng
+  const findAtbCart = (data: any, productId: string | number, attributeId: string | number) => {
+    const findAtb = data.find((item: IcartItem) => (item.attributeId == attributeId && item.productId._id == productId)) as IcartItem
+    return findAtb
+  }
   // Hàm toggle khi nhấn vào icon yêu thích
   const toggleLike = () => {
     if (currentUser?._id) {
       mutation.mutate({
         userId: currentUser?._id,
-        productId: product?._id,
+        productId: product?._id ?? "",
         status: !liked,
       });
       setLiked(!liked); // Cập nhật trạng thái yêu thích
@@ -91,6 +98,7 @@ const Product_information = ({ product }: Props) => {
   };
 
   const onBlurQuantity = (value: any) => {
+    if (!product?.active) return message.error("Sản phẩm này đã hết");
     if (value === "") {
       message.error("Không được để trống");
       inputRef.current.value = 1;
@@ -103,26 +111,38 @@ const Product_information = ({ product }: Props) => {
           if (inputRef.current.value < 1) {
             message.error("số lượng không thể nhỏ hơn 1");
             inputRef.current.value = 1;
-          } else if (inputRef.current.value > curentAttribute.instock) {
-            message.error(`Số lượng tối đa là ${curentAttribute.instock}`);
-            inputRef.current.value = curentAttribute.instock;
+          } else {
+            const atbCart = findAtbCart(carts, product?._id ? product?._id : '', curentAttribute?._id ? curentAttribute._id : '')
+            if (Number(inputRef?.current?.value) + Number(atbCart?.quantity ? atbCart.quantity : 0) > curentAttribute?.instock) {
+              if (Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0)) > 0) {
+                message.error(`Bạn chỉ được phép thêm ${Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0))} sản phẩm nữa`);
+                inputRef.current.value = Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0))
+              } else {
+                message.error(`Sản phẩm đã đạt mức tối đa trên giỏ hàng của bạn !`);
+                inputRef.current.value = 1
+              }
+            } else {
+              if (inputRef?.current?.value <= curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0)) {
+                inputRef.current.value = parseInt(inputRef?.current?.value);
+              } else {
+                if (Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0)) > 0) {
+                  message.error(`Bạn chỉ được phép thêm ${Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0))} sản phẩm nữa`);
+                  inputRef.current.value = Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0))
+                } else {
+                  message.error(`Sản phẩm đã đạt mức tối đa trên giỏ hàng của bạn !`);
+                  inputRef.current.value = 1
+                }
+              }
+            }
           }
+        } else {
+          message.error('Vui lòng chọn đủ thông tin!')
         }
       }
     }
-    // else if(value == 0){
-    //     message.error("Không được để số lượng bằng 0")
-    //     input.value = 1
-    // }
-    // else if(value < 0){
-    //     message.error("Không được để số lượng âm")
-    //     input.value = 1
-    // }
-    // else if (value > curentAttribute.instock) {
-    //     message.error(`Số lượng tối đa là ${curentAttribute.instock}`)
-    // }
   };
   const giamSl = () => {
+    if (!product?.active) return message.error("Sản phẩm này đã hết");
     if (choiceSize === "") {
       message.error("Vui lòng chọn size");
     } else {
@@ -137,18 +157,35 @@ const Product_information = ({ product }: Props) => {
     }
   };
   const tangSl = () => {
+    if (!product?.active) return message.error("Sản phẩm này đã hết");
     if (choiceSize === "") {
       message.error("Vui lòng chọn size");
     } else {
       if (curentAttribute !== null) {
-        if (inputRef?.current?.value > curentAttribute?.instock) {
-          // message.error(`Số lượng tối đa là ${curentAttribute.instock}`)
+        // tìm cart item từ giỏ hàng
+        const atbCart = findAtbCart(carts, product?._id ? product?._id : '', curentAttribute?._id ? curentAttribute._id : '')
+
+        // nếu số lượng hiện tại cộng thêm số lượng trên giỏ hàng mà lớn hơn số lượng trong kho => báo lỗi
+        if (Number(inputRef?.current?.value) + Number(atbCart?.quantity ? atbCart.quantity : 0) > curentAttribute?.instock) {
+          if (Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0)) > 0) {
+            message.error(`Bạn chỉ được phép thêm ${Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0))} sản phẩm nữa`);
+            inputRef.current.value = Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0))
+          } else {
+            message.error(`Sản phẩm đã đạt mức tối đa trên giỏ hàng của bạn !`);
+            inputRef.current.value = 1
+          }
           // input.value = curentAttribute.instock
         } else {
-          if (inputRef?.current?.value < curentAttribute.instock) {
+          // nếu số lượng hiện tại bé hơn số lượng trên giỏ hàng trừ đi số lượng trong kho => hợp lệ
+          if (inputRef?.current?.value < curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0)) {
             inputRef.current.value = parseInt(inputRef?.current?.value) + 1;
           } else {
-            message.error(`Số lượng tối đa là ${curentAttribute.instock}`);
+            if (Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0)) > 0) {
+              message.error(`Bạn chỉ được phép thêm ${Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0))} sản phẩm nữa`);
+            } else {
+              message.error(`Sản phẩm đã đạt mức tối đa trên giỏ hàng của bạn !`);
+              inputRef.current.value = 1
+            }
           }
         }
       }
@@ -161,9 +198,22 @@ const Product_information = ({ product }: Props) => {
     );
     if (!curentAttribute) return message.error("Vui lòng chọn size");
     if (!gallery) return message.error("Vui lòng thao tác lại");
-    if (!currentUser) return message.error("Bạn chưa đăng nhập");
+    if (!currentUser) return navigate('/signin');
+    if (!product?.active) return message.error("Sản phẩm này đã hết");
+    const atbCart = findAtbCart(carts, product?._id ? product?._id : '', curentAttribute?._id ? curentAttribute._id : '')
+    if (atbCart) {
+      if (Number(inputRef.current.value) + Number(atbCart?.quantity ? atbCart.quantity : 0) > curentAttribute.instock) {
+        if (Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0)) > 0) {
+          inputRef.current.value = Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0))
+          return message.error(`Bạn chỉ được phép thêm ${Number(curentAttribute.instock - Number(atbCart?.quantity ? atbCart.quantity : 0))} sản phẩm nữa`);
+        } else {
+          inputRef.current.value = 1;
+          return message.error(`Sản phẩm đã đạt mức tối đa trên giỏ hàng của bạn !`);
+        }
+      }
+    }
     const newCart = {
-      productId: product._id,
+      productId: product?._id,
       quantity: Number(inputRef.current.value),
       attributeId: curentAttribute?._id,
       galleryId: gallery?._id,
@@ -188,9 +238,10 @@ const Product_information = ({ product }: Props) => {
             <h1 className="lg:text-[32px] text-[18px] font-semibold text-[#221f20]">
               {product?.name}
             </h1>
+            {!product?.active && (<p className="text-red m-0">*Sản phẩm này đã hết</p>)}
           </div>
-          {/*  */}
-          <div className="lg:flex lg:text-[18px] lg:mb-[28px] text-[14px] mt-4 lg:mt-0 ">
+          {/*  Sku và Rate */}
+          {/* <div className="lg:flex lg:text-[18px] lg:mb-[28px] text-[14px] mt-4 lg:mt-0 ">
             <p>
               SKU: <span>57E3930</span>
             </p>
@@ -202,20 +253,28 @@ const Product_information = ({ product }: Props) => {
               <i className="fa-solid fa-star text-[#EEB256]" />
             </div>
             <p className="inline-block">(0 đánh giá)</p>
-          </div>
-          {/*  */}
+          </div> */}
+          {/* hiển thị giá tiền */}
           {choiceSize == "" ? (
-            <div className="flex lg:mb-[24px] mt-4 lg:mt-0 mb-4">
-              <div className="flex items-center gap-x-2">
-                <p className="lg:text-2xl text-[18px] font-semibold m-0">
-                  {minPrice ? formatPrice(minPrice) : 0}đ
-                </p>
-                <p className="m-0 font-bold">-</p>
-                <p className="lg:text-2xl text-[18px] font-semibold m-0">
-                  {maxPrice ? formatPrice(maxPrice) : 0}đ
-                </p>
+            minPrice !== maxPrice ? (
+              <div className="flex lg:mb-[24px] mt-4 lg:mt-0 mb-4">
+                <div className="flex items-center gap-x-2">
+                  <p className="lg:text-[27px] text-[18px] font-semibold m-0">
+                    {minPrice ? formatPrice(minPrice) : 0}đ
+                  </p>
+                  <p className="m-0 font-bold">-</p>
+                  <p className="lg:text-[27px] text-[18px] font-semibold m-0">
+                    {maxPrice ? formatPrice(maxPrice) : 0}đ
+                  </p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="mt-4  mb-4 lg:mt-0 lg:mb-[24px] ">
+                  <p className="lg:text-[27px] text-[18px] font-semibold m-0">
+                    {minPrice ? formatPrice(minPrice) : 0}đ
+                  </p>
+              </div>
+            )
           ) : (
             <div className="flex lg:mb-[24px] mt-4 lg:mt-0 mb-4">
               <b className="lg:text-[27px] text-[18px] font-semibold">
@@ -245,11 +304,11 @@ const Product_information = ({ product }: Props) => {
               <h3 className="font-semibold lg:text-2xl">
                 Màu sắc:{" "}
                 <span id="selected-color">
-                  {choiceColor === "" ? product.colors[0]?.name : choiceColor}
+                  {choiceColor === "" ? (product?.colors ? product?.colors[0]?.name : '') : choiceColor}
                 </span>
               </h3>
               <div className="color-options flex lg:mt-4 lg:text-[16px] mt-2">
-                {product.colors.map((color, index) => (
+                {product?.colors?.map((color, index) => (
                   <div
                     onClick={() => {
                       setChoiceColor(color.name);
@@ -262,37 +321,24 @@ const Product_information = ({ product }: Props) => {
                   >
                     {color.name === choiceColor && (
                       <span
-                        className={`${
-                          color.name.includes("TRẮNG")
-                            ? "text-black"
-                            : "text-white"
-                        } check-icon  absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 `}
+                        className={`${color.name.includes("TRẮNG")
+                          ? "text-black"
+                          : "text-white"
+                          } check-icon  absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 `}
                       >
                         <i className="fas fa-check" />
                       </span>
                     )}
                   </div>
                 ))}
-                {/* <div className="relative w-5 h-5 mr-4 bg-white border rounded-full color-option lg:w-6 lg:h-6" data-color="Trắng">
-                    <span className="absolute hidden text-black transform -translate-x-1/2 -translate-y-1/2 check-icon top-1/2 left-1/3"><i className="fas fa-check" /></span>
-                    </div> */}
               </div>
             </div>
             {/*  */}
             <div className="product-detail__size">
               <div className="size-options flex mt-[24px] mb-[12px]">
-                {product.attributes.map((color, index) => {
+                {product?.attributes?.map((color, index) => {
                   if (color.color === choiceColor) {
                     return (
-                      // <Button
-                      //     key={index}
-                      //     onClick={() => { setChoiceSize(color.size); }}
-                      //     className="size-option lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border flex colors-center justify-center lg:mr-[14px] mr-3"
-                      //     style={{ border: `1px solid ${choiceSize === color.size ? 'blue' : ''}` }}
-                      //     disabled={color.instock === 0}
-                      // >
-                      //     {color.size}
-                      // </Button>
                       <div
                         key={index + 1}
                         onClick={() => {
@@ -308,9 +354,8 @@ const Product_information = ({ product }: Props) => {
                             setChoiceSize(color.size);
                           }
                         }}
-                        className={` ${
-                          color?._id === curentAttribute?._id && "border-black"
-                        } size-option cursor-pointer lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border overflow-hidden flex items-center justify-center lg:mr-[14px] mr-3 relative`}
+                        className={` ${color?._id === curentAttribute?._id && "border-black"
+                          } size-option cursor-pointer lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border overflow-hidden flex items-center justify-center lg:mr-[14px] mr-3 relative`}
                       >
                         {color?.size}
                         {(color.instock === 0 || color?.active == false) && (
@@ -323,17 +368,14 @@ const Product_information = ({ product }: Props) => {
                   }
                   return null;
                 })}
-                {/* <div className="size-option lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border flex items-center justify-center lg:mr-[14px] mr-3">M</div>
-                    <div className="size-option lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border flex items-center justify-center lg:mr-[14px] mr-3">L</div>
-                    <div className="size-option lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border flex items-center justify-center lg:mr-[14px] mr-3">XL</div>
-                    <div className="size-option lg:w-[54px] lg:h-[37px] w-[48px] h-[32px] border flex items-center justify-center lg:mr-[14px] mr-3">XXL</div> */}
+              
               </div>
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <i className="fa-solid fa-ruler" />
                 <span className="ml-[10px] lg:text-[14px] text-[12px] text-[#373737]">
                   Kiểm tra size của bạn
                 </span>
-              </div>
+              </div> */}
             </div>
             {/*  */}
             <div className="flex items-center product-detail__quantity">
@@ -342,6 +384,7 @@ const Product_information = ({ product }: Props) => {
               </h3>
               <div className="quantity-control flex border lg:rounded-tl-2xl lg:rounded-br-2xl rounded-tl-md rounded-br-md mt-[-12px] lg:mt-0  ">
                 <button
+                disabled={!product?.active}
                   onClick={() => giamSl()}
                   className="quantity-decrease lg:w-[55px] lg:h-[54px] w-8 h-8 border flex items-center justify-center mr-[5px] lg:rounded-tl-2xl lg:rounded-br-2xl rounded-tl-md rounded-br-md"
                 >
@@ -349,6 +392,7 @@ const Product_information = ({ product }: Props) => {
                 </button>
                 <input
                   ref={inputRef}
+                  disabled={!product?.active}
                   onBlur={(e) => onBlurQuantity(e.target.value)}
                   type="number"
                   className=" lg:w-[60px] lg:h-[54px] w-8 h-8  text-center"
@@ -356,6 +400,7 @@ const Product_information = ({ product }: Props) => {
                   min={1}
                 />
                 <button
+                disabled={!product?.active}
                   onClick={() => tangSl()}
                   className="quantity-increase lg:w-[55px] lg:h-[54px] w-8 h-8 border flex items-center justify-center ml-[5px] lg:rounded-tl-2xl lg:rounded-br-2xl rounded-tl-md rounded-br-md"
                 >
@@ -367,23 +412,22 @@ const Product_information = ({ product }: Props) => {
             <div className="product-detail__actions flex lg:mt-[24px] mb-4 mt-4">
               <button
                 disabled={
-                  curentAttribute == null || curentAttribute?.instock == 0
+                  curentAttribute == null || curentAttribute?.instock == 0||!product?.active
                     ? true
                     : false
                 }
                 onClick={onAddToCart}
-                className={` ${
-                  curentAttribute == null || curentAttribute?.instock == 0
-                    ? "bg-gray-400"
-                    : "bg-[#221f20] border-black hover:text-black hover:bg-white"
-                }    border  w-[160px] h-[48px]  text-white lg:text-[16px] text-[13px] px-4 font-semibold lg:mr-[10px] mr-1
+                className={` ${curentAttribute == null || curentAttribute?.instock == 0|| !product?.active
+                  ? "bg-gray-400"
+                  : "bg-[#221f20] border-black hover:text-black hover:bg-white"
+                  }    border  w-[160px] h-[48px]  text-white lg:text-[16px] text-[13px] px-4 font-semibold lg:mr-[10px] mr-1
                 rounded-tl-2xl rounded-br-2xl`}
               >
                 THÊM VÀO GIỎ
               </button>
-              <button className="buy-now hover:text-white hover:bg-black w-[125px] lg:text-[16px] text-[13px] rounded-tl-2xl rounded-br-2xl border border-black h-[48px] text-black font-semibold mx-4">
+              {/* <button className="buy-now hover:text-white hover:bg-black w-[125px] lg:text-[16px] text-[13px] rounded-tl-2xl rounded-br-2xl border border-black h-[48px] text-black font-semibold mx-4">
                 MUA HÀNG
-              </button>
+              </button> */}
               <button
                 className="h-[48px] w-[48px] hover:text-white hover:bg-black border border-black rounded-tl-2xl rounded-br-2xl"
                 onClick={toggleLike}

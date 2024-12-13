@@ -24,7 +24,6 @@ const VoucherList = () => {
             SetVouchers(newVouchers);
         }
     }, [query?.data]);
-    console.log(query?.data)
     // Lọc danh sách voucher theo trạng thái và loại voucher
     const filteredVouchers = Vouchers.filter(voucher =>
         voucher.category === filterType &&

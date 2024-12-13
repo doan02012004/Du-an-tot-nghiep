@@ -11,7 +11,7 @@ export interface IFavorite {
   
   export interface IFavoriteToggle {
     userId: string;
-    productId: string;
+    productId: string|number;
     status: boolean;
   }
   

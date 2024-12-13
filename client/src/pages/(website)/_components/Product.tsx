@@ -28,7 +28,7 @@ const Product = ({ product,maxPrice,minPrice,discount,colorsUrl }: Props) => {
   // Kiểm tra nếu sản phẩm đã có trong danh sách yêu thích
   useEffect(() => {
     if (data) {
-      const isFavorited = data.some((favorite:any) => favorite.productId._id === product._id);
+      const isFavorited = data.some((favorite:any) => favorite?.productId?._id === product?._id);
       setLiked(isFavorited);
     }
   }, [data, product]);
@@ -36,7 +36,7 @@ const Product = ({ product,maxPrice,minPrice,discount,colorsUrl }: Props) => {
   // Hàm toggle khi nhấn vào icon yêu thích
   const toggleLike = () => {
     if (currentUser?._id) {
-      mutation.mutate({userId:currentUser?._id, productId: product._id, status: !liked });
+      mutation.mutate({userId:currentUser?._id, productId: product?._id?product?._id : '', status: !liked });
       setLiked(!liked); // Cập nhật trạng thái yêu thích
     }
   };

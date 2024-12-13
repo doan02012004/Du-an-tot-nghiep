@@ -296,7 +296,7 @@ const OrderDetails = () => {
                         )}
                         <div className="grid grid-cols-2">
                             <p>Tổng giá trị đơn hàng:</p>
-                            <p>{formatPrice(order?.totalPrice?order.totalOrder:0)} VND</p>
+                            <p>{formatPrice(order?.totalPrice?order.totalPrice:0)} VND</p>
                         </div>
                     </div>
                 </div>

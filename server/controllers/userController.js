@@ -35,7 +35,6 @@ export const getAllUser = async (req, res) => {
     }
 };
 
-
 // lấy user theo id
 export const getByIdUser = async (req, res) => {
 
@@ -101,10 +100,13 @@ export const updateUser = async (req, res) => {
 
         // Nếu người dùng gửi mật khẩu mới, hash lại trước khi lưu
         if (password) {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            if (hashedPassword !== user.password) {
-                changes.password = 'Mật khẩu đã thay đổi'; // Không lưu mật khẩu dưới dạng plaintext
-                user.password = hashedPassword; // Cập nhật mật khẩu đã hash vào user
+            // So sánh mật khẩu mới với mật khẩu hiện tại (đã hash)
+            const isSamePassword = await bcrypt.compare(password, user.password);
+
+            if (!isSamePassword) {
+                changes.password = password; // Lưu mật khẩu gốc vào lịch sử thay đổi
+                const hashedPassword = await bcrypt.hash(password, 10);
+                user.password = hashedPassword; // Lưu mật khẩu đã hash vào user
             }
         }
 
@@ -118,10 +120,11 @@ export const updateUser = async (req, res) => {
 
         // Lưu người dùng với thông tin mới
         await user.save();
+
         // Chỉ lưu vào collection `HistoryUpdateUser` nếu có thay đổi
         if (Object.keys(changes).length > 0) {
             const updatedUserData = {
-                originalUser: user._id, // Lưu ID của user gốc
+                originalUser: originalUser, // Lưu toàn bộ thông tin gốc
                 changes: changes, // Chỉ lưu những trường đã thay đổi
                 updateTime: new Date(), // Lưu thời gian cập nhật
             };
@@ -727,17 +730,15 @@ export const getHistoryUpdateUser = async (req, res) => {
             .exec();
 
         // Format lại dữ liệu để chỉ trả về các trường đã thay đổi
-        const formattedHistory = history.map((record) => {
-            return {
-                _id: record._id,
-                originalUser: record.originalUser,
-                changes: record.changes, // Đây là các trường đã thay đổi
-                updateTime: record.updateTime
-            };
-        });
+        const formattedHistory = history.map((record) => ({
+            _id: record._id,
+            originalUser: record.originalUser, // Thông tin gốc
+            changes: record.changes,          // Các thay đổi
+            updateTime: record.updateTime,
+        }));
 
         // Trả về lịch sử đã được format
-        res.status(200).json(history);
+        res.status(200).json(formattedHistory);
     } catch (error) {
         res.status(500).json({
             message: 'Lỗi máy chủ: không thể lấy được lịch sử cập nhật',

@@ -18,9 +18,14 @@ const useProductMutation = () => {
             switch (option.action) {
                 case 'add':
                     try {
-                        await addProduct(option.product)
-                        message.success("Thêm sản phẩm thành công")
-                        navigate('/admin/products')
+                       const data = await addProduct(option.product)
+                       if(data?._id){
+                           message.success("Thêm sản phẩm thành công")
+                           navigate('/admin/products')
+
+                       }else{
+                        message.error("Thêm sản phẩm thất bại")
+                       }
                     } catch (error) {
                         console.log(error)
                         message.error("Thêm sản phẩm thất bại")
@@ -54,6 +59,9 @@ const useProductMutation = () => {
                         if (data?.slug) {
                            if(socket.current){
                             socket.current.emit('adminUpdateInforProduct',{newProduct:data})
+                           }
+                           if(data.slug !== option.productInfor?.slug){
+                            navigate(`/admin/products/view/${data.slug}`)
                            }
                         }
                     } catch (error) {

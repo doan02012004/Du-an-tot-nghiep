@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { formatPrice } from '../../../../common/utils/product';
 import { IVoucher } from '../../../../common/interfaces/voucher';
 import ListVoucher from './ListVoucher';
@@ -10,28 +10,126 @@ import VoucherDiscount from './VoucherDiscount';
 import { IshipSubmit } from '../../../../common/interfaces/orderInterfaces'
 import VoucherShipping from './VoucherShipping';
 import { IcartItem } from '../../../../common/interfaces/cart';
+import { AppContext } from '../../../../common/contexts/AppContextProvider';
 
 type Props = {
-    carts:IcartItem
+    carts: IcartItem
     totalCart: number;
     vouchers: IVoucher[];
     shippingCost: IshipSubmit | null // Thêm shippingCost vào props
 };
 
-const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
+const OrderTotal = ({ totalCart, vouchers, shippingCost, carts }: Props) => {
+    const { socket } = useContext(AppContext)
     const [displayVoucher, setDisplayVoucher] = useState(false);
     const [selectedVoucherCode, setSelectedVoucherCode] = useState(''); // State để lưu mã voucher
+    const { currentUser } = useContext(AppContext)
     const voucher = useSelector((state: any) => state.cart.voucher) as IVoucher
     const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
     const dispatch = useDispatch()
     useEffect(() => {
+        if (socket?.current) {
+            socket?.current.on('deleteVoucher', (data: any) => {
+                if (data._id === voucher?._id) {
+                    message.error('Voucher đã bị xoá')
+                    dispatch(setVoucher(null))
+                }
+            })
+        }
+    }, [socket?.current, voucher])
+    useEffect(() => {
+        const socketCurrent = socket?.current;
+        const handleUpdateVoucher = (data: any) => {
+            if (data._id === voucher?._id) {
+                message.warning('Voucher đã được update')
+                dispatch(setVoucher(data))
+                if (!voucher?.usedBy?.includes(currentUser?._id)) {
+                    if (voucher?.status == true) {
+                        if (new Date(voucher?.endDate) >= new Date()) {
+                            if (voucher?.quantity > 0) {
+                                if (totalCart >= voucher?.minOrderValue) {
+                                    if (data.type == 'fixed') {
+                                        const newTotalSubmit = totalCart - data?.value
+                                        if (Number(newTotalSubmit) < 0) {
+                                            dispatch(setTotalSubmit(0))
+                                        } else {
+                                            dispatch(setTotalSubmit(newTotalSubmit))
+                                        }
+                                    } else if (data.type == 'percentage') {
+                                        const discountVoucher = totalCart * data?.value / 100
+                                        if (data?.maxDiscountValue && data?.maxDiscountValue > discountVoucher) {
+                                            const newTotalSubmit = totalCart - discountVoucher
+                                            if (Number(newTotalSubmit) < 0) {
+                                                dispatch(setTotalSubmit(0))
+                                            } else {
+                                                dispatch(setTotalSubmit(newTotalSubmit))
+                                            }
+                                        } else {
+                                            const newTotalSubmit = totalCart - Number(data?.maxDiscountValue)
+                                            if (Number(newTotalSubmit) < 0) {
+                                                dispatch(setTotalSubmit(0))
+                                            } else {
+                                                dispatch(setTotalSubmit(newTotalSubmit))
+                                            }
+                                        }
+                                    }else if (data.type == 'freeship'){
+                                        if (Number(data?.maxDiscountValue) >= Number(shippingCost?.value?.price)) {
+                                            const newTotalSubmit = totalCart - Number(shippingCost?.value?.price)
+                                            if (Number(newTotalSubmit) < 0) {
+                                                dispatch(setTotalSubmit(0))
+                                            } else {
+                                                dispatch(setTotalSubmit(newTotalSubmit))
+                                            }
+                                        } else {
+                                            const newTotalSubmit = totalCart - Number(data?.maxDiscountValue)
+                                            if (Number(newTotalSubmit) < 0) {
+                                                dispatch(setTotalSubmit(0))
+                                            } else {
+                                                dispatch(setTotalSubmit(newTotalSubmit))
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    dispatch(setVoucher(null))
+                                }
+                            }else{
+                                dispatch(setVoucher(null))
+                            }
+                        }else{
+                            dispatch(setVoucher(null))
+                        }
+                    }else{
+                        dispatch(setVoucher(null))
+                    }
+                }else{
+                    dispatch(setVoucher(null))
+                }
+                
+                
+
+            }
+        };
+        if (socketCurrent) {
+            // Gỡ bỏ listener cũ trước khi đăng ký mới
+            socketCurrent.off('updateVoucher', handleUpdateVoucher);
+            socketCurrent.on('updateVoucher', handleUpdateVoucher);
+        }
+    
+        // Cleanup function để gỡ listener khi component unmount
+        return () => {
+            if (socketCurrent) {
+                socketCurrent.off('updateVoucher', handleUpdateVoucher);
+            }
+        };
+    }, [socket?.current, voucher,totalCart])
+    useEffect(() => {
         // Tính lại tổng giá trị đơn hàng (totalCart)
         dispatch(setTotalSubmit(totalCart));
-    
+
         // Nếu có voucher, tính lại giá trị giảm giá
         if (voucher) {
             let newTotalSubmit = totalCart;
-    
+
             if (voucher.category === 'discount') {
                 if (voucher.type === 'percentage') {
                     const discount = totalCart * voucher.value / 100;
@@ -40,8 +138,12 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
                 } else if (voucher.type === 'fixed') {
                     newTotalSubmit -= voucher.value;
                 }
+            }else{
+                if (voucher.type === 'freeship') {
+                    newTotalSubmit -= Math.min(Number(voucher?.maxDiscountValue), shippingCost?.value?.price || Number(voucher?.maxDiscountValue))
+                }
             }
-    
+
             dispatch(setTotalSubmit(newTotalSubmit));
         }
     }, [carts, voucher, totalCart, dispatch]);
@@ -55,7 +157,7 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
     };
     const onAplly = async () => {
         if (selectedVoucherCode) {
-            if(selectedVoucherCode !== voucher?.code){
+            if (selectedVoucherCode !== voucher?.code) {
                 try {
                     const data = await getVoucherByCode(selectedVoucherCode)// Gọi API lấy voucher theo mã 
                     if (data) {
@@ -66,7 +168,7 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
                 } catch (error) {
                     console.log(error)
                 }
-            }else{
+            } else {
                 message.error("Mã đã tồn tại")
             }
         } else {
@@ -80,7 +182,7 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
             // Nếu người dùng xóa hết, reset voucher
             dispatch(setTotalSubmit(totalCart))
             dispatch(setVoucher(null));
-        }else if (value !== voucher?.code){
+        } else if (value !== voucher?.code) {
             dispatch(setTotalSubmit(totalCart))
             dispatch(setVoucher(null));
         }
@@ -103,7 +205,7 @@ const OrderTotal = ({ totalCart, vouchers, shippingCost,carts }: Props) => {
                         <VoucherDiscount voucher={voucher} setSelectedVoucherCode={selectedVoucherCode} />
                     )}
                     {voucher && voucher.category == 'shipping' && (
-                        <VoucherShipping voucher={voucher} setSelectedVoucherCode={selectedVoucherCode} shippingCost={shippingCost}/>
+                        <VoucherShipping voucher={voucher} setSelectedVoucherCode={selectedVoucherCode} shippingCost={shippingCost} />
                     )}
                     <div className="flex justify-between items-center">
                         <span className="text-sm">Phí vận chuyển</span>
