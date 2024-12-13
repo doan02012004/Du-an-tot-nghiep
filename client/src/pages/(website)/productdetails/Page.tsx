@@ -54,6 +54,7 @@ const ProductDetailsPage = () => {
       socket?.current?.on("adminUpdateProduct", (option: { newProduct: Iproduct, attributeId: string }) => {
         setProduct(option.newProduct)
         if(option.newProduct?.slug !== product?.slug){
+          console.log('Đã vào')
             navigate(`/productdetails/${option.newProduct.slug}`)
         }
       })

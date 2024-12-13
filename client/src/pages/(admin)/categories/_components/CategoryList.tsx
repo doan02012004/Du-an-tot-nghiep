@@ -76,21 +76,25 @@ const CategoryList: React.FC = () => {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
-        <Space size="middle">
-          <Popconfirm
-            title="Delete the category"
-            description="Are you sure to delete this category?"
-            onConfirm={() => mutation.mutate({ action: "delete", category: record })}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button danger>Delete</Button>
-          </Popconfirm>
-          <Link to={`edit/${record._id}`}>
-            <Button type='primary'>Update</Button>
-          </Link>
-        </Space>
-      ),
+        <>
+          {record?.name !== 'Không xác định' && (
+            <Space size="middle">
+              <Popconfirm
+                title="Delete the category"
+                description="Are you sure to delete this category?"
+                onConfirm={() => mutation.mutate({ action: "delete", category: record })}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button danger>Delete</Button>
+              </Popconfirm>
+              <Link to={`edit/${record._id}`}>
+                <Button type='primary'>Update</Button>
+              </Link>
+            </Space>
+          )}
+        </>
+          ),
     }
   ];
 
