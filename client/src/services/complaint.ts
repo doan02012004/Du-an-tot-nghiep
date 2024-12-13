@@ -22,11 +22,12 @@ export const fetchComplaintById = async (complaintId: string) => {
 
 
 // Cập nhật trạng thái khiếu nại
-export const updateComplaintStatus = async ({ complaintId, status, response }: IComplaintUpdate) => {
+export const updateComplaintStatus = async ({ complaintId, status, response, note }: IComplaintUpdate) => {
     const data = await instance.put(`/complaint/${complaintId}`, {
         complaintId,
         status,
-        response
+        response,
+        note
     });
     return data.data;
 };

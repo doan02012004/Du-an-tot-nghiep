@@ -156,7 +156,6 @@ const OrderManager = () => {
     ?.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Sắp xếp
 
 
-
   
   return (
    <>
@@ -231,8 +230,8 @@ const OrderManager = () => {
                      </Button>
                     )}
                     {(order.status === "delivered") && (
-                      <Button onClick={()=>{setopen(!open);setitems(order.items);setid(order._id);settotalOrder(order.totalOrder);settotalPrice(order.totalPrice);settvoucher(order?.voucher?.discountValue),setship(order?.ship?.value?.price)}} disabled={mutation.isPending} >
-                        <RollbackOutlined style={{ fontSize: '18px', marginRight: '8px' }} />
+                      <Button onClick={()=>{setopen(!open);setitems(order.items);setid(order._id);settotalOrder(order.totalOrder);settotalPrice(order.totalPrice);settvoucher(order?.voucher?.discountValue),setship(order?.ship?.value?.price)}} disabled={mutation.isPending} icon={mutation.isPending ? <Spin size="small" /> : <RollbackOutlined style={{ fontSize: '18px', marginRight: '8px' }} />}>
+                        
                         Trả hàng
                       </Button>
                     ) }

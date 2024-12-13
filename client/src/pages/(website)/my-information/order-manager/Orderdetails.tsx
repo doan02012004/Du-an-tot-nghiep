@@ -157,8 +157,8 @@ const OrderDetails = () => {
           Trạng thái: {translateStatus(orders?.status || '')}
         </span>
         {(orders?.status === "delivered" || orders?.status === "Exchanged") && (
-                     <Button type='primary' onClick={() => onHandleReceived(orders?._id) } className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline ml-2">
-                      <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} />
+                     <Button type='primary' onClick={() => onHandleReceived(orders?._id) } className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline ml-2" disabled={mutation.isPending} icon={mutation.isPending ? <Spin size="small" /> : <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} />}>
+                      {/* <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} /> */}
                       Đã nhận hàng
                      </Button>
                     )}

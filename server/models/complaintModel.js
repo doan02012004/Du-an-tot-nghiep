@@ -11,6 +11,7 @@ const complaintSchema = new Schema(
       default: 'new',
     },
     response: { type: String },
+    note: { type: String },
   },
   { timestamps: true, versionKey: false }
 );
