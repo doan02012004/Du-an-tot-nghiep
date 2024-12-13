@@ -52,20 +52,20 @@ const useCartMutation = () => {
                         return error
                     }
                     break;
-                    case "remove":
-                        try {
-                            const data = await removeProductCartQuantity({ userId: currentUser?._id, ...options.cart })
-                            message.success("Xoá sản phẩm thành công")
-                            return data
-                        } catch (error) {
-                            return error
-                        }
-                        break;
+                case "remove":
+                    try {
+                        const data = await removeProductCartQuantity({ userId: currentUser?._id, ...options.cart })
+                        message.success("Xoá sản phẩm thành công")
+                        return data
+                    } catch (error) {
+                        return error
+                    }
+                    break;
                 default:
                     break;
             }
         },
-        onSuccess:()=> {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['CARTS'] })
         },
     })

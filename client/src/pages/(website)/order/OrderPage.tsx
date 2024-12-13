@@ -27,6 +27,7 @@ import useCartQuery from "../../../common/hooks/carts/useCartQuery"
 
 const OrderPage = () => {
     // const [ship, setShip] = useState<IshipItem | null>(null)
+    const { socket } = useContext(AppContext)
     const [shippingCost, setShippingCost] = useState<IshipSubmit | null>(null);
     const [payment, setPayment] = useState<"cash" | "atm" | "vnPay" | "credit">('cash')
     const [productDisplay, setProductDisplay] = useState(false)
@@ -43,6 +44,33 @@ const OrderPage = () => {
     const navigate = useNavigate()
     const dispath = useDispatch()
     const carts = useSelector((state: any) => state.cart.carts)
+    useEffect(()=>{
+        if (socket?.current) {
+            socket?.current.on('deleteVoucher',(data:any)=>{
+                if (voucherQuery.data && voucherQuery.data.length > 0) {
+                    if (data?._id) {
+                        const vouchers = voucherQuery.data?.find((voucher:IVoucher)=>voucher?._id===data?._id)
+                        if (vouchers) {
+                            const newVouchers =voucherQuery.data?.filter((voucher: IVoucher) => voucher._id !== data._id);
+                            setVouchers(newVouchers)
+                        }
+                    }
+                }
+            })
+        }
+    },[socket?.current,vouchers,voucherQuery.data])
+    useEffect(()=>{
+        if (socket?.current) {
+            socket?.current.on('updateVoucher',(data:any)=>{
+                if (voucherQuery.data && voucherQuery.data.length > 0) {
+                    const updatedVouchers = voucherQuery.data.map((voucher:IVoucher) => 
+                        voucher._id === data._id ? data : voucher
+                    );
+                    setVouchers(updatedVouchers)
+                }
+            })
+        }
+    },[socket?.current,vouchers,voucherQuery.data])
     useEffect(() => {
         if (cartUser) {
             if (cartUser?.carts?.length == 0) {
