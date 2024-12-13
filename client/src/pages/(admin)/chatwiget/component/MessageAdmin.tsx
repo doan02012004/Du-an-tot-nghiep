@@ -32,8 +32,8 @@ const MessageAdmin = ({checkBoxRef,currentUser,message}: Props) => {
     useEffect(() => {
         if (message && message?.productId) {
             if (message.attributeId) {
-                const attribute = message.productId.attributes.find((item: Iattribute) => item._id == message.attributeId)
-                const findGallery = message.productId?.gallerys.find((item: Igallery) => item.name == attribute?.color)
+                const attribute = message.productId?.attributes?.find((item: Iattribute) => item?._id == message?.attributeId)
+                const findGallery = message.productId?.gallerys?.find((item: Igallery) => item.name == attribute?.color)
                 setGallery(findGallery ? findGallery : null)
                 setCurrentAtb(attribute)
             } else {

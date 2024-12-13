@@ -161,13 +161,13 @@ const Product_information = ({ product }: Props) => {
     );
     if (!curentAttribute) return message.error("Vui lòng chọn size");
     if (!gallery) return message.error("Vui lòng thao tác lại");
+    if (!currentUser) return message.error("Bạn chưa đăng nhập");
     const newCart = {
       productId: product._id,
       quantity: Number(inputRef.current.value),
       attributeId: curentAttribute?._id,
       galleryId: gallery?._id,
     } as InewCart;
-    console.log(newCart);
     cartMutation.mutate({ action: "addtocart", cart: newCart });
   };
 
@@ -245,7 +245,7 @@ const Product_information = ({ product }: Props) => {
               <h3 className="font-semibold lg:text-2xl">
                 Màu sắc:{" "}
                 <span id="selected-color">
-                  {choiceColor === "" ? product.colors[0].name : choiceColor}
+                  {choiceColor === "" ? product.colors[0]?.name : choiceColor}
                 </span>
               </h3>
               <div className="color-options flex lg:mt-4 lg:text-[16px] mt-2">

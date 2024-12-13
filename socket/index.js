@@ -38,7 +38,7 @@ io.on("connection", (socket) => {
 
     // Gửi tin nhắn
     socket.on("sendMessage", (newMessage) => {
-        const user = activeUsers.find((user) => user._id == newMessage.receiver)
+        const user = activeUsers.find((user) => user._id == newMessage.receiver?._id)
         if (user) {
             io.to(user.socketId).emit("newMessage", newMessage)
         }

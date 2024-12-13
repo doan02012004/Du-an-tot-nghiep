@@ -44,7 +44,7 @@ const Member = ({chat,setChatId,chatId,setUserMessage}:Props) => {
     useEffect(()=>{
         if(socket?.current){
             socket?.current?.on("newMessage",(newMessage:Imesage)=>{
-                if(newMessage.chatId == chat?._id){
+                if(newMessage?.chatId == chat?._id){
                     setLastMessage(newMessage)
                 }
                
