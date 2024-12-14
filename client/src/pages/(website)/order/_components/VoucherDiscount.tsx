@@ -24,10 +24,11 @@ const VoucherDiscount = ({ voucher, setSelectedVoucherCode }: Props) => {
         if (carts.lenght !== 0) {
             if (voucher) {
                 if (!voucher?.usedBy?.includes(currentUser?._id)) {
-                    if (voucher?.type === "percentage") {
-                        if (voucher?.status == true || new Date(voucher?.endDate) >= new Date()) {
+                    if (voucher?.status == true) {
+                        if (new Date(voucher?.endDate) >= new Date()) {
                             if (voucher?.quantity > 0) {
-                                if (voucher?.minOrderValue <= totalCart) {
+                                if (voucher?.type === "percentage") {
+                                    if (voucher?.minOrderValue <= totalCart) {
                                         const discountVoucher = totalCart * voucher?.value / 100
                                         if (voucher?.maxDiscountValue && voucher?.maxDiscountValue > discountVoucher) {
                                             const totalSubmit = totalCart - discountVoucher
@@ -43,64 +44,41 @@ const VoucherDiscount = ({ voucher, setSelectedVoucherCode }: Props) => {
                                             } else {
                                                 dispatch(setTotalSubmit(totalSubmit))
                                             }
-                                            dispatch(setTotalSubmit(totalSubmit))
                                         }
-                                    
-                                } else {
-                                    dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
-                                    message.error("Tổng giá không đủ điều kiện");
 
-                                    setTimeout(() => {
+                                    } else {
+                                        dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
+                                        message.error("Tổng giá không đủ điều kiện");
                                         dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
-                                    }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
-                                }
-                            } else {
-                                message.error("Số lượng voucher đã hết");
-                                setTimeout(() => {
-                                    dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
-                                }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
-                            }
-                        } else {
-                            message.error("Voucher đã hết hạn");
-                            setTimeout(() => {
-                                dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
-                            }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
-                        }
-
-
-                    } else {
-                        if (voucher?.status == true || new Date(voucher?.endDate) >= new Date()) {
-                            if (voucher?.quantity > 0) {
-                                if (totalCart >= voucher?.minOrderValue) {
-                                    
+                                    }
+                                } else {
+                                    if (totalCart >= voucher?.minOrderValue) {
                                         const totalSubmit = totalCart - voucher?.value
                                         if (Number(totalSubmit) < 0) {
                                             dispatch(setTotalSubmit(0))
                                         } else {
                                             dispatch(setTotalSubmit(totalSubmit))
                                         }
-                                  
-                                } else {
-                                    dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
-                                    message.error("Tổng giá không đủ điều kiện");
-                                    setTimeout(() => {
+                                    } else {
+                                        dispatch(setTotalSubmit(totalCart));  // Reset totalSubmit về totalCart
                                         dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
-                                    }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
+                                        message.error("Tổng giá không đủ điều kiện");
+                                    }
                                 }
                             } else {
                                 message.error("Số lượng voucher đã hết");
-                                setTimeout(() => {
-                                    dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
-                                }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
-                            }
-                        } else {
-                            message.error("Voucher đã hết hạn");
-                            setTimeout(() => {
                                 dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
-                            }, 0);  // Đặt voucher về null sau một khoảng ngắn để message xuất hiện trước
-                        }
+                            }
 
+                        } else {
+                            message.error("Voucher đã hết hạn sử dụng");
+                            dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
+                        }
+                    } else {
+                        message.error("Voucher không còn hoạt động");
+                        dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi
                     }
+
                 } else {
                     message.error("Bạn đã sử dụng voucher này rồi");
                     dispatch(setVoucher(null));  // Đặt voucher về null sau khi thông báo lỗi

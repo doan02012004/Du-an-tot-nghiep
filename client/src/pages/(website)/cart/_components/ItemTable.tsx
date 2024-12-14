@@ -56,6 +56,23 @@ const ItemTable = ({ cart }: Props) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [attribute])
+
+    const textErrorCart = (option:{attribute:any,cart:IcartItem}) =>{
+        if(!option?.attribute || option?.attribute?.active == false || option?.attribute?.instock == 0 || option?.cart?.productId?.active == false){
+            return 'Hết sản phẩm'
+        }else if( option?.attribute?.instock < option?.cart?.quantity){
+            return 'Số lượng vượt quá kho hàng'
+        }else{
+            return 'Hết sản phẩm'
+        }
+    }
+    const quantityErrorCart = (option:{attribute:any,cart:IcartItem}) =>{
+        if(!option?.attribute || option?.attribute.instock == 0 || !option?.attribute.active || !option?.cart?.productId?.active){
+            return true
+        }else{
+            return false
+        }
+    }
     const increaseQuantity = () => {
         if (attribute && Number(inputRef.current.value) + 1 > attribute?.instock) return message.error("Đã đạt số lượng tối đa")
         const newCart = {
@@ -100,11 +117,11 @@ const ItemTable = ({ cart }: Props) => {
                         <Link to={`/productdetails/${cart?.productId?.slug}`} className='block h-[205px] w-[140px]'>
                             <img src={gallery?.avatar} className='object-cover w-full h-full' />
                         </Link>
-                        {(!attribute || attribute?.active == false || attribute.instock == 0 || cart?.productId?.active == false) && (
+                        {(!attribute || attribute?.active == false || attribute.instock == 0 || cart?.productId?.active == false|| attribute?.instock < cart?.quantity) && (
                             <div className='absolute z-10 top-0 left-0 right-0 bottom-0 bg-black/30 flex justify-center items-center'>
-                                <div className='px-2 py-1 rounded-lg flex items-center bg-white'>
+                                <div className='px-2 py-1 rounded-lg flex items-center bg-white max-w-[95%] mx-auto'>
                                     <WarningOutlined className='text-red' />
-                                    <span className='ml-2 text-yellow text-xs'>Ngừng bán</span>
+                                    <span className='ml-2 text-yellow text-xs'>{textErrorCart({attribute,cart})}</span>
                                 </div>
                             </div>
                         )}
@@ -129,9 +146,9 @@ const ItemTable = ({ cart }: Props) => {
             </td>
             <td className="w-24 align-top">
                 <div className="border grid grid-cols-3 items-center rounded-tl-[20px] rounded-br-[20px]">
-                    <button disabled={(!attribute || attribute.instock == 0 || !attribute.active || !cart?.productId?.active)} onClick={decreaseQuantity} className=" border border-t-0 border-l-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">-</button>
-                    <input disabled={(!attribute || attribute.instock == 0 || !attribute.active || !cart?.productId?.active)} ref={inputRef} onBlur={onInput} className="h-full text-xs text-center bg-transparent outline-0 " defaultValue={cart?.quantity} />
-                    <button disabled={(!attribute || attribute.instock == 0 || !attribute.active || !cart?.productId?.active)} onClick={increaseQuantity} className=" border border-t-0 border-r-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">+</button>
+                    <button disabled={quantityErrorCart({attribute,cart})} onClick={decreaseQuantity} className=" border border-t-0 border-l-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">-</button>
+                    <input disabled={quantityErrorCart({attribute,cart})} ref={inputRef} onBlur={onInput} className="h-full text-xs text-center bg-transparent outline-0 " defaultValue={cart?.quantity} />
+                    <button disabled={quantityErrorCart({attribute,cart})} onClick={increaseQuantity} className=" border border-t-0 border-r-0 border-b-0 rounded-tl-[20px] rounded-br-[20px] py-1 px-1 text-lg ">+</button>
                 </div>
             </td>
             <td className="align-top">

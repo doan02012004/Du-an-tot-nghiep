@@ -128,7 +128,7 @@ export const deleteVoucher = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Voucher không tồn tại' });
         }
 
-        return res.status(200).json({ success: true, message: 'Voucher đã được xóa thành công' });
+        return res.status(200).json({ success: true, message: 'Voucher đã được xóa thành công',data:deletedVoucher });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
     }

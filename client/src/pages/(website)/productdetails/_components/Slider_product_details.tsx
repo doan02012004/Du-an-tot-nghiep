@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
 import 'swiper/css';
@@ -9,12 +10,12 @@ import { Igallery, Iproduct } from '../../../../common/interfaces/product';
 import { AppContext } from '../../../../common/contexts/AppContextProvider';
 
 type Props = {
-    product:Iproduct
+    product:Iproduct|null
 }
 
 const Slider_product_details = ({product}: Props) => {
     const { choiceColor } = useContext(AppContext);
-    const [gallery, setGallery] = useState(null);
+    const [gallery, setGallery] = useState<string[]>([]);
     const imageRef = useRef(null as any)
 
     useEffect(() => {

@@ -19,29 +19,23 @@ const HistoryUpdateUser: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             const result = await getHistoryUpdateUser();
-            setData(result.map((item: any) => {
-                // Lọc các thay đổi thực sự trong 'changes'
-                const updatedDetails = Object.keys(item.changes).reduce((acc: any, key: string) => {
-                    if (item.changes[key] !== item.originalUser[key]) {
-                        acc[key] = item.changes[key];
-                    }
-                    return acc;
-                }, {});
-
-                return {
-                    key: item._id,
-                    time: new Date(item.updateTime).toLocaleString(),
-                    email: item.originalUser.email,
-                    updatedDetails: updatedDetails, // Lưu các thay đổi thực sự
-                };
-            }));
+            setData(result.map((item: any) => ({
+                key: item._id,
+                time: new Date(item.updateTime).toLocaleString(),
+                email: item.originalUser?.email || 'Không rõ', // Kiểm tra null
+                originalUser: item.originalUser, // Thêm dữ liệu gốc
+                updatedDetails: item.changes,
+            })));
         };
         fetchData();
     }, []);
 
     const handleViewDetails = async (id: string) => {
         const record = await getHistoryUpdateUserById(id);
-        setSelectedRecord(record);
+        setSelectedRecord({
+            originalUser: record.originalUser, // Thông tin trước khi thay đổi
+            changes: record.changes,          // Thông tin sau khi thay đổi
+        });
         setIsModalVisible(true);
     };
 

@@ -34,6 +34,10 @@ const AddressItem = ({ address }: Props) => {
   const handleEdit = () => {
     setIsOpenForm(true); // Open form for editing
   };
+  
+  const onDefault = () =>{
+    
+  }
 
   return (
     <div className="w-full">
@@ -60,6 +64,7 @@ const AddressItem = ({ address }: Props) => {
                 <UpdateAddress setIsOpenForm={setIsOpenForm} address={address} />
               )}
               <button
+                onClick={onDefault}
                 className={`${
                   address?.isDefault ? "bg-black text-white" : "bg-white text-black border-black"
                 } border text-sm rounded-tl-[10px] rounded-br-[10px] px-3 py-2 hover:bg-white hover:text-black`}

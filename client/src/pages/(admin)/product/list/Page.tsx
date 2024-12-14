@@ -159,7 +159,7 @@ const ListProduct = () => {
     return (
         <div>
             <div className='flex justify-between items-center mb-3'>
-                <Link to={'/admin/products/add'} className='block w-max' ><Button type='primary'><PlusOutlined /> Sản phẩm</Button></Link>
+                <a href={'/admin/products/add'} className='block w-max' ><Button type='primary'><PlusOutlined /> Sản phẩm</Button></a>
                 <div className='flex items-center gap-x-3'>
                     <Select
                         className='min-w-40'

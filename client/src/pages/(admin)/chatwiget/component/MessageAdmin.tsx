@@ -53,7 +53,7 @@ const MessageAdmin = ({checkBoxRef,currentUser,message}: Props) => {
     }
   return (
     <>
-            {message?.productId && currentAtb && (
+            {message?.productId && message.type == 'product' &&message?.productId?.active===true  && (
                 <div className='flex gap-x-3 max-w-96 self-start mb-3 mt-5'>
                     <div className='w-20 h-28 overflow-hidden'>
                         <img src={gallery?.avatar} className=' cursor-pointer object-cover w-full h-full' alt={message?.productId?.name} />
@@ -89,7 +89,7 @@ const MessageAdmin = ({checkBoxRef,currentUser,message}: Props) => {
                     </div>
                 </div>
             )}
-               {!currentAtb && message.type == 'product' && (
+               {(!message?.productId && message.type == 'product' || message?.productId?.active === false && message.type == 'product') && (
                     <div className='flex gap-x-3 max-w-96 self-start mb-3 mt-5'>
                         <div className="bg-black/30 w-full h-full px-3 py-2">
                             <div className="bg-white px-2 py-1">

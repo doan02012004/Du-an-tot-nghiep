@@ -200,8 +200,9 @@ export const updateAttributeProduct = async (req, res) => {
     );
     product.attributes = newAttributes;
     await product.save();
+    const newProduct = await ProductModel.findById({ _id: req.params.productId }).populate('categoryId brandId');
     return res.status(200).json({
-      data: product,
+      data: newProduct,
       message: "Cập nhật thuộc tính thành công",
     });
   } catch (error) {
@@ -279,7 +280,7 @@ export const updateInforProduct = async (req, res) => {
         gender: req.body.gender,
       },
       { new: true }
-    );
+    ).populate('categoryId brandId');
     return res.status(200).json(updateProduct);
   } catch (error) {
     return res.status(500).json({
@@ -329,7 +330,7 @@ export const deleteProduct = async (req, res) => {
 };
 export const deleteSize = async (req, res) => {
   try {
-    const product = await ProductModel.findById(req.params.productId);
+    const product = await ProductModel.findById(req.params.productId).populate('categoryId brandId');
     if (!product) {
       return res.status(404).json({
         message: "Product Not Found",
@@ -361,7 +362,8 @@ export const deleteSize = async (req, res) => {
     })
     return res.status(200).json({
       message: "Xóa size thành công !",
-      success: true
+      success: true,
+      product:product
     });
    }else{
     return res.status(404).json({
@@ -377,7 +379,7 @@ export const deleteSize = async (req, res) => {
 };
 export const deleteColor = async (req, res) => {
   try {
-    const product = await ProductModel.findById(req.params.productId)
+    const product = await ProductModel.findById(req.params.productId).populate('categoryId brandId')
     if (!product) {
       return res.status(404).json({
         message: "Product Not Found",
@@ -412,7 +414,8 @@ export const deleteColor = async (req, res) => {
     })
     return res.status(200).json({
       message: "Xóa màu sắc thành công !",
-      success: true
+      success: true,
+      product:product
     });
   }else{
     return res.status(404).json({

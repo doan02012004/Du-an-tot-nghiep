@@ -65,7 +65,7 @@ export const sendMessage = async (req, res) => {
 // get chat admin
 export const getChatAdmin = async (req, res) => {
     try {
-        const admin = await UserModel.findById(req.params.userId); // Giả sử chỉ có một admin  
+        const admin = await UserModel.findOne({role:'admin'}); // Giả sử chỉ có một admin  
         if (!admin) {
             return res.status(404).json({ message: 'Không tìm thấy người quản trị' });
         }

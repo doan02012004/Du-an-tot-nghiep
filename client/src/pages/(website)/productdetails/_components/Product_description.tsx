@@ -3,7 +3,7 @@ import { Iproduct } from "../../../../common/interfaces/product";
 
 import CommentList from "./CommentList";
 
-type Props = { product: Iproduct };
+type Props = { product: Iproduct|null };
 
 const Product_description = ({ product }: Props) => {
   const [activeTab, setActiveTab] = useState<"des" | "comment">("des");
@@ -54,7 +54,7 @@ const Product_description = ({ product }: Props) => {
             height: isOpen ? "100%" : "120px", // Điều chỉnh chiều cao theo trạng thái mở/đóng
           }}
         >
-          {activeTab === "des" ? <div ref={desRef}></div> : <CommentList productId={product._id? product._id: ''} />}
+          {activeTab === "des" ? <div ref={desRef}></div> : <CommentList productId={product?._id? product._id: ''} />}
         </div>
       </div>
       <div className="flex items-center justify-center mt-4">
