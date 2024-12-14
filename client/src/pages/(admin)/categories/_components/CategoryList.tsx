@@ -58,17 +58,17 @@ const CategoryList: React.FC = () => {
       dataIndex: "slug",
     },
     
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      render: (_, record) => (
-        <Switch
-          size="small"
-          checked={record.status === 'Hoạt động'}
-          onChange={(checked) => handleStatusChange(checked, record)}
-        />
-      ),
-    },
+    // {
+    //   title: "Trạng thái",
+    //   dataIndex: "status",
+    //   render: (_, record) => (
+    //     <Switch
+    //       size="small"
+    //       checked={record.status === 'Hoạt động'}
+    //       onChange={(checked) => handleStatusChange(checked, record)}
+    //     />
+    //   ),
+    // },
     {
       title: 'Action',
       key: 'action',
