@@ -211,8 +211,8 @@ const OrderDetails = () => {
                       <div className='flex'>
                         <Button onClick={() => handlePayAgain(orders._id)} ><span>Tiếp tục thanh toán</span>
                         </Button>
-                        <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
-                        <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} /> Huỷ đơn hàng
+                        <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] mx-2 cursor-pointer italic underline" disabled={mutation.isPending} icon={mutation.isPending ? <Spin size="small" /> : <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />}>
+                       Huỷ đơn hàng
                         </Button>
                       </div>
                     )}

@@ -28,7 +28,9 @@ const useCartMutation = () => {
                 case "increase":
                     try {
                         const data = await increaseProductCartQuantity({ userId: currentUser?._id, ...options.cart })
+                        if(data?.status === 200){
                         message.success("Tăng số lượng thành công")
+                        }
                         return data
                     } catch (error) {
                         return error

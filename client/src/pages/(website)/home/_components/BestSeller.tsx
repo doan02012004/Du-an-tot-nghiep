@@ -21,7 +21,7 @@ const BestSeller = () => {
   }, [productQuery?.data]);
 
   return (
-    <section className="newArrival mb-[18px] lg:mb-10">
+    <section className="newArrival mb-[18px] lg:mb-16">
       <div className="container">
         <h1 className="text-xl lg:text-3xl font-semibold text-dark tracking-[2px] text-center uppercase mb-[10px] lg:mb-5">
           BEST SELLER | SALE 50% TOÀN BỘ SP
@@ -80,13 +80,13 @@ const BestSeller = () => {
               </Swiper>
             </div>
           </div>
-          <div className="mx-auto mt-5 w-max">
+          {/* <div className="mx-auto mt-5 w-max">
             <a href="#" className="block">
               <span className="block px-4 py-2 border btn-lg lg:py-3 lg:px-6 border-dark">
                 Xem tất cả
               </span>
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

@@ -29,7 +29,7 @@ const OrderDetails = () => {
         if(socket?.current){
           socket.current?.on('onUpdateOrderStatus',(data:any) =>{
             if(data?._id == order?._id){
-              if(data?.status == 'cancelled' || data?.status == 'received'|| data?.status == 'Complaints'|| data?.status == 'Returngoods'|| data?.status == 'Exchanged'){
+              if(data?.status == 'cancelled' || data?.status == 'received'|| data?.status == 'Complaints'|| data?.status == 'Returngoods'|| data?.status == 'Exchanged' || data?.status == 'pending'){
                 setorder(data)
               }
             }

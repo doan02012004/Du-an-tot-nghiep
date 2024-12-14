@@ -21,9 +21,10 @@ export const getCart = async (userId: string) => {
 export const increaseProductCartQuantity = async (option: { userId?: string,productId?:string,attributeId?:string})=>{
     try {
         const res = await instance.post(`/carts/increase`, option)
-        return res.data
+        return res
     } catch (error) {
-        console.log(error)
+        // console.log(error)
+        return error
     }
 }
 

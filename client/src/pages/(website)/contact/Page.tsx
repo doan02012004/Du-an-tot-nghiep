@@ -77,7 +77,7 @@ const PageContact = (props: Props) => {
 
                     <div className="w-[50%]">
                         <p className='font-bold'>Email</p>
-                        <p className='leading-normal'>saleadmin@ivy.com.vn</p>
+                        <p className='leading-normal'>Fendishop@gmail.com</p>
                     </div>
                 </div>
                 {/*  */}
@@ -100,7 +100,7 @@ const PageContact = (props: Props) => {
                     <div className="w-[50%]">
                         <p className='font-bold'>Chăm sóc khách hàng</p>
                         <span className='leading-normal'>Email:</span><br />
-                        <span className='leading-normal'>cskh@ivy.com.vn</span><br />
+                        <span className='leading-normal'>Fendishop@gmail.com</span><br />
                         <span className='leading-normal'>Hotline:</span>
                         <p className='leading-normal'>0905 89 86 83</p>
                         <p className='leading-normal'>Thứ Hai đến Thứ Bảy, từ 8:00 đến 17:30</p>

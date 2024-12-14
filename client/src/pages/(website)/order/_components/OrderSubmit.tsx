@@ -88,7 +88,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
     const onHandlePayment = async () => {
         setLoading(true)
         if (payment === "vnPay") {
-            const totalPrice = ship?.value?.price ? totalCart + ship?.value?.price : totalCart;
+            // const totalPrice = ship?.value?.price ? totalCart + ship?.value?.price : totalCart;
             const newvoucher = {
                 code: voucher?.code || null,
                 discountValue: (voucher?.type === "percentage" && (Math.min(totalCart * voucher?.value / 100, Number(voucher.maxDiscountValue)))) || (voucher?.type === "fixed" && (voucher?.value)) || (voucher?.type === "freeship" && (Math.min(Number(ship?.value?.price), Number(voucher?.maxDiscountValue)))) || 0,
@@ -97,7 +97,8 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
             }
             try {
                 const amount = totalCart + (ship?.value?.price || 0) as number;
-                const response = await paymentVNPay({ amount, userId: currentUser?._id, customerInfor: { ...address }, ship: ship, totalPrice: totalPrice, totalOrder: totalProduct, voucher: newvoucher });
+                const response = await paymentVNPay({ amount, userId: currentUser?._id, customerInfor: { ...address }, ship: ship, totalPrice: totalSubmit + ship?.value?.price, totalOrder: totalProduct, voucher: newvoucher });
+                // console.log(totalSubmit)
                 if (response?.paymentUrl) {
                     setLoading(false)
                     window.location.href = response.paymentUrl;

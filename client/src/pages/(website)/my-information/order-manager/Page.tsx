@@ -156,7 +156,7 @@ const OrderManager = () => {
       case 'cancelled':
         return 'Đã hủy';
       case 'received':
-        return 'Đã nhận hàng';
+        return 'Hoàn thành';
       case 'Returngoods':
         return 'Trả hàng';
       case 'Complaints':
@@ -238,7 +238,7 @@ const OrderManager = () => {
             <option value="confirmed">Đã xác nhận</option>
             <option value="shipped">Đang giao hàng</option>
             <option value="delivered">Đã giao hàng</option>
-            <option value="received">Đã nhận hàng</option>
+            <option value="received">Hoàn thành</option>
             <option value="cancelled">Đã hủy</option>
             <option value="Returngoods">Trả hàng</option>
             <option value="Complaints">Khiếu nại</option>
@@ -274,7 +274,7 @@ const OrderManager = () => {
               });
               return (
                 <tr className="flex flex-wrap lg:table-row" key={order?._id}> 
-                  <td className="flex-[50%] lg:table-cell pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']  underline lg:no-underline"><a href={`/customer/orderdetails/${order?._id}`}>{order.orderNumber}</a></td>
+                  <td className="flex-[50%] lg:table-cell pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']  underline lg:no-underline"><a className='underline hover:text-red' href={`/customer/orderdetails/${order?._id}`}>{order.orderNumber}</a></td>
                   <td className="lg:table-cell  pt-5 py-3 border-t-[1px] lg:border-b-[1px] border-['#f7f8f9']">{formattedDate}</td>
 
 
@@ -313,8 +313,8 @@ const OrderManager = () => {
                       <div className=''>
                         <Button onClick={() => handlePayAgain(order._id)} ><span>Tiếp tục thanh toán</span>
                         </Button>
-                        <Button type='primary' danger onClick={()=>{setorderId(order._id),setcheck(!check)}} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
-                        <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} /> Huỷ đơn hàng
+                        <Button type='primary' danger onClick={()=>{setorderId(order._id),setcheck(!check)}} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline" disabled={pendingState[order?._id]} icon={pendingState[order?._id] ? <Spin size="small" /> : <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />}>
+                         Huỷ đơn hàng
                         </Button>
                       </div>
                     )}
