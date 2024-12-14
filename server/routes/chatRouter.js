@@ -5,7 +5,7 @@ const router = Router();
 
 router.post('/send', sendMessage);
 router.post('/create', createChat);
-router.get('/chatadmin/:userId', getChatAdmin);
+router.get('/chatadmin', getChatAdmin);
 
 router.get('/messages/:chatId', getMessages);
 router.get('/lastmessage/:chatId', getLastMessage);
