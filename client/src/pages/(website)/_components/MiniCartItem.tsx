@@ -61,6 +61,13 @@ const MiniCartItem = ({cart}: Props) => {
             inputRef.current.value = cart.quantity
         }
     }
+    const remove = () => {
+        const newCart = {
+            productId: cart.productId?._id as string,
+            attributeId: cart.attributeId as string,
+        }
+        cartMutation.mutate({ action: "remove", cart: newCart })
+    }
     return (
         <div className="w-full h-[94px] flex gap-3 pb-4 border-b border-gray-200  mb-4 relative ">
             <div className="flex-shrink-0 w-16 h-full">
@@ -91,12 +98,12 @@ const MiniCartItem = ({cart}: Props) => {
                     <span className="text-sm text-[#AC2F33] font-semibold ">{cart?.total >0 ? formatPrice(cart?.total) : '0'} <span className="underline">đ</span></span>
                 </div>
             </div>
-          {(!attribute || attribute?.instock == 0 || attribute?.active == false || cart?.productId?.active == false) && (
+          {(!attribute || attribute?.instock == 0 || attribute?.active == false || cart?.productId?.active == false || attribute?.instock < cart?.quantity) && (
               <div className='absolute z-10 top-0 left-0 right-0 bottom-0 bg-black/30 flex justify-center items-center'>
               <div className='px-2 py-1 rounded-lg flex items-center bg-white'>
                   <WarningOutlined className='text-red' />
-                  <span className='mx-2 text-yellow text-xs'>Ngừng bán</span> |
-                  <button className='text-sm text-red underline ml-2 hover:text-blue'>Xóa</button>
+                  <span className='mx-2 text-yellow text-xs'>Hết sản phẩm</span> |
+                  <button onClick={remove} className='text-sm text-red underline ml-2 hover:text-blue'>Xóa</button>
               </div>
              
       </div>

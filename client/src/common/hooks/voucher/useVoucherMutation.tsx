@@ -1,9 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { message } from 'antd';
 import { IVoucher } from '../../interfaces/voucher';
-import { createVoucher, updateVoucher, deleteVoucher, checkVoucher } from '../../../services/voucher';
+import { createVoucher, updateVoucher, deleteVoucher } from '../../../services/voucher';
+import { useContext } from 'react';
+import { AppContext } from '../../contexts/AppContextProvider';
 
 const useVoucherMutation = () => {
+    const { socket } = useContext(AppContext)
     const queryClient = useQueryClient();
     const mutation = useMutation({
         mutationKey: ['VOUCHERS'],
@@ -21,7 +24,11 @@ const useVoucherMutation = () => {
                 case "update":
                     try {
                         const response = await updateVoucher(options.voucher);
-                        message.success("Cập nhật voucher thành công");
+                        if (response?.success) {
+                            if (socket?.current) {
+                                socket.current?.emit('adminUpdateVoucher', response.voucher)
+                            }
+                        }
                         return response;
                     } catch (error) {
                         message.error("Cập nhật voucher thất bại");
@@ -29,14 +36,20 @@ const useVoucherMutation = () => {
                     }
                 case "delete":
                     try {
-                        await deleteVoucher(options.voucher._id!);
-                        message.success("Xóa voucher thành công");
+                        const data = await deleteVoucher(options.voucher._id!);
+                        if (data?.success) {
+                            message.success("Xóa voucher thành công");
+                            if (socket?.current) {
+                                socket.current?.emit('adminDeleteVoucher', data.data)
+                            }
+                        }
+
                     } catch (error) {
                         message.error("Xóa voucher thất bại");
                         throw error;
                     }
                     break;
-                    case "checkVoucher":
+                case "checkVoucher":
                     try {
                         // await  checkVoucher(options.voucher._id!);
                         message.success("Xóa voucher thành công");

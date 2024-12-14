@@ -1,7 +1,7 @@
 import { Iproduct } from "../../../../common/interfaces/product"
 
 type Props = {
-  product:Iproduct
+  product:Iproduct|null
 }
 
 const Breadcrumb_products = ({product}: Props) => {

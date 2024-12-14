@@ -1,5 +1,5 @@
 import { CloseOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Form, Input, Menu, Radio, Table, TableProps } from "antd";
+import { Button, Dropdown, Form, Input, Menu, Radio, Spin, Table, TableProps } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useOrderMutation from "../../../../common/hooks/orders/useOrderMutation";
@@ -108,7 +108,7 @@ const OrderDetails = () => {
         const invalidTransitions: Record<string, string[]> = {
             pending: ["pending", "unpaid", "shipped", "delivered", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
             unpaid: ["pending", "unpaid", "confirmed", "shipped", "delivered", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
-            confirmed: ["pending", "unpaid", "confirmed", "delivered", "cancelled", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
+            confirmed: ["pending", "unpaid", "confirmed", "delivered",  "received", "Returngoods", "Complaints","Refunded","Exchanged"],
             shipped: ["pending", "unpaid", "confirmed", "shipped", "cancelled", "received", "Returngoods", "Complaints","Refunded","Exchanged"],
             delivered: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "Returngoods","Complaints","Refunded","Exchanged"],
             cancelled: ["pending", "unpaid", "confirmed", "shipped", "delivered", "cancelled", "received","Returngoods","Complaints","Refunded","Exchanged"],
@@ -242,7 +242,7 @@ const OrderDetails = () => {
     ];
     
     return (
-        <div className="overflow-y-auto h-[600px]">
+        <div className="">
             <div className="flex justify-between items-center mb-4">
                 <h6 className='font-semibold text-[20px]'>CHI TIẾT ĐƠN HÀNG:</h6>
                 <Link to={`/admin/orders`}>
@@ -270,7 +270,9 @@ const OrderDetails = () => {
                             <div className="flex items-center">
                                 <p className="mr-2">{getStatusText(order.status)}</p>
                                 <Dropdown overlay={statusMenu} trigger={['click']}>
-                                    <EditOutlined className="text-blue-500 cursor-pointer" />
+                                <Button type="primary" icon={mutation.isPending ? <Spin size="small" /> : <EditOutlined />} disabled={mutation.isPending}>
+        {mutation.isPending ? "Đang xử lý..." : "Thay đổi"}
+    </Button>
                                 </Dropdown>
                             </div>
                         </div>
@@ -296,7 +298,7 @@ const OrderDetails = () => {
                         )}
                         <div className="grid grid-cols-2">
                             <p>Tổng giá trị đơn hàng:</p>
-                            <p>{formatPrice(order?.totalPrice?order.totalOrder:0)} VND</p>
+                            <p>{formatPrice(order?.totalPrice?order.totalPrice:0)} VND</p>
                         </div>
                     </div>
                 </div>

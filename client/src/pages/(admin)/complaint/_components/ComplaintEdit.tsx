@@ -1,4 +1,4 @@
-import { Button, Card, Descriptions, Input, Select, message } from 'antd';
+import { Button, Card, Descriptions, Input, Select, Spin, message } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import useComplaintQuery from '../../../../common/hooks/complaint/useComplaintQuery';
 import useComplaintMutation from '../../../../common/hooks/complaint/useComplaintMutation';
@@ -12,25 +12,29 @@ const ComplaintEdit = (props: Props) => {
   const query = useComplaintQuery(id);
   const mutation = useComplaintMutation();
   const mutations = useOrderMutation();
-  
   // State để lưu thông tin chỉnh sửa
   const [status, setStatus] = useState<'new' | 'in_progress' | 'resolved' | 'cancelled' | ''>(''); 
+  const [statusOrder, setStatusOrder] = useState<'Complaints' | 'received' | 'Returngoods' | 'Exchanged' | ''>(''); 
   const [response, setResponse] = useState<string>('');
+  const [note, setnote] = useState<string>('');
+  console.log(query)
 
   // Cập nhật giá trị status và response khi query thay đổi
   useEffect(() => {
     if (query) {
       setStatus(query.status || '');  // Cập nhật trạng thái
       setResponse(query.response || '');  // Cập nhật phản hồi
+      setnote(query?.note || '')  // cập nhật ghi chú
+      setStatusOrder(query?.orderId?.status || '')
     }
   }, [query]);
 
   const handleUpdate = () => {
-    if (status === query?.status && response === query?.response) {
+    if (status === query?.status && response === query?.response && note === query?.note && statusOrder === query?.orderId?.status) {
       message.info('Không có thay đổi để cập nhật.');
       return;
     }
-    
+    console.log(note)
     // Cập nhật trạng thái khiếu nại
     mutation.mutate({
       action: 'update',
@@ -38,6 +42,7 @@ const ComplaintEdit = (props: Props) => {
         complaintId: id!,
         status,
         response,
+        note,
       },
     });
 
@@ -51,36 +56,41 @@ const ComplaintEdit = (props: Props) => {
     }
 
     if (status === 'resolved') {
-      // Kiểm tra phản hồi từ admin để cập nhật trạng thái đơn hàng
-      if (response.includes('Trả hàng')) {
-        mutations.mutate({
-          action: 'updateStatus',
-          orderId: query.orderId._id,
-          status: 'Returngoods',
-        });
-      } else if (response.includes('Hoàn tiền')) {
-        mutations.mutate({
-          action: 'updateStatus',
-          orderId: query.orderId._id,
-          status: 'Returngoods',
-        });
-      } else if (response.includes('Đổi trả hàng')) {
-        mutations.mutate({
-          action: 'updateStatus',
-          orderId: query.orderId._id,
-          status: 'Exchanged',
-        });
-      }else if (response.includes('Đơn hàng đã hoàn tất')) {
-        mutations.mutate({
-          action: 'updateStatus',
-          orderId: query.orderId._id,
-          status: 'received',
-        });
-      }
-       else {
-        // Nếu không có yêu cầu thay đổi trạng thái đơn hàng
-        message.success('Khiếu nại đã được giải quyết!');
-      }
+      mutations.mutate({
+            action: 'updateStatus',
+            orderId: query?.orderId?._id,
+            status: statusOrder,
+          });
+      // // Kiểm tra phản hồi từ admin để cập nhật trạng thái đơn hàng
+      // if (response.includes('Trả hàng')) {
+      //   mutations.mutate({
+      //     action: 'updateStatus',
+      //     orderId: query.orderId._id,
+      //     status: 'Returngoods',
+      //   });
+      // } else if (response.includes('Hoàn tiền')) {
+      //   mutations.mutate({
+      //     action: 'updateStatus',
+      //     orderId: query.orderId._id,
+      //     status: 'Returngoods',
+      //   });
+      // } else if (response.includes('Đổi trả hàng')) {
+      //   mutations.mutate({
+      //     action: 'updateStatus',
+      //     orderId: query.orderId._id,
+      //     status: 'Exchanged',
+      //   });
+      // }else if (response.includes('Đơn hàng đã hoàn tất')) {
+      //   mutations.mutate({
+      //     action: 'updateStatus',
+      //     orderId: query.orderId._id,
+      //     status: 'received',
+      //   });
+      // }
+      //  else {
+      //   // Nếu không có yêu cầu thay đổi trạng thái đơn hàng
+      //   message.success('Khiếu nại đã được giải quyết!');
+      // }
     }
   };
 
@@ -104,10 +114,13 @@ const ComplaintEdit = (props: Props) => {
             <Descriptions.Item label="Email khách hàng">
               {query?.userId?.email || 'N/A'}
             </Descriptions.Item>
+            <Descriptions.Item label="Phone khách hàng">
+              {query?.userId?.phone || 'N/A'}
+            </Descriptions.Item>
             <Descriptions.Item label="Lý do khiếu nại">
               {query?.complaintReason}
             </Descriptions.Item>
-            <Descriptions.Item label="Cập nhật trạng thái">
+            <Descriptions.Item label="Trạng thái đơn khiếu nại">
               <Select
                 value={status}
                 onChange={setStatus}
@@ -115,11 +128,34 @@ const ComplaintEdit = (props: Props) => {
                 placeholder="Chọn trạng thái"
               >
                 <Select.Option value="new" disabled={status !== "new"}>Mới</Select.Option>
-                <Select.Option value="in_progress" disabled={status === "in_progress"}>Đang xử lý</Select.Option>
-                <Select.Option value="resolved">Đã giải quyết</Select.Option>
-                <Select.Option value="cancelled" disabled={status === "resolved"}>Huỷ khiếu nại</Select.Option>
+                <Select.Option value="in_progress" disabled={status !== "new"}>Đang xử lý</Select.Option>
+                <Select.Option value="resolved" disabled={status !== "in_progress"}>Đã giải quyết</Select.Option>
+                <Select.Option value="cancelled" disabled={status !== "in_progress"}>Huỷ khiếu nại</Select.Option>
               </Select>
             </Descriptions.Item>
+            <Descriptions.Item label="Ghi chú">
+            <Input.TextArea
+                value={note}
+                onChange={(e) => setnote(e.target.value)}
+                placeholder="Nhập phản hồi"
+                rows={1}
+              />
+            </Descriptions.Item>
+            {status === "resolved" && (
+              <Descriptions.Item label="Trạng thái đơn hàng">
+              <Select
+                value={statusOrder}
+                onChange={setStatusOrder}
+                style={{ width: 200 }}
+                placeholder="Chọn trạng thái"
+              >
+                <Select.Option value="Complaints" disabled={statusOrder !== "Complaints"}>Khiếu nại</Select.Option>
+                <Select.Option value="received" disabled={statusOrder !== "Complaints"}>Đơn hoàn thành</Select.Option>
+                <Select.Option value="Returngoods" disabled={statusOrder !== "Complaints"}>Trả hàng</Select.Option>
+                <Select.Option value="Exchanged" disabled={statusOrder !== "Complaints"}>Đổi trả hàng</Select.Option>
+              </Select>
+            </Descriptions.Item>
+            )}
             <Descriptions.Item label="Ngày tạo">
               {new Date(query?.createdAt).toLocaleString()}
             </Descriptions.Item>
@@ -136,7 +172,7 @@ const ComplaintEdit = (props: Props) => {
             </Descriptions.Item>
           </Descriptions>
           <div className="mt-4 flex justify-end">
-            <Button onClick={handleUpdate} type="primary">
+            <Button onClick={handleUpdate} type="primary" disabled={mutation.isPending} icon={mutation.isPending && <Spin size="small" />}>
               Cập nhật
             </Button>
           </div>

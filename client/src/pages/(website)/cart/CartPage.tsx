@@ -61,9 +61,21 @@ const CartPage = () => {
                 return findAtb
             })
             const checkAtb = cartAtb.some((item: Iattribute) => item?.active == false)
+            const checkQuantity = carts.some((item:IcartItem) => {
+                const findAtb = item?.productId?.attributes.find((atb:Iattribute) => atb?._id == item?.attributeId)
+                if(findAtb){
+                    if(findAtb.instock < item.quantity){
+                        return true
+                    }else{
+                        return false
+                    }
+                }else{
+                    return true
+                }
+            })
             const checkUndefine = cartAtb.some((item: Iattribute) => !item)
             const checkInstock = cartAtb.some((item: Iattribute) => item?.instock == 0)
-            if(check || checkAtb || checkUndefine| checkInstock||checkProduct){
+            if(check || checkAtb || checkUndefine| checkInstock||checkProduct| checkQuantity){
                 if(checkCarts == true){
                     dispath(setCheckCarts(false))
                 }

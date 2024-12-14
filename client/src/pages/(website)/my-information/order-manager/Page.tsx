@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CheckCircleOutlined, CloseOutlined, DeleteOutlined, RollbackOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Radio, } from 'antd';
+import { CheckCircleOutlined, CloseOutlined, DeleteOutlined, LoadingOutlined, RollbackOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Radio, Spin, } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../../../common/contexts/AppContextProvider';
 import useOrderMutation from '../../../../common/hooks/orders/useOrderMutation';
@@ -34,6 +34,21 @@ const OrderManager = () => {
   const [selectedReason, setSelectedReason] = useState('');
   const [otherReason, setOtherReason] = useState('');
   const [orderId,setorderId] = useState("")
+  const Goodsmoney = items && items?.reduce((sum,item:any)=> item?.total + sum, 0 ) || 0
+  console.log(items)
+  // Tạo state cho trạng thái isPending của từng đơn hàng
+  const [pendingState, setPendingState] = useState(
+    order?.reduce((acc, order) => {
+      acc[order?._id] = false; // Mặc định trạng thái của các đơn hàng là false (không loading)
+      return acc;
+    }, {})
+  );
+  const [pendingStates, setPendingStates] = useState(
+    order?.reduce((acc, order) => {
+      acc[order?._id] = false; // Mặc định trạng thái của các đơn hàng là false (không loading)
+      return acc;
+    }, {})
+  );
 
   useEffect(()=>{
     if(socket?.current){
@@ -59,7 +74,12 @@ const OrderManager = () => {
     'Khác'
   ];
 
-  const onSubmit = (values) => {
+  const onSubmit = (values:any) => {
+    const action = 'huỷ đơn'
+    setPendingState(prevState => ({
+      ...prevState,
+      [orderId]: true // Đặt trạng thái loading cho đơn hàng hiện tại
+    }));
     const cancelReason = values.reason === "Khác" ? values.otherReason : values.reason;
         
         mutation.mutate({
@@ -70,10 +90,26 @@ const OrderManager = () => {
         });
       
         setcheck(!check);
+        // Giả lập quá trình xử lý (ví dụ gọi API)
+    setTimeout(() => {
+      // Sau khi xử lý xong, bạn có thể cập nhật trạng thái lại
+      setPendingState(prevState => ({
+        ...prevState,
+        [orderId]: false // Kết thúc loading
+      }));
+
+      // Xử lý hành động (hủy đơn, trả hàng, hoặc đã nhận hàng) ở đây
+      console.log(`Đơn hàng ${orderId} đã được ${action}`);
+    }, 2000); // Giả lập thời gian xử lý 2 giây
   }
 
   
   const handleSubmit = (values:any) => {
+    const action = 'trả hàng'
+    setPendingState(prevState => ({
+      ...prevState,
+      [orderId]: true // Đặt trạng thái loading cho đơn hàng hiện tại
+    }));
     mutations.mutate({
       action: 'add',
       complaintData: {
@@ -92,6 +128,17 @@ const OrderManager = () => {
     });
     form.resetFields(); // Reset lại form sau khi submit
     setopen(!open);
+    // Giả lập quá trình xử lý (ví dụ gọi API)
+    setTimeout(() => {
+      // Sau khi xử lý xong, bạn có thể cập nhật trạng thái lại
+      setPendingState(prevState => ({
+        ...prevState,
+        [orderId]: false // Kết thúc loading
+      }));
+
+      // Xử lý hành động (hủy đơn, trả hàng, hoặc đã nhận hàng) ở đây
+      console.log(`Đơn hàng ${orderId} đã được ${action}`);
+    }, 2000); // Giả lập thời gian xử lý 2 giây
   };
 
   const renderOrderStatus = (status : string) => {
@@ -142,8 +189,23 @@ const OrderManager = () => {
   };
 
   // Hàm xử lý nhận hàng
-  const onHandleReceived = (orderId:string) =>{
+  const onHandleReceived = (orderId:string,action:string) =>{
+    setPendingStates(prevState => ({
+      ...prevState,
+      [orderId]: true // Đặt trạng thái loading cho đơn hàng hiện tại
+    }));
     mutation.mutate({ action: "updateStatus", orderId: orderId, status: "received" })
+    // Giả lập quá trình xử lý (ví dụ gọi API)
+    setTimeout(() => {
+      // Sau khi xử lý xong, bạn có thể cập nhật trạng thái lại
+      setPendingStates(prevState => ({
+        ...prevState,
+        [orderId]: false // Kết thúc loading
+      }));
+
+      // Xử lý hành động (hủy đơn, trả hàng, hoặc đã nhận hàng) ở đây
+      console.log(`Đơn hàng ${orderId} đã được ${action}`);
+    }, 2000); // Giả lập thời gian xử lý 2 giây
   }
   // const sortedOrders = orders?.data?.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const [filterStatus, setFilterStatus] = useState(""); // Trạng thái được chọn để lọc
@@ -152,7 +214,6 @@ const OrderManager = () => {
   const filteredOrders = order
     ?.filter((order: any) => (filterStatus ? order.status === filterStatus : true)) // Lọc theo trạng thái
     ?.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Sắp xếp
-
 
 
   
@@ -223,23 +284,30 @@ const OrderManager = () => {
                       <span>{renderOrderStatus(order.status)}</span>
                     </div>
           
-                    {(order.paymentMethod === "cash" && order.status === "pending") && (
-                     <Button type='primary' danger onClick={()=>{setorderId(order._id),setcheck(!check)}} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
-                     <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />
+                    {(order.paymentMethod === "cash" && (order.status === "pending" || order.status === "confirmed") ) && (
+                     <Button type='primary' danger onClick={()=>{setorderId(order._id),setcheck(!check)}} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline" disabled={pendingState[order?._id]} icon={pendingState[order?._id] ? <Spin size="small" /> : <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />}>
                      Huỷ đơn 
                      </Button>
                     )}
                     {(order.status === "delivered") && (
-                      <Button onClick={()=>{setopen(!open);setitems(order.items);setid(order._id);settotalOrder(order.totalOrder);settotalPrice(order.totalPrice);settvoucher(order.voucher.discountValue),setship(order.ship.value.price)}}>
-                        <RollbackOutlined style={{ fontSize: '18px', marginRight: '8px' }} />
+                      <Button onClick={()=>{setopen(!open);setitems(order.items);setid(order._id);settotalOrder(order.totalOrder);settotalPrice(order.totalPrice);settvoucher(order?.voucher?.discountValue),setship(order?.ship?.value?.price)}} disabled={pendingState[order?._id]} icon={pendingState[order?._id] ? <Spin size="small" /> : <RollbackOutlined style={{ fontSize: '18px', marginRight: '8px' }} />}>
+                        
                         Trả hàng
                       </Button>
                     ) }
                     {(order.status === "delivered" || order.status === "Exchanged") && (
-                     <Button type='primary' onClick={() => onHandleReceived(order?._id) } className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
-                      <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} />
-                      Đã nhận hàng
-                     </Button>
+                      <div className="">
+                        <Button
+                          type="primary"
+                          onClick={() => onHandleReceived(order?._id, 'đã nhận hàng')}
+                          disabled={pendingStates[order?._id]}
+                          className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline"
+                          icon={pendingStates[order?._id] ? <Spin size="small" /> : <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} />}
+                        >
+                          Đã nhận hàng
+                        </Button>
+                        
+                      </div>
                     )}
                     {order.status === "unpaid" && (
                       <div className=''>
@@ -287,7 +355,7 @@ const OrderManager = () => {
               <div className="mt-10">
                 <div className="grid grid-cols-2 gap-4 mb-3 ">
                     <div className="">
-                    {items.map((pro:any,index:number)=>(
+                    {items?.map((pro:any,index:number)=>(
                       <div key={index+1} className="mt-2 flex">
                         <img src={pro.gallery.avatar} alt="" width={100} height={20} className='object-cover' />
                         <div className="ml-[6%] w-[178.715px]">
@@ -305,7 +373,7 @@ const OrderManager = () => {
                     <div className="mt-4 border-dashed border-l-4 p-5">
                       <div className="flex">
                       <h4 className='w-[160px]'>Tống số tiền hàng :</h4>
-                      <span>{totalPrice}đ</span> <span className='ml-4'>X{totalOrder}</span>
+                      <span>{Goodsmoney}đ</span> <span className='ml-4'>X{totalOrder}</span>
                       </div>
                       <div className="flex">
                       <h4 className='w-[160px]'>Phí vận chuyển:</h4>
@@ -317,7 +385,7 @@ const OrderManager = () => {
                       </div>
                       <div className="flex">
                       <h4 className='w-[160px]'>Tổng giá tri:</h4>
-                      <span>{totalPrice-voucher}đ</span>
+                      <span>{totalPrice||0}đ</span>
                       </div>
                     </div>
                 </div>

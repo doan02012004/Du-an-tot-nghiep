@@ -62,7 +62,6 @@ const UpdateAddress = ({ setIsOpenForm, address }: Props) => {
     console.log("Updated data before mutation:", updatedData); 
     addressMutation.mutate({ action: "update", newAddress: updatedData });
     setIsOpenForm(false);
-    console.log(updatedData);
   };
 
   return (
@@ -156,38 +155,6 @@ const UpdateAddress = ({ setIsOpenForm, address }: Props) => {
             className="w-full px-5 py-3 placeholder-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent lg:placeholder:text-base placeholder:text-sm"
             placeholder="Địa chỉ"
           />
-        </div>
-        <div className="flex items-center gap-x-8">
-          <div className="flex items-center gap-x-2">
-            <input
-              type="radio"
-              id="nam"
-              value={"house"}
-              className="accent-slate-950 size-5"
-              {...register("option", { required: true })}
-            />
-            <label
-              htmlFor="nam"
-              className="block text-sm font-semibold cursor-pointer text-dark"
-            >
-              Nhà/chung cư
-            </label>
-          </div>
-          <div className="flex items-center gap-x-2">
-            <input
-              type="radio"
-              id="nu"
-              value={"company"}
-              className="accent-slate-950 size-5"
-              {...register("option", { required: true })}
-            />
-            <label
-              htmlFor="nu"
-              className="block text-sm font-semibold cursor-pointer text-dark"
-            >
-              Công ty/cơ quan
-            </label>
-          </div>
         </div>
         <div className="flex items-center gap-x-2">
           <input

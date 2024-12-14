@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Iattribute, Igallery, InewColor, InewSize } from '../../interfaces/product'
+import { Iattribute, Igallery, InewColor, InewSize, Iproduct } from '../../interfaces/product'
 import { message } from 'antd'
 import { addColorProduct, addSizeProduct, deleteColorProduct, deleteImageGallery, deleteSizeProduct, updateProductAttribute, updateProductGallery } from '../../../services/products'
 import { IColor } from '../../interfaces/Color'
@@ -48,10 +48,10 @@ const useAttributeMutation = () => {
                     break;
                 case 'deleteSize':
                     try {
-                      const data =   await deleteSizeProduct(option.productId, option.size) as {message:string,success:boolean}
+                      const data =   await deleteSizeProduct(option.productId, option.size) as {message:string,success:boolean,product:Iproduct}
                         if(data?.success == true){
                             message.success(`Xóa size ${option?.size} thành công!`);
-                            socket?.current?.emit('adminDeleteSize',{productId:option.productId,size:option.size})
+                            socket?.current?.emit('adminDeleteSize',{newProduct:data.product,productId:option.productId,size:option.size})
                            }else{
                             message.error('Xóa thất bại !')
                            }
@@ -61,10 +61,10 @@ const useAttributeMutation = () => {
                     break;
                 case 'deleteColor':
                     try {
-                       const data =  await deleteColorProduct(option.productId, option.color) as {message:string,success:boolean}
+                       const data =  await deleteColorProduct(option.productId, option.color) as {message:string,success:boolean,product:Iproduct}
                        if(data?.success == true){
                         message.success("Xóa màu sắc thành công!");
-                        socket?.current?.emit('adminDeleteColor',{productId:option.productId,color:option.color})
+                        socket?.current?.emit('adminDeleteColor',{newProduct:data.product,productId:option.productId,color:option.color})
                        }else{
                         message.error('Xóa thất bại !')
                        }

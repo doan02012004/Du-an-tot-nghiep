@@ -86,7 +86,7 @@ export const createComplaint = async (req, res) => {
 // Lấy tất cả khiếu nại
 export const getAllComplaints = async (req, res) => {
     try {
-        const complaints = await complaintModel.find().populate('orderId', 'orderNumber totalPrice').populate('userId', 'fullname email');
+        const complaints = await complaintModel.find().populate('orderId', 'orderNumber totalPrice status').populate('userId', 'fullname email phone');
 
         return res.status(StatusCodes.OK).json(complaints);
     } catch (error) {
@@ -100,8 +100,8 @@ export const getComplaintById = async (req, res) => {
 
     try {
         const complaint = await complaintModel.findById(complaintId)
-            .populate('orderId', 'orderNumber totalPrice')
-            .populate('userId', 'fullname email');
+            .populate('orderId', 'orderNumber totalPrice status')
+            .populate('userId', 'fullname email phone');
 
         if (!complaint) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Complaint not found" });
@@ -115,7 +115,7 @@ export const getComplaintById = async (req, res) => {
 
 // Cập nhật trạng thái khiếu nại
 export const updateComplaintStatus = async (req, res) => {
-    const { complaintId, status, response } = req.body;
+    const { complaintId, status, response, note } = req.body;
 
     try {
         // Kiểm tra trạng thái hợp lệ của khiếu nại
@@ -127,7 +127,7 @@ export const updateComplaintStatus = async (req, res) => {
         // Cập nhật khiếu nại
         const updatedComplaint = await complaintModel.findByIdAndUpdate(
             complaintId,
-            { status, response },
+            { status, response, note },
             { new: true }
         );
 

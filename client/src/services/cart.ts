@@ -4,7 +4,7 @@ export const addToCart = async (option: { userId?: string,productId?:string,attr
         const res = await instance.post(`/carts/addtocart`, option)
         return res.data
     } catch (error) {
-        console.log(error)
+        return error
     }
 }
 

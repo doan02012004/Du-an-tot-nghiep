@@ -21,6 +21,10 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         // remove user from active users
+        const user = activeUsers.find((user) => user.socketId == socket.id)
+        if(user){
+            
+        }
         activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
         // send all active users to all users
         io.emit("getUsers", activeUsers);
@@ -97,6 +101,14 @@ io.on("connection", (socket) => {
     socket.on('updateOrderStatus',(data) =>{
         // phát sự kiện cho toàn bộ client
         io.emit('onUpdateOrderStatus',data)
+    })
+
+    socket.on('adminDeleteVoucher',(data)=>{
+        io.emit('deleteVoucher',data)
+    })
+
+    socket.on('adminUpdateVoucher',(data)=>{
+        io.emit('updateVoucher',data)
     })
     
     
