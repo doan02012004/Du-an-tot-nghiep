@@ -4,7 +4,7 @@ export const addToCart = async (option: { userId?: string,productId?:string,attr
         const res = await instance.post(`/carts/addtocart`, option)
         return res.data
     } catch (error) {
-        console.log(error)
+        return error
     }
 }
 
@@ -21,9 +21,10 @@ export const getCart = async (userId: string) => {
 export const increaseProductCartQuantity = async (option: { userId?: string,productId?:string,attributeId?:string})=>{
     try {
         const res = await instance.post(`/carts/increase`, option)
-        return res.data
+        return res
     } catch (error) {
-        console.log(error)
+        // console.log(error)
+        return error
     }
 }
 

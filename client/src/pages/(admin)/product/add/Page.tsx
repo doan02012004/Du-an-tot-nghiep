@@ -19,8 +19,8 @@ const AddProductAdmin = () => {
   const gallerys = useSelector((state: any) => state.product.gallerys)
   const isSave = useSelector((state: any) => state.product.isSave)
   const dispath = useDispatch()
-  useEffect(() => {
-    dispath(setSizes([]))
+  useEffect( () => {
+     dispath(setSizes([]))
     dispath(setProductInfor({}))
     dispath(setGallerys([]))
     dispath(setAttributes([]))

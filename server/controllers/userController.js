@@ -256,6 +256,7 @@ export const register = async (req, res) => {
         const address = await AddressModel.create(
             {
                 ...req.body,
+                userId: userData?._id,
                 fullname: `${User.firstname} ${User.lastname}`,
                 isDefault: true
 

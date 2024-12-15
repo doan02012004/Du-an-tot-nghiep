@@ -10,9 +10,9 @@ export const sendMessage = async (option: Ichat) => {
     }
 }
 
-export const findChatAdmin = async (userId?:string) => {
+export const findChatAdmin = async () => {
     try {
-        const res = await instance.get(`/chats/chatadmin/${userId}`)
+        const res = await instance.get(`/chats/chatadmin`)
         return res.data
     } catch (error) {
         console.log(error)

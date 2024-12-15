@@ -70,21 +70,22 @@ cron.schedule('0 0 * * *', async () => {
     }
 });
 cron.schedule('0 0 * * *', async () => {
+    
     try {
         // Tìm đơn hàng đã giao mà chưa cập nhật trạng thái received
         const threeDaysAgo = new Date();
         threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-
+        
         const orders = await orderModel.find({
-            status: 'delivered',
+            status: 'unpaid',
             createdAt: { $lte: threeDaysAgo } // Kiểm tra đơn hàng đã giao quá 3 ngày
         });
         for (const order of orders) {
-            order.status = 'received';
+            order.status = 'cancelled';
+            order.cancelReason = 'Auto-cancelled after 3 days without payment'; // Thêm lý do hủy
             await order.save();
-            console.log(`Order ${order._id} đã tự động chuyển trạng thái từ delivered sang received.`);
+            console.log(`Order ${order._id} đã tự động chuyển trạng thái từ unpaid sang cancelled.`);
         }
-        console.log('Order status update check completed.');
     } catch (error) {
         console.error('Có lỗi xảy ra khi cập nhật trạng thái đơn hàng:', error.message);
     }

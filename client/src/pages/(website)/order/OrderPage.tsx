@@ -32,7 +32,7 @@ const OrderPage = () => {
     const [payment, setPayment] = useState<"cash" | "atm" | "vnPay" | "credit">('cash')
     const [productDisplay, setProductDisplay] = useState(false)
     const { currentUser } = useContext(AppContext)
-    const [addressDefault, setAddressDefault] = useState<Iaddress | null>(null)
+    const [addressDefault, setAddressDefault] = useState<Iaddress | any>(null)
     const [isOpenForm, setIsOpenForm] = useState(false)
     const [vouchers, setVouchers] = useState<IVoucher[]>([])
     const totalCart = useSelector((state: any) => state.cart.totalCart)
@@ -86,7 +86,21 @@ const OrderPage = () => {
     useEffect(() => {
         if (addressQuery?.data && addressQuery?.data?.length > 0) {
             const findAddressDefault = addressQuery?.data?.find((item: Iaddress) => item.isDefault == true)
-            setAddressDefault(findAddressDefault)
+            if(findAddressDefault){
+                setAddressDefault(findAddressDefault)
+            }else{
+                setAddressDefault(() =>{
+                    if(addressQuery?.data){
+                        if(addressQuery?.data?.length > 0){
+                            return addressQuery?.data[0]
+                        }else{
+                            return null
+                        }
+                    }else{
+                        return null
+                    }
+                })
+            }
         }
     }, [addressQuery?.data])
 
@@ -98,9 +112,21 @@ const OrderPage = () => {
                 const findAtb = item?.productId?.attributes.find((atb:Iattribute) => atb?._id == item?.attributeId)
                 return findAtb
             })
+            const checkQuantity = carts.some((item:IcartItem) => {
+                const findAtb = item?.productId?.attributes.find((atb:Iattribute) => atb?._id == item?.attributeId)
+                if(findAtb){
+                    if(findAtb.instock < item.quantity){
+                        return true
+                    }else{
+                        return false
+                    }
+                }else{
+                    return true
+                }
+            })
             const checkAtb = cartAtb.some((item: Iattribute) => item?.active == false)
             const checkInstock = cartAtb.some((item: Iattribute) => item?.instock == 0)
-            if(check || checkAtb || checkInstock||checkProduct){
+            if(check || checkAtb || checkInstock||checkProduct|checkQuantity){
                 if(checkCarts == true){
                     dispath(setCheckCarts(false))
                 }
@@ -134,7 +160,7 @@ const OrderPage = () => {
                             <div className=''>
                                 <div className="pb-4">
                                     <span className="text-lg lg:text-xl text-black font-semibold">Địa chỉ giao hàng</span>
-                                    {!currentUser && (
+                                    {/* {!currentUser && (
                                         <>
                                             <div className="py-4 flex items-center gap-5">
                                                 <button className="py-3 bg-black w-48 lg:py-4 rounded-tl-[20px] rounded-br-[20px] font-semibold text-white hover:bg-white hover:text-black hover:border hover:border-black">ĐĂNG
@@ -147,7 +173,7 @@ const OrderPage = () => {
                                                 moda.</span>
                                         </>
 
-                                    )}
+                                    )} */}
 
                                     {
                                         addressDefault && (

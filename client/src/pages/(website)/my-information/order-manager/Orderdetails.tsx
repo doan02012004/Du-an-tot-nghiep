@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CheckCircleOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Form, Input, message, Radio } from 'antd';
+import { CheckCircleOutlined, CloseOutlined, DeleteOutlined, RollbackOutlined } from '@ant-design/icons';
+import { Button, Form, Input, message, Radio, Spin } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import instance from '../../../../common/config/axios';
@@ -9,18 +9,25 @@ import { useOrderQuery } from '../../../../common/hooks/orders/useOrderQuery';
 import { IOrder } from '../../../../common/interfaces/orderInterfaces';
 import CommentForm from './_components/CommentForm';
 import { AppContext } from '../../../../common/contexts/AppContextProvider';
+import TextArea from 'antd/es/input/TextArea';
+import useComplaintMutation from '../../../../common/hooks/complaint/useComplaintMutation';
 
 const OrderDetails = () => {
   const { id } = useParams();
   const query = useOrderQuery({ orderId: id });
   const [orders,setorder] =useState({} as IOrder)
   const {currentUser,socket} = useContext(AppContext)
+  const [open,setopen] = useState(false)
+  const [isReturningLoading, setIsReturningLoading] = useState(false);
+  const [isReceivedLoading, setIsReceivedLoading] = useState(false);
+
   useEffect(()=>{
     if(query?.data){
       setorder(query?.data)
     }
   },[query?.data])
   const mutation = useOrderMutation();
+  const mutations = useComplaintMutation();
   const navigate = useNavigate()
   const [form] = Form.useForm();
   const [check,setcheck] = useState(false)
@@ -31,9 +38,9 @@ const OrderDetails = () => {
   const items = orders?.items;
   const ship = orders?.ship;
   const voucher = orders?.voucher
-  const Goodsmoney = orders.items?.reduce((sum,item:any)=> item?.total + sum, 0 ) || 0
+  const Goodsmoney = orders.items && orders.items?.reduce((sum,item:any)=> item?.total + sum, 0 ) || 0
   const Totalamount =orders?.totalPrice 
-
+  console.log(items)
   useEffect(()=>{
     if(socket?.current){
       socket.current?.on('onUpdateOrderStatus',(data:any) =>{
@@ -142,8 +149,34 @@ const OrderDetails = () => {
   };
   // Hàm xử lý nhận hàng
   const onHandleReceived = (orderId:string) =>{
+    // setIsReceivedLoading(true)
     mutation.mutate({ action: "updateStatus", orderId: orderId, status: "received" })
+    setIsReceivedLoading(false)
   }
+
+  const handleSubmit = (values:any) => {
+    // setIsReturningLoading(true)
+    mutations.mutate({
+      action: 'add',
+      complaintData: {
+        orderId: values.orderId,
+        userId: values.userId,
+        complaintReason: values.complaintReason,
+        status: values.status,
+      },
+    });
+  
+    // Cập nhật trạng thái đơn hàng thành 'Returngoods'
+    mutation.mutate({
+      action: "updateStatus",
+      orderId: values.orderId,
+      status: "Complaints",
+    });
+    form.resetFields(); // Reset lại form sau khi submit
+    setopen(!open);
+    setIsReturningLoading(false)
+    
+  };
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -156,15 +189,21 @@ const OrderDetails = () => {
         >
           Trạng thái: {translateStatus(orders?.status || '')}
         </span>
+        {/* onClick={()=>{setopen(!open);setitems(order.items);setid(order._id);settotalOrder(order.totalOrder);settotalPrice(order.totalPrice);settvoucher(order?.voucher?.discountValue),setship(order?.ship?.value?.price)}} */}
+        {(orders?.status === "delivered") && (
+                      <Button className='ml-2' onClick={()=>{setopen(!open),setIsReturningLoading(true)}} disabled={isReturningLoading || isReceivedLoading} icon={isReturningLoading ? <Spin size="small" /> : <RollbackOutlined style={{ fontSize: '18px', marginRight: '8px' }} />}>
+                        
+                        Trả hàng
+                      </Button>
+                    ) }
         {(orders?.status === "delivered" || orders?.status === "Exchanged") && (
-                     <Button type='primary' onClick={() => onHandleReceived(orders?._id) } className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline ml-2">
-                      <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} />
+                     <Button type='primary' onClick={() => {onHandleReceived(orders?._id),setIsReceivedLoading(true)} } className="flex justify-center text-[14px]  cursor-pointer italic underline ml-2" disabled={isReceivedLoading || isReturningLoading} icon={isReceivedLoading ? <Spin size="small" /> : <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} />}>
+                      {/* <CheckCircleOutlined style={{ fontSize: '24px', color: 'white' }} /> */}
                       Đã nhận hàng
                      </Button>
                     )}
-        {(orders?.paymentMethod === "cash" && orders.status === "pending") && (
-                     <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] ml-1 mt-1 cursor-pointer italic underline">
-                     <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />
+        {(orders?.paymentMethod === "cash" && (orders?.status === "pending" || orders?.status === "confirmed")) && (
+                     <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] ml-1 mt-1 cursor-pointer italic underline" disabled={mutation.isPending} icon={mutation.isPending ? <Spin size="small" /> : <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />}>
                      Huỷ đơn 
                      </Button>
                     )}
@@ -172,13 +211,21 @@ const OrderDetails = () => {
                       <div className='flex'>
                         <Button onClick={() => handlePayAgain(orders._id)} ><span>Tiếp tục thanh toán</span>
                         </Button>
-                        <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline">
-                        <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} /> Huỷ đơn hàng
+                        <Button type='primary' danger onClick={()=>{setcheck(!check)}} className="flex justify-center text-[14px] mx-2 cursor-pointer italic underline" disabled={mutation.isPending} icon={mutation.isPending ? <Spin size="small" /> : <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />}>
+                       Huỷ đơn hàng
                         </Button>
                       </div>
                     )}
+        {orders?.cancelReason && (
+          <div className="px-4 py-2 rounded-full font-semibold">
+            Lý do: {orders?.cancelReason}
+          </div>
+        )}
       </div>
 
+      <div className="px-4 mb-6">
+        <span>Ngày tạo: {new Date(orders?.createdAt).toLocaleString()}</span>
+      </div>
       {/* Thông tin đơn hàng */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Địa chỉ nhận hàng */}
@@ -308,6 +355,93 @@ const OrderDetails = () => {
       {/* form đánh giá  */}
       {dataComment && (
         <CommentForm item={dataComment} setDataComment={setDataComment} orderId={orders?._id?orders._id:''}/>
+      )}
+
+      {open && (
+        <div className="w-[50%] h-[80%] border border-black rounded-xl fixed top-20 p-5 shadow-2xl bg-white overflow-y-auto">
+          <div className="">
+            <h1 className='text-center text-red font-semibold'>KHIẾU NẠI ĐƠN HÀNG</h1>
+            <CloseOutlined style={{ fontSize: 20, color: 'black' }} onClick={()=>setopen(!open)} className='absolute top-5 right-5' />
+              <div className="mt-10">
+                <div className="grid grid-cols-2 gap-4 mb-3 ">
+                    <div className="">
+                    {items?.map((pro:any,index:number)=>(
+                      <div key={index+1} className="mt-2 flex">
+                        <img src={pro.gallery.avatar} alt="" width={100} height={20} className='object-cover' />
+                        <div className="ml-[6%] w-[178.715px]">
+                          <h3>{pro.name}</h3>
+                          <p>Size: {pro.attribute.size}</p>
+                          <p>Màu: {pro.attribute.color}</p>
+                          <div className="flex justify-between">
+                            <span>Giá : {pro.price}đ</span>
+                            <span>X{pro.quantity}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) )}
+                    </div>
+                    <div className="mt-4 border-dashed border-l-4 p-5">
+                      <div className="flex">
+                      <h4 className='w-[160px]'>Tống số tiền hàng :</h4>
+                      <span>{Goodsmoney}đ</span> <span className='ml-4'>X{orders?.totalOrder}</span>
+                      </div>
+                      <div className="flex">
+                      <h4 className='w-[160px]'>Phí vận chuyển:</h4>
+                      <span>{ship?.value?.price?.toLocaleString() || '0'}đ</span>
+                      </div>
+                      <div className="flex">
+                      <h4 className='w-[160px]'>Mã giảm giá:</h4>
+                      <span>{voucher?.discountValue.toLocaleString() || '0'}đ</span>
+                      </div>
+                      <div className="flex">
+                      <h4 className='w-[160px]'>Tổng giá tri:</h4>
+                      <span>{Totalamount||0}đ</span>
+                      </div>
+                    </div>
+                </div>
+                {/* from */}
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleSubmit}
+                    initialValues={{
+                      orderId: id, // Giá trị orderId tạm thời
+                      userId: currentUser?._id, // Giá trị userId tạm thời
+                      status: 'new', // Giá trị mặc định của status
+                    }}
+                  >
+                    {/* Trường orderId (ẩn đi) */}
+                    <Form.Item name="orderId" style={{ display: 'none' }}>
+                      <Input type="hidden" />
+                    </Form.Item>
+
+                    {/* Trường userId (ẩn đi) */}
+                    <Form.Item name="userId" style={{ display: 'none' }}>
+                      <Input type="hidden" />
+                    </Form.Item>
+
+                    {/* Trường status (ẩn đi) */}
+                    <Form.Item name="status" style={{ display: 'none' }}>
+                      <Input type="hidden" />
+                    </Form.Item>
+
+                    {/* Trường complaintReason */}
+                    <Form.Item
+                      name="complaintReason"
+                      label="Lý Do Khiếu Nại"
+                      rules={[{ required: true, message: 'Vui lòng nhập lý do khiếu nại!' }]}
+                    >
+                      <TextArea rows={4} placeholder="Nhập lý do khiếu nại của bạn..." />
+                    </Form.Item>
+
+                    {/* Nút Submit */}
+                    <Form.Item className="text-center">
+                      <Button type="primary" htmlType="submit">Gửi Khiếu Nại</Button>
+                    </Form.Item>
+                  </Form>
+              </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -31,7 +31,6 @@ const OrderOptionShip = ({ onShippingCostChange }: Props) => {
             const sumVolume = carts.reduce((sum: number, cart: IcartItem) => sum + cart.volume, 0);
             const weightCost = ship.weight.find(range => sumWeight >= range.minWeight && sumWeight <= range.maxWeight) as WeightRange;
             const volumeCost = ship.volume.find(range => sumVolume >= range.minVolume && sumVolume <= range.maxVolume) as VolumeRange;
-            // console.log("khối lương",weightCost)
             if (weightCost?.price > volumeCost?.price) {
                 const shipWeight = {
                     nameBrand: ship.nameBrand,

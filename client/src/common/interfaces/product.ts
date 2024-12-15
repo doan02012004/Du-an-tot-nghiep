@@ -28,6 +28,7 @@ export interface IproductInfor {
     discount: number,
     status?: boolean,
     featured?: boolean,
+    slug?:string
 }
 
 export interface Igallery {

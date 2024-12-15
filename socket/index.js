@@ -21,6 +21,10 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         // remove user from active users
+        const user = activeUsers.find((user) => user.socketId == socket.id)
+        if(user){
+            
+        }
         activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
         // send all active users to all users
         io.emit("getUsers", activeUsers);

@@ -205,7 +205,7 @@ const ListUser = () => {
             render: (user: Iuser) => (
                 <div className='flex gap-2'>
                     {/* Kiểm tra nếu người dùng có đơn hàng chưa thanh toán */}
-                    {user.hasUnpaidOrder ? (
+                    {user.hasUnpaidOrder || user?.role === 'admin' ? (
                         <Button type="default" disabled> Không thể xóa</Button>  // Vô hiệu hóa nút xóa
                     ) : (
                         <Popconfirm title="Xóa người dùng?" description="Bạn có muốn xóa không?"

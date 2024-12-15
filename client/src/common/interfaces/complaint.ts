@@ -12,4 +12,5 @@ export interface IComplaintUpdate {
     complaintId: string;
     status: 'new' | 'in_progress' | 'resolved' | 'cancelled';
     response?: string;
+    note?: string;
 }

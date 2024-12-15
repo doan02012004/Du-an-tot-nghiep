@@ -131,7 +131,7 @@ const Sidebar_prod = () => {
                   {colors?.map((color: any) => (
                     <li key={color.name}>
                     <button
-                      className={`color-btn w-5 h-5 rounded-full relative ${color.background === '#FFFFFF' ? 'border border-[#000]' : ''} ${highlightedColors.includes(color.name) ? 'highlighted' : ''}`}
+                      className={`color-btn w-5 h-5 rounded-full relative  ${color.background === '#FFFFFF' ? 'border border-[#000]' : ''} ${highlightedColors.includes(color.name) ? 'highlighted' : ''}`}
                       onClick={() => handleColorClick(color.name)}
                       style={{ backgroundColor: color.background, borderColor: color.background === '#FFFFFF' ? 'black' : 'transparent' }}
                     >

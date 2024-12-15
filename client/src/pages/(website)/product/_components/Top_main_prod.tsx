@@ -26,8 +26,8 @@ const Top_main_prod = () => {
               <div id="myDropdown" className="dropdown-content bg-white border border-gray-300 rounded-lg shadow-lg mt-2 absolute z-20 w-[67%] lg:w-[274px]">
                 <button onClick={() => applySort("default")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Mặc định</button>
                 <button onClick={() => applySort("new")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Mới nhất</button>
-                <button onClick={() => applySort("bestSale")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Được mua nhiều nhất</button>
-                <button onClick={() => applySort("favourite")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Được yêu thích nhất</button>
+                {/* <button onClick={() => applySort("bestSale")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Được mua nhiều nhất</button>
+                <button onClick={() => applySort("favourite")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Được yêu thích nhất</button> */}
                 <button onClick={() => applySort("desc")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Giá: cao đến thấp</button>
                 <button onClick={() => applySort("asc")} className="w-[100%] flex justify-start px-4 py-2 text-gray-800 hover:bg-gray-200">Giá: thấp đến cao</button>
               </div>

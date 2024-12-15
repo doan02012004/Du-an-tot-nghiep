@@ -15,7 +15,11 @@ const useCartMutation = () => {
                 case "addtocart":
                     try {
                         const data = await addToCart({ userId: currentUser?._id, ...options.cart })
-                        message.success("Thêm sản phẩm vào giỏ hàng thành công")
+                         if(data.message == 'ok') {
+                            message.success("Thêm sản phẩm vào giỏ hàng thành công")
+                        }else{
+                            message.error("Thêm giỏ hàng thất bại")
+                        }
                         return data
                     } catch (error) {
                         return error
@@ -24,7 +28,9 @@ const useCartMutation = () => {
                 case "increase":
                     try {
                         const data = await increaseProductCartQuantity({ userId: currentUser?._id, ...options.cart })
+                        if(data?.status === 200){
                         message.success("Tăng số lượng thành công")
+                        }
                         return data
                     } catch (error) {
                         return error

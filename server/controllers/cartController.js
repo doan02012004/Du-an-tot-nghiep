@@ -37,7 +37,7 @@ export const addToCart = async (req, res) => {
                     galleryId: galleryId
                 })
                 await newCart.save()
-                return res.status(200).json({ message: "thêm mới giỏ hàng thành công" })
+                return res.status(200).json({ message: "ok" })
             }
         } else {
             const checkProduct = carts.carts.find(item => (item.productId == productId && item.attributeId == attributeId))
@@ -60,7 +60,7 @@ export const addToCart = async (req, res) => {
                 }
                 }
                 await carts.save()
-                return res.status(200).json({ message: "thêm sản phẩm vào giỏ hàng thành công" })
+                return res.status(200).json({ message: "ok" })
             }
 
         } catch (error) {

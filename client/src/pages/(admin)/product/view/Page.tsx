@@ -7,7 +7,6 @@ import { Iproduct } from "../../../../common/interfaces/product"
 import { Button, Tabs, TabsProps } from "antd"
 import { LeftOutlined, LoadingOutlined } from "@ant-design/icons"
 import TabImageUpdate from "./_components/TabImageUpdate"
-import AddProperties from "./_components/AddProperties"
 import TabComment from "./_components/TabComment"
 
 

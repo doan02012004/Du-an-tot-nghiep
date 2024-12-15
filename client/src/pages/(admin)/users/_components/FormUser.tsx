@@ -25,7 +25,11 @@ const FormUser = ({ data, setUser }: FormUserProps) => {
         if (data) {
             setIsOpen(true)
             setId(data._id)
-            form.setFieldsValue({ ...data, date: moment(data.date) })
+            form.setFieldsValue({
+                ...data,
+                password:undefined,
+                date: moment(data.date)
+            })
             setOptionForm('update')
         }
     }, [data])
@@ -47,13 +51,18 @@ const FormUser = ({ data, setUser }: FormUserProps) => {
         }
     }
     const onSubmit = (user: Iuser) => {
+       
         if (optionForm == 'add') {
             mutation.mutate({ action: 'add', user: user })
             setIsOpen(false)
         } else {
+            
             const newUser = {
                 _id: id,
                 ...user
+            }
+            if (!form.getFieldValue('password') && form.getFieldValue('password')=='') {
+                newUser.password = data.password
             }
             mutation.mutate({ action: 'update', user: newUser })
             setIsOpen(false)
@@ -103,8 +112,14 @@ const FormUser = ({ data, setUser }: FormUserProps) => {
                                 <Form.Item<Iuser> name="email" label="Email" rules={[{ required: true, message: "Please enter email!" }, { type: 'email', message: "Email invalidate!" }]}>
                                     <Input />
                                 </Form.Item>
-                                <Form.Item<Iuser> name="password" label="Password" rules={[{ required: true, message: "Please enter password!" }]}>
-                                    <Input.Password />
+                                <Form.Item<Iuser> name="password" label="Password" rules={[
+                                    ...(optionForm === 'add'
+                                        ? [{ required: true, message: "Please enter password!" }]
+                                        : []),
+                                ]}>
+                                    <Input.Password placeholder={optionForm === 'update'
+                                        ? "Để trống nếu không muốn thay đổi mật khẩu"
+                                        : ""} />
                                 </Form.Item>
                             </div>
                             <Form.Item<Iuser> name="phone" label="Phone" rules={[{ required: true, message: "Please enter phone!" }]} validateStatus={inputStatus as ''} help={errorMessage}>
@@ -114,7 +129,10 @@ const FormUser = ({ data, setUser }: FormUserProps) => {
                                 />
                             </Form.Item>
                             <div className='grid grid-cols-3 items-center gap-4'>
-                                <Form.Item<Iuser> label="Role" name="role">
+                            <Form.Item<Iuser>  name="address" label="Address" rules={[{ required: true, message: "Please enter address!" }]} className={optionForm === 'update' ? '' : 'hidden'}>
+                                <Input />
+                            </Form.Item>
+                                <Form.Item<Iuser> label="Role" name="role" className={optionForm === 'update' ? 'hidden' : ''}>
                                     <Select>
                                         <Select.Option value="admin">Admin</Select.Option>
                                         <Select.Option value="user">User</Select.Option>
@@ -135,29 +153,29 @@ const FormUser = ({ data, setUser }: FormUserProps) => {
 
                             <div className='grid grid-cols-3 gap-4'>
                                 <Form.Item<Iuser> label="City" name="city">
-                                    <Select loading={queryDataLocation.isLoading} value={huyen} onChange={(value:any) => onChangeTinh(value)}>
+                                    <Select loading={queryDataLocation.isLoading} value={huyen} onChange={(value: any) => onChangeTinh(value)}>
                                         {queryDataLocation?.data?.map((item: any, i: number) => (
                                             <Select.Option key={i} value={item.name}>{item.name}</Select.Option>
                                         ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item<Iuser> label="District" name="district">
-                                    <Select loading={queryDataLocation.isLoading} value={xa} onChange={(value:any) => onChangeHuyen(value)}>
-                                    {huyen?.map((item: any, i: number) => (
-                                        <Select.Option  key={i} value={item.name} >{item.name}</Select.Option>
-                                    ))}
+                                    <Select loading={queryDataLocation.isLoading} value={xa} onChange={(value: any) => onChangeHuyen(value)}>
+                                        {huyen?.map((item: any, i: number) => (
+                                            <Select.Option key={i} value={item.name} >{item.name}</Select.Option>
+                                        ))}
                                     </Select>
-                                </Form.Item>    
+                                </Form.Item>
                                 <Form.Item<Iuser> label="Ward" name="ward">
                                     <Select loading={queryDataLocation.isLoading}>
-                                    {xa?.map((item: any, i: number) => (
-                                        <Select.Option key={i} value={item.name}>{item.name}</Select.Option>
-                                    ))}
-                                        
+                                        {xa?.map((item: any, i: number) => (
+                                            <Select.Option key={i} value={item.name}>{item.name}</Select.Option>
+                                        ))}
+
                                     </Select>
                                 </Form.Item>
                             </div>
-                            <Form.Item<Iuser> name="address" label="Address" rules={[{ required: true, message: "Please enter address!" }]}>
+                            <Form.Item<Iuser>  name="address" label="Address" rules={[{ required: true, message: "Please enter address!" }]} className={optionForm === 'update' ? 'hidden' : ''}>
                                 <Input />
                             </Form.Item>
                             <Form.Item>
@@ -165,7 +183,7 @@ const FormUser = ({ data, setUser }: FormUserProps) => {
                                     <Button loading={mutation.isPending} type="primary" htmlType="submit">
                                         {optionForm == "add" ? "Add" : "Update"}
                                     </Button>
-                                    <Button htmlType="button" onClick={()=>  form.resetFields()}>
+                                    <Button htmlType="button" onClick={() => form.resetFields()}>
                                         Reset
                                     </Button>
 

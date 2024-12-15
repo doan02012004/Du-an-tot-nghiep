@@ -28,6 +28,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
     const voucher = useSelector((state: any) => state.cart.voucher) as Vouchers;
     const [loading, setLoading] = useState(false)
     const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
+    const checkCarts = useSelector((state: any) => state.cart.checkCarts)
     const orderMutation = useOrderMutation()
     const navigate = useNavigate()
     // const totalSubmit = useSelector((state: any) => state.cart.totalSubmit)
@@ -87,7 +88,7 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
     const onHandlePayment = async () => {
         setLoading(true)
         if (payment === "vnPay") {
-            const totalPrice = ship?.value?.price ? totalCart + ship?.value?.price : totalCart;
+            // const totalPrice = ship?.value?.price ? totalCart + ship?.value?.price : totalCart;
             const newvoucher = {
                 code: voucher?.code || null,
                 discountValue: (voucher?.type === "percentage" && (Math.min(totalCart * voucher?.value / 100, Number(voucher.maxDiscountValue)))) || (voucher?.type === "fixed" && (voucher?.value)) || (voucher?.type === "freeship" && (Math.min(Number(ship?.value?.price), Number(voucher?.maxDiscountValue)))) || 0,
@@ -96,7 +97,8 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
             }
             try {
                 const amount = totalCart + (ship?.value?.price || 0) as number;
-                const response = await paymentVNPay({ amount, userId: currentUser?._id, customerInfor: { ...address }, ship: ship, totalPrice: totalPrice, totalOrder: totalProduct, voucher: newvoucher });
+                const response = await paymentVNPay({ amount, userId: currentUser?._id, customerInfor: { ...address }, ship: ship, totalPrice: totalSubmit + ship?.value?.price, totalOrder: totalProduct, voucher: newvoucher });
+                // console.log(totalSubmit)
                 if (response?.paymentUrl) {
                     setLoading(false)
                     window.location.href = response.paymentUrl;
@@ -136,9 +138,9 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
         <>
             {payment === "cash" ? (
                 <button
+                disabled={!checkCarts}
                     onClick={onHandleOrder}
-                    className="bg-black text-white w-full py-3 
-                    text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] hover:bg-white hover:text-black hover:border hover:border-black"
+                    className={`${checkCarts? 'bg-black hover:bg-white hover:text-black hover:border hover:border-black' : 'bg-gray-300'} text-white w-full py-3 text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] `}
                 >
                     HOÀN THÀNH
                 </button>

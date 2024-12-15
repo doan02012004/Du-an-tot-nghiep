@@ -78,7 +78,7 @@ const Footer = () => {
               <ul className="footer-infomation-content hidden lg:block mb-6 lg:mb-0">
                 <li>
                   <a href="#" className="block text-sm mb-4 hover:text-dark">
-                    Về Mail-Shop
+                    Về Fendi Shop
                   </a>
                 </li>
                 <li>
@@ -182,7 +182,7 @@ const Footer = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="block text-sm hover:text-dark">
+                  <a href="/contact" className="block text-sm hover:text-dark">
                     Liên hệ
                   </a>
                 </li>
@@ -211,7 +211,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="py-6 lg:py-8">
-          <p className="text-center">© Mail Shop All rights reserved</p>
+          <p className="text-center">© Fendi Shop All rights reserved</p>
         </div>
         {/* Đệm cho phần navbar-mobile  */}
         <div className="h-10 lg:hidden" />
