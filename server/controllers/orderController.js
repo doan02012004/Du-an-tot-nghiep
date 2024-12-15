@@ -327,7 +327,7 @@ export const updateOrderStatus = async (req, res) => {
             shipped: "Đang giao",
             delivered: "Đã giao hàng",
             cancelled: "Đã hủy",
-            received: "Đã nhận hàng",
+            received: "Đơn hoàn thành",
             Returngoods: "Trả hàng",
             Complaints: "Đang xử lý khiếu nại",
             //   Refunded:"Hoàn tiền",
@@ -734,7 +734,8 @@ export const vnpayReturn = async (req, res) => {
             const order = await orderModel.findOneAndUpdate({
                 orderNumber:orderNumber
             },{
-                status:'pending'
+                status:'pending',
+                paymentStatus: "Đã thanh toán"
             });
             if (order) {
                 if(!orderInfo.includes('Thanh toan lai')){

@@ -61,7 +61,7 @@ const OrderList = (props: Props) => {
             case 'confirmed': return { label: 'Đã xác nhận', color: 'blue' };
             case 'shipped': return { label: 'Đang giao hàng', color: 'purple' };
             case 'delivered': return { label: 'Đã giao hàng', color: 'green' };
-            case 'received': return { label: 'Đã nhận', color: 'green' };
+            case 'received': return { label: 'Đơn hoàn thành', color: 'green' };
             case 'cancelled': return { label: 'Đã hủy', color: 'red' };
             case 'Returngoods': return { label: 'Trả hàng', color: 'black' };
             case 'Complaints': return { label: 'Khiếu nại', color: 'black' };
@@ -213,7 +213,7 @@ const OrderList = (props: Props) => {
                     <Option value="confirmed">Đã xác nhận</Option>
                     <Option value="shipped">Đang giao hàng</Option>
                     <Option value="delivered">Đã giao hàng</Option>
-                    <Option value="received">Đã nhận</Option>
+                    <Option value="received">Đơn hoàn thằnh</Option>
                     <Option value="cancelled">Đã hủy</Option>
                     <Option value="Returngoods">Trả hàng</Option>
                     <Option value="Complaints">Khiếu nại</Option>
