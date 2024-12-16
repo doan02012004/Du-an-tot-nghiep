@@ -132,7 +132,7 @@ const OrderDetails = () => {
       case 'delivered':
         return 'Đã giao hàng';
       case 'received':
-        return 'Đã nhận hàng';
+        return 'Hoàn thành';
       case 'cancelled':
         return 'Đã hủy';
       case 'Returngoods':

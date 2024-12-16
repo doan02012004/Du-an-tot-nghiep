@@ -152,7 +152,7 @@ const OrderManager = () => {
       case 'shipped':
         return 'Đang giao';
       case 'delivered':
-        return 'Đã giao thành công';
+        return 'Đã giao hàng';
       case 'cancelled':
         return 'Đã hủy';
       case 'received':

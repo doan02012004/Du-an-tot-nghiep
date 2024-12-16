@@ -1,5 +1,5 @@
 import { CustomerServiceOutlined, EnvironmentOutlined, MailOutlined, MessageOutlined, PhoneOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { message, Spin } from 'antd';
 import { useContext, useRef, useState } from 'react';
 import { AppContext } from '../../../common/contexts/AppContextProvider';
 import useContactMutation from '../../../common/hooks/contact/useContactMutation';
@@ -138,7 +138,9 @@ const PageContact = (props: Props) => {
                     <button
                         type="submit"
                         className="w-[210px] bg-black text-white  py-3 rounded hover:bg-gray-800 transition mt-6 rounded-tl-[16px] rounded-br-[16px]"
+                        disabled={mutation.isPending}
                     >
+                        {mutation.isPending && <Spin className='mr-2' size="small" />}
                         GỬI
                     </button>
                 </form>

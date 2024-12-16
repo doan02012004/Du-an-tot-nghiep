@@ -5,7 +5,7 @@ import { Iaddress } from "../../../../common/interfaces/address"
 import { Iuser } from "../../../../common/interfaces/auth"
 import { IcartItem } from "../../../../common/interfaces/cart"
 import { Iattribute, Igallery } from "../../../../common/interfaces/product"
-import { message } from "antd"
+import { message, Spin } from "antd"
 import { useNavigate } from "react-router-dom"
 import { IshipSubmit, Vouchers } from "../../../../common/interfaces/orderInterfaces"
 import { paymentVNPay } from "../../../../services/order"
@@ -138,10 +138,11 @@ const OrderSubmit = ({ payment, address, user, totalProduct, totalCart, carts, s
         <>
             {payment === "cash" ? (
                 <button
-                disabled={!checkCarts}
+                disabled={!checkCarts || orderMutation.isPending}
                     onClick={onHandleOrder}
                     className={`${checkCarts? 'bg-black hover:bg-white hover:text-black hover:border hover:border-black' : 'bg-gray-300'} text-white w-full py-3 text-lg font-semibold rounded-tl-[20px] rounded-br-[20px] `}
                 >
+                    {orderMutation.isPending && <Spin size="small" className="mx-2" />}
                     HOÀN THÀNH
                 </button>
             ) : (

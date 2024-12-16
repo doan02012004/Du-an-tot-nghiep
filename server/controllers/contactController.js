@@ -56,7 +56,7 @@ export const createContact = async (req, res) => {
         `;
 
         // Gửi email xác nhận cho khách hàng
-        await sendEmail(user.email, subject, emailContent);
+         sendEmail(user.email, subject, emailContent);
 
         // Trả về thông tin liên hệ đã được tạo
         return res.status(StatusCodes.CREATED).json(contact);
@@ -149,7 +149,7 @@ export const updateContactStatus = async (req, res) => {
             `;
 
             // Gửi email phản hồi cho khách hàng
-            await sendEmail(user.email, subject, emailContent);
+            sendEmail(user.email, subject, emailContent);
         }
 
         // Trả về liên hệ đã được cập nhật

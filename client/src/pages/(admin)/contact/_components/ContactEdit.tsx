@@ -1,4 +1,4 @@
-import { Button, Card, Descriptions, Input, Select, message } from 'antd';
+import { Button, Card, Descriptions, Input, Select, Spin, message } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import useContactQuery from '../../../../common/hooks/contact/useContactQuery';
 import useContactMutation from '../../../../common/hooks/contact/useContactMutation';
@@ -72,8 +72,8 @@ const ContactEdit = (props: Props) => {
                 placeholder="Chọn trạng thái"
               >
                 <Select.Option value="new" disabled={status !== "new"}>Mới</Select.Option>
-                <Select.Option value="in_progress" disabled={status === "in_progress"}>Đang xử lý</Select.Option>
-                <Select.Option value="resolved">Đã giải quyết</Select.Option>
+                <Select.Option value="in_progress" disabled={status !== "new"}>Đang xử lý</Select.Option>
+                <Select.Option value="resolved" disabled={status !== "in_progress"}>Đã giải quyết</Select.Option>
               </Select>
             </Descriptions.Item>
             <Descriptions.Item label="Ngày tạo">
@@ -92,7 +92,7 @@ const ContactEdit = (props: Props) => {
             </Descriptions.Item>
           </Descriptions>
           <div className="mt-4 flex justify-end">
-            <Button onClick={handleUpdate} type="primary">
+            <Button onClick={handleUpdate} type="primary" disabled={mutation.isPending} icon={mutation.isPending && <Spin size="small" />}>
               Cập nhật
             </Button>
           </div>
