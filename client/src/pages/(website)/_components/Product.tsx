@@ -52,8 +52,6 @@ const Product = ({ product,maxPrice,minPrice,discount,colorsUrl }: Props) => {
     }else if(option?.colorUrl && arrColor.length>0){
       const newVariant = option.attributes?.find((item) => {
         const findColorAtb1 = arrColor.find(c => item.color.includes(c))
-        // console.log(item.color)
-        // console.log(findColorAtb1)
         if(item?.price_new >= min_price && item.price_new<= max_price){
           if(arrColor.includes(item.color)){
             return item
@@ -89,10 +87,6 @@ const Product = ({ product,maxPrice,minPrice,discount,colorsUrl }: Props) => {
     const newGallery: Igallery | any = product?.gallerys.find((gallery: Igallery) => gallery.name == item.name)
     setGallery(newGallery)
   }
-const ar = ['TRẮNG','XANH']
-const str = 'TRẮNG NGÀ'
-const f = ar.filter(c => c.includes(str))
-console.log(f)
   return (
     <>
       <div>
