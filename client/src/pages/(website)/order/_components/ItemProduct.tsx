@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { formatPrice } from '../../../../common/utils/product'
 import { Iattribute, Igallery } from '../../../../common/interfaces/product'
 import { IcartItem } from '../../../../common/interfaces/cart'
+import { ArrowDownOutlined } from '@ant-design/icons'
 
 type Props = {
     cart: IcartItem
@@ -43,6 +44,7 @@ const ItemProduct = ({cart}: Props) => {
                                 <span className="text-[12px]">Màu sắc: {attribute && attribute?.color}</span>
                                 <span className="text-[12px]">Size: {attribute && attribute?.size}</span>
                             </div>
+                            <p className="text-xs font-bold text-red"><ArrowDownOutlined />{attribute ? attribute?.discount: 0}%</p>
                         </div>
                     </div>
                 </td>

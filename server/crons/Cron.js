@@ -90,3 +90,21 @@ cron.schedule('0 0 * * *', async () => {
         console.error('Có lỗi xảy ra khi cập nhật trạng thái đơn hàng:', error.message);
     }
 });
+cron.schedule('0 0 * * *', async () => {
+    try {
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+        
+        const orders = await orderModel.find({
+            status: 'Exchanged',
+            createdAt: { $lte: threeDaysAgo } 
+        });
+        for (const order of orders) {
+            order.status = 'received';
+            await order.save();
+            console.log(`Order ${order._id} đã tự động chuyển trạng thái từ Exchanged sang received.`);
+        }
+    } catch (error) {
+        console.error('Có lỗi xảy ra khi cập nhật trạng thái đơn hàng:', error.message);
+    }
+});
