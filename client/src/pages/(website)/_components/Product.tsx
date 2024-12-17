@@ -50,7 +50,22 @@ const Product = ({ product,maxPrice,minPrice,discount,colorsUrl }: Props) => {
       const newVariant = option.attributes?.reduce((current, item) =>item.price_new < current.price_new ? item: current, product?.attributes[0] )
       return newVariant
     }else if(option?.colorUrl && arrColor.length>0){
-      const newVariant = option.attributes?.find((item) => (arrColor?.includes(item.color) && item.price_new >= min_price && item.price_new <= max_price ) )
+      const newVariant = option.attributes?.find((item) => {
+        const findColorAtb1 = arrColor.find(c => item.color.includes(c))
+        // console.log(item.color)
+        // console.log(findColorAtb1)
+        if(item?.price_new >= min_price && item.price_new<= max_price){
+          if(arrColor.includes(item.color)){
+            return item
+          }else if(findColorAtb1){
+            return item
+          }else{
+            return null
+          }
+        }else{
+          return null
+        }
+      })
       return newVariant
     }else if(option.discount){
       const newVariant = option.attributes?.reduce((current, item) =>item.discount > current.discount ? item: current, product?.attributes[0] )
@@ -74,7 +89,10 @@ const Product = ({ product,maxPrice,minPrice,discount,colorsUrl }: Props) => {
     const newGallery: Igallery | any = product?.gallerys.find((gallery: Igallery) => gallery.name == item.name)
     setGallery(newGallery)
   }
-
+const ar = ['TRẮNG','XANH']
+const str = 'TRẮNG NGÀ'
+const f = ar.filter(c => c.includes(str))
+console.log(f)
   return (
     <>
       <div>
