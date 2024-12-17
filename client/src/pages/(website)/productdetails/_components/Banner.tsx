@@ -10,7 +10,7 @@ const Banner = () => {
       <Swiper className="swiper-wrapper rounded-tl-[32px] rounded-br-[32px]  lg:rounded-tl-[80px] lg:rounded-br-[80px]">
         <SwiperSlide className="swiper-slide w-full h-[396px] lg:h-[508px] overflow-hidden  rounded-tl-[32px] rounded-br-[32px]  lg:rounded-tl-[80px] lg:rounded-br-[80px] ">
           <a href="#" className="block w-full h-full">
-            <img src="https://cotton4u.vn/files/news/2024/06/18/8678df9a0f0d3eb466073f5c305c88aa.webp" className="w-full h-full object-cover"  />
+            <img src="https://cotton4u.vn/files/news/2024/12/16/5fbf0a4427b8cc4b9a8027cb0d75df2c.webp" className="w-full h-full object-cover"  />
           </a>
         </SwiperSlide>
         <SwiperSlide className="swiper-slide w-full h-[396px] lg:h-[508px] overflow-hidden  rounded-tl-[32px] rounded-br-[32px]  lg:rounded-tl-[80px] lg:rounded-br-[80px] ">
