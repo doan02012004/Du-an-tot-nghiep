@@ -183,7 +183,7 @@ export const createOrder = async (req, res) => {
                     `;
 
                     try {
-                        await sendEmail(userEmail, subject, message);
+                         sendEmail(userEmail, subject, message);
                     } catch (emailError) {
                         console.error("Lỗi khi gửi email:", emailError);
                     }
@@ -327,7 +327,7 @@ export const updateOrderStatus = async (req, res) => {
             shipped: "Đang giao",
             delivered: "Đã giao hàng",
             cancelled: "Đã hủy",
-            received: "Đơn hoàn thành",
+            received: "Hoàn thành",
             Returngoods: "Trả hàng",
             Complaints: "Đang xử lý khiếu nại",
             //   Refunded:"Hoàn tiền",
@@ -387,7 +387,7 @@ export const updateOrderStatus = async (req, res) => {
         </div>
       `;
 
-        await sendEmail(userEmail, subject, message);
+         sendEmail(userEmail, subject, message);
 
         // Trả về đơn hàng đã được cập nhật
         return res.status(StatusCodes.OK).json(updatedOrder);
@@ -727,9 +727,10 @@ export const vnpayReturn = async (req, res) => {
     const sortedParams = sortObject(vnp_Params);
     const queryString = querystring.stringify(sortedParams, { encode: false });
     const hash = crypto.createHmac('sha512', secretKey).update(queryString).digest('hex');
+    const orderNumber = vnp_Params['vnp_TxnRef']
+    const orderInfo =  vnp_Params['vnp_OrderInfo']
+    const findOrder = await orderModel.findOne({orderNumber:orderNumber}).populate("userId")
     if (hash === secureHash) {
-        const orderNumber = vnp_Params['vnp_TxnRef']
-        const orderInfo =  vnp_Params['vnp_OrderInfo']
         if (vnp_Params['vnp_ResponseCode'] === '00') {
             const order = await orderModel.findOneAndUpdate({
                 orderNumber:orderNumber
@@ -748,7 +749,7 @@ export const vnpayReturn = async (req, res) => {
                 const user = await UserModel.findById(order?.userId);
                 const userEmail = user?.email || ""; // Email của người dùng
                 if (userEmail) {
-                    await successEmail(userEmail, order?.orderNumber);  // Gọi hàm gửi email thành công
+                    successEmail(userEmail, order?.orderNumber);  // Gọi hàm gửi email thành công
                 }
                 return res.redirect('http://localhost:5173/thanks');
             } else {
@@ -756,6 +757,10 @@ export const vnpayReturn = async (req, res) => {
             }
 
         } else {
+            const userEmail = findOrder?.userId?.email || ""; // Email của người dùng
+            if (userEmail) {
+                failedEmail(userEmail, findOrder?.orderNumber);  // Gọi hàm gửi email thành công
+            }
             // return res.status(400).json({ message: 'Chữ ký không hợp lệ' });
             return res.redirect('http://localhost:5173/order');
         }

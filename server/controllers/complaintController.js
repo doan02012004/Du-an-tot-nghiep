@@ -73,7 +73,7 @@ export const createComplaint = async (req, res) => {
             `;
       
             // Gửi email cho khách hàng
-            await sendEmail(userEmail, subject, message);
+            sendEmail(userEmail, subject, message);
           }
 
         // Trả về thông tin khiếu nại đã được tạo
@@ -195,7 +195,7 @@ export const updateComplaintStatus = async (req, res) => {
             `;
   
             // Gửi email cho khách hàng
-            await sendEmail(userEmail, subject, message);
+            sendEmail(userEmail, subject, message);
         }
 
         // Trả về khiếu nại đã được cập nhật

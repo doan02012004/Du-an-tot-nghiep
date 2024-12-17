@@ -61,7 +61,7 @@ const OrderDetails = () => {
             case 'cancelled':
                 return 'Đã hủy';
             case 'received':
-                return 'Đơn hoàn thành';
+                return 'Hoàn thành';
             case 'Returngoods':
                 return 'Trả hàng';
             case 'Complaints':
@@ -166,7 +166,7 @@ const OrderDetails = () => {
                 onClick={() => handleStatusChange('delivered')}
                 disabled={!validateStatusChange(order.status, 'delivered')}
             >
-                Đơn hoàn thành
+                Đã giao hàng
             </Menu.Item>
             <Menu.Item
                 onClick={() => {handleStatusChange('cancelled');setcheck(!check)}}
@@ -178,7 +178,7 @@ const OrderDetails = () => {
                 onClick={() => handleStatusChange('received')}
                 disabled={!validateStatusChange(order.status, 'received')}
             >
-                Đã nhận hàng
+                Hoàn thành
             </Menu.Item>
             <Menu.Item
                 onClick={() => handleStatusChange('Returngoods')}
