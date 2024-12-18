@@ -284,7 +284,7 @@ const OrderManager = () => {
                       <span>{renderOrderStatus(order.status)}</span>
                     </div>
           
-                    {(order.paymentMethod === "cash" && (order.status === "pending" || order.status === "confirmed") ) && (
+                    {( (order.status === "pending" || order.status === "confirmed") ) && (
                      <Button type='primary' danger onClick={()=>{setorderId(order._id),setcheck(!check)}} className="flex justify-center text-[14px] mt-1 cursor-pointer italic underline" disabled={pendingState[order?._id]} icon={pendingState[order?._id] ? <Spin size="small" /> : <DeleteOutlined style={{ fontSize: '24px', color: 'white' }} />}>
                      Huỷ đơn 
                      </Button>

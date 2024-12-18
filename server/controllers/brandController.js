@@ -1,6 +1,7 @@
 
 import Brand from "../models/brandModel.js";
 import slugify from "slugify";
+import ProductModel from "../models/productModel.js";
 export const create = async (req, res) => {
     try {
         const brand = await Brand.create({
@@ -39,6 +40,11 @@ export const getBrandById = async (req, res) => {
 export const deleteBrandById = async (req, res) => {
     try {
         const brand = await Brand.findByIdAndDelete(req.params.id);
+        const findbr = await Brand.findOne({name:"Không xác định"})
+        const productUpdate = await ProductModel.updateMany(
+            { brandId: req.params.id }, 
+            { brandId: findbr._id }  
+        );
         return res.status(200).json(brand);
     } catch (error) {
         return res.status(500).json({ error });

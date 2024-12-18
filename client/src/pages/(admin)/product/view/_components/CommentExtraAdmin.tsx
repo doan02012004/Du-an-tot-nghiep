@@ -55,9 +55,9 @@ const CommentExtraAdmin = ({ comment, userTag, setUserTag }: CommentExtralProps)
             (<h5 className="text-rose-900 text-sm font-semibold">Fendi Shop</h5>)
             :
             (
-              <h5 className="text-black text-sm font-semibold">{recomment.userId.lastname} {recomment.userId.firstname}</h5>
+              <h5 className="text-black text-sm font-semibold">{recomment?.userId?.lastname} {recomment?.userId?.firstname}</h5>
             )}
-          <p className="text-xs" style={{ overflowWrap: 'break-word', wordWrap: 'break-word' }}> {recomment.tag && (<span className=' text-xs font-semibold text-blue mr-2'>{recomment?.tag?.role == 'admin'?'Fendi Shop': `${recomment.tag?.lastname} ${recomment.tag?.firstname}`}</span>)} {recomment?.comment.toString()}</p>
+          <p className="text-xs" style={{ overflowWrap: 'break-word', wordWrap: 'break-word' }}> {recomment?.tag && (<span className=' text-xs font-semibold text-blue mr-2'>{recomment?.tag?.role == 'admin'?'Fendi Shop': `${recomment?.tag?.lastname} ${recomment?.tag?.firstname}`}</span>)} {recomment?.comment.toString()}</p>
           <div className="flex justify-between items-center">
           <div className='text-xs text-black font-medium'>
             {formatDateComment(recomment?.createdAt)}
@@ -65,7 +65,7 @@ const CommentExtraAdmin = ({ comment, userTag, setUserTag }: CommentExtralProps)
             <div className="flex gap-x-8 pr-5">
               {currentUser && (
                 <div className="flex items-center">
-                  <LikeOutlined onClick={() =>onHandleLikeExtra(recomment._id)}  className={` ${recomment.likes.includes(currentUser?._id) && 'text-blue'} cursor-pointer `} /> <span className="ml-2">{recomment.likes.length}</span>
+                  <LikeOutlined onClick={() =>onHandleLikeExtra(recomment._id)}  className={` ${recomment?.likes?.includes(currentUser?._id) && 'text-blue'} cursor-pointer `} /> <span className="ml-2">{recomment?.likes?.length}</span>
                 </div>
               )}
               {
@@ -77,7 +77,7 @@ const CommentExtraAdmin = ({ comment, userTag, setUserTag }: CommentExtralProps)
               }
               {(recomment?.userId?._id !== currentUser?._id && currentUser) && (
                 <div>
-                  <span onClick={() => { setUserTag(recomment.userId) }} className=' cursor-pointer text-xs hover:underline'>phản hồi</span>
+                  <span onClick={() => { setUserTag(recomment?.userId) }} className=' cursor-pointer text-xs hover:underline'>phản hồi</span>
                 </div>
               )}
             </div>

@@ -127,10 +127,10 @@ const ComplaintEdit = (props: Props) => {
                 style={{ width: 200 }}
                 placeholder="Chọn trạng thái"
               >
-                <Select.Option value="new" disabled={status !== "new"}>Mới</Select.Option>
-                <Select.Option value="in_progress" disabled={status !== "new"}>Đang xử lý</Select.Option>
-                <Select.Option value="resolved" disabled={status !== "in_progress"}>Đã giải quyết</Select.Option>
-                <Select.Option value="cancelled" disabled={status !== "in_progress"}>Huỷ khiếu nại</Select.Option>
+                <Select.Option value="new" disabled={query?.status !== "new"}>Mới</Select.Option>
+                <Select.Option value="in_progress" disabled={query?.status !== "new"}>Đang xử lý</Select.Option>
+                <Select.Option value="resolved" disabled={query?.status !== "in_progress"}>Đã giải quyết</Select.Option>
+                <Select.Option value="cancelled" disabled={query?.status !== "in_progress"}>Huỷ khiếu nại</Select.Option>
               </Select>
             </Descriptions.Item>
             <Descriptions.Item label="Ghi chú">

@@ -61,22 +61,13 @@ const BrandList: React.FC = () => {
       title: "Slug",
       dataIndex: "slug",
     },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      render: (_, record) => (
-        <Switch
-          size="small"
-          checked={record.status === 'Hoạt động'}
-          onChange={(checked) => handleStatusChange(checked, record)}
-        />
-      ),
-    },
+    
     {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
-          <Space size="middle">
+          <>
+            {record?.name  !== 'Không xác định' &&(<Space size="middle">
               <Popconfirm
                   title="Delete the brand"
                   description="Are you sure to delete this brand?"
@@ -87,7 +78,8 @@ const BrandList: React.FC = () => {
                   <Button danger>Delete</Button>
               </Popconfirm>
               <Link to={`edit/${record._id}`}><Button type='primary'>Update</Button></Link>
-          </Space>
+          </Space>)}
+          </>
       ),
   }
 ];

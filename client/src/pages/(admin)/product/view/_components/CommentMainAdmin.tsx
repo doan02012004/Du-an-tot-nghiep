@@ -49,24 +49,24 @@ const CommentMainAdmin = ({ comment, user,commentRef,commentId,setCommentId }: C
 
   // toggleLike 
   const onHandleLike = () =>{
-    commentMutation.mutate({action:'like',newComment:{commentId:comment._id,userId:user?._id}})
+    commentMutation.mutate({action:'like',newComment:{commentId:comment?._id,userId:user?._id}})
   }
   return (
     <div>
       {/* Nội dung bình luận */}
       <div className="bg-gray-100 rounded-md p-2">
-        <h5 className="text-black text-base font-semibold m-0">{comment.userId.lastname} {comment.userId.firstname}</h5>
+        <h5 className="text-black text-base font-semibold m-0">{comment?.userId?.lastname} {comment?.userId?.firstname}</h5>
           <Rate value={comment?.rating} className='text-xs p-0 mb-2' disabled />
-        <p>{comment.comment}</p>
+        <p>{comment?.comment}</p>
         <div className="flex justify-between items-center">
           <div className='text-xs text-black font-medium'>
-            {formatDateComment(comment.createdAt)}
+            {formatDateComment(comment?.createdAt)}
           </div>
          <div className=' flex items-center gap-x-8 pr-5 '>
            {/* Like button */}
            {user && (
             <div className="flex items-center">
-              <LikeOutlined onClick={onHandleLike} className={` ${comment.likes.includes(user?._id) && 'text-blue'} cursor-pointer `} /> <span className="ml-2">{comment.likes ? comment.likes.length : 0}</span>
+              <LikeOutlined onClick={onHandleLike} className={` ${comment?.likes?.includes(user?._id) && 'text-blue'} cursor-pointer `} /> <span className="ml-2">{comment?.likes ? comment?.likes?.length : 0}</span>
             </div>
           )}
           {/* Comment button */}
@@ -77,23 +77,23 @@ const CommentMainAdmin = ({ comment, user,commentRef,commentId,setCommentId }: C
                   setUserTag(null)
                   return null
                 }else{
-                  return comment._id
+                  return comment?._id
                 }
               })} // Toggle hiển thị bình luận trả lời
               className={` cursor-pointer ${comment?._id == commentId && 'text-blue'}`}
             />
-            <span className="ml-2">{comment.recomments ? comment.recomments.length : 0}</span>
+            <span className="ml-2">{comment?.recomments ? comment?.recomments?.length : 0}</span>
           </div>
           {/* Delete button */}
-          {user && user?._id == comment.userId._id && (
+          {user && user?._id == comment?.userId?._id && (
             <div>
-              {commentMutation.isPending ? <LoadingOutlined /> : <DeleteOutlined onClick={() => handleDelete(comment._id ? comment._id : '')} className="cursor-pointer" />}
+              {commentMutation.isPending ? <LoadingOutlined /> : <DeleteOutlined onClick={() => handleDelete(comment?._id ? comment?._id : '')} className="cursor-pointer" />}
             </div>
           )}
 
           {(comment?.userId?._id !== user?._id && user)  && (
             <div>
-              <span onClick={() => { setUserTag(comment.userId); setCommentId(comment?._id) }} className=' cursor-pointer text-xs hover:underline'>phản hồi</span>
+              <span onClick={() => { setUserTag(comment?.userId); setCommentId(comment?._id) }} className=' cursor-pointer text-xs hover:underline'>phản hồi</span>
             </div>
           )}
 
